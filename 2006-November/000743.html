@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseTree2 :)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree2%20%3A%29&In-Reply-To=%3C20061106110128.58681.qmail%40web54008.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000742.html">
+   <LINK REL="Next"  HREF="000746.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseTree2 :)</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree2%20%3A%29&In-Reply-To=%3C20061106110128.58681.qmail%40web54008.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] YDDatabaseTree2 :)">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Mon Nov  6 12:01:28 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000742.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+        <LI>Next message: <A HREF="000746.html">[ydf-devel] Adding ajax grid support to YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#743">[ date ]</a>
+              <a href="thread.html#743">[ thread ]</a>
+              <a href="subject.html#743">[ subject ]</a>
+              <a href="author.html#743">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Francisco,
+
+It's a good change to make a new YDDatabaseTree based
+on 
+YDDatabaseObject. I didn't attempt it with my version
+of YDDatabaseTree2 
+since I am very much a novice with YDDatabaseObject.
+
+The implementation you propose would allow a scenario
+where multiple 
+module or users data (i.e. in subtrees) are stored in
+a single tree 
+table with less risk of a rebuild corrupting data
+amongst subtrees. 
+Subtrees / branches specific to a user could then be
+stored in a subtree 
+with a root node based on their user id or some
+combination of fields.
+
+I look forward to seeing the new class.
+
+Thanks,
+
+Graeme
+
+Francisco Azevedo wrote:
+&gt;<i> Hi all
+</I>&gt;<i>
+</I>&gt;<i> I have created a new YDDatabaseTree. This is not a
+</I>YDDatabaseTree 
+&gt;<i> extension but a new tree management implementation
+</I>with a different 
+&gt;<i> algorithm.
+</I>&gt;<i>
+</I>&gt;<i> The main difference is.. speed! and position
+</I>support!  ;)
+&gt;<i>
+</I>&gt;<i> Let's see the differences in more details:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Columns used:
+</I>&gt;<i> 	- on YDDT:  id, parent, nleft, nright, nlevel
+</I>&gt;<i> 	- on YDDT2; id, parent,       lineage,  level,
+</I>position
+&gt;<i>
+</I>&gt;<i> 	on YDDT2, the control part is done with 'lineage'
+</I>instead of
+&gt;<i> 	          'nleft' and 'nright'
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Qty of queries:
+</I>&gt;<i>
+</I>&gt;<i> on selects:
+</I>&gt;<i> 	- all algorithms only use 1 or 2 sql queries to get
+</I>results.
+&gt;<i>
+</I>&gt;<i> on adding a node in a table with 1000 nodes already:
+</I>&gt;<i> 	- YDDT uses more than 1000 queries
+</I>&gt;<i> 	  (because it needs to rebuild the table)
+</I>&gt;<i> 	- YDDT2 uses 2 sql queries
+</I>&gt;<i>
+</I>&gt;<i> on moving a node in a table with 1000 nodes already
+</I>&gt;<i> 	- YDDT: uses more than 1000 queries
+</I>&gt;<i> 	        don't have support for position
+</I>&gt;<i> 	- YDDT2 uses 4 sql queries (with position support)
+</I>&gt;<i>
+</I>&gt;<i> on deleting a node in a table with 100 nodes
+</I>already:
+&gt;<i> 	- YDDT uses more than 1000 queries
+</I>&gt;<i> 	  (because it needs to rebuild the table)
+</I>&gt;<i> 	- YDDT2 uses 2 sql queries
+</I>&gt;<i> 	  (and, if table type InnoDB, children are deleted
+</I>automaticaly)
+&gt;<i>
+</I>&gt;<i> So, where is the magic.. basically YDDT2 uses what i
+</I>called the 
+&gt;<i> 'lineage' instead of 'nleft' and 'nright'. Lineage
+</I>is the id path to the 
+&gt;<i> node.
+</I>&gt;<i> Eg, imagine a tree like:
+</I>&gt;<i>
+</I>&gt;<i> .
+</I>&gt;<i> +- A
+</I>&gt;<i> |
+</I>&gt;<i> +- B
+</I>&gt;<i> |  +- C
+</I>&gt;<i> |     +- X
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> The lineages are:
+</I>&gt;<i>
+</I>&gt;<i> .
+</I>&gt;<i> +- A  lineage: //
+</I>&gt;<i> |
+</I>&gt;<i> +- B  lineage: //
+</I>&gt;<i> |  +- C  lineage: //B/
+</I>&gt;<i> |     +- X  lineage: //B/C/
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Lineage always start with '//', then contains all
+</I>parent id nodes 
+&gt;<i> separated by '/' and has an '/' in the end.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> This means that each node info is only dependent of
+</I>the parent, i mean, 
+&gt;<i> the only &quot;rebuild&quot; that is need on node operations
+</I>is to update some 
+&gt;<i> lineage's (but not all like in YDDT).. and in
+</I>opposition to YDDT, this 
+&gt;<i> simple &quot;rebuild&quot; can be done in just 1 sql query in
+</I>YDDT2.
+&gt;<i>
+</I>&gt;<i> I will put this new class in YDF in next days (maybe
+</I>tomorrow).
+&gt;<i>
+</I>&gt;<i> To be a perfect class, i think the YDDT2 should be
+</I>done using 
+&gt;<i> YDDatabaseObject (currently it uses the common
+</I>YDDatabase methods).
+&gt;<i> The problem is that i don't know how to do some
+</I>things using 
+&gt;<i> YDDatabaseObject.. maybe db can help me here..
+</I>&gt;<i>
+</I>&gt;<i> Db, how can i:
+</I>&gt;<i> - unregister a key?
+</I>&gt;<i> - unregister a field?
+</I>&gt;<i> - currently in a UPDATE, i can set values like:
+</I>&gt;<i> 	$dbo-&gt;resetValues();
+</I>&gt;<i> 	$dbo-&gt;set( 'xpto', 3 );
+</I>&gt;<i> 	$dbo-&gt;update();
+</I>&gt;<i>
+</I>&gt;<i> 	but.. how can i define expressions?
+</I>&gt;<i> 	On YDDT2 i have this sql:
+</I>&gt;<i> 	UPDATE *table* SET REPLACE(...) WHERE ...
+</I>&gt;<i>
+</I>&gt;<i> 	Can i (??) do something like:
+</I>&gt;<i> 	$dbo-&gt;resetValues();
+</I>&gt;<i> 	$dbo-&gt;set( 'REPLACE(...)' );
+</I>&gt;<i> 	$dbo-&gt;where( ... )
+</I>&gt;<i> 	$dbo-&gt;update();
+</I>&gt;<i>
+</I>&gt;<i> 	if not, how can i do this?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Anyway, what do you think?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> regards
+</I>&gt;<i> Francisco A
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>
+</I><A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">https://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>
+
+
+ 
+____________________________________________________________________________________
+Low, Low, Low Rates! Check out Yahoo! Messenger's cheap PC-to-Phone call rates 
+(<A HREF="http://voice.yahoo.com">http://voice.yahoo.com</A>)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000742.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+	<LI>Next message: <A HREF="000746.html">[ydf-devel] Adding ajax grid support to YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#743">[ date ]</a>
+              <a href="thread.html#743">[ thread ]</a>
+              <a href="subject.html#743">[ subject ]</a>
+              <a href="author.html#743">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

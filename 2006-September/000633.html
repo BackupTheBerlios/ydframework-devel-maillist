@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2114 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2114%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200609081619.k88GJc3R012346%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000632.html">
+   <LINK REL="Next"  HREF="000634.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2114 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2114%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200609081619.k88GJc3R012346%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2114 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep  8 18:19:38 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000632.html">[ydf-devel] r2113 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000634.html">[ydf-devel] r2115 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#633">[ date ]</a>
+              <a href="thread.html#633">[ thread ]</a>
+              <a href="subject.html#633">[ subject ]</a>
+              <a href="author.html#633">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-08 18:19:38 +0200 (Fri, 08 Sep 2006)
+New Revision: 2114
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+Log:
+Fixed the install of the weblog application.
+
+More info: [ Bug #8708 ] Install of new instance fails
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 16:14:14 UTC (rev 2113)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 16:19:38 UTC (rev 2114)
+@@ -182,7 +182,7 @@
+                 // Add any missing items fields
+                 $fields = $this-&gt;dbmeta-&gt;getFields( '#_items' );
+                 $this-&gt;executeIfMissing( 'body_more', $fields, 'ALTER TABLE #_items ADD body_more LONGTEXT AFTER body' );
+-                $this-&gt;executeIfMissing( 'is_draft', $fields, 'ALTER TABLE #_items ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER auto_close' );
++                $this-&gt;executeIfMissing( 'is_draft', $fields, 'ALTER TABLE #_items ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER num_comments' );
+                 $this-&gt;executeIfPresent( 'allow_comments', $fields, 'ALTER TABLE #_items DROP allow_comments' );
+                 $this-&gt;executeIfPresent( 'auto_close', $fields, 'ALTER TABLE #_items DROP auto_close' );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000632.html">[ydf-devel] r2113 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000634.html">[ydf-devel] r2115 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#633">[ date ]</a>
+              <a href="thread.html#633">[ thread ]</a>
+              <a href="subject.html#633">[ subject ]</a>
+              <a href="author.html#633">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

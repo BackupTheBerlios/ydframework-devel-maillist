@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C455C99A1.7010403%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000754.html">
+   <LINK REL="Next"  HREF="000755.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C455C99A1.7010403%40fusemail.com%3E"
+       TITLE="[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields">francisco at fusemail.com
+       </A><BR>
+    <I>Thu Nov 16 18:02:25 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000754.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+        <LI>Next message: <A HREF="000755.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#759">[ date ]</a>
+              <a href="thread.html#759">[ thread ]</a>
+              <a href="subject.html#759">[ subject ]</a>
+              <a href="author.html#759">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Graeme
+
+&gt;<i> The new YDDatabaseTree2 is a cool 8-) new implementation of database trees!
+</I>&gt;<i> 
+</I>&gt;<i> There is a bug in the select statement for YDDatabaseTree2::getNode. I 
+</I>&gt;<i> think the code needs to include appropriate quote characters so that 
+</I>&gt;<i> string fields can be used in addition to numeric id fields. String 
+</I>&gt;<i> fields cause the db instance to raise an error.
+</I>
+Fixed.
+
+&gt;<i> I have also written a findNode method which allows for the tree to be 
+</I>&gt;<i> search based on a number of equality criteria ( field / value pairs).
+</I>&gt;<i> 
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Find the node data for the node matching the criteria.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $criteria      Array of field/value pairs.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns An object containing the node's data, or false if 
+</I>&gt;<i> node not found
+</I>&gt;<i>          */
+</I>&gt;<i>         function findNode( $criteria ) {
+</I>
+
+The method sounds good but i would prefer to include it in 
+YDDatabaseTree3 (the YDDatabaseObject version of YDDatabaseTree2).
+This way we could implement getNodes and _getNodes as:
+
+function _getNodes(){
+
+	$this-&gt;find();
+	return $this-&gt;getValues();
+}
+
+
+function getNodes(){
+	$this-&gt;resetValues();
+	return $this-&gt;_getNodes();
+}
+
+
+Then, if you want to use getNode you only need to invoke it.. but you 
+can easily extend it in your code:
+
+
+	$dbTree3 = new YDDatabaseTree3( ... );
+	$dbTree3-&gt;set( 'realm', 'abc' );
+	$dbTree3-&gt;set( 'url', '/index.php' );
+
+	$node = $dbTree3-&gt;_getNodes();
+	
+	// _getNode() and not getNode()!!
+	// otherwise your previous sets would be ignored
+
+This has Huge capabilities because you can use all YDDatabaseObject 
+features to extend the method!
+Eg:
+   - Imagine you want to set limits.. you only need to:
+
+	$dbTree3 = new YDDatabaseTree3( ... );
+	$dbTree3-&gt;set( 'realm', 'abc' );
+	$dbTree3-&gt;set( 'url', '/index.php' );
+	$dbTree3-&gt;limit( 3 );
+
+	$node = $dbTree3-&gt;_getNodes();
+
+   - Imagine you want to create LIKES:
+
+	$dbTree3 = new YDDatabaseTree3( ... );
+	$dbTree3-&gt;where( &quot;'realm LIKE 'ab%'&quot; );
+	$dbTree3-&gt;set( 'url', '/index.php' );
+	$dbTree3-&gt;limit( 3 );
+
+	$node = $dbTree3-&gt;_getNodes();
+
+	This will retrive the first 3 elements where realm starts
+	with ab and url is /index.php
+
+
+What do you think?
+
+regards
+Francisco A
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000754.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+	<LI>Next message: <A HREF="000755.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#759">[ date ]</a>
+              <a href="thread.html#759">[ thread ]</a>
+              <a href="subject.html#759">[ subject ]</a>
+              <a href="author.html#759">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

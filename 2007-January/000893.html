@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2301 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2301%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200701071747.l07Hl8pM008381%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000892.html">
+   <LINK REL="Next"  HREF="000894.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2301 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2301%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200701071747.l07Hl8pM008381%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2301 - YDFramework2.0/trunk/YDFramework2">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan  7 18:47:08 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000892.html">[ydf-devel] r2300 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000894.html">[ydf-devel] r2302 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses javascript
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#893">[ date ]</a>
+              <a href="thread.html#893">[ thread ]</a>
+              <a href="subject.html#893">[ subject ]</a>
+              <a href="author.html#893">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-07 18:47:07 +0100 (Sun, 07 Jan 2007)
+New Revision: 2301
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+Log:
+Improved the output of YD_DEBUG a little bit by:
+- Removing the include path
+- Reformatting the way SQL queries are shown
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-07 17:37:21 UTC (rev 2300)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-07 17:47:07 UTC (rev 2301)
+@@ -162,24 +162,13 @@
+                 $debug .= 'INCLUDED FILES (' . sizeof( $includeFiles ) . ' files - ' . $includeFilesSize . ')' . YD_CRLF . YD_CRLF;
+                 $debug .= &quot;\t&quot; . implode( &quot;\n\t&quot;, $includeFiles ) . YD_CRLF . YD_CRLF;
+ 
+-                // Create the list of include directories
+-                $include_dirs = explode( YD_PATHDELIM, ini_get( 'include_path' ) );
+-                $debug .= 'INCLUDES SEARCH PATH (' . sizeof( $include_dirs ) . ' directories)' . YD_CRLF . YD_CRLF;
+-                foreach ( $include_dirs as $path ) {
+-                    if ( realpath( $path ) ) {
+-                        $debug .= &quot;\t&quot; . realpath( $path ) . YD_CRLF;
+-                    } else {
+-                        $debug .= &quot;\t&quot; . $path . YD_CRLF;
+-                    }
+-                }
+-                $debug .= YD_CRLF;
+-
+                 // Add the queries if any
+                 if ( sizeof( $GLOBALS['YD_SQL_QUERY'] ) &gt; 0 ) {
+                     $debug .= 'EXECUTED SQL QUERIES (' . sizeof( $GLOBALS['YD_SQL_QUERY'] ) . ' queries)' . YD_CRLF . YD_CRLF;
+                     foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
++                        $debug .= &quot;\t&quot; . '---- SQL QUERY ' . ($key+1) . ' ----' . YD_CRLF;
+                         foreach ( explode( YD_CRLF, trim( $query ) ) as $line ) {
+-                            $debug .= &quot;\t[&quot; . ( $key+1 ) . ']' . &quot;\t&quot; . rtrim( $line ) . YD_CRLF;
++                            $debug .= &quot;\t\t&quot; . rtrim( $line ) . YD_CRLF;
+                         }
+                         $debug .= YD_CRLF;
+                     }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000892.html">[ydf-devel] r2300 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000894.html">[ydf-devel] r2302 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses javascript
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#893">[ date ]</a>
+              <a href="thread.html#893">[ thread ]</a>
+              <a href="subject.html#893">[ subject ]</a>
+              <a href="author.html#893">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

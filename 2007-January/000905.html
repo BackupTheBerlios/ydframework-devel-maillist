@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2313 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2313%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701161215.l0GCFmZm012142%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000904.html">
+   <LINK REL="Next"  HREF="000906.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2313 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2313%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701161215.l0GCFmZm012142%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2313 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 16 13:15:48 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000904.html">[ydf-devel] r2312 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000906.html">[ydf-devel] r2314 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#905">[ date ]</a>
+              <a href="thread.html#905">[ thread ]</a>
+              <a href="subject.html#905">[ subject ]</a>
+              <a href="author.html#905">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-16 13:15:48 +0100 (Tue, 16 Jan 2007)
+New Revision: 2313
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+The post request info is now automatically deleted after 7 days.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-16 12:11:28 UTC (rev 2312)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-16 12:15:48 UTC (rev 2313)
+@@ -142,10 +142,14 @@
+                 $this-&gt;db-&gt;executeSql( $sql );
+             }
+ 
+-            // Cleanup the bad behaviour table
++            // Cleanup the bad behaviour table part 1
+             $sql = 'DELETE FROM #_bad_behavior WHERE DATE_SUB( `date`, INTERVAL 1 day ) &lt; DATE_SUB( CURDATE(), INTERVAL 1 day ) AND request_method = \'GET\' AND `key` = \'00000000\'';
+             $this-&gt;db-&gt;executeSql( $sql );
+ 
++            // Cleanup the bad behaviour table part 2
++            $sql = 'DELETE FROM #_bad_behavior WHERE DATE_SUB( `date`, INTERVAL 7 day ) &lt; DATE_SUB( CURDATE(), INTERVAL 7 day )';
++            $this-&gt;db-&gt;executeSql( $sql );
++
+             // Check against akismet if a key is there
+             if ( YDConfig::get( 'akismet_key', '' ) != '' ) {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-16 12:11:28 UTC (rev 2312)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-16 12:15:48 UTC (rev 2313)
+@@ -392,6 +392,7 @@
+ $GLOBALS['t']['user_agent'] = 'User Agent';
+ $GLOBALS['t']['request_entity'] = 'Request Entity';
+ $GLOBALS['t']['key'] = 'Key';
++$GLOBALS['t']['bb_delete_desc'] = 'Request information automatically deleted after 7 days.';
+ $GLOBALS['t']['confirm_empty_bb'] = 'Are you sure you want to delete all request information?';
+ $GLOBALS['t']['empty_bb_now'] = 'Delete all request information now.';
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-16 12:11:28 UTC (rev 2312)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-16 12:15:48 UTC (rev 2313)
+@@ -392,6 +392,7 @@
+ $GLOBALS['t']['user_agent'] = 'User Agent';
+ $GLOBALS['t']['request_entity'] = 'Request Entiteit';
+ $GLOBALS['t']['key'] = 'Code';
++$GLOBALS['t']['bb_delete_desc'] = 'Request informatie wordt automatisch verwijderd na 7 dagen.';
+ $GLOBALS['t']['confirm_empty_bb'] = 'Bent u zeker dat u alle request informatie wil verwijderen?';
+ $GLOBALS['t']['empty_bb_now'] = 'Verwijder nu alle request informatie.';
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl	2007-01-16 12:11:28 UTC (rev 2312)
++++ YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl	2007-01-16 12:15:48 UTC (rev 2313)
+@@ -20,7 +20,7 @@
+                     &lt;/th&gt;
+                 &lt;/tr&gt;
+                 &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;5&quot;&gt;
+-                    &lt;i&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptyBadBehaviour&quot;
++                    &lt;i&gt;{t w=&quot;bb_delete_desc&quot;} &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptyBadBehaviour&quot;
+                      onClick=&quot;return confirm( '{t w=&quot;confirm_empty_bb&quot;}' );&quot;&gt;{t w=&quot;empty_bb_now&quot;}&lt;/a&gt;&lt;/i&gt;
+                 &lt;/td&gt;&lt;/tr&gt;
+                 &lt;tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2007-01-16 12:11:28 UTC (rev 2312)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2007-01-16 12:15:48 UTC (rev 2313)
+@@ -68,13 +68,6 @@
+                         {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+                     &lt;/td&gt;
+                     &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {*{if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.comment|bbcode|strip_tags|truncate}&lt;/a&gt;
+-                        {if $comment.item_title}
+-                            &lt;br/&gt;
+-                            {t w=&quot;item&quot;}: {$comment.item_title}
+-                        {/if}
+-                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}*}
+                         {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+                         &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.item_title}&lt;/a&gt;
+                         &lt;br/&gt;
+@@ -107,7 +100,7 @@
+             &lt;/tr&gt;
+         {else}
+             &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;5&quot;&gt;
+-                &lt;i&gt;{t w=&quot;spam_delete_desc&quot;}. &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptySpam&quot;
++                &lt;i&gt;{t w=&quot;spam_delete_desc&quot;} &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptySpam&quot;
+                  onClick=&quot;return confirm( '{t w=&quot;confirm_empty_spam&quot;}' );&quot;&gt;{t w=&quot;empty_spam_now&quot;}&lt;/a&gt;&lt;/i&gt;
+             &lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000904.html">[ydf-devel] r2312 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000906.html">[ydf-devel] r2314 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#905">[ date ]</a>
+              <a href="thread.html#905">[ thread ]</a>
+              <a href="subject.html#905">[ subject ]</a>
+              <a href="author.html#905">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

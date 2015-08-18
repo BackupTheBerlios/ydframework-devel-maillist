@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2439 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2439%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200705271856.l4RIurSv025259%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001032.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2439 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2439%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200705271856.l4RIurSv025259%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2439 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sun May 27 20:56:53 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001032.html">[ydf-devel] r2438 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1033">[ date ]</a>
+              <a href="thread.html#1033">[ thread ]</a>
+              <a href="subject.html#1033">[ subject ]</a>
+              <a href="author.html#1033">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-05-27 20:56:43 +0200 (Sun, 27 May 2007)
+New Revision: 2439
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+Log:
+new method: YDUrl::deleteQueryVars() to deletes all vars
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-05-26 17:32:01 UTC (rev 2438)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-05-27 18:56:43 UTC (rev 2439)
+@@ -423,7 +423,16 @@
+             unset( $this-&gt;_url_parsed['query'][$name] );
+         }
+ 
++
+         /**
++         *	This function will delete the indicated query variable if it exists.
++         */
++        function deleteQueryVars() {
++            $this-&gt;_url_parsed['query'] = array();
++        }
++
++
++        /**
+          *	Function to get the contents of the URL. It will get the contents using Gzip compression if possible in
+          *	order to save bandwidth. It uses the HTTP Client class from Simon Willison to do the dirty work.
+          *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001032.html">[ydf-devel] r2438 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1033">[ date ]</a>
+              <a href="thread.html#1033">[ thread ]</a>
+              <a href="subject.html#1033">[ subject ]</a>
+              <a href="author.html#1033">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

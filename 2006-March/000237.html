@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1810 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDDatabaseDrivers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1810%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDDatabaseDrivers&In-Reply-To=%3C200603222007.k2MK7Ra4014319%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000236.html">
+   <LINK REL="Next"  HREF="000238.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1810 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDDatabaseDrivers</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1810%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDDatabaseDrivers&In-Reply-To=%3C200603222007.k2MK7Ra4014319%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1810 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDDatabaseDrivers">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Mar 22 21:07:27 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000236.html">[ydf-devel] r1809 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000238.html">[ydf-devel] r1811 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#237">[ date ]</a>
+              <a href="thread.html#237">[ thread ]</a>
+              <a href="subject.html#237">[ subject ]</a>
+              <a href="author.html#237">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-03-22 21:07:20 +0100 (Wed, 22 Mar 2006)
+New Revision: 1810
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+Log:
+The connect function now returns true or false depending on whether the connection was succesfull or not.
+
+Feature Request #2031
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-03-22 19:40:26 UTC (rev 1809)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-03-22 20:07:20 UTC (rev 1810)
+@@ -701,6 +701,8 @@
+ 
+         /**
+          *  Function that makes the actual connection.
++         *
++         *  @returns    Boolean indicating if the connection was succesfull or not.
+          */
+         function connect() {
+         }
+@@ -1272,22 +1274,38 @@
+          *  @returns    The version of the database server software.
+          */
+         function getServerVersion() {
+-            $this-&gt;connect();
++            $result = $this-&gt;connect();
++
++            // Handle errors
++            if ( ! $result &amp;&amp; is_null( $this-&gt;_conn ) &amp;&amp; $this-&gt;_failOnError === true ) {
++                trigger_error( mysql_error(), YD_ERROR );
++            }
++            if ( ! $result &amp;&amp; ! is_null( $this-&gt;_conn ) &amp;&amp; $this-&gt;_failOnError === true ) {
++                trigger_error( mysql_error( $this-&gt;_conn ), YD_ERROR );
++            }
++
++            // Return the version
+             return 'MySQL ' . mysql_get_server_info();
++
+         }
+ 
+         /**
+          *  Function that makes the actual connection.
++         *
++         *  @returns    Boolean indicating if the connection was succesfull or not.
+          */
+         function connect() {
+-            $conn = @mysql_connect( $this-&gt;_host, $this-&gt;_user, $this-&gt;_pass );
+-            if ( ! $conn ) {
+-                trigger_error( mysql_error(), YD_ERROR );
++            if ( $this-&gt;_conn == null ) {
++                $conn = @mysql_connect( $this-&gt;_host, $this-&gt;_user, $this-&gt;_pass );
++                if ( ! $conn ) {
++                    return false;
++                }
++                if ( ! @mysql_select_db( $this-&gt;_db, $conn ) ) {
++                    return false;
++                }
++                $this-&gt;_conn = $conn;
+             }
+-            if ( ! @mysql_select_db( $this-&gt;_db, $conn ) ) {
+-                trigger_error( mysql_error( $conn ), YD_ERROR );
+-            }
+-            $this-&gt;_conn = $conn;
++            return true;
+         }
+ 
+         /**
+@@ -1402,14 +1420,35 @@
+          *  @internal
+          */
+         function &amp; _connectAndExec( $sql ) {
++
++            // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
++
++            // Log the statement
+             $this-&gt;_logSql( $sql );
+-            $this-&gt;connect();
++
++            // Connect
++            $result = $this-&gt;connect();
++
++            // Handle errors
++            if ( ! $result &amp;&amp; is_null( $this-&gt;_conn ) &amp;&amp; $this-&gt;_failOnError === true ) {
++                trigger_error( mysql_error(), YD_ERROR );
++            }
++            if ( ! $result &amp;&amp; ! is_null( $this-&gt;_conn ) &amp;&amp; $this-&gt;_failOnError === true ) {
++                trigger_error( mysql_error( $this-&gt;_conn ), YD_ERROR );
++            }
++
++            // Execute the query
+             $result = @mysql_query( $sql, $this-&gt;_conn );
++
++            // Handle errors
+             if ( $result === false &amp;&amp; $this-&gt;_failOnError === true ) {
+                 trigger_error( '[' . mysql_errno( $this-&gt;_conn ) . '] ' . mysql_error( $this-&gt;_conn ), YD_ERROR );
+             }
++
++            // Return the result
+             return $result;
++
+         }
+ 
+     }
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2006-03-22 19:40:26 UTC (rev 1809)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2006-03-22 20:07:20 UTC (rev 1810)
+@@ -67,19 +67,31 @@
+          *	@returns	The version of the database server software.
+          */
+         function getServerVersion() {
+-            $this-&gt;connect();
++
++            // Connect
++            $result = $this-&gt;connect();
++
++            // Handle errors
++            if ( ! $result &amp;&amp; $this-&gt;_failOnError === true ) {
++                $error = ocierror();
++                trigger_error( $error['message'], YD_ERROR );
++            }
++
++            // Return the version
+             return 'Oracle ' . ociserverversion( $this-&gt;_conn );
++
+         }
+ 
+         /**
+          *	Function that makes the actual connection.
++         *
++         *  @returns    Boolean indicating if the connection was succesfull or not.
+          */
+         function connect() {
+             if ( $this-&gt;_conn == null ) {
+                 $conn = @OCILogon( $this-&gt;_user, $this-&gt;_pass, $this-&gt;_db );
+                 if ( ! $conn ) {
+-                    $error = ocierror( $conn );
+-                    trigger_error( $error['message'], YD_ERROR );
++                    return false;
+                 }
+                 $this-&gt;_conn = $conn;
+                 $stmt = OCIParse(
+@@ -87,6 +99,7 @@
+                 );
+                 @OCIExecute( $stmt );
+             }
++            return true;
+         }
+ 
+         /**
+@@ -247,15 +260,35 @@
+          *	@internal
+          */
+         function &amp; _connectAndExec( $sql ) {
++
++            // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
++
++            // Log the statement
+             $this-&gt;_logSql( $sql );
+-            $this-&gt;connect();
++
++            // Connect
++            $result = $this-&gt;connect();
++
++            // Handle errors
++            if ( ! $result &amp;&amp; $this-&gt;_failOnError === true ) {
++                $error = ocierror();
++                trigger_error( $error['message'], YD_ERROR );
++            }
++
++            // Create statement
+             $stmt = OCIParse( $this-&gt;_conn, $sql );
+-            if ( ! $stmt ) {
++
++            // Handle errors
++            if ( ! $stmt &amp;&amp; $this-&gt;_failOnError === true ) {
+                 $error = ocierror( $stmt );
+                 trigger_error( $error['message'], YD_ERROR );
+             }
++
++            // Execute
+             $result = @OCIExecute( $stmt );
++
++            // Handle errors
+             if ( $result === false &amp;&amp; $this-&gt;_failOnError === true ) {
+                 $error = ocierror( $stmt );
+                 if ( ! empty( $error['sqltext'] ) ) {
+@@ -263,7 +296,10 @@
+                 }
+                 trigger_error( $error['message'], YD_ERROR );
+             }
++
++            // Return the result
+             return $stmt;
++
+         }
+ 
+         /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2006-03-22 19:40:26 UTC (rev 1809)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2006-03-22 20:07:20 UTC (rev 1810)
+@@ -87,10 +87,11 @@
+                 $connstr = implode( ' ', $connstr );
+                 $conn = pg_connect( $connstr );
+                 if ( ! $conn ) {
+-                    trigger_error( pg_last_error( $conn ), YD_ERROR );
++                    return false;
+                 }
+                 $this-&gt;_conn = $conn;
+             }
++            return true;
+         }
+ 
+         /**
+@@ -191,14 +192,32 @@
+          *	@internal
+          */
+         function &amp; _connectAndExec( $sql ) {
++
++            // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
++
++            // Log the SQL
+             $this-&gt;_logSql( $sql );
+-            $this-&gt;connect();
++
++            // Connect
++            $result = $this-&gt;connect();
++
++            // Handle errors
++            if ( ! $result &amp;&amp; $this-&gt;_failOnError === true ) {
++                trigger_error( pg_last_error(), YD_ERROR );
++            }
++
++            // Perform the query
+             $result = @pg_query( $this-&gt;_conn, $sql );
++
++            // Handle errors
+             if ( $result === false &amp;&amp; $this-&gt;_failOnError === true ) {
+                 trigger_error( pg_last_error( $conn ), YD_ERROR );
+             }
++
++            // Return the result
+             return $result;
++
+         }
+ 
+         /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2006-03-22 19:40:26 UTC (rev 1809)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2006-03-22 20:07:20 UTC (rev 1810)
+@@ -64,8 +64,18 @@
+          *	@returns	The version of the database server software.
+          */
+         function getServerVersion() {
+-            $this-&gt;connect();
++
++            // Connect
++            $result = $this-&gt;connect();
++
++            // Handle errors
++            if ( ! $result &amp;&amp; $this-&gt;_failOnError === true ) {
++                trigger_error( $GLOBALS['YD_SQLITE_error'], YD_ERROR );
++            }
++
++            // Return the version
+             return 'SQLite ' . sqlite_libversion();
++
+         }
+ 
+         /**
+@@ -75,10 +85,11 @@
+             if ( $this-&gt;_conn == null ) {
+                 $conn = @sqlite_open( $this-&gt;_db, 0666, $error );
+                 if ( ! $conn ) {
+-                    trigger_error( $error, YD_ERROR );
++                    return false;
+                 }
+                 $this-&gt;_conn = $conn;
+             }
++            return true;
+         }
+ 
+         /**
+@@ -189,14 +200,32 @@
+          *	@internal
+          */
+         function &amp; _connectAndExec( $sql ) {
++
++            // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
++
++            // Log the statement
+             $this-&gt;_logSql( $sql );
+-            $this-&gt;connect();
++
++            // Connect
++            $result = $this-&gt;connect();
++
++            // Handle errors
++            if ( ! $result &amp;&amp; $this-&gt;_failOnError === true ) {
++                trigger_error( $GLOBALS['YD_SQLITE_error'], YD_ERROR );
++            }
++
++            // Execute the query
+             $result = @sqlite_query( $sql, $this-&gt;_conn );
++
++            // Handle errors
+             if ( $result === false &amp;&amp; $this-&gt;_failOnError === true ) {
+                 trigger_error( sqlite_error_string( sqlite_last_error( $this-&gt;_conn ) ), YD_ERROR );
+             }
++
++            // Return the result
+             return $result;
++
+         }
+ 
+     }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000236.html">[ydf-devel] r1809 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000238.html">[ydf-devel] r1811 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#237">[ date ]</a>
+              <a href="thread.html#237">[ thread ]</a>
+              <a href="subject.html#237">[ subject ]</a>
+              <a href="author.html#237">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

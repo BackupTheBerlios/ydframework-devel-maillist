@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1897 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1897%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604261436.k3QEaxBC013641%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000354.html">
+   <LINK REL="Next"  HREF="000356.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1897 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1897%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604261436.k3QEaxBC013641%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1897 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Wed Apr 26 16:36:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000354.html">[ydf-devel] r1896 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMPage: . languages
+</A></li>
+        <LI>Next message: <A HREF="000356.html">[ydf-devel] r1898 - YDFramework2.0/trunk/YDFramework2/addons
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#355">[ date ]</a>
+              <a href="thread.html#355">[ thread ]</a>
+              <a href="subject.html#355">[ subject ]</a>
+              <a href="author.html#355">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-26 16:36:47 +0200 (Wed, 26 Apr 2006)
+New Revision: 1897
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+Log:
+YDCMComponent has built-in methods for tree management
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-04-26 14:33:41 UTC (rev 1896)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-04-26 14:36:47 UTC (rev 1897)
+@@ -27,8 +27,8 @@
+     }
+ 
+     YDInclude( 'YDDatabaseObject.php' );
+-    YDInclude( 'YDCMTree.php' );
+ 
++
+     class YDCMComponent extends YDDatabaseObject {
+ 
+         function YDCMComponent( $name, $standardComponent = true ) {
+@@ -67,15 +67,37 @@
+          		$relLanguage = &amp; $this-&gt;registerRelation( 'YDCMLanguages', false, 'YDCMLanguages' );
+ 				$relLanguage-&gt;setLocalKey( 'language_id' );
+ 				$relLanguage-&gt;setForeignKey( 'language_id' );
+-
+-				// a standard component has tree operations
+-				$this-&gt;tree = new YDCMTree();
+ 			}
++				
++			// a standard component has tree operations
++			// TODO: position is required and we must change order from 'parent_id' to 'parent_id ASC, position ASC'
++			$this-&gt;tree = new YDDatabaseTree( 'default', 'YDCMTree', 'content_id', 'parent_id', 'parent_id' );
+ 
++			// TODO: set sort by parent &amp; position
++			// $this-&gt;tree-&gt;setSortField( 'parent_id ASC, position ASC' );
++
++			// add tree fields
++			$this-&gt;tree-&gt;addField( 'type' );
++			$this-&gt;tree-&gt;addField( 'state' );
++			$this-&gt;tree-&gt;addField( 'reference' );
++			$this-&gt;tree-&gt;addField( 'access' );
++			$this-&gt;tree-&gt;addField( 'searcheable' );
++			$this-&gt;tree-&gt;addField( 'published_date_start' );
++			$this-&gt;tree-&gt;addField( 'published_date_end' );
+ 		}
+ 
+ 
+         /**
++         *  This function returns all elements (except root)
++         *
++         *  @returns    all tree elements 
++         */
++		function getTreeElements(){
++			return $this-&gt;tree-&gt;getDescendants( 1 );
++		}
++
++
++        /**
+          *  This function returns the component author
+          *
+          *  @returns    component author
+@@ -115,17 +137,6 @@
+ 		}
+ 
+ 
+-		// this function will fix the current YDDatabaseObject::registerRelation
+-		// TODO: delete it when YDDatabaseObject::registerRelation support seach inside YDF addons directory
+-		function registerRelation( $a, $b, $c ){
+-		
+-			YDInclude( $a . '.php' );
+-			YDInclude( $c . '.php' );			
+-			
+-			return parent::registerRelation( $a, $b, $c );
+-		}
+-		
+-
+         /**
+          *  This function changes component state
+          *
+@@ -135,12 +146,30 @@
+          *
+          */
+ 		function toogleState( $id ){
++
++			// get node values
++			$old_node = $this-&gt;tree-&gt;getNode( $id );
++
++			// change state attribute
++			if ( $old_node[ 'state' ] == 0 ) return $this-&gt;setState( $id, 1 );
++			else                             return $this-&gt;setState( $id, 0 );
++		}
++
++
++        /**
++         *  This function sets a node state
++         *
++         *  @param $id         The node id
++         *  @param $state      The state code
++         *
++         *  @returns    1 if state changed, 0 otherwise
++         */
++		function setState( $id, $state ){
+ 		
+-			return $this-&gt;tree-&gt;toogleState( $id );
++			return $this-&gt;tree-&gt;updateNode( array( 'state' =&gt; $state ), $id );
+ 		}
+ 
+ 
+-
+         /**
+          *  This function deletes the tree part of a component only
+          *
+@@ -149,7 +178,7 @@
+          */
+ 		function deleteNode( $id ){
+ 		
+-			return $this-&gt;tree-&gt;deleteNode( $id );
++			return $this-&gt;tree-&gt;deleteNode( intval( $id ) );
+ 		}
+ 
+ 
+@@ -158,20 +187,56 @@
+          *
+          *  @param $values  Node values
+          */
+-		function add( $values ){
++		function addNode( $values, $parent_id = null ){
+ 
+-			// reset values
+-			$this-&gt;reset();
++			// user YDDatabasetree method
++			return $this-&gt;tree-&gt;addNode( $values, $parent_id );
++		}
++
++
++        /**
++         *  This function updates a node
++         *
++         *  @param $values  Node values
++         */
++		function updateNode( $values, $node_id = null ){
++
++			// user YDDatabasetree method
++			return $this-&gt;tree-&gt;updateNode( $values, $node_id );
++		}
++
++
++    }
++
++
++
++
++    class YDCMTree extends YDDatabaseObject {
++    
++        function YDCMTree() {
++        
++			// init component as non default
++            $this-&gt;YDDatabaseObject();
+ 			
+-			// set values
+-			$this-&gt;setValues( $values );
++			// register database as default
++            $this-&gt;registerDatabase();
+ 
+-			// TODO: check if language_id (another admin could delete or deactivate it)
+-			// TODO: check if content_id exist (not required because it should be locked anyway)
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMTree' );
+ 
+-			// insert values
+-			return $this-&gt;insert();
++            // register custom key
++            $this-&gt;registerKey( 'content_id', true );
++
++			// register fields	
++			$this-&gt;registerField( 'parent_id' );
++			$this-&gt;registerField( 'type' );
++			$this-&gt;registerField( 'state' );
++			$this-&gt;registerField( 'reference' );
++			$this-&gt;registerField( 'access' );			
++			$this-&gt;registerField( 'searcheable' );			
++			$this-&gt;registerField( 'published_date_start' );
++			$this-&gt;registerField( 'published_date_end' );			
+ 		}
++	}
+ 
+-    }
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000354.html">[ydf-devel] r1896 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMPage: . languages
+</A></li>
+	<LI>Next message: <A HREF="000356.html">[ydf-devel] r1898 - YDFramework2.0/trunk/YDFramework2/addons
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#355">[ date ]</a>
+              <a href="thread.html#355">[ thread ]</a>
+              <a href="subject.html#355">[ subject ]</a>
+              <a href="author.html#355">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

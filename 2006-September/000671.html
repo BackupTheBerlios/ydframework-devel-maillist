@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2151 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2151%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200609191710.k8JHAA1c011292%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000670.html">
+   <LINK REL="Next"  HREF="000672.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2151 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2151%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200609191710.k8JHAA1c011292%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2151 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Sep 19 19:10:10 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000670.html">[ydf-devel] r2150 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000672.html">[ydf-devel] r2152 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#671">[ date ]</a>
+              <a href="thread.html#671">[ thread ]</a>
+              <a href="subject.html#671">[ subject ]</a>
+              <a href="author.html#671">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-19 19:09:32 +0200 (Tue, 19 Sep 2006)
+New Revision: 2151
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+Log:
+- added support to checkboxgroup disable
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-09-19 16:50:09 UTC (rev 2150)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-09-19 17:09:32 UTC (rev 2151)
+@@ -113,7 +113,31 @@
+             }
+         }
+ 
++
+         /**
++         *	This function disables checkboxes
++         *
++         *	@param	$options	Value, Array of values to disable
++         */
++        function disable( $options ) {
++
++            // if null disable all elements
++            if ( is_null ( $options ) ){
++                foreach ( $this-&gt;_items as $k =&gt; $item )
++                    if ( isset( $this-&gt;_items[$k] ) ) $this-&gt;_items[$k]-&gt;disable();
++                return;
++            }
++
++            // check if options is array
++            if ( ! is_array( $options ) ) $options = array( $options );
++
++            // disable specific elements
++            foreach( $options as $k )
++                if ( isset( $this-&gt;_items[$k] ) ) $this-&gt;_items[$k]-&gt;disable();
++        }
++
++
++        /**
+          *      This function returns the value of the element.
+          *
+          *      @returns        Value of this object.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000670.html">[ydf-devel] r2150 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000672.html">[ydf-devel] r2152 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#671">[ date ]</a>
+              <a href="thread.html#671">[ thread ]</a>
+              <a href="subject.html#671">[ subject ]</a>
+              <a href="author.html#671">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

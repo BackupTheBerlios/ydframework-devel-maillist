@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2307 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDLoadconfig
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2307%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20.%0A%09YDLoadconfig&In-Reply-To=%3C200701131807.l0DI7rRc024593%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000898.html">
+   <LINK REL="Next"  HREF="000900.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2307 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDLoadconfig</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2307%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20.%0A%09YDLoadconfig&In-Reply-To=%3C200701131807.l0DI7rRc024593%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2307 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDLoadconfig">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 13 19:07:53 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000898.html">[ydf-devel] r2306 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000900.html">[ydf-devel] r2308 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#899">[ date ]</a>
+              <a href="thread.html#899">[ thread ]</a>
+              <a href="subject.html#899">[ subject ]</a>
+              <a href="author.html#899">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-13 19:07:38 +0100 (Sat, 13 Jan 2007)
+New Revision: 2307
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/
+   YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php
+Log:
+added new addon: YDLoadconfig
+This simple addon reads db stored configurations to apply all YDConfig set.
+In a future, maybe we could add support to db configuration saving and reading/saving from a php file too. This way, it could be possible to define a higher priority to a text file and, if a db is not online, generic file configs would be retrieve from that file.
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php	2007-01-13 17:58:36 UTC (rev 2306)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php	2007-01-13 18:07:38 UTC (rev 2307)
+@@ -0,0 +1,127 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++
++    /**
++     *  This class reads a database table to apply correspondent YDConfig
++     */
++    class YDLoadconfig extends YDAddOnModule {
++
++        /**
++         *  Class constructor for the YDLoadconfig class.
++         *
++         *  @param $dbinstance      Database instance name or object.
++         */
++        function YDLoadconfig( $dbinstance = 'default' ) {
++
++            // Initializes YDBase
++            $this-&gt;YDAddOnModule();
++
++            // Setup the module
++            $this-&gt;_author = 'Francisco Azevedo';
++            $this-&gt;_version = '1.0b';
++            $this-&gt;_copyright = '(c) 2006 Francisco Azevedo, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>';
++            $this-&gt;_description = 'This class handles db configurations.';
++
++			// init DB object
++            $this-&gt;db = new YDDatabaseObject();
++
++			// register database as default
++            $this-&gt;db-&gt;registerDatabase( $dbinstance );
++
++            // init table information
++			$this-&gt;_tables = array();
++
++			// init results
++			$this-&gt;_results = array();
++        }
++
++
++        /**
++         *  This function adds a table and correspondent name and value columns
++         *
++         *  @param $tablename       Table name
++         *  @param $column_name     (Optional) Column name that have variable names. By default: 'name'.
++         *  @param $column_value    (Optional) Column name that have variable values. By default: 'value'.
++         *
++         */
++        function addTable( $tablename, $column_name = 'name', $column_value = 'value' ) {
++
++            // if table don't exist add it to tables array
++            if ( ! in_array( $tablename, $this-&gt;_tables ) ) $this-&gt;_tables[ $tablename ] = array( $column_name, $column_value );
++        }
++
++
++        /**
++         *  This function loads configuration from db
++         */
++        function load() {
++
++			// clean possible previous results
++			$this-&gt;_results = array();
++
++            // cycle all tables to get their column names
++			foreach( $this-&gt;_tables as $tablename =&gt; $columns ){
++
++				// copy default db object
++	            $db = $this-&gt;db;
++
++				// register table
++				$db-&gt;registerTable( $tablename );
++
++				// register fields
++				$db-&gt;registerField( $columns[0] );
++				$db-&gt;registerField( $columns[1] );
++
++				// find everything in db
++				$db-&gt;find();
++
++				// add results
++				$this-&gt;_results = array_merge( $this-&gt;_results, $db-&gt;getResultsAsAssocArray( $columns[0], $columns[1] ) );
++			}
++        }
++
++
++        /**
++         *  This function creates all YDF Configs
++         */
++        function apply() {
++
++			// if we don't have results maybe we should load them
++			if ( empty( $this-&gt;_results ) ) $this-&gt;load();
++
++            // cycle all results to apply YDConfig
++			foreach( $this-&gt;_results as $name =&gt; $value ){
++				YDConfig::set( $name, $value );
++			}
++        }
++
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000898.html">[ydf-devel] r2306 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000900.html">[ydf-devel] r2308 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#899">[ date ]</a>
+              <a href="thread.html#899">[ thread ]</a>
+              <a href="subject.html#899">[ subject ]</a>
+              <a href="author.html#899">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

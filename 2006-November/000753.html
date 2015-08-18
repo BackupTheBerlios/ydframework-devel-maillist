@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2203 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2203%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611152215.kAFMFiNN018552%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000752.html">
+   <LINK REL="Next"  HREF="000754.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2203 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2203%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611152215.kAFMFiNN018552%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2203 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Nov 15 23:15:44 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000752.html">[ydf-devel] r2202 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000754.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#753">[ date ]</a>
+              <a href="thread.html#753">[ thread ]</a>
+              <a href="subject.html#753">[ subject ]</a>
+              <a href="author.html#753">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-15 23:15:21 +0100 (Wed, 15 Nov 2006)
+New Revision: 2203
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+Log:
+- small fixes on YDCMGroup when adding a new group
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-11-15 21:08:42 UTC (rev 2202)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-11-15 22:15:21 UTC (rev 2203)
+@@ -154,7 +154,6 @@
+ 			// add elements
+ 			$this-&gt;_form-&gt;addElement( 'text',     'name',        t( 'ydcmgroup label name' ) );
+ 			$this-&gt;_form-&gt;addElement( 'textarea', 'description', t( 'ydcmgroup label description' ), array( 'rows' =&gt; 4, 'cols' =&gt; 40 ) );
+-			$this-&gt;_form-&gt;addElement( 'select',   'state',       t( 'ydcmgroup label state' ), array(), array( 0 =&gt; t( 'Blocked' ), 1 =&gt; t( 'Active' ) ) );
+ 
+ 			// add rules
+ 			$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkgroup' ), array( $edit, $id ) );
+@@ -170,9 +169,6 @@
+ 				$defaults = $this-&gt;getGroup( $id );
+ 				$this-&gt;_form-&gt;setDefaults( $defaults );
+ 
+-				// state default is 'ydcmuserobject_state' because it's on userobject table
+-				$this-&gt;_form-&gt;setDefault( 'state', $defaults[ 'ydcmuserobject_state' ] );
+-
+ 				// add submit button
+ 				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmgroup label save' ) );
+ 			}
+@@ -280,7 +276,7 @@
+ 				$userobject = array();
+ 				$userobject['type']  = 'YDCMGroup';
+ 				$userobject['reference'] = $values[ 'name' ];
+-				$userobject['state']     = $values[ 'state' ];
++				$userobject['state']     = 1;
+ 
+ 				// update userobject
+ 				$uobj = new YDCMUserobject();
+@@ -312,7 +308,7 @@
+ 				$userobject = array();
+ 				$userobject['type']      = 'YDCMGroup';
+ 				$userobject['reference'] = $values[ 'name' ];
+-				$userobject['state']     = $values[ 'state' ];
++				$userobject['state']     = 1;
+ 
+ 				// check default parent id
+ 				if ( is_null( $id ) ) $id = 1;
+@@ -320,15 +316,18 @@
+ 				// TODO: check if group is valid (and, eg, is not a user node)
+ 
+ 				// update userobject and get new id
+-				$uobj = new YDCMUserobject();
+-				$res  = $uobj-&gt;addNode( $userobject, intval( $id ) );
++				$uobj   = new YDCMUserobject();
++				$nodeID = $uobj-&gt;addNode( $userobject, intval( $id ) );
+ 
++				// init result count
++				$res = $nodeID;
++
+ 				// if we are using the permission system, add permissions and sum lines afected in permission table
+-				if ( isset( $this-&gt;editing_PERMOBJ ) ) $res += $this-&gt;editing_PERMOBJ-&gt;saveFormNew( $id, $formvalues );
++				if ( isset( $this-&gt;editing_PERMOBJ ) ) $res += $this-&gt;editing_PERMOBJ-&gt;saveFormNew( $id, $nodeID, $formvalues );
+ 
+ 				// create user row
+ 				$group = array();
+-				$group[ 'group_id' ]    = $res;
++				$group[ 'group_id' ]    = intval( $nodeID );
+ 				$group[ 'name' ]        = $values[ 'name' ];
+ 				$group[ 'description' ] = $values[ 'description' ];
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-11-15 21:08:42 UTC (rev 2202)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-11-15 22:15:21 UTC (rev 2203)
+@@ -577,14 +577,15 @@
+         /**
+          *  This method adds a new permission system
+          *
+-         *  @param $user_id      (Optional) Parent of this permission system. Must be a user id
++         *  @param $user_id      Parent of this permission system. Must be a user id
++         *  @param $group_id     Group id of this permissions system
+          *  @param $formvalues   (Optional) Custom array with user attributes
+          *
+          *  @returns    INT: total of rows affected
+          */
+-		function saveFormNew( $user_id = null, $formvalues = null ){
++		function saveFormNew( $user_id, $group_id, $formvalues = null ){
+ 
+-			return $this-&gt;_saveFormDetails( $user_id, false, $formvalues );
++			return $this-&gt;_saveFormDetails( $user_id, false, $formvalues, $group_id );
+ 		}
+ 
+ 
+@@ -595,10 +596,11 @@
+          *  @param $id           If we are editing, $id is the group id. If we are adding, $id is the user id
+          *  @param $edit         Boolean flag that defines if we are editing $id or adding to $id
+          *  @param $formvalues   (Optional) Custom array with user attributes
++         *  @param $group_id     Node id used when inserting permissions. nodeID is the node where permissions are applyed
+          *
+          *  @returns    INT: total of rows affected
+          */
+-		function _saveFormDetails( $id, $edit, $formvalues = null ){
++		function _saveFormDetails( $id, $edit, $formvalues = null, $group_id = 0 ){
+ 
+ 			// validate with custom values
+ 			if ( ! is_null( $formvalues ) ) $this-&gt;_form-&gt;validate( $formvalues );
+@@ -654,6 +656,8 @@
+ 				}
+ 			}
+ 
++			// if we are adding permissions we must add to group_id recently created (not to parent)
++			if ( $edit == false ) $id = $group_id;
+ 
+ 			$rows_deleted = 0;
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-11-15 21:08:42 UTC (rev 2202)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-11-15 22:15:21 UTC (rev 2203)
+@@ -256,7 +256,7 @@
+ 			}else{
+ 				$this-&gt;_form-&gt;addElement( 'text',      'name',          t( 'ydcmuser label name' ),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
+ 				$this-&gt;_form-&gt;addElement( 'text',      'email',         t( 'ydcmuser label email' ) );
+-				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t( 'ydcmuser label other' ),    array('rows' =&gt; 15, 'cols' =&gt; 90) );
++				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t( 'ydcmuser label other' ),    array('rows' =&gt; 15, 'cols' =&gt; 40) );
+ 
+ 				$languages = new YDCMLanguages();
+ 				$languages = $languages-&gt;active();
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000752.html">[ydf-devel] r2202 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000754.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#753">[ date ]</a>
+              <a href="thread.html#753">[ thread ]</a>
+              <a href="subject.html#753">[ subject ]</a>
+              <a href="author.html#753">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

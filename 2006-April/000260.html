@@ -1,0 +1,1077 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1829 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1829%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200604051005.k35A5vlV011389%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000259.html">
+   <LINK REL="Next"  HREF="000261.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1829 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1829%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200604051005.k35A5vlV011389%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1829 - YDFramework2.0/trunk/YDFramework2">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Apr  5 12:05:57 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000259.html">[ydf-devel] r1828 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000261.html">[ydf-devel] r1830 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#260">[ date ]</a>
+              <a href="thread.html#260">[ thread ]</a>
+              <a href="subject.html#260">[ subject ]</a>
+              <a href="author.html#260">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-04-05 12:05:56 +0200 (Wed, 05 Apr 2006)
+New Revision: 1829
+
+Removed:
+   YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+Merged YDF2_init.php and YDF2_core.php as it gets included anyway.
+
+Deleted: YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-04-04 21:58:43 UTC (rev 1828)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-04-05 10:05:56 UTC (rev 1829)
+@@ -1,507 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    // Constants
+-    define( 'YD_CONFIG_VAR', 'YDF2_GLOBAL_CONFIG' );
+-    define( 'YD_LOCALE_KEY', 'YD_LOCALE' );
+-
+-    // This is the list of support languages
+-    $GLOBALS[ 'YD_LANGUAGES' ] = array(
+-        'en'  =&gt; array( 'eng', 'english', 'en_US' ),
+-        'eng' =&gt; array( 'en', 'english', 'en_US' ),
+-        'cs'  =&gt; array( 'csy', 'czech' ),
+-        'csy' =&gt; array( 'czech', 'cs' ),
+-        'da'  =&gt; array( 'dan', 'danish' ),
+-        'dan' =&gt; array( 'danish', 'da' ),
+-        'nl'  =&gt; array( 'nld', 'dutch' ),
+-        'nld' =&gt; array( 'dutch', 'nl' ),
+-        'nlb' =&gt; array( 'belgian', 'dutch-belgian', 'nl_BE', 'nl' ),
+-        'ena' =&gt; array( 'australian', 'english-aus', 'en_AU', 'en' ),
+-        'enc' =&gt; array( 'canadian', 'english-can', 'en_CA', 'en' ),
+-        'enz' =&gt; array( 'english-nz', 'en_NZ', 'en' ),
+-        'uk'  =&gt; array( 'english-uk', 'en_UK', 'en', 'enu', 'eng' ),
+-        'enu' =&gt; array( 'uk', 'english-uk', 'en_UK', 'en', 'eng' ),
+-        'us'  =&gt; array( 'american', 'american english', 'american-english', 'english-american', 'english-us', 'english-usa', 'enu', 'usa', 'en_US', 'en' ),
+-        'fi'  =&gt; array( 'fin', 'finnish' ),
+-        'fin' =&gt; array( 'finnish', 'fi' ),
+-        'fr'  =&gt; array( 'fra', 'french' ),
+-        'fra' =&gt; array( 'french', 'fr_FR', 'fr_FR', 'fr' ),
+-        'frb' =&gt; array( 'french-belgian', 'fr_BE', 'fr' ),
+-        'frc' =&gt; array( 'french-canadian', 'fr_CA', 'fr' ),
+-        'frs' =&gt; array( 'french-swiss', 'fr_SW', 'fr' ),
+-        'de'  =&gt; array( 'deu', 'german' ),
+-        'deu' =&gt; array( 'german', 'de' ),
+-        'dea' =&gt; array( 'german-austrian', 'de_AU', 'de' ),
+-        'des' =&gt; array( 'german-swiss', 'swiss', 'de_SW', 'de' ),
+-        'el'  =&gt; array( 'ell', 'greek' ),
+-        'ell' =&gt; array( 'greek', 'el' ),
+-        'hu'  =&gt; array( 'hun', 'hungarian' ),
+-        'hun' =&gt; array( 'hungarian', 'hu' ),
+-        'is'  =&gt; array( 'isl', 'icelandic' ),
+-        'isl' =&gt; array( 'icelandic', 'is' ),
+-        'it'  =&gt; array( 'ita', 'italian' ),
+-        'ita' =&gt; array( 'italian', 'it' ),
+-        'its' =&gt; array( 'italian-swiss', 'it', 'it_SW' ),
+-        'no'  =&gt; array( 'nor', 'norwegian' ),
+-        'nor' =&gt; array( 'norwegian-bokmal', 'no', 'no_BO' ),
+-        'non' =&gt; array( 'norwegian-nynorsk', 'no', 'no_NY' ),
+-        'pl'  =&gt; array( 'plk', 'polish' ),
+-        'plk' =&gt; array( 'polish', 'pl' ),
+-        'pt'  =&gt; array( 'ptg', 'portuguese' ),
+-        'ptg' =&gt; array( 'portuguese', 'pt' ),
+-        'ptb' =&gt; array( 'portuguese-brazil', 'pt_BR', 'pt' ),
+-        'ru'  =&gt; array( 'rus', 'russian' ),
+-        'rus' =&gt; array( 'russian', 'ru' ),
+-        'sk'  =&gt; array( 'sky', 'slovak' ),
+-        'sky' =&gt; array( 'slovak', 'sk' ),
+-        'es'  =&gt; array( 'spanish' ),
+-        'esp' =&gt; array( 'spanish', 'es' ),
+-        'esm' =&gt; array( 'spanish-mexican', 'es_ME', 'es' ),
+-        'esn' =&gt; array( 'spanish-modern', 'es_MO', 'es' ),
+-        'sv'  =&gt; array( 'sve', 'swedish' ),
+-        'sve' =&gt; array( 'swedish', 'sv' ),
+-        'tr'  =&gt; array( 'trk', 'turkish' ),
+-        'trk' =&gt; array( 'turkish', 'tr' ),
+-    );
+-
+-    /**
+-     *	This function will include a file from the filesystem. It works similar to the require_once function but it
+-     *	knows about the include path for the Yellow Duck Framework.
+-     *
+-     *	@param $file	File to be included.
+-     */
+-    function YDInclude( $file ) {
+-        if ( is_file( $file ) ) {
+-            include_once( $file );
+-            return;
+-        }
+-        foreach ( $GLOBALS['YD_INCLUDE_PATH'] as $include ) {
+-            if ( $include != false &amp;&amp; is_file( $include . '/' . $file ) ) {
+-                include_once( $include . '/' . $file );
+-                return;
+-            }
+-        }
+-        trigger_error(
+-            'Failed to include the file: ' . $file . ' The file was not found in the include path.', YD_ERROR
+-        );
+-    }
+-
+-    /**
+-     *	This function will add a marker to the global timer.
+-     *
+-     *	@param $name	The name of the marker.
+-     */
+-    function YDGlobalTimerMarker( $name ) {
+-        if ( ! isset( $GLOBALS['timer'] ) ) {
+-            include_once( dirname( __FILE__ ) . '/YDClasses/YDUtil.php' );
+-            $GLOBALS['timer'] = new YDTimer();
+-        }
+-        $GLOBALS['timer']-&gt;addMarker( $name );
+-    }
+-
+-    /**
+-     *	This function will fix magic quotes.
+-     *
+-     *	@param $value	The value to fix.
+-     *
+-     *	@returns	The fixed value.
+-     */
+-    function YDRemoveMagicQuotes( &amp; $value ) {
+-        if ( get_magic_quotes_gpc() == 1 ) {
+-            if ( is_array( $value ) ) {
+-                $result = array();
+-                foreach ( $value as $key=&gt;$val) {
+-                    $result[ $key ] = is_array( $val ) ? YDRemoveMagicQuotes( $val ) : stripslashes( $val );
+-                }
+-                return $result;
+-            } else {
+-                return stripslashes( $value );
+-            }
+-        }
+-        return $value;
+-    }
+-
+-    /**
+-     *  This function is used to load translations from a $GLOBALS['t'] array.
+-     *
+-     *  @param  $t  The name of the translated string.
+-     *
+-     *  @returns    The translated string.
+-     */
+-    function t( $t ) {
+-
+-        // Return empty string when param is missing
+-        if ( empty( $t ) ) {
+-            return '';
+-        }
+-
+-        // Return the right translation
+-        $t = strtolower( $t );
+-        return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
+-
+-    }
+-
+-    /**
+-     *  This is the base class for all other YD classes.
+-     */
+-    class YDBase {
+-
+-        /**
+-         *  Class constructor for the YDBase class.
+-         */
+-        function YDBase() {
+-        }
+-
+-        /**
+-         *  This function returns the name of the current class.
+-         *
+-         *  @returns    The name of the current class in lowercase.
+-         */
+-        function getClassName() {
+-            return strtolower( get_class( $this ) );
+-        }
+-
+-        /**
+-         *  This function returns true if the specified method is existing in the current class.
+-         *
+-         *  @param      $name   The name of the class method to look for.
+-         *
+-         *  @returns    Boolean indicating if the class method exists or not.
+-         */
+-        function hasMethod( $name ) {
+-            return method_exists( $this, $name );
+-        }
+-
+-        /**
+-         *  This function checks if this object instance is of a specific class or is based on a derived class of the
+-         *  given class. The class name is case insensitive.
+-         *
+-         *  @param $class   The object type you want to check against.
+-         *
+-         *  @returns    Boolean indicating if this object is of the specified class.
+-         */
+-        function isSubClass( $class ) {
+-            return YDObjectUtil::isSubClass( $this, $class );
+-        }
+-
+-        /**
+-         *  Function to get all the ancestors of this class. The list will contain
+-         *  the parent class first, and then it's parent class, etc. You can pass both
+-         *  the name of the class or an object instance to this function.
+-         *
+-         *  @returns    Array with all the ancestors.
+-         */
+-        function getAncestors() {
+-            return YDObjectUtil::getAncestors( $this-&gt;getClassName() );
+-        }
+-
+-        /**
+-         *  This function will serialize the object.
+-         */
+-        function serialize() {
+-            return YDObjectUtil::serialize( $this );
+-        }
+-
+-        /**
+-         *  This function sets a variable in the object.
+-         *
+-         *  @param  $name   The variable name.
+-         *  @param  $value  The variable value.
+-         *
+-         *  @returns        Returns a reference to the variable
+-         */
+-        function &amp; set( $name, $value ) { 
+-            $this-&gt;$name = $value; 
+-            return $this-&gt;$name; 
+-        } 
+-
+-        /**
+-         *  This function indicates if a variable in the object exists or not.
+-         *
+-         *  @param  $name   The variable name.
+-         *  @param  $null   (Optional) If false, indicates variables that are null
+-         *                  as they don't exist. Default: false.
+-         *
+-         *  @returns        Returns a boolean indicating if a variable exists or not.
+-         */
+-        function exists( $name, $null=false ) { 
+-            return $null ? array_key_exists( $name, $this ) : isset( $this-&gt;$name ); 
+-        } 
+-
+-        /**
+-         *  This function returns a variable value in the object.
+-         *
+-         *  @param  $name  The variable name.
+-         *
+-         *  @returns       Returns the variable value.
+-         */
+-        function get( $name ) { 
+-            return $this-&gt;exists( $name, true ) ? $this-&gt;$name : null; 
+-        }
+-
+-        /** 
+-         *  This function returns an array with all the values of the object. 
+-         * 
+-         *  @returns  An array with all the values. 
+-         */ 
+-        function toArray() { 
+-            $array = get_object_vars( $this ); 
+-            foreach ( $array as $key =&gt; $val ) { 
+-                if ( substr( $key, 0, 1 ) == '_' ) { 
+-                    unset( $array[ $key ] ); 
+-                } 
+-            } 
+-            return $array; 
+-        } 
+-
+-    }
+-
+-    /**
+-     *	This is the class that hold the global configuration.
+-     */
+-    class YDConfig extends YDBase {
+-
+-        /**
+-         *	This function initializes the global configuration.
+-         *
+-         *	@internal
+-         */
+-        function _init() {
+-            if ( ! isset( $GLOBALS[ YD_CONFIG_VAR ] ) ) {
+-                $GLOBALS[ YD_CONFIG_VAR ] = array();
+-            }
+-        }
+-
+-        /**
+-         *	This funtion add a new configuration variable to the configuration.
+-         *
+-         *	@param	$name		The name of the configuration variable.
+-         *	@param	$value		The value of the configuration variable.
+-         *	@param	$override	(optional) Override the current value or not. Default is true.
+-         */
+-        function set( $name, $value, $override=true ) {
+-            if ( YDConfig::exists( $name ) ) {
+-                if ( $override ) {
+-                    $GLOBALS[ YD_CONFIG_VAR ][ $name ] = $value;
+-                }
+-            } else {
+-                $GLOBALS[ YD_CONFIG_VAR ][ $name ] = $value;
+-            }
+-        }
+-
+-        /**
+-         *	This function returns a variable from the configuration. If the configuration variable doesn't exist, it
+-         *	returns a fatal error.
+-         *
+-         *	@param	$name       The name of the configuration variable to retrieve.
+-         *  @param  $default    (optional) If not null, this value will be returned if the configuration setting doesn't
+-         *                      exist in the configuration.
+-         *
+-         *	@returns	The value of the configuration variable.
+-         */
+-        function get( $name, $default=null ) {
+-            return YDConfig::exists( $name ) ? $GLOBALS[ YD_CONFIG_VAR ][ $name ] : $default;
+-        }
+-
+-        /**
+-         *	This function checks if the configuration value is set or not.
+-         *
+-         *	@returns	Boolean indicating if the configuration value is set or not.
+-         */
+-        function exists( $name ) {
+-            YDConfig::_init();
+-            return isset( $GLOBALS[ YD_CONFIG_VAR ][ $name ] );
+-        }
+-
+-        /**
+-         *	This function dumps the contents of the configuration.
+-         */
+-        function dump() {
+-            YDConfig::_init();
+-            YDDebugUtil::dump( $GLOBALS[ YD_CONFIG_VAR ], 'YDConfig contents' );
+-        }
+-
+-    }
+-
+-    /**
+-     *	This is the class that hold the locale information.
+-     */
+-    class YDLocale extends YDBase {
+-
+-        /**
+-         *	@param	$locale	Sets the current locale
+-         */
+-        function set( $locale ) {
+-
+-            // Check if the locale exists or not
+-            if ( ! array_key_exists( strtolower( $locale ), $GLOBALS[ 'YD_LANGUAGES' ] ) ) {
+-                trigger_error( 'You specified an invalid locale: &quot;' . strtolower( $locale ) . '&quot;', YD_ERROR );
+-            }
+-
+-            // Get the locales
+-            $locales = $GLOBALS[ 'YD_LANGUAGES' ][ $locale ];
+-
+-            // Add the current locale
+-            array_unshift( $locales, $locale );
+-            array_unshift( $locales, LC_ALL );
+-
+-            // Add another one
+-            array_push( $locales, substr( $locale, 0, 2 ) . '_' . strtoupper( substr( $locale, 0, 2 ) ) );
+-
+-            // Set the locale
+-            @call_user_func_array( 'setlocale', array_unique( $locales ) );
+-
+-            // Set the locale
+-            YDConfig::set( YD_LOCALE_KEY, $locale );
+-
+-            // initialize t array
+-            $GLOBALS['t'] = array();
+-
+-            // if directories array exist we must include all files
+-            if ( isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
+-                foreach ( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] as $dir )
+-                    @include_once( $dir . '/' . YDLocale::get() . '.php' );
+-        }
+-
+-
+-        /**
+-         *	@returns	The current locale.
+-         */
+-        function get() {
+-            YDConfig::set( YD_LOCALE_KEY, 'en', false );
+-            return strtolower( YDConfig::get( YD_LOCALE_KEY ) );
+-        }
+-
+-
+-        /**
+-         *	This function adds a new directory
+-         *
+-         *	@param	$dir       Directory to add
+-         */
+-        function addDirectory( $dir ){
+-
+-            // check if directories array exists
+-            if ( !isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
+-                $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] = array();
+-
+-            // add directory to array. Needed when changing locale
+-            $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ][] = $dir;
+-
+-            // check if translations array exists
+-            if ( !isset( $GLOBALS['t'] ) )
+-                $GLOBALS['t'] = array();
+-
+-            // include directory
+-            include_once( $dir . '/' . YDLocale::get() . '.php' );
+-        }
+-
+-    }
+-
+-
+-    /**
+-     *	This is the base class for all other YD classes.
+-     */
+-    class YDAddOnModule extends YDBase {
+-
+-        /**
+-         *	Class constructor for the YDBase class.
+-         */
+-        function YDAddOnModule() {
+-            $this-&gt;_author = 'unknown author';
+-            $this-&gt;_version = '1.0';
+-            $this-&gt;_copyright = 'no copyright';
+-            $this-&gt;_description = 'no description';
+-        }
+-
+-    }
+-
+-    // Add if not exists yet
+-    if (!function_exists('str_ireplace')) {
+-
+-        /**
+-         *  Function to do a case insensitve str_replace
+-         *
+-         *  @param  $search     The string to search for.
+-         *  @param  $replace    The replacement string.
+-         *  @param  $subject    The string to replace in
+-         *  @param  $count      (optional) The maximum number of replacements. Default us all.
+-         *
+-         *  @returns    The updated string.
+-         */
+-        function str_ireplace( $search, $replace, $subject, $count = null ) {
+-            if ( is_string( $search ) &amp;&amp; is_array( $replace ) ) {
+-                user_error( 'Array to string conversion', E_USER_NOTICE );
+-                $replace = ( string ) $replace;
+-            }
+-            if ( ! is_array( $search ) ) {
+-                $search = array( $search );
+-            }
+-            $search = array_values( $search );
+-            if ( ! is_array( $replace ) ) {
+-                $replace_string = $replace;
+-                $replace = array();
+-                for ( $i = 0, $c = count( $search ); $i &lt; $c; $i++ ) {
+-                    $replace[$i] = $replace_string;
+-                }
+-            }
+-            $replace = array_values( $replace );
+-            $length_replace = count( $replace );
+-            $length_search = count( $search );
+-            if ( $length_replace &lt; $length_search ) {
+-                for ( $i = $length_replace; $i &lt; $length_search; $i++ ) {
+-                    $replace[$i] = '';
+-                }
+-            }
+-            $was_array = false;
+-            if ( ! is_array( $subject ) ) {
+-                $was_array = true;
+-                $subject = array( $subject );
+-            }
+-            $count = 0;
+-            foreach ( $subject as $subject_key =&gt; $subject_value ) {
+-                foreach ( $search as $search_key =&gt; $search_value ) {
+-                    $segments = explode( strtolower( $search_value ), strtolower( $subject_value ) );
+-                    $count += count( $segments ) - 1;
+-                    $pos = 0;
+-                    foreach ( $segments as $segment_key =&gt; $segment_value ) {
+-                        $segments[$segment_key] = substr( $subject_value, $pos, strlen( $segment_value ) );
+-                        $pos += strlen( $segment_value ) + strlen( $search_value );
+-                    }
+-                    $subject_value = implode( $replace[$search_key], $segments );
+-                }
+-                $result[$subject_key] = $subject_value;
+-            }
+-            if ( $was_array === true ) {
+-                return $result[0];
+-            }
+-            return $result;
+-        }
+-
+-    }
+-
+-?&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-04-04 21:58:43 UTC (rev 1828)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-04-05 10:05:56 UTC (rev 1829)
+@@ -121,9 +121,484 @@
+     $GLOBALS['YD_INCLUDE_PATH'] = explode( YD_PATHDELIM, $includePath );
+     @ini_set( 'include_path', $includePath );
+ 
+-    // Include the standard functions
+-    include_once( YD_DIR_HOME . '/YDF2_core.php' );
++//    // Include the standard functions
++//    include_once( YD_DIR_HOME . '/YDF2_core.php' );
+ 
++    // Constants
++    define( 'YD_CONFIG_VAR', 'YDF2_GLOBAL_CONFIG' );
++    define( 'YD_LOCALE_KEY', 'YD_LOCALE' );
++
++    // This is the list of support languages
++    $GLOBALS[ 'YD_LANGUAGES' ] = array(
++        'en'  =&gt; array( 'eng', 'english', 'en_US' ),
++        'eng' =&gt; array( 'en', 'english', 'en_US' ),
++        'cs'  =&gt; array( 'csy', 'czech' ),
++        'csy' =&gt; array( 'czech', 'cs' ),
++        'da'  =&gt; array( 'dan', 'danish' ),
++        'dan' =&gt; array( 'danish', 'da' ),
++        'nl'  =&gt; array( 'nld', 'dutch' ),
++        'nld' =&gt; array( 'dutch', 'nl' ),
++        'nlb' =&gt; array( 'belgian', 'dutch-belgian', 'nl_BE', 'nl' ),
++        'ena' =&gt; array( 'australian', 'english-aus', 'en_AU', 'en' ),
++        'enc' =&gt; array( 'canadian', 'english-can', 'en_CA', 'en' ),
++        'enz' =&gt; array( 'english-nz', 'en_NZ', 'en' ),
++        'uk'  =&gt; array( 'english-uk', 'en_UK', 'en', 'enu', 'eng' ),
++        'enu' =&gt; array( 'uk', 'english-uk', 'en_UK', 'en', 'eng' ),
++        'us'  =&gt; array( 'american', 'american english', 'american-english', 'english-american', 'english-us', 'english-usa', 'enu', 'usa', 'en_US', 'en' ),
++        'fi'  =&gt; array( 'fin', 'finnish' ),
++        'fin' =&gt; array( 'finnish', 'fi' ),
++        'fr'  =&gt; array( 'fra', 'french' ),
++        'fra' =&gt; array( 'french', 'fr_FR', 'fr_FR', 'fr' ),
++        'frb' =&gt; array( 'french-belgian', 'fr_BE', 'fr' ),
++        'frc' =&gt; array( 'french-canadian', 'fr_CA', 'fr' ),
++        'frs' =&gt; array( 'french-swiss', 'fr_SW', 'fr' ),
++        'de'  =&gt; array( 'deu', 'german' ),
++        'deu' =&gt; array( 'german', 'de' ),
++        'dea' =&gt; array( 'german-austrian', 'de_AU', 'de' ),
++        'des' =&gt; array( 'german-swiss', 'swiss', 'de_SW', 'de' ),
++        'el'  =&gt; array( 'ell', 'greek' ),
++        'ell' =&gt; array( 'greek', 'el' ),
++        'hu'  =&gt; array( 'hun', 'hungarian' ),
++        'hun' =&gt; array( 'hungarian', 'hu' ),
++        'is'  =&gt; array( 'isl', 'icelandic' ),
++        'isl' =&gt; array( 'icelandic', 'is' ),
++        'it'  =&gt; array( 'ita', 'italian' ),
++        'ita' =&gt; array( 'italian', 'it' ),
++        'its' =&gt; array( 'italian-swiss', 'it', 'it_SW' ),
++        'no'  =&gt; array( 'nor', 'norwegian' ),
++        'nor' =&gt; array( 'norwegian-bokmal', 'no', 'no_BO' ),
++        'non' =&gt; array( 'norwegian-nynorsk', 'no', 'no_NY' ),
++        'pl'  =&gt; array( 'plk', 'polish' ),
++        'plk' =&gt; array( 'polish', 'pl' ),
++        'pt'  =&gt; array( 'ptg', 'portuguese' ),
++        'ptg' =&gt; array( 'portuguese', 'pt' ),
++        'ptb' =&gt; array( 'portuguese-brazil', 'pt_BR', 'pt' ),
++        'ru'  =&gt; array( 'rus', 'russian' ),
++        'rus' =&gt; array( 'russian', 'ru' ),
++        'sk'  =&gt; array( 'sky', 'slovak' ),
++        'sky' =&gt; array( 'slovak', 'sk' ),
++        'es'  =&gt; array( 'spanish' ),
++        'esp' =&gt; array( 'spanish', 'es' ),
++        'esm' =&gt; array( 'spanish-mexican', 'es_ME', 'es' ),
++        'esn' =&gt; array( 'spanish-modern', 'es_MO', 'es' ),
++        'sv'  =&gt; array( 'sve', 'swedish' ),
++        'sve' =&gt; array( 'swedish', 'sv' ),
++        'tr'  =&gt; array( 'trk', 'turkish' ),
++        'trk' =&gt; array( 'turkish', 'tr' ),
++    );
++
++    /**
++     *	This function will include a file from the filesystem. It works similar to the require_once function but it
++     *	knows about the include path for the Yellow Duck Framework.
++     *
++     *	@param $file	File to be included.
++     */
++    function YDInclude( $file ) {
++        if ( is_file( $file ) ) {
++            include_once( $file );
++            return;
++        }
++        foreach ( $GLOBALS['YD_INCLUDE_PATH'] as $include ) {
++            if ( $include != false &amp;&amp; is_file( $include . '/' . $file ) ) {
++                include_once( $include . '/' . $file );
++                return;
++            }
++        }
++        trigger_error(
++            'Failed to include the file: ' . $file . ' The file was not found in the include path.', YD_ERROR
++        );
++    }
++
++    /**
++     *	This function will add a marker to the global timer.
++     *
++     *	@param $name	The name of the marker.
++     */
++    function YDGlobalTimerMarker( $name ) {
++        if ( ! isset( $GLOBALS['timer'] ) ) {
++            include_once( dirname( __FILE__ ) . '/YDClasses/YDUtil.php' );
++            $GLOBALS['timer'] = new YDTimer();
++        }
++        $GLOBALS['timer']-&gt;addMarker( $name );
++    }
++
++    /**
++     *	This function will fix magic quotes.
++     *
++     *	@param $value	The value to fix.
++     *
++     *	@returns	The fixed value.
++     */
++    function YDRemoveMagicQuotes( &amp; $value ) {
++        if ( get_magic_quotes_gpc() == 1 ) {
++            if ( is_array( $value ) ) {
++                $result = array();
++                foreach ( $value as $key=&gt;$val) {
++                    $result[ $key ] = is_array( $val ) ? YDRemoveMagicQuotes( $val ) : stripslashes( $val );
++                }
++                return $result;
++            } else {
++                return stripslashes( $value );
++            }
++        }
++        return $value;
++    }
++
++    /**
++     *  This function is used to load translations from a $GLOBALS['t'] array.
++     *
++     *  @param  $t  The name of the translated string.
++     *
++     *  @returns    The translated string.
++     */
++    function t( $t ) {
++
++        // Return empty string when param is missing
++        if ( empty( $t ) ) {
++            return '';
++        }
++
++        // Return the right translation
++        $t = strtolower( $t );
++        return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
++
++    }
++
++    /**
++     *  This is the base class for all other YD classes.
++     */
++    class YDBase {
++
++        /**
++         *  Class constructor for the YDBase class.
++         */
++        function YDBase() {
++        }
++
++        /**
++         *  This function returns the name of the current class.
++         *
++         *  @returns    The name of the current class in lowercase.
++         */
++        function getClassName() {
++            return strtolower( get_class( $this ) );
++        }
++
++        /**
++         *  This function returns true if the specified method is existing in the current class.
++         *
++         *  @param      $name   The name of the class method to look for.
++         *
++         *  @returns    Boolean indicating if the class method exists or not.
++         */
++        function hasMethod( $name ) {
++            return method_exists( $this, $name );
++        }
++
++        /**
++         *  This function checks if this object instance is of a specific class or is based on a derived class of the
++         *  given class. The class name is case insensitive.
++         *
++         *  @param $class   The object type you want to check against.
++         *
++         *  @returns    Boolean indicating if this object is of the specified class.
++         */
++        function isSubClass( $class ) {
++            return YDObjectUtil::isSubClass( $this, $class );
++        }
++
++        /**
++         *  Function to get all the ancestors of this class. The list will contain
++         *  the parent class first, and then it's parent class, etc. You can pass both
++         *  the name of the class or an object instance to this function.
++         *
++         *  @returns    Array with all the ancestors.
++         */
++        function getAncestors() {
++            return YDObjectUtil::getAncestors( $this-&gt;getClassName() );
++        }
++
++        /**
++         *  This function will serialize the object.
++         */
++        function serialize() {
++            return YDObjectUtil::serialize( $this );
++        }
++
++        /**
++         *  This function sets a variable in the object.
++         *
++         *  @param  $name   The variable name.
++         *  @param  $value  The variable value.
++         *
++         *  @returns        Returns a reference to the variable
++         */
++        function &amp; set( $name, $value ) { 
++            $this-&gt;$name = $value; 
++            return $this-&gt;$name; 
++        } 
++
++        /**
++         *  This function indicates if a variable in the object exists or not.
++         *
++         *  @param  $name   The variable name.
++         *  @param  $null   (Optional) If false, indicates variables that are null
++         *                  as they don't exist. Default: false.
++         *
++         *  @returns        Returns a boolean indicating if a variable exists or not.
++         */
++        function exists( $name, $null=false ) { 
++            return $null ? array_key_exists( $name, $this ) : isset( $this-&gt;$name ); 
++        } 
++
++        /**
++         *  This function returns a variable value in the object.
++         *
++         *  @param  $name  The variable name.
++         *
++         *  @returns       Returns the variable value.
++         */
++        function get( $name ) { 
++            return $this-&gt;exists( $name, true ) ? $this-&gt;$name : null; 
++        }
++
++        /** 
++         *  This function returns an array with all the values of the object. 
++         * 
++         *  @returns  An array with all the values. 
++         */ 
++        function toArray() { 
++            $array = get_object_vars( $this ); 
++            foreach ( $array as $key =&gt; $val ) { 
++                if ( substr( $key, 0, 1 ) == '_' ) { 
++                    unset( $array[ $key ] ); 
++                } 
++            } 
++            return $array; 
++        } 
++
++    }
++
++    /**
++     *	This is the class that hold the global configuration.
++     */
++    class YDConfig extends YDBase {
++
++        /**
++         *	This function initializes the global configuration.
++         *
++         *	@internal
++         */
++        function _init() {
++            if ( ! isset( $GLOBALS[ YD_CONFIG_VAR ] ) ) {
++                $GLOBALS[ YD_CONFIG_VAR ] = array();
++            }
++        }
++
++        /**
++         *	This funtion add a new configuration variable to the configuration.
++         *
++         *	@param	$name		The name of the configuration variable.
++         *	@param	$value		The value of the configuration variable.
++         *	@param	$override	(optional) Override the current value or not. Default is true.
++         */
++        function set( $name, $value, $override=true ) {
++            if ( YDConfig::exists( $name ) ) {
++                if ( $override ) {
++                    $GLOBALS[ YD_CONFIG_VAR ][ $name ] = $value;
++                }
++            } else {
++                $GLOBALS[ YD_CONFIG_VAR ][ $name ] = $value;
++            }
++        }
++
++        /**
++         *	This function returns a variable from the configuration. If the configuration variable doesn't exist, it
++         *	returns a fatal error.
++         *
++         *	@param	$name       The name of the configuration variable to retrieve.
++         *  @param  $default    (optional) If not null, this value will be returned if the configuration setting doesn't
++         *                      exist in the configuration.
++         *
++         *	@returns	The value of the configuration variable.
++         */
++        function get( $name, $default=null ) {
++            return YDConfig::exists( $name ) ? $GLOBALS[ YD_CONFIG_VAR ][ $name ] : $default;
++        }
++
++        /**
++         *	This function checks if the configuration value is set or not.
++         *
++         *	@returns	Boolean indicating if the configuration value is set or not.
++         */
++        function exists( $name ) {
++            YDConfig::_init();
++            return isset( $GLOBALS[ YD_CONFIG_VAR ][ $name ] );
++        }
++
++        /**
++         *	This function dumps the contents of the configuration.
++         */
++        function dump() {
++            YDConfig::_init();
++            YDDebugUtil::dump( $GLOBALS[ YD_CONFIG_VAR ], 'YDConfig contents' );
++        }
++
++    }
++
++    /**
++     *	This is the class that hold the locale information.
++     */
++    class YDLocale extends YDBase {
++
++        /**
++         *	@param	$locale	Sets the current locale
++         */
++        function set( $locale ) {
++
++            // Check if the locale exists or not
++            if ( ! array_key_exists( strtolower( $locale ), $GLOBALS[ 'YD_LANGUAGES' ] ) ) {
++                trigger_error( 'You specified an invalid locale: &quot;' . strtolower( $locale ) . '&quot;', YD_ERROR );
++            }
++
++            // Get the locales
++            $locales = $GLOBALS[ 'YD_LANGUAGES' ][ $locale ];
++
++            // Add the current locale
++            array_unshift( $locales, $locale );
++            array_unshift( $locales, LC_ALL );
++
++            // Add another one
++            array_push( $locales, substr( $locale, 0, 2 ) . '_' . strtoupper( substr( $locale, 0, 2 ) ) );
++
++            // Set the locale
++            @call_user_func_array( 'setlocale', array_unique( $locales ) );
++
++            // Set the locale
++            YDConfig::set( YD_LOCALE_KEY, $locale );
++
++            // initialize t array
++            $GLOBALS['t'] = array();
++
++            // if directories array exist we must include all files
++            if ( isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
++                foreach ( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] as $dir )
++                    @include_once( $dir . '/' . YDLocale::get() . '.php' );
++        }
++
++        /**
++         *	@returns	The current locale.
++         */
++        function get() {
++            YDConfig::set( YD_LOCALE_KEY, 'en', false );
++            return strtolower( YDConfig::get( YD_LOCALE_KEY ) );
++        }
++
++        /**
++         *	This function adds a new directory
++         *
++         *	@param	$dir       Directory to add
++         */
++        function addDirectory( $dir ){
++
++            // check if directories array exists
++            if ( !isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
++                $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] = array();
++
++            // add directory to array. Needed when changing locale
++            $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ][] = $dir;
++
++            // check if translations array exists
++            if ( !isset( $GLOBALS['t'] ) )
++                $GLOBALS['t'] = array();
++
++            // include directory
++            include_once( $dir . '/' . YDLocale::get() . '.php' );
++        }
++
++    }
++
++    /**
++     *	This is the base class for all other YD classes.
++     */
++    class YDAddOnModule extends YDBase {
++
++        /**
++         *	Class constructor for the YDBase class.
++         */
++        function YDAddOnModule() {
++            $this-&gt;_author = 'unknown author';
++            $this-&gt;_version = '1.0';
++            $this-&gt;_copyright = 'no copyright';
++            $this-&gt;_description = 'no description';
++        }
++
++    }
++
++    // Add if not exists yet
++    if ( ! function_exists( 'str_ireplace' ) ) {
++
++        /**
++         *  Function to do a case insensitve str_replace
++         *
++         *  @param  $search     The string to search for.
++         *  @param  $replace    The replacement string.
++         *  @param  $subject    The string to replace in
++         *  @param  $count      (optional) The maximum number of replacements. Default us all.
++         *
++         *  @returns    The updated string.
++         */
++        function str_ireplace( $search, $replace, $subject, $count = null ) {
++            if ( is_string( $search ) &amp;&amp; is_array( $replace ) ) {
++                user_error( 'Array to string conversion', E_USER_NOTICE );
++                $replace = ( string ) $replace;
++            }
++            if ( ! is_array( $search ) ) {
++                $search = array( $search );
++            }
++            $search = array_values( $search );
++            if ( ! is_array( $replace ) ) {
++                $replace_string = $replace;
++                $replace = array();
++                for ( $i = 0, $c = count( $search ); $i &lt; $c; $i++ ) {
++                    $replace[$i] = $replace_string;
++                }
++            }
++            $replace = array_values( $replace );
++            $length_replace = count( $replace );
++            $length_search = count( $search );
++            if ( $length_replace &lt; $length_search ) {
++                for ( $i = $length_replace; $i &lt; $length_search; $i++ ) {
++                    $replace[$i] = '';
++                }
++            }
++            $was_array = false;
++            if ( ! is_array( $subject ) ) {
++                $was_array = true;
++                $subject = array( $subject );
++            }
++            $count = 0;
++            foreach ( $subject as $subject_key =&gt; $subject_value ) {
++                foreach ( $search as $search_key =&gt; $search_value ) {
++                    $segments = explode( strtolower( $search_value ), strtolower( $subject_value ) );
++                    $count += count( $segments ) - 1;
++                    $pos = 0;
++                    foreach ( $segments as $segment_key =&gt; $segment_value ) {
++                        $segments[$segment_key] = substr( $subject_value, $pos, strlen( $segment_value ) );
++                        $pos += strlen( $segment_value ) + strlen( $search_value );
++                    }
++                    $subject_value = implode( $replace[$search_key], $segments );
++                }
++                $result[$subject_key] = $subject_value;
++            }
++            if ( $was_array === true ) {
++                return $result[0];
++            }
++            return $result;
++        }
++
++    }
++
+     // Default the locale to English
+     YDConfig::set( 'YD_LOCALE', 'en', false );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000259.html">[ydf-devel] r1828 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000261.html">[ydf-devel] r1830 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#260">[ date ]</a>
+              <a href="thread.html#260">[ thread ]</a>
+              <a href="subject.html#260">[ subject ]</a>
+              <a href="author.html#260">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

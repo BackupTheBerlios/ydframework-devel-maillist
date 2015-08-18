@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061117150349.8758.qmail%40web54006.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000764.html">
+   <LINK REL="Next"  HREF="000766.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061117150349.8758.qmail%40web54006.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Fri Nov 17 16:03:49 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000764.html">[ydf-devel] Is YDDatabaseTree2::moveNode working?
+</A></li>
+        <LI>Next message: <A HREF="000766.html">[ydf-devel] r2208 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#765">[ date ]</a>
+              <a href="thread.html#765">[ thread ]</a>
+              <a href="subject.html#765">[ subject ]</a>
+              <a href="author.html#765">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Hi Francisco,
+
+Thanks for fixing getNode. There are bugs in YDDatabaseTree2::moveNodeand YDDatabaseTree2::addNode which I will explain at the bottom of thisreply.
+
+Francisco Azevedo wrote:      
+There is a bug in the select statement for YDDatabaseTree2::getNode. I think the code needs to include appropriate quote characters so that string fields can be used in addition to numeric id fields. String fields cause the db instance to raise an error.    
+    
+Fixed.  
+
+Thanks!
+      
+I have also written a findNode method which allows for the tree to be search based on a number of equality criteria ( field / value pairs).        /**         *  Find the node data for the node matching the criteria.         *         *  @param $criteria      Array of field/value pairs.         *         *  @returns An object containing the node's data, or false if node not found         */        function findNode( $criteria ) {    
+    
+The method sounds good but i would prefer to include it in YDDatabaseTree3 (the YDDatabaseObject version of YDDatabaseTree2).This way we could implement getNodes and _getNodes as:  
+&lt;code and explanation snipped&gt;
+  
+What do you think?  
+Your suggestion is great. I can add the find methods I suggested to anextension class rather than modifying YDDatabaseTree2.
+
+As mentioned above, there are bugs in YDDatabaseTree2::moveNode andYDDatabaseTree2::addNode. I think the bugs will also be present inYDDatabaseTree3 since the logic is basically  the same.
+
+For moveNode, positions can be duplicated if the position of a node ismoved within the current parent. For addNode the database can also endup with duplicated positions within the current parent.
+
+I have attached a modified version of YDDatabaseTree2containing my fixes.
+
+I was thinking that the following methods would make use of the treeclasses more flexible:
+  
+   positionDecrementNode( $id, $lock_branch = true ) -decrease the position of the specified node within the current branch.If lock_branch is set to false and the node's current position is 1then the node will move up to the position one less than the parent'sposition in the parent level.  
+   positionIncrementNode( $id, $lock_branch = true ) -increase the position of the specified node within the current branch.If lock_branch is set to false and the node's current position is thehighest in the current branchthen the node will move up to the position one greater than theparent's position in the parent level.  
+   levelPromoteNode( $id ) - reduce the level of thespecified node by 1 and the position will be set to the position of theparent node plus one.  
+   levelDemoteNode( $id ) - increase the level of thespecified node by making the node a child of its brother node (thebrother node with position one less than the subject node's originalposition).
+  
+Regards,
+
+Graeme
+
+
+ 
+---------------------------------
+Sponsored Link
+
+Mortgage rates near 39yr lows. $310,000 Mortgage for $999/mo -  Calculate new house payment
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061117/30abb39a/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061117/30abb39a/attachment.html</A>&gt;
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061117/30abb39a/attachment-0001.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061117/30abb39a/attachment-0001.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000764.html">[ydf-devel] Is YDDatabaseTree2::moveNode working?
+</A></li>
+	<LI>Next message: <A HREF="000766.html">[ydf-devel] r2208 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#765">[ date ]</a>
+              <a href="thread.html#765">[ thread ]</a>
+              <a href="subject.html#765">[ subject ]</a>
+              <a href="author.html#765">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

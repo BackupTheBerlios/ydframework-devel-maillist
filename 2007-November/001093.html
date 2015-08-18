@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2499 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2499%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree&In-Reply-To=%3C200711011906.lA1J6UPD018468%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001092.html">
+   <LINK REL="Next"  HREF="001094.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2499 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2499%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree&In-Reply-To=%3C200711011906.lA1J6UPD018468%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2499 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Nov  1 20:06:30 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001092.html">[ydf-devel] r2498 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="001094.html">[ydf-devel] r2500 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1093">[ date ]</a>
+              <a href="thread.html#1093">[ thread ]</a>
+              <a href="subject.html#1093">[ subject ]</a>
+              <a href="author.html#1093">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-11-01 20:06:24 +0100 (Thu, 01 Nov 2007)
+New Revision: 2499
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php
+Log:
+on YDDatabaseObject, if a parent node was not found when adding an element, it tries to add to root element
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php	2007-11-01 15:18:11 UTC (rev 2498)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php	2007-11-01 19:06:24 UTC (rev 2499)
+@@ -583,7 +583,13 @@
+ 
+ 				// get parent lineage and compute node lineage
+ 				$parent_node = $this-&gt;getNode( $parent_id );
+-				$lineage     = $parent_node[ $this-&gt;__lineage ] . $parent_id . '/';
++				
++				// check if parent node was found
++				if( isset( $parent_node[ $this-&gt;__lineage ] ) ){
++					$lineage     = $parent_node[ $this-&gt;__lineage ] . $parent_id . '/';
++				}else{
++					$lineage     = '//' . $parent_id . '/';
++				}
+ 			}
+ 
+ 			// get how much brothers we will have
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001092.html">[ydf-devel] r2498 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="001094.html">[ydf-devel] r2500 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1093">[ date ]</a>
+              <a href="thread.html#1093">[ thread ]</a>
+              <a href="subject.html#1093">[ subject ]</a>
+              <a href="author.html#1093">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

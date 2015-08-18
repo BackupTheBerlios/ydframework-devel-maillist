@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2144 - YDFramework2.0/trunk/examples/cm/backend
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2144%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200609141633.k8EGX8VF030356%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000662.html">
+   <LINK REL="Next"  HREF="000664.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2144 - YDFramework2.0/trunk/examples/cm/backend</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2144%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200609141633.k8EGX8VF030356%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2144 - YDFramework2.0/trunk/examples/cm/backend">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep 14 18:33:08 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000662.html">[ydf-devel] r2143 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages/YDCMUser
+</A></li>
+        <LI>Next message: <A HREF="000664.html">[ydf-devel] r2145 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#663">[ date ]</a>
+              <a href="thread.html#663">[ thread ]</a>
+              <a href="subject.html#663">[ subject ]</a>
+              <a href="author.html#663">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-14 18:32:56 +0200 (Thu, 14 Sep 2006)
+New Revision: 2144
+
+Modified:
+   YDFramework2.0/trunk/examples/cm/backend/userdetails.php
+Log:
+- updated YDCM user example: creating and editing a user with YDCMUser is extremely simple now! Simpler is impossible :)
+
+Modified: YDFramework2.0/trunk/examples/cm/backend/userdetails.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/backend/userdetails.php	2006-09-14 16:31:15 UTC (rev 2143)
++++ YDFramework2.0/trunk/examples/cm/backend/userdetails.php	2006-09-14 16:32:56 UTC (rev 2144)
+@@ -21,7 +21,7 @@
+         }
+ 
+ 
+-        // Default action (that shows user details form with some editable fields)
++        // Default action (that shows user details)
+         function actionDefault() {
+ 
+ 			// get user 6 
+@@ -41,17 +41,14 @@
+         // Edit user example
+         function actionEdit() {
+ 
+-			// add editing form defaults of userobject 6
+-			$this-&gt;users-&gt;addFormEdit( 6 );
++			// create editing form of userobject 6
++			$form = &amp; $this-&gt;users-&gt;addFormEdit( 6 );
+ 
+-			// get form
+-			$form = &amp; $this-&gt;users-&gt;getForm();
+-
+ 			// if form is not submitted just show it
+ 			if ( ! $form-&gt;isSubmitted() ) return $form-&gt;display();
+ 
+-			// update user 6 with submitted information, magic isn't it ;)
+-			$result = $this-&gt;users-&gt;saveFormEdit( 6 );
++			// update user with submitted information, magic isn't it ;)
++			$result = $this-&gt;users-&gt;saveFormEdit();
+ 
+ 			// print result message
+ 			if ( $result-&gt;ok ) print( 'OK: ' . $result-&gt;message );
+@@ -62,20 +59,17 @@
+         }
+ 
+ 
+-		// this action will add a new sub-user of the root (super-administrator: id 100)
++		// this action will add a new user
+ 		function actionNew(){
+ 
+-			// add form for adding a new user to group 2
+-			$this-&gt;users-&gt;addFormNew( 2 );
++			// create form for adding a new user
++			$form = &amp; $this-&gt;users-&gt;addFormNew();
+ 
+-			// get form
+-			$form = &amp; $this-&gt;users-&gt;getForm();
+-
+ 			// if form is not submitted just show it
+ 			if ( ! $form-&gt;isSubmitted() ) return $form-&gt;display();
+ 
+-			// add user to group 2
+-			$result = $this-&gt;users-&gt;saveFormNew( 2 );
++			// add user
++			$result = $this-&gt;users-&gt;saveFormNew();
+ 			
+ 			// print result message
+ 			if ( $result-&gt;ok ) print( 'OK: ' . $result-&gt;message );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000662.html">[ydf-devel] r2143 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages/YDCMUser
+</A></li>
+	<LI>Next message: <A HREF="000664.html">[ydf-devel] r2145 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#663">[ date ]</a>
+              <a href="thread.html#663">[ thread ]</a>
+              <a href="subject.html#663">[ subject ]</a>
+              <a href="author.html#663">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

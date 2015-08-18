@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1691 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1691%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200602171203.k1HC3O3D000540%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000093.html">
+   <LINK REL="Next"  HREF="000095.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1691 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1691%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200602171203.k1HC3O3D000540%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1691 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject">david_db at berlios.de
+       </A><BR>
+    <I>Fri Feb 17 13:03:24 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000093.html">[ydf-devel] r1690 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000095.html">[ydf-devel] r1692 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#94">[ date ]</a>
+              <a href="thread.html#94">[ thread ]</a>
+              <a href="subject.html#94">[ subject ]</a>
+              <a href="author.html#94">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-02-17 13:02:41 +0100 (Fri, 17 Feb 2006)
+New Revision: 1691
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+Log:
+Added config variable YD_DBOBJ_EXECUTE to YDDatabaseObject. If defined to false, find(), update(), delete() and insert() will retrieve the SQL query without executing it.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-17 05:13:25 UTC (rev 1690)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-17 12:02:41 UTC (rev 1691)
+@@ -67,6 +67,12 @@
+      */
+     YDConfig::set( 'YD_DBOBJECT_UPDATE', false, false );
+ 
++    /**
++     *  This config defines if an action should be executed or not.
++     *  Default: true.
++     */
++    YDConfig::set( 'YD_DBOBJECT_EXECUTE', true, false );
++    
+     // Includes
+     include_once( YD_DIR_HOME_CLS . '/YDDatabase.php' );
+     include_once( YD_DIR_HOME_ADD . '/YDDatabaseQuery/YDDatabaseQuery.php' );
+@@ -1004,6 +1010,10 @@
+ 
+             YDDebugUtil::debug( YDStringUtil::removeWhiteSpace( $sql ) );
+             
++            if ( ! YDConfig::get( 'YD_DBOBJECT_EXECUTE' ) ) {
++                return $sql;
++            }
++            
+             $result = $this-&gt;_db-&gt;executeSql( $sql );
+             $success = ( $result == -1 || $result === false ) ? false : true;
+             
+@@ -1063,6 +1073,10 @@
+ 
+             YDDebugUtil::debug( YDStringUtil::removeWhiteSpace( $sql ) );
+             
++            if ( ! YDConfig::get( 'YD_DBOBJECT_EXECUTE' ) ) {
++                return $sql;
++            }
++            
+             $result = $this-&gt;_db-&gt;executeSql( $sql );
+             $success = ( $result == -1 || $result === false ) ? false : true;
+             
+@@ -1101,6 +1115,10 @@
+             
+             YDDebugUtil::debug( YDStringUtil::removeWhiteSpace( $sql ) );
+             
++            if ( ! YDConfig::get( 'YD_DBOBJECT_EXECUTE' ) ) {
++                return $sql;
++            }
++            
+             $result = $this-&gt;_db-&gt;executeSql( $sql );
+             $success = ( $result == -1 || $result === false ) ? false : true;
+ 
+@@ -1321,6 +1339,10 @@
+                                 The SELECT statement is empty', YD_ERROR );
+             }
+             
++            if ( ! YDConfig::get( 'YD_DBOBJECT_EXECUTE' ) ) {
++                return $this-&gt;_query-&gt;getQuery();
++            }
++            
+             $result = $this-&gt;findSql( $this-&gt;_query-&gt;getQuery(), $slices );
+             $success = ( $result == -1 || $result === false ) ? false : true;
+             
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000093.html">[ydf-devel] r1690 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000095.html">[ydf-devel] r1692 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#94">[ date ]</a>
+              <a href="thread.html#94">[ thread ]</a>
+              <a href="subject.html#94">[ subject ]</a>
+              <a href="author.html#94">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

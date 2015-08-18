@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1928 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1928%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDFormElements&In-Reply-To=%3C200605151459.k4FEx80d027203%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000397.html">
+   <LINK REL="Next"  HREF="000399.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1928 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1928%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDFormElements&In-Reply-To=%3C200605151459.k4FEx80d027203%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1928 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements">ximian at berlios.de
+       </A><BR>
+    <I>Mon May 15 16:59:08 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000397.html">[ydf-devel] r1927 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000399.html">[ydf-devel] r1929 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#398">[ date ]</a>
+              <a href="thread.html#398">[ thread ]</a>
+              <a href="subject.html#398">[ subject ]</a>
+              <a href="author.html#398">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-15 16:58:43 +0200 (Mon, 15 May 2006)
+New Revision: 1928
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+added new simple form element to be used with ajax: grid
+added new recordset methods
+updated ydform for new element
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-05-15 07:45:36 UTC (rev 1927)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-05-15 14:58:43 UTC (rev 1928)
+@@ -439,8 +439,53 @@
+             return $this-&gt;set;
+         }
+ 
++
++        /**
++         *  Sets fields names
++         */
++        function setFields( $fields ) {
++            return $this-&gt;gr_fields = $fields;
++        }
++
++
++        /**
++         *  Gets fields names
++         */
++        function getFields() {
++            return ( isset( $this-&gt;gr_fields ) ? $this-&gt;gr_fields : array() );
++        }
++
++
++        /**
++         *  Set current field name
++         */
++        function setCurrentField( $field ) {
++            return $this-&gt;gr_currentField = $field;
++        }
++
++
++        /**
++         *  Get current field name
++         */
++        function getCurrentField() {
++            return ( isset( $this-&gt;gr_currentField ) ? $this-&gt;gr_currentField : array() );
++        }
++
++
++        /**
++         *  Set sort direction
++         */
++        function getSortdirection( $reverse = false ) {
++
++			if ( $reverse ) return ( $this-&gt;sortdirection == 'ASC' ? 'DESC' : 'ASC' ) ;
++
++			return $this-&gt;sortdirection;
++        }
++
++
+     }
+ 
++
+     /**
+      *  This class defines a database object.
+      */
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-05-15 07:45:36 UTC (rev 1927)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-05-15 14:58:43 UTC (rev 1928)
+@@ -123,7 +123,9 @@
+             $this-&gt;registerElement( 'div', 'YDFormElement_Div', 'YDFormElement_Div.php' );
+             $this-&gt;registerElement( 'autocompleter', 'YDFormElement_Autocompleter', 'YDFormElement_Autocompleter.php' );
+             $this-&gt;registerElement( 'switchmenu', 'YDFormElement_SwitchMenu', 'YDFormElement_SwitchMenu.php' );
++            $this-&gt;registerElement( 'grid', 'YDFormElement_Grid', 'YDFormElement_Grid.php' );
+ 
++
+             // Add the rules
+             $this-&gt;registerRule( 'required', array( 'YDValidateRules', 'required' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'maxlength', array( 'YDValidateRules', 'maxlength' ), 'YDValidateRules.php' );
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2006-05-15 07:45:36 UTC (rev 1927)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2006-05-15 14:58:43 UTC (rev 1928)
+@@ -0,0 +1,109 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
++    include_once( YD_DIR_HOME_CLS . '/YDTemplate.php');
++
++    /**
++     *        This is the class that defines a simple ajax grid element
++     */
++    class YDFormElement_Grid extends YDFormElement {
++
++        /**
++         *        This is the class constructor for the YDFormElement_Grid class.
++         *
++         *        @param $form                The name of the form to which this element is connected.
++         *        @param $name                The name of the form element.
++         *        @param $label                (optional) The label for the form element.
++         *        @param $attributes        (optional) The attributes for the form element.
++         *        @param $options                (optional) The options for the elment.
++         */
++        function YDFormElement_Grid( $form = '', $name = '_gr', $label='', $attributes=array(), $options=array() ) {
++
++            // Initialize the parent
++            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
++
++            // Set the type
++            $this-&gt;_type = 'grid';
++
++            // Set the value correctly
++            $this-&gt;_placeLabel = 'none';
++
++            // Indicate if filters need to be applied
++            $this-&gt;_applyFilters = false;
++
++            // Indicate we are a button type
++            $this-&gt;_isButton = false;
++        }
++
++
++        /**
++         *      This function returns a boolean indicating if the element value was
++         *      modified from it's default value.
++         *
++         *      @returns        Boolean indicating if the element was modified.
++         */
++        function isModified() {
++            return false;
++        }
++
++
++        /**
++         *      This function adds a ajax event to handle header calls
++         */
++		function setAjax( &amp;$ajax, $method ){
++		
++			$ajax-&gt;addEvent( 'ticketReload(order, dir, page)', $method, array( 'var order', 'var dir', 'var page' ) );
++		}
++
++
++        /**
++         *        This function will return the element as HTML.
++         *
++         *        @returns        The form element as HTML text.
++         */
++        function toHtml() {
++
++            // Create the list of attributes
++            $attribs = array(
++                'id' =&gt; $this-&gt;_form . '_' . $this-&gt;_name
++            );
++            $attribs = array_merge( $this-&gt;_attributes, $attribs );
++
++			// get record template and assign recordset
++			$template_record = new YDTemplate();
++			$template_record-&gt;assign( 'recordset', $this-&gt;_value );
++
++            // Get the HTML
++			return $template_record-&gt;fetch( dirname( __FILE__ ) . '/YDFormElement_Grid.tpl' );
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl	2006-05-15 07:45:36 UTC (rev 1927)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl	2006-05-15 14:58:43 UTC (rev 1928)
+@@ -0,0 +1,38 @@
++&lt;table width=&quot;100%&quot;  border=&quot;0&quot;&gt;
++  &lt;tr&gt;
++    &lt;td align=&quot;right&quot;&gt;
++	&lt;span class=&quot;field_previous&quot; onClick=&quot;ticketReload('{$recordset-&gt;getCurrentField()}', '{$recordset-&gt;getSortdirection()}', '{$recordset-&gt;pagePrevious}');&quot;&gt;{t w=&quot;previous&quot;}&lt;/span&gt;
++    {foreach from=$recordset-&gt;pages item=&quot;page&quot;}
++		{if ($page != $recordset-&gt;page)}
++			&lt;span class=&quot;field_page&quot; onClick=&quot;ticketReload('{$recordset-&gt;getCurrentField()}', '{$recordset-&gt;getSortdirection()}', '{$page}');&quot;&gt;{$page}&lt;/span&gt;
++		{else}
++			&lt;span class=&quot;field_page_current&quot;&gt;{$page}&lt;/span&gt;
++		{/if}
++	{/foreach}
++	&lt;span class=&quot;field_next&quot; onClick=&quot;ticketReload('{$recordset-&gt;getCurrentField()}', '{$recordset-&gt;getSortdirection()}', '{$recordset-&gt;pageNext}');&quot;&gt;{t w=&quot;next&quot;}&lt;/span&gt;
++	&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;/table&gt;
++&lt;br /&gt;
++        &lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;
++
++            &lt;tr class=&quot;rowHeader&quot;&gt;
++                {foreach from=$recordset-&gt;getFields() item=&quot;field&quot;}
++					{if ($field != $recordset-&gt;getCurrentField())}
++	                    &lt;td height=&quot;24&quot; align=&quot;right&quot; class=&quot;fieldHeader&quot; onClick=&quot;ticketReload('{$field}', '{$recordset-&gt;getSortdirection(true)}', '{$recordset-&gt;page}');&quot;&gt;{t w=$field}&nbsp;&lt;/td&gt;
++					{else}
++	                    &lt;td height=&quot;24&quot; align=&quot;right&quot; class=&quot;fieldHeader_order&quot; onClick=&quot;ticketReload('{$field}', '{$recordset-&gt;getSortdirection(true)}', '{$recordset-&gt;page}');&quot;&gt;{t w=$field}&nbsp;&lt;/td&gt;
++					{/if}
++                {/foreach}
++            &lt;/tr&gt;
++
++
++        {foreach from=$recordset-&gt;set item=&quot;record&quot;}
++            &lt;tr class=&quot;{cycle values='row1,row2'}&quot;&gt;
++                {foreach from=$record item=&quot;val&quot;}
++                    &lt;td height=&quot;24&quot; align=&quot;right&quot;&gt;{$val}&nbsp;&lt;/td&gt;
++                {/foreach}
++            &lt;/tr&gt;
++        {/foreach}
++
++&lt;/table&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000397.html">[ydf-devel] r1927 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000399.html">[ydf-devel] r1929 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#398">[ date ]</a>
+              <a href="thread.html#398">[ thread ]</a>
+              <a href="subject.html#398">[ subject ]</a>
+              <a href="author.html#398">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

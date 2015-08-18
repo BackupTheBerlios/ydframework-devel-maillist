@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2125 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2125%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609131132.k8DBWR4J000339%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000643.html">
+   <LINK REL="Next"  HREF="000645.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2125 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2125%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609131132.k8DBWR4J000339%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2125 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Sep 13 13:32:27 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000643.html">[ydf-devel] r2124 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000645.html">[ydf-devel] r2126 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#644">[ date ]</a>
+              <a href="thread.html#644">[ thread ]</a>
+              <a href="subject.html#644">[ subject ]</a>
+              <a href="author.html#644">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-13 13:32:27 +0200 (Wed, 13 Sep 2006)
+New Revision: 2125
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+Log:
+Added initial support for cookies to YDRequest.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-09-13 10:20:07 UTC (rev 2124)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-09-13 11:32:27 UTC (rev 2125)
+@@ -38,8 +38,11 @@
+         /**
+          *	This is the class constructor for the YDRequest class. This sets the default action to 'actionDefault' (but
+          *	can be overridden later on).
++         *
++         *  @param  $cookiePath     (optional) The default cookie path. Defaults to '/'.
++         *  @param  $cookieLifeTime (optional) The default cookie life time. Defaults to 31536000 seconds (1 year).
+          */
+-        function YDRequest() {
++        function YDRequest( $cookiePath='/', $cookieLifeTime=null ) {
+ 
+             // Initialize YDBase
+             $this-&gt;YDBase();
+@@ -53,6 +56,14 @@
+ 
+             // this is for callbacks applicable to all actions
+             $this-&gt;_callbacks-&gt;set( 'action',   array( 'before' =&gt; array(), 'after' =&gt; array() ) );
++
++            // The default cookie path
++            $this-&gt;cookiePath = $cookiePath;
++            if ( $cookieLifeTime == null ) {
++                $cookieLifeTime = time() + 31536000;
++            }
++            $this-&gt;cookieLifeTime = $cookieLifeTime;
++
+         }
+ 
+         /**
+@@ -511,6 +522,52 @@
+             return true;
+         }
+ 
++        /**
++         *  This function gets the value of a specific cookie.
++         *
++         *  @param  $name       The name of the cookie.
++         *  @param  $default    (optional) The default value if the cookie is null or not set. Defaults to ''.
++         *  @param  $values     (optional) The allowed values as an array.
++         *
++         *  @returns    The value of the cookie or the default if the cookie is not set or not in values.
++         */
++        function getCookie( $name, $default='', $values=null ) {
++            if ( isset( $_COOKIE[$name] ) &amp;&amp; ! empty( $_COOKIE[$name] ) ) {
++                if ( ! is_null( $values ) ) {
++                    if ( in_array( $_COOKIE[$name], $values ) ) {
++                        return $_COOKIE[$name];
++                    } else {
++                        return $default;
++                    }
++                } else {
++                    return $_COOKIE[$name];
++                }
++            } else {
++                return $default;
++            }
++        }
++
++        /**
++         *  This function sets the value for a specific cookie
++         *
++         *  @param  $name       The name of the cookie to set.
++         *  @param  $value      The value to set for the cookie.
++         */
++        function setCookie( $name, $value ) {
++            setcookie( $name, $value, $this-&gt;cookieLifeTime, $this-&gt;cookiePath );
++        }
++
++        /**
++         *  This function deletes a cookie value.
++         *
++         *  @param  $name       The name of the cookie to delete.
++         */
++        function deleteCookie( $name ) {
++            setcookie( $name, null, time() - 31536000, $this-&gt;cookiePath );
++            unset( $_COOKIE[$name] );
++        }
++
++
+     }
+ 
+ ?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000643.html">[ydf-devel] r2124 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000645.html">[ydf-devel] r2126 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#644">[ date ]</a>
+              <a href="thread.html#644">[ thread ]</a>
+              <a href="subject.html#644">[ subject ]</a>
+              <a href="author.html#644">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

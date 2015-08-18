@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2252 - YDFramework2.0/trunk/examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2252%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200612092134.kB9LYreI007206%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000842.html">
+   <LINK REL="Next"  HREF="000844.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2252 - YDFramework2.0/trunk/examples</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2252%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200612092134.kB9LYreI007206%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2252 - YDFramework2.0/trunk/examples">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Dec  9 22:34:53 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000842.html">[ydf-devel] r2251 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	3rdparty/captcha 3rdparty/fonts YDClasses	YDClasses/YDFormElements addons addons/YDCaptcha
+</A></li>
+        <LI>Next message: <A HREF="000844.html">[ydf-devel] r2253 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#843">[ date ]</a>
+              <a href="thread.html#843">[ thread ]</a>
+              <a href="subject.html#843">[ subject ]</a>
+              <a href="author.html#843">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-12-09 22:34:28 +0100 (Sat, 09 Dec 2006)
+New Revision: 2252
+
+Added:
+   YDFramework2.0/trunk/examples/form_captcha.php
+Modified:
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+- added example on how to use a captcha element
+
+Added: YDFramework2.0/trunk/examples/form_captcha.php
+===================================================================
+--- YDFramework2.0/trunk/examples/form_captcha.php	2006-12-09 21:31:11 UTC (rev 2251)
++++ YDFramework2.0/trunk/examples/form_captcha.php	2006-12-09 21:34:28 UTC (rev 2252)
+@@ -0,0 +1,60 @@
++&lt;?php
++
++    // standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    // YDF includes
++    YDInclude( 'YDForm.php' );
++    YDInclude( 'YDRequest.php' );
++
++    class form_captcha extends YDRequest {
++
++        // constructor
++        function form_captcha() {
++            $this-&gt;YDRequest();
++        }
++
++        // default action
++        function actionDefault() {
++
++            // create form
++            $form = new YDForm( 'myform' );
++
++			// add elements
++            $form-&gt;addElement( 'text',    'txt', 'Enter your name:' );
++            $form-&gt;addElement( 'captcha', 'cap', 'Enter code:' );
++            $form-&gt;addElement( 'submit',  'cmd', 'Send' );
++
++			// add rules
++            $form-&gt;addRule( 'txt', 'required', 'Your name is required' );
++            $form-&gt;addRule( 'cap', 'captcha',  'Security code is not valid' );
++
++            if ( $form-&gt;validate() ) {
++                YDDebugUtil::dump( $form-&gt;getValues(), 'Form values' );
++            } else {
++                $form-&gt;display();
++            }
++
++        }
++
++		// Reserved action that creates the image
++        function actionShowCaptcha() {
++
++			// include captcha lib
++			YDInclude( 'YDCaptcha.php' );
++
++			// create captcha object
++			$captcha = new YDCaptcha();
++//			$captcha-&gt;useColour( true );
++//			$captcha-&gt;setNumChars( 3 );
++
++			// return image
++			return $captcha-&gt;Create();
++        }
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-12-09 21:31:11 UTC (rev 2251)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-12-09 21:34:28 UTC (rev 2252)
+@@ -186,7 +186,7 @@
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-            &lt;td rowspan=&quot;12&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
++            &lt;td rowspan=&quot;13&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form.php&quot;&gt;Form handling and validation&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form.php&quot;&gt;form.php&lt;/a&gt;
+@@ -254,6 +254,10 @@
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_checkboxgroup.tpl&quot;&gt;form_checkboxgroup.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_captcha.php&quot;&gt;Using the captcha element&lt;/a&gt;&lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_captcha.php&quot;&gt;form_captcha.php&lt;/a&gt; &lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using logfiles&lt;/b&gt;&lt;/td&gt;
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+@@ -611,8 +615,7 @@
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/persistent_store.php&quot;&gt;ajax/persistent_store.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/form_runtime.php&quot;&gt;Adding extra form elements in a response &lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/form_runtime.php&quot;&gt;Adding extra form elements in a response &lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/form_runtime.php&quot;&gt;ajax/form_runtime.php&lt;/a&gt; &lt;/td&gt;
+           &lt;/tr&gt;
+         &lt;tr&gt;
+@@ -799,8 +802,7 @@
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;akismet.php&quot;&gt;Using YDAkismet&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=akismet.php&quot;&gt;akismet.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=akismet.php&quot;&gt;akismet.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;/table&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000842.html">[ydf-devel] r2251 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	3rdparty/captcha 3rdparty/fonts YDClasses	YDClasses/YDFormElements addons addons/YDCaptcha
+</A></li>
+	<LI>Next message: <A HREF="000844.html">[ydf-devel] r2253 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#843">[ date ]</a>
+              <a href="thread.html#843">[ thread ]</a>
+              <a href="subject.html#843">[ subject ]</a>
+              <a href="author.html#843">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

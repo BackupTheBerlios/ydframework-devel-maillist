@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2281 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage skins/default	skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2281%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage%20skins/default%0A%09skins/default_with_lightbox&In-Reply-To=%3C200612302000.kBUK0TgS011887%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000872.html">
+   <LINK REL="Next"  HREF="000874.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2281 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage skins/default	skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2281%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage%20skins/default%0A%09skins/default_with_lightbox&In-Reply-To=%3C200612302000.kBUK0TgS011887%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2281 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage skins/default	skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Dec 30 21:00:29 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000872.html">[ydf-devel] r2280 - YDFramework2.0/trunk/YDFramework2/3rdparty
+</A></li>
+        <LI>Next message: <A HREF="000874.html">[ydf-devel] r2282 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#873">[ date ]</a>
+              <a href="thread.html#873">[ thread ]</a>
+              <a href="subject.html#873">[ subject ]</a>
+              <a href="author.html#873">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-12-30 21:00:28 +0100 (Sat, 30 Dec 2006)
+New Revision: 2281
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+Log:
+Added captcha security to the weblog application (just in case, like with yellowduck.be, the akismet service is not available).
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-12-29 20:26:16 UTC (rev 2280)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-12-30 20:00:28 UTC (rev 2281)
+@@ -585,6 +585,9 @@
+         // Add a comment
+         function addComment( $values ) {
+ 
++            // Remove the unneeded values
++            unset( $values['security_code'] );
++
+             // Update the values
+             $values['userip'] = $_SERVER['REMOTE_ADDR'];
+             $values['useragent'] = $_SERVER['HTTP_USER_AGENT'];
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-12-29 20:26:16 UTC (rev 2280)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-12-30 20:00:28 UTC (rev 2281)
+@@ -99,6 +99,8 @@
+ $GLOBALS['t']['choose_no_spam'] = 'Choose &quot;no spam&quot; here';
+ $GLOBALS['t']['err_userspam'] = 'Detected a spam attack';
+ $GLOBALS['t']['err_duplicate_comment'] = 'Duplicate comment detected';
++$GLOBALS['t']['enter_security_code'] = 'Enter the security code';
++$GLOBALS['t']['err_security_code_not_valid'] = 'The security code is not valid';
+ 
+ // comment_email.tpl
+ $GLOBALS['t']['new_comment'] = 'New comment';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-12-29 20:26:16 UTC (rev 2280)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-12-30 20:00:28 UTC (rev 2281)
+@@ -99,6 +99,8 @@
+ $GLOBALS['t']['choose_no_spam'] = 'Kies hier &quot;geen spam&quot;';
+ $GLOBALS['t']['err_userspam'] = 'Detecteerde een spam aanval';
+ $GLOBALS['t']['err_duplicate_comment'] = 'Duplicaat commentaar gededecteerd';
++$GLOBALS['t']['enter_security_code'] = 'Geef de veiligheidscode in';
++$GLOBALS['t']['err_security_code_not_valid'] = 'De veiligheidscode is niet correct';
+ 
+ // comment_email.tpl
+ $GLOBALS['t']['new_comment'] = 'Nieuw commentaar';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-12-29 20:26:16 UTC (rev 2280)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-12-30 20:00:28 UTC (rev 2281)
+@@ -54,10 +54,14 @@
+             $form-&gt;addElement( 'text', 'username', t( 'name' ) );
+             $form-&gt;addElement( 'text', 'useremail', t( 'mail_not_published' ) );
+             $form-&gt;addElement( 'text', 'userwebsite', t( 'website' ) );
++            $elem = &amp; $form-&gt;addElement( 'captcha', 'security_code', t( 'enter_security_code' ) );
+             $form-&gt;addElement( 'textarea', 'comment', '' );
+             $form-&gt;addElement( 'submit', 'cmdSubmit', t( 'submit_comment' ), array( 'class' =&gt; 'button' ) );
+             $form-&gt;addElement( 'hidden', 'item_id' );
+ 
++            // Change the text position of the captcha element
++            $elem-&gt;setTextPosition( true );
++
+             // Set the defaults
+             $defaults = array();
+             $defaults['item_id']     = $id;
+@@ -67,20 +71,19 @@
+             $form-&gt;setDefaults( $defaults );
+ 
+             // Set the rules
+-            $form-&gt;addRule( 'username',    'required',      t( 'err_name' ) );
+-            $form-&gt;addRule( 'username',    'not_email',     t( 'err_name_email' ) );
+-            $form-&gt;addRule( 'username',    'maxlength',     t( 'err_name_length' ), 35 );
+-            $form-&gt;addRule( 'useremail',   'email',         t( 'err_email' ) );
+-            $form-&gt;addRule( 'useremail',   'required',      t( 'err_email' ) );
+-            $form-&gt;addRule( 'userwebsite', 'httpurl',       t( 'err_website' ) );
+-            $form-&gt;addRule( 'comment',     'required',      t( 'err_comment' ) );
+-            $form-&gt;addRule( 'comment',     'maxlength',     t( 'err_comment_length' ), YDConfig::get( 'max_comment_length', 1500 ) );
+-            $form-&gt;addRule( 'comment',     'maxhyperlinks', t( 'err_comment_links' ), YDConfig::get( 'max_comment_links', 1 ) );
+-            $form-&gt;addFormRule( array( &amp; $this, 'checkDuplicateComments' ) );
++            $form-&gt;addRule( 'username',      'required',      t( 'err_name' ) );
++            $form-&gt;addRule( 'username',      'not_email',     t( 'err_name_email' ) );
++            $form-&gt;addRule( 'username',      'maxlength',     t( 'err_name_length' ), 35 );
++            $form-&gt;addRule( 'useremail',     'email',         t( 'err_email' ) );
++            $form-&gt;addRule( 'useremail',     'required',      t( 'err_email' ) );
++            $form-&gt;addRule( 'userwebsite',   'httpurl',       t( 'err_website' ) );
++            $form-&gt;addRule( 'security_code', 'captcha',       t( 'err_security_code_not_valid' ) );
++            $form-&gt;addRule( 'comment',       'required',      t( 'err_comment' ) );
++            $form-&gt;addRule( 'comment',       'maxlength',     t( 'err_comment_length' ), YDConfig::get( 'max_comment_length', 1500 ) );
++            $form-&gt;addRule( 'comment',       'maxhyperlinks', t( 'err_comment_links' ), YDConfig::get( 'max_comment_links', 1 ) );
+ 
+             // Add the filters
+             $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
+-            //$form-&gt;addFilter( 'comment', 'safe_html' );
+ 
+             // Process the form
+             if ( $form-&gt;validate() === true ) {
+@@ -180,13 +183,18 @@
+ 
+         }
+ 
+-        // Function to check for duplicate comments
+-        function checkDuplicateComments( $fields ) {
+-            if ( $this-&gt;weblog-&gt;isDuplicateComment( $fields ) === true ) {
+-                return array( '__ALL__' =&gt; t( 'err_duplicate_comment' ) );
+-            } else {
+-                return true;
+-            }
++        // Reserved action that creates the image 
++        function actionShowCaptcha() {
++
++            // include captcha lib
++            YDInclude( 'YDCaptcha.php' );
++
++            // Create captcha object 
++            $captcha = new YDCaptcha();
++
++            // Return the image
++            return $captcha-&gt;Create();
++
+         }
+ 
+     }
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-12-29 20:26:16 UTC (rev 2280)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-12-30 20:00:28 UTC (rev 2281)
+@@ -115,6 +115,7 @@
+                         &lt;b&gt;{t w=&quot;h_contents&quot;}&lt;/b&gt;&lt;br/&gt;
+                         &raquo; &lt;a href=&quot;items.php&quot;&gt;{t w=&quot;a_items&quot;}&lt;/a&gt;&lt;br/&gt;
+                         &raquo; &lt;a href=&quot;comments.php&quot;&gt;{t w=&quot;a_comments&quot;}&lt;/a&gt;&lt;br/&gt;
++                        &raquo; &lt;a href=&quot;comments.php?filter=spam&quot;&gt;{t w=&quot;a_comments_spam&quot;}&lt;/a&gt;&lt;br/&gt;
+                         &raquo; &lt;a href=&quot;pages.php&quot;&gt;{t w=&quot;a_pages&quot;}&lt;/a&gt;&lt;br/&gt;
+                         &raquo; &lt;a href=&quot;links.php&quot;&gt;{t w=&quot;a_links&quot;}&lt;/a&gt;&lt;br/&gt;
+                         &raquo; &lt;a href=&quot;images.php&quot;&gt;{t w=&quot;a_images&quot;}&lt;/a&gt;&lt;br/&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-12-29 20:26:16 UTC (rev 2280)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-12-30 20:00:28 UTC (rev 2281)
+@@ -142,6 +142,7 @@
+         &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+         &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+         &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;&lt;small&gt;{$comments_form.security_code.label_html}&lt;/small&gt;&lt;br/&gt;{$comments_form.security_code.html}&lt;/p&gt;
+ 
+         &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-12-29 20:26:16 UTC (rev 2280)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-12-30 20:00:28 UTC (rev 2281)
+@@ -136,6 +136,7 @@
+         &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+         &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+         &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;&lt;small&gt;{$comments_form.security_code.label_html}&lt;/small&gt;&lt;br/&gt;{$comments_form.security_code.html}&lt;/p&gt;
+ 
+         &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000872.html">[ydf-devel] r2280 - YDFramework2.0/trunk/YDFramework2/3rdparty
+</A></li>
+	<LI>Next message: <A HREF="000874.html">[ydf-devel] r2282 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#873">[ date ]</a>
+              <a href="thread.html#873">[ thread ]</a>
+              <a href="subject.html#873">[ subject ]</a>
+              <a href="author.html#873">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

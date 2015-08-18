@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2297 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2297%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDDatabaseDrivers&In-Reply-To=%3C200701071337.l07DbR3J007128%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000888.html">
+   <LINK REL="Next"  HREF="000890.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2297 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2297%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDDatabaseDrivers&In-Reply-To=%3C200701071337.l07DbR3J007128%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2297 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan  7 14:37:27 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000888.html">[ydf-devel] r2296 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers
+</A></li>
+        <LI>Next message: <A HREF="000890.html">[ydf-devel] r2298 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#889">[ date ]</a>
+              <a href="thread.html#889">[ thread ]</a>
+              <a href="subject.html#889">[ subject ]</a>
+              <a href="author.html#889">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-07 14:37:26 +0100 (Sun, 07 Jan 2007)
+New Revision: 2297
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+Improved the database classes. They now properly report an error if something goes wrong, along with the SQL statement and debug stack trace.
+
+Also added YDDatabase::formatSql which returns a formatted SQL statement.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-06 19:04:40 UTC (rev 2296)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-07 13:37:26 UTC (rev 2297)
+@@ -781,6 +781,17 @@
+ 
+         }
+ 
++        /**
++         *  This function formats an SQL statement.
++         *
++         *  @param $sql         The SQL statement to format.
++         *
++         *  @returns    The formatted SQL statement
++         */
++        function formatSql( $sql ) {
++            return YDDatabaseDriver::formatSql( $sql );
++        }
++
+     }
+ 
+     /**
+@@ -1442,6 +1453,37 @@
+         }
+ 
+         /**
++         *  This function formats an SQL statement.
++         *
++         *  @param $sql         The SQL statement to format.
++         *
++         *  @returns    The formatted SQL statement
++         */
++        function formatSql( $sql ) {
++
++            // Split the SQL in different lines
++            $sql = str_ireplace( ' SELECT ', ' SELECT ', $sql );
++            $sql = str_ireplace( ' UPDATE ', ' UPDATE ', $sql );
++            $sql = str_ireplace( ' DELETE ', ' DELETE ', $sql );
++            $sql = str_ireplace( ' INSERT ', ' INSERT ', $sql );
++            $sql = str_ireplace( ' UNION ', YD_CRLF . 'UNION' . YD_CRLF, $sql );
++            $sql = str_ireplace( ' FROM ', YD_CRLF . 'FROM ', $sql );
++            $sql = str_ireplace( ' INTO ', YD_CRLF . 'INTO ', $sql );
++            $sql = str_ireplace( ' VALUES ', YD_CRLF . 'VALUES ', $sql );
++            $sql = str_ireplace( ' LEFT JOIN ', YD_CRLF . 'LEFT JOIN ', $sql );
++            $sql = str_ireplace( ' RIGHT JOIN ', YD_CRLF . 'RIGHT JOIN ', $sql );
++            $sql = str_ireplace( ' INNER JOIN ', YD_CRLF . 'INNER JOIN ', $sql );
++            $sql = str_ireplace( ' WHERE ', YD_CRLF . 'WHERE ', $sql );
++            $sql = str_ireplace( ' ORDER BY ', YD_CRLF . 'ORDER BY ', $sql );
++            $sql = str_ireplace( ' GROUP BY ', YD_CRLF . 'GROUP BY ', $sql );
++            $sql = str_ireplace( ' LIMIT ', YD_CRLF . 'LIMIT ', $sql );
++
++            // Return the formatted statement
++            return $sql;
++
++        }
++
++        /**
+          *  This function will log the SQL statement to the debug log and keep track of the number of queries that were
+          *  executed. This will only happen if YD_DEBUG equals 1 or 2
+          *
+@@ -1455,21 +1497,8 @@
+             // Show debugging info if needed
+             if ( YDConfig::get( 'YD_DEBUG' ) == 1 || YDConfig::get( 'YD_DEBUG' ) == 2 ) {
+ 
+-                // Split the SQL in different lines
+-                $sql = str_ireplace( ' SELECT ', ' SELECT ', $sql );
+-                $sql = str_ireplace( ' UPDATE ', ' UPDATE ', $sql );
+-                $sql = str_ireplace( ' DELETE ', ' DELETE ', $sql );
+-                $sql = str_ireplace( ' INSERT ', ' INSERT ', $sql );
+-                $sql = str_ireplace( ' FROM ', YD_CRLF . 'FROM ', $sql );
+-                $sql = str_ireplace( ' INTO ', YD_CRLF . 'INTO ', $sql );
+-                $sql = str_ireplace( ' VALUES ', YD_CRLF . 'VALUES ', $sql );
+-                $sql = str_ireplace( ' LEFT JOIN ', YD_CRLF . 'LEFT JOIN ', $sql );
+-                $sql = str_ireplace( ' RIGHT JOIN ', YD_CRLF . 'RIGHT JOIN ', $sql );
+-                $sql = str_ireplace( ' INNER JOIN ', YD_CRLF . 'INNER JOIN ', $sql );
+-                $sql = str_ireplace( ' WHERE ', YD_CRLF . 'WHERE ', $sql );
+-                $sql = str_ireplace( ' ORDER BY ', YD_CRLF . 'ORDER BY ', $sql );
+-                $sql = str_ireplace( ' GROUP BY ', YD_CRLF . 'GROUP BY ', $sql );
+-                $sql = str_ireplace( ' LIMIT ', YD_CRLF . 'LIMIT ', $sql );
++                // Format the SQL statement
++                $sql = $this-&gt;formatSql( $sql );
+ 
+                 // Get the backtrace
+                 $trace = debug_backtrace();
+@@ -1735,7 +1764,7 @@
+ 
+             // Handle errors
+             if ( $result === false &amp;&amp; $this-&gt;_failOnError === true ) {
+-                trigger_error( '[' . mysql_errno( $this-&gt;_conn ) . '] ' . mysql_error( $this-&gt;_conn ), YD_ERROR );
++                YDDebugUtil::error( '[' . mysql_errno( $this-&gt;_conn ) . '] ' . mysql_error( $this-&gt;_conn ), $sql );
+             }
+ 
+             // Log the statement
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-06 19:04:40 UTC (rev 2296)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-07 13:37:26 UTC (rev 2297)
+@@ -294,6 +294,8 @@
+                 if ( ! empty( $error['sqltext'] ) ) {
+                     $error['message'] .= ' (SQL: ' . $error['sqltext'] . ')';
+                 }
++                echo( '&lt;b&gt;Stacktrace:&lt;/b&gt; &lt;pre&gt;' . YDDebugUtil::getStackTrace() . '&lt;/pre&gt;' );
++                echo( '&lt;b&gt;SQL Statement:&lt;/b&gt; &lt;pre&gt;' . $this-&gt;formatSql( $sql ) . '&lt;/pre&gt;' );
+                 trigger_error( $error['message'], YD_ERROR );
+             }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-06 19:04:40 UTC (rev 2296)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-07 13:37:26 UTC (rev 2297)
+@@ -212,6 +212,8 @@
+ 
+             // Handle errors
+             if ( $result === false &amp;&amp; $this-&gt;_failOnError === true ) {
++                echo( '&lt;b&gt;Stacktrace:&lt;/b&gt; &lt;pre&gt;' . YDDebugUtil::getStackTrace() . '&lt;/pre&gt;' );
++                echo( '&lt;b&gt;SQL Statement:&lt;/b&gt; &lt;pre&gt;' . $this-&gt;formatSql( $sql ) . '&lt;/pre&gt;' );
+                 trigger_error( pg_last_error( $this-&gt;conn ), YD_ERROR );
+             }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-06 19:04:40 UTC (rev 2296)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-07 13:37:26 UTC (rev 2297)
+@@ -217,6 +217,8 @@
+ 
+             // Handle errors
+             if ( $result === false &amp;&amp; $this-&gt;_failOnError === true ) {
++                echo( '&lt;b&gt;Stacktrace:&lt;/b&gt; &lt;pre&gt;' . YDDebugUtil::getStackTrace() . '&lt;/pre&gt;' );
++                echo( '&lt;b&gt;SQL Statement:&lt;/b&gt; &lt;pre&gt;' . $this-&gt;formatSql( $sql ) . '&lt;/pre&gt;' );
+                 trigger_error( sqlite_error_string( sqlite_last_error( $this-&gt;_conn ) ), YD_ERROR );
+             }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-06 19:04:40 UTC (rev 2296)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-07 13:37:26 UTC (rev 2297)
+@@ -384,6 +384,22 @@
+     class YDDebugUtil extends YDBase {
+ 
+         /**
++         *  Trigger an error
++         *
++         *  @param  $error  The error to raise.
++         *  @param  $sql    (optional) The SQL statement to log with the error.
++         *  @param  $level  (optional) The type of error to be raised. Default is YD_ERROR.
++         */
++        function error( $msg, $sql=null, $level=YD_ERROR ) {
++            echo( '&lt;p&gt;&lt;b&gt;&lt;font color=&quot;red&quot;&gt;An error occured&lt;/font&gt;&lt;/b&gt;&lt;/p&gt;' );
++            echo( '&lt;b&gt;Stacktrace:&lt;/b&gt; &lt;pre&gt;' . YDDebugUtil::getStackTrace() . '&lt;/pre&gt;' );
++            if ( ! empty( $sql ) ) {
++                echo( '&lt;b&gt;SQL Statement:&lt;/b&gt; &lt;pre&gt;' . $this-&gt;formatSql( $sql ) . '&lt;/pre&gt;' );
++            }
++            trigger_error( $msg, $level );
++        }
++
++        /**
+          *	Function to output a debug message. These message are only shown if the constant YD_DEBUG is set to 1. You
+          *	can turn on debugging by specifying the YD_DEBUG parameter in the url and assigning it the value 1.
+          *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000888.html">[ydf-devel] r2296 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers
+</A></li>
+	<LI>Next message: <A HREF="000890.html">[ydf-devel] r2298 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#889">[ date ]</a>
+              <a href="thread.html#889">[ thread ]</a>
+              <a href="subject.html#889">[ subject ]</a>
+              <a href="author.html#889">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

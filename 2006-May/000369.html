@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1907 - in YDFramework2.0/trunk/YDFramework2/addons: . YDCMHelpdesk
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1907%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20.%20YDCMHelpdesk&In-Reply-To=%3C200605031439.k43EdUjK028697%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000368.html">
+   <LINK REL="Next"  HREF="000370.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1907 - in YDFramework2.0/trunk/YDFramework2/addons: . YDCMHelpdesk</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1907%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20.%20YDCMHelpdesk&In-Reply-To=%3C200605031439.k43EdUjK028697%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1907 - in YDFramework2.0/trunk/YDFramework2/addons: . YDCMHelpdesk">ximian at berlios.de
+       </A><BR>
+    <I>Wed May  3 16:39:30 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000368.html">[ydf-devel] r1906 - in YDFramework2.0/trunk/YDFramework2/addons: YDCMLanguages/languages YDCMPage/languages
+</A></li>
+        <LI>Next message: <A HREF="000370.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#369">[ date ]</a>
+              <a href="thread.html#369">[ thread ]</a>
+              <a href="subject.html#369">[ subject ]</a>
+              <a href="author.html#369">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-03 16:38:25 +0200 (Wed, 03 May 2006)
+New Revision: 1907
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php
+Log:
+added a new YDCM component draft: YDCMHelpdesk, a very simple helpdesk management
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php	2006-05-03 14:35:05 UTC (rev 1906)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php	2006-05-03 14:38:25 UTC (rev 1907)
+@@ -0,0 +1,234 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    class YDCMHelpdesk extends YDCMComponent {
++    
++        function YDCMHelpdesk() {
++        
++			// init component
++            $this-&gt;YDCMComponent( 'YDCMHelpdesk' );
++
++            $this-&gt;_author = 'Francisco Azevedo';
++            $this-&gt;_version = '0.1';
++            $this-&gt;_copyright = '(c) Copyright 2006 Francisco Azevedo';
++            $this-&gt;_description = 'This is a simple helpdesk component';
++
++			// register custom fields
++			$this-&gt;registerField( 'title' );
++						
++			// custom relation
++            $rel = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_posts', false, 'YDCMHelpdesk_posts' );
++			$rel-&gt;setLocalKey( 'component_id' );
++            $rel-&gt;setForeignKey( 'component_id' );
++			$rel-&gt;setForeignJoin( 'LEFT' );
++		}
++
++
++        /**
++         *  This function creates a new helpdesk
++         *
++         *  @param $title  Helpdesk title
++         *  @param $language_id  (Optional) Language code of the heldesk
++         *  @param $reference  (Optional) Node reference
++         *  @param $parent_id  (Optional) Id of the parent help desk
++         */
++		function create( $title, $language_id = 'all', $reference = '', $parent_id = 0 ){
++		
++			// add node to content tree
++			$node = array();
++			$node[ 'type' ]        = 'YDCMHelpdesk';
++			$node[ 'reference' ]   = $reference;
++			$node[ 'state' ]       = 1;
++			$node[ 'access' ]      = 1;
++			$node[ 'searcheable' ] = 0;
++
++			// add tree node
++			// TODO: check if parent_id exist
++			$id = $this-&gt;addNode( $node, intval( $parent_id ) );
++		
++			// add a standard title
++			return $this-&gt;addTitle( $id, $title, $language_id );
++		}
++
++		
++		function addTitle( $id, $title, $language_id ){
++		
++			// reset values
++			$this-&gt;resetValues();
++
++			// add a default helpdesk title
++			// TODO: check if language code exist
++			$this-&gt;content_id  = $id;
++			$this-&gt;title       = $title;
++			$this-&gt;language_id = $language_id;
++
++			// insert values
++			return $this-&gt;insert();
++		}
++
++		
++    }
++
++
++
++    class YDCMHelpdesk_posts extends YDCMComponent {
++    
++        function YDCMHelpdesk_posts() {
++        
++			// init component
++            $this-&gt;YDCMComponent( 'YDCMHelpdesk_posts', false );
++
++			// register Key
++			$this-&gt;registerKey( 'post_id', true );
++
++			// register custom fields
++			$this-&gt;registerField( 'component_id' );
++			$this-&gt;registerField( 'user_id' );
++			$this-&gt;registerField( 'subject' );
++			$this-&gt;registerField( 'localization' );
++			$this-&gt;registerField( 'urgency_id' );
++			$this-&gt;registerField( 'state_id' );
++			$this-&gt;registerField( 'text' );
++			$this-&gt;registerField( 'created_in' );
++			$this-&gt;registerField( 'reported_in' );
++			$this-&gt;registerField( 'reported_by' );
++			$this-&gt;registerField( 'reported_to_in' );
++			$this-&gt;registerField( 'reported_to' );
++			$this-&gt;registerField( 'reported_to_local' );
++
++			// custom relation
++            $rel = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk', false, 'YDCMHelpdesk' );
++			$rel-&gt;setLocalKey( 'component_id' );
++            $rel-&gt;setForeignKey( 'component_id' );
++
++            $relUsers = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
++			$relUsers-&gt;setLocalKey( 'user_id' );
++            $relUsers-&gt;setForeignKey( 'user_id' );
++
++            $relResponse = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_response', false, 'YDCMHelpdesk_response' );
++			$relResponse-&gt;setLocalKey( 'post_id' );
++            $relResponse-&gt;setForeignKey( 'post_id' );
++			$relResponse-&gt;setForeignJoin( 'LEFT' );
++
++            $relUrgency = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_urgency', false, 'YDCMHelpdesk_urgency' );
++			$relUrgency-&gt;setLocalKey( 'urgency_id' );
++            $relUrgency-&gt;setForeignKey( 'urgency_id' );
++
++            $relState = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_state', false, 'YDCMHelpdesk_state' );
++			$relState-&gt;setLocalKey( 'state_id' );
++            $relState-&gt;setForeignKey( 'state_id' );
++		}
++
++	}
++
++
++
++    class YDCMHelpdesk_response extends YDCMComponent {
++    
++        function YDCMHelpdesk_response() {
++        
++			// init component
++            $this-&gt;YDCMComponent( 'YDCMHelpdesk_response', false );
++
++			// register Key
++			$this-&gt;registerKey( 'response_id', true );
++
++			// register custom fields
++			$this-&gt;registerField( 'post_id' );
++			$this-&gt;registerField( 'user_id' );
++			$this-&gt;registerField( 'date' );
++			$this-&gt;registerField( 'description' );
++
++			// custom relations
++            $rel = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_posts', false, 'YDCMHelpdesk_posts' );
++			$rel-&gt;setLocalKey( 'post_id' );
++            $rel-&gt;setForeignKey( 'post_id' );
++
++            $relUsers = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
++			$relUsers-&gt;setLocalKey( 'user_id' );
++            $relUsers-&gt;setForeignKey( 'user_id' );
++		}
++
++	}	
++
++
++
++    class YDCMHelpdesk_urgency extends YDCMComponent {
++    
++        function YDCMHelpdesk_urgency() {
++        
++			// init component
++            $this-&gt;YDCMComponent( 'YDCMHelpdesk_urgency', false );
++
++			// register Key
++			$this-&gt;registerKey( 'urgency_id', true );
++
++			// register custom fields
++			$this-&gt;registerField( 'description' );
++			$this-&gt;registerField( 'color' );
++						
++			// custom relations
++            $rel = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_posts', false, 'YDCMHelpdesk_posts' );
++			$rel-&gt;setLocalKey( 'urgency_id' );
++            $rel-&gt;setForeignKey( 'urgency_id' );
++			$rel-&gt;setForeignJoin( 'LEFT' );
++		}
++
++	}	
++
++
++
++
++    class YDCMHelpdesk_state extends YDCMComponent {
++    
++        function YDCMHelpdesk_state() {
++        
++			// init component
++            $this-&gt;YDCMComponent( 'YDCMHelpdesk_state', false );
++
++			// register Key
++			$this-&gt;registerKey( 'state_id', true );
++
++			// register custom fields
++			$this-&gt;registerField( 'description' );
++						
++			// custom relations
++            $rel = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_posts', false, 'YDCMHelpdesk_posts' );
++			$rel-&gt;setLocalKey( 'state_id' );
++            $rel-&gt;setForeignKey( 'state_id' );
++			$rel-&gt;setForeignJoin( 'LEFT' );
++		}
++
++	}	
++
++
++
++
++
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000368.html">[ydf-devel] r1906 - in YDFramework2.0/trunk/YDFramework2/addons: YDCMLanguages/languages YDCMPage/languages
+</A></li>
+	<LI>Next message: <A HREF="000370.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#369">[ date ]</a>
+              <a href="thread.html#369">[ thread ]</a>
+              <a href="subject.html#369">[ subject ]</a>
+              <a href="author.html#369">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

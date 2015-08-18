@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2303 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2303%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200701131747.l0DHlbFr032193%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000894.html">
+   <LINK REL="Next"  HREF="000896.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2303 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2303%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200701131747.l0DHlbFr032193%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2303 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 13 18:47:37 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000894.html">[ydf-devel] r2302 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses javascript
+</A></li>
+        <LI>Next message: <A HREF="000896.html">[ydf-devel] r2304 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#895">[ date ]</a>
+              <a href="thread.html#895">[ thread ]</a>
+              <a href="subject.html#895">[ subject ]</a>
+              <a href="author.html#895">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-13 18:47:14 +0100 (Sat, 13 Jan 2007)
+New Revision: 2303
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+Log:
+on YDDatabaseObject:
+ - fixed getResults comment typo
+ - added date management on insertForm
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-08 11:21:56 UTC (rev 2302)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-13 17:47:14 UTC (rev 2303)
+@@ -836,7 +836,7 @@
+          *  @param $only_current (optional) Returns only the current object results. Default: false.
+          *  @param $only_fields  (optional) Returns only defined fields. Default: false.
+          *  @param $columns      (optional) Returns the columns names instead of the fields names.
+-         *  @param $prefix       (optional) Adds the relation's vars as prefixes to the keys. Default: false.
++         *  @param $prefix       (optional) Adds the relation's vars as prefixes to the keys. Default: true.
+          *
+          *  @returns  An array with the results.
+          */
+@@ -1048,11 +1048,13 @@
+          *
+          *  @param $forvalues  (optional) Custom form validation values
+          *
++         *  @param $onDate     (optional) When element is a date (read: array ), we should convert to this format. Default: 'datetimesql'
++         *
+          *  @returns  YDResult object with a message and a result
+          *            On 'ok', result is the new id
+          *            On 'form_err', result is array of form error messages
+          */
+-        function insertForm( &amp; $form, $messages = array(), $formvalues = null ){
++        function insertForm( &amp; $form, $messages = array(), $formvalues = null, $onDate = 'datetimesql' ){
+ 
+             YDInclude( 'YDResult.php' );
+ 
+@@ -1069,15 +1071,23 @@
+             // reset all previous information
+             $this-&gt;reset();
+ 
+-            $this-&gt;setValues( $form-&gt;getValues() );
++			// get form values
++			$values = $form-&gt;getValues();
+ 
++			// convert dates
++			foreach( $values as $element =&gt; $value )
++				if ( is_array( $value ) ) $values[ $element ] = YDStringUtil::formatDate( $form-&gt;getValue( $element ), $onDate );
++
++			// apply values
++            $this-&gt;setValues( $values );
++
+             // insert values and check result
+             $result = $this-&gt;insert();
+ 
+             if ( $result ){
+                 return YDResult::ok( $msg_ok, $result );
+             }else{
+-                return YDResult::fatal( $msg_err, $result );
++                return YDResult::fatal( $msg_error, $result );
+             }
+         }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000894.html">[ydf-devel] r2302 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses javascript
+</A></li>
+	<LI>Next message: <A HREF="000896.html">[ydf-devel] r2304 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#895">[ date ]</a>
+              <a href="thread.html#895">[ thread ]</a>
+              <a href="subject.html#895">[ subject ]</a>
+              <a href="author.html#895">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

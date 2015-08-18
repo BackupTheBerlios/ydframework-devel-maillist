@@ -1,0 +1,553 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2163 - YDFramework2.0/trunk/examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2163%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200609251132.k8PBWBhI024808%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000686.html">
+   <LINK REL="Next"  HREF="000688.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2163 - YDFramework2.0/trunk/examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2163%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200609251132.k8PBWBhI024808%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2163 - YDFramework2.0/trunk/examples/weblog/manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Sep 25 13:32:11 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000686.html">[ydf-devel] r2162 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000688.html">[ydf-devel] r2164 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#687">[ date ]</a>
+              <a href="thread.html#687">[ thread ]</a>
+              <a href="subject.html#687">[ subject ]</a>
+              <a href="author.html#687">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-25 13:32:11 +0200 (Mon, 25 Sep 2006)
+New Revision: 2163
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/categories.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/images.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/images_selector.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/links.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+Log:
+Used the new browser bars in the weblog admin.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/categories.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/categories.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/categories.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -19,36 +19,6 @@
+ 
+ {if $YD_ACTION == 'default'}
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $categories-&gt;totalPages &gt; 1}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;3&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $categories-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$categories-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$categories-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $categories-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$categories-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $categories-&gt;isLastPage}
+-                        &lt;a href=&quot;{$categories-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     {$form.tag}
+         &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+             &lt;tr&gt;
+@@ -65,7 +35,7 @@
+                 &lt;th class=&quot;adminRowR&quot; width=&quot;20%&quot;&gt;{t w=&quot;number_of_items&quot;}&lt;/th&gt;
+                 &lt;th class=&quot;adminRowR&quot; width=&quot;35%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+             &lt;/tr&gt;
+-            {$browsebar}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;3&quot;&gt;{$categories-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             {foreach from=$categories-&gt;set item=&quot;category&quot;}
+                 &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+                     &lt;td class=&quot;adminRowL&quot;&gt;{$category.title}&lt;/td&gt;
+@@ -78,7 +48,7 @@
+                     &lt;/td&gt;
+                 &lt;/tr&gt;
+             {/foreach}
+-            {$browsebar}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;3&quot;&gt;{$categories-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;3&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$categories-&gt;totalRows}&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -21,36 +21,6 @@
+ 
+ {if $YD_ACTION == 'default'}
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $comments-&gt;totalPages &gt; 1}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $comments-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$comments-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$comments-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $comments-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$comments-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $comments-&gt;isLastPage}
+-                        &lt;a href=&quot;{$comments-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+     {if $item}
+         &lt;tr&gt;
+@@ -83,7 +53,7 @@
+             &lt;th class=&quot;adminRowL&quot; width=&quot;30%&quot;&gt;{t w=&quot;comment&quot;}&lt;/th&gt;
+             &lt;th class=&quot;adminRowR&quot; width=&quot;18%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+         &lt;/tr&gt;
+-        {$browsebar}
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         {foreach from=$comments-&gt;set item=&quot;comment&quot;}
+             &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;
+@@ -126,7 +96,7 @@
+                 &lt;/td&gt;
+             &lt;/tr&gt;
+         {/foreach}
+-        {$browsebar}
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
+                 &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/images.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/images.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/images.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -19,36 +19,6 @@
+ 
+ {if $YD_ACTION == 'default'}
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $images-&gt;totalPages &gt; 1}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $images-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$images-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$images-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $images-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$images-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $images-&gt;isLastPage}
+-                        &lt;a href=&quot;{$images-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     {$form.tag}
+         {$form.action.html}
+         &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+@@ -70,7 +40,7 @@
+                 &lt;th class=&quot;adminRowL&quot; width=&quot;14%&quot;&gt;{t w=&quot;dimensions&quot;}&lt;/th&gt;
+                 &lt;th class=&quot;adminRowR&quot; width=&quot;10%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+             &lt;/tr&gt;
+-            {$browsebar}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;{$images-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             {foreach from=$images-&gt;set item=&quot;image&quot;}
+                 &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+                     &lt;td class=&quot;adminRowL&quot; valign=&quot;top&quot;&gt;{$image-&gt;getLastModified()|date:'%Y/%m/%d %H:%M'}&lt;/td&gt;
+@@ -89,7 +59,7 @@
+                     &lt;/td&gt;
+                 &lt;/tr&gt;
+             {/foreach}
+-            {$browsebar}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;{$images-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;7&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$images-&gt;totalRows}&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/images_selector.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/images_selector.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/images_selector.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -39,36 +39,6 @@
+ 
+     &lt;p class=&quot;title&quot;&gt;{t w=&quot;h_contents&quot;} &raquo; {t w=&quot;select_image&quot;}&lt;/p&gt;
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $images-&gt;pages}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot; style=&quot;border-top: 1px solid #DDDDDD;&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $images-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$images-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$images-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $images-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$images-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $images-&gt;isLastPage}
+-                        &lt;a href=&quot;{$images-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     {$form.tag}
+         {$form.action.html}
+         &lt;table width=&quot;100%&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+@@ -80,7 +50,7 @@
+                 &lt;td class=&quot;adminRowR&quot; colspan=&quot;1&quot;&gt;{$form._cmdSubmit.html}&lt;/td&gt;
+             &lt;/tr&gt;
+         {if $images-&gt;set}
+-            {$browsebar}
++            &lt;tr&gt;&lt;td colspan=&quot;5&quot;&gt;{$images-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             {foreach from=$images-&gt;set item=&quot;image_row&quot;}
+             &lt;tr&gt;
+                 {foreach from=$image_row item=&quot;image&quot;}
+@@ -109,7 +79,7 @@
+                 {/foreach}
+             &lt;/tr&gt;
+             {/foreach}
+-            {$browsebar}
++            &lt;tr&gt;&lt;td colspan=&quot;5&quot;&gt;{$images-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;5&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$images-&gt;totalRows}&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -19,36 +19,6 @@
+ 
+ {if $YD_ACTION == 'default'}
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $items-&gt;totalPages &gt; 1}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $items-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$items-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$items-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $items-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$items-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $items-&gt;isLastPage}
+-                        &lt;a href=&quot;{$items-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+     &lt;tr&gt;
+         &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;
+@@ -69,7 +39,7 @@
+             &lt;th class=&quot;adminRowL&quot; width=&quot;26%&quot;&gt;{t w=&quot;title&quot;}&lt;/th&gt;
+             &lt;th class=&quot;adminRowR&quot; width=&quot;22%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+         &lt;/tr&gt;
+-        {$browsebar}
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$items-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         {foreach from=$items-&gt;set item=&quot;item&quot;}
+             &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $item.is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;
+@@ -103,7 +73,7 @@
+                 &lt;/td&gt;
+             &lt;/tr&gt;
+         {/foreach}
+-        {$browsebar}
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$items-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
+                 &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$items-&gt;totalRows}&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -19,36 +19,6 @@
+ 
+ {if $YD_ACTION == 'default'}
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $images-&gt;totalPages &gt; 1}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $images-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$images-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$images-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $images-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$images-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $images-&gt;isLastPage}
+-                        &lt;a href=&quot;{$images-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+     &lt;tr&gt;
+         &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+@@ -96,7 +66,7 @@
+                 &lt;th class=&quot;adminRowL&quot; width=&quot;14%&quot;&gt;{t w=&quot;dimensions&quot;}&lt;/th&gt;
+                 &lt;th class=&quot;adminRowR&quot; width=&quot;10%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+             &lt;/tr&gt;
+-            {$browsebar}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;{$images-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             {foreach from=$images-&gt;set item=&quot;image&quot;}
+                 &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+                     &lt;td class=&quot;adminRowL&quot; valign=&quot;top&quot;&gt;{$image-&gt;getLastModified()|date:'%Y/%m/%d %H:%M'}&lt;/td&gt;
+@@ -127,7 +97,7 @@
+                     &lt;/td&gt;
+                 &lt;/tr&gt;
+             {/foreach}
+-            {$browsebar}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;{$images-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;5&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$images-&gt;totalRows}&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/links.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/links.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/links.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -19,36 +19,6 @@
+ 
+ {if $YD_ACTION == 'default'}
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $links-&gt;totalPages &gt; 1}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $links-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$links-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$links-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $links-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$links-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $links-&gt;isLastPage}
+-                        &lt;a href=&quot;{$links-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+     &lt;tr&gt;
+         &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;a_links&quot;}&lt;/th&gt;
+@@ -64,6 +34,7 @@
+             &lt;th class=&quot;adminRowR&quot; width=&quot;10%&quot;&gt;{t w=&quot;num_visits&quot;}&lt;/th&gt;
+             &lt;th class=&quot;adminRowR&quot; width=&quot;20%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+         &lt;/tr&gt;
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$links-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         {foreach from=$links-&gt;set item=&quot;link&quot;}
+             &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$link.title}&lt;/td&gt;
+@@ -76,6 +47,7 @@
+                 &lt;/td&gt;
+             &lt;/tr&gt;
+         {/foreach}
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$links-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
+                 &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$links-&gt;totalRows}&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-09-25 11:22:32 UTC (rev 2162)
++++ YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-09-25 11:32:11 UTC (rev 2163)
+@@ -19,36 +19,6 @@
+ 
+ {if $YD_ACTION == 'default'}
+ 
+-    {capture assign=&quot;browsebar&quot;}
+-        {if $pages-&gt;totalPages &gt; 1}
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;
+-                    {if ! $pages-&gt;isFirstPage}
+-                        &lt;a href=&quot;{$pages-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+-                    {else}
+-                        &laquo;
+-                    {/if}
+-                    |
+-                    {foreach from=$pages-&gt;pages item=&quot;page&quot;}
+-                        {if $page == $pages-&gt;page}
+-                            &lt;b&gt;{$page}&lt;/b&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$pages-&gt;getPageUrl($page)}&quot; class=&quot;subline&quot;&gt;{$page}&lt;/a&gt;
+-                        {/if}
+-                    {/foreach}
+-                    |
+-                    {if ! $pages-&gt;isLastPage}
+-                        &lt;a href=&quot;{$pages-&gt;getNextUrl()}&quot; class=&quot;subline&quot;&gt;&raquo;&lt;/a&gt;
+-                    {else}
+-                        &raquo;
+-                    {/if}
+-                    &lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {/capture}
+-
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+     &lt;tr&gt;
+         &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;a_pages&quot;}&lt;/th&gt;
+@@ -64,6 +34,7 @@
+             &lt;th class=&quot;adminRowL&quot; width=&quot;30%&quot;&gt;{t w=&quot;title&quot;}&lt;/th&gt;
+             &lt;th class=&quot;adminRowR&quot; width=&quot;18%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+         &lt;/tr&gt;
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$pages-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         {foreach from=$pages-&gt;set item=&quot;page&quot;}
+             &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $page.is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;
+@@ -91,6 +62,7 @@
+                 &lt;/td&gt;
+             &lt;/tr&gt;
+         {/foreach}
++        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$pages-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
+                 &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$pages-&gt;totalRows}&lt;/p&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000686.html">[ydf-devel] r2162 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000688.html">[ydf-devel] r2164 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#687">[ date ]</a>
+              <a href="thread.html#687">[ thread ]</a>
+              <a href="subject.html#687">[ subject ]</a>
+              <a href="author.html#687">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

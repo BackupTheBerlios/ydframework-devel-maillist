@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1831 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1831%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604051409.k35E9cjB032581%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000261.html">
+   <LINK REL="Next"  HREF="000263.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1831 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1831%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604051409.k35E9cjB032581%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1831 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Wed Apr  5 16:09:38 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000261.html">[ydf-devel] r1830 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+        <LI>Next message: <A HREF="000263.html">[ydf-devel] r1832 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#262">[ date ]</a>
+              <a href="thread.html#262">[ thread ]</a>
+              <a href="subject.html#262">[ subject ]</a>
+              <a href="author.html#262">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-05 16:09:22 +0200 (Wed, 05 Apr 2006)
+New Revision: 1831
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+new feature: YDForm::getErrors can return an array or a string and it's possible to, when returning an string, to define the separator and an initial string.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-04-05 10:06:18 UTC (rev 1830)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-04-05 14:09:22 UTC (rev 1831)
+@@ -688,10 +688,24 @@
+         /**
+          *  This function returns all active error messages
+          *
+-         *  @returns    An array containing all active error messages
++         *  @param $asString  (Optional) Boolean value that defines if we want a string or an array
++         *
++         *  @param $separator  (Optional) String that separates all messages (used when we want errors as string)
++         *
++         *  @param $initial  (Optional) String to prepend to all messages (used when we want errors as string)
++         *
++         *  @returns    An array/string containing all active error messages
+          */
+-        function getErrors() {
+-            return array_values( $this-&gt;_errors );
++        function getErrors( $asString = false, $separator = &quot;\n&quot;, $initial = '' ) {
++
++            // get form errors
++            $errors = array_values( $this-&gt;_errors );
++
++            // if we want a string, we must implode with custom separator and use initial string
++            if ( $asString ) $errors = $initial . implode( $separator, $errors );
++
++            // return errors
++            return $errors;
+         }
+ 
+         /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000261.html">[ydf-devel] r1830 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+	<LI>Next message: <A HREF="000263.html">[ydf-devel] r1832 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#262">[ date ]</a>
+              <a href="thread.html#262">[ thread ]</a>
+              <a href="subject.html#262">[ subject ]</a>
+              <a href="author.html#262">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,3322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2334 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers	YDClasses/YDFormElements YDClasses/YDFormRenderers	addons/YDAjax addons/YDAkismet addons/YDBBCode	addons/YDCMComponent addons/YDCaptcha addons/YDCart	addons/YDDatabaseObject addons/YDDatabaseQuery	addons/YDDatabaseQuery/YDDatabaseQueryDrivers	addons/YDFeedCreator addons/YDGraph addons/YDGraphPie	addons/YDInstaller addons/YDLoadconfig addons/YDMysqlDump	addons/YDPdfReport addons/YDSimpleCMS
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2334%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20YDClasses/YDDatabaseDrivers%0A%09YDClasses/YDFormElements%20YDClasses/YDFormRenderers%0A%09addons/YDAjax%20addons/YDAkismet%20addons/YDBBCode%0A%09addons/YDCMComponent%20addons/YDCaptcha%20addons/YDCart%0A%09addons/YDDatabaseObject%20addons/YDDatabaseQuery%0A%09addons/YDDatabaseQuery/YDDatabaseQueryDrivers%0A%09addons/YDFeedCreator%20addons/YDGraph%20addons/YDGraphPie%0A%09addons/YDInstaller%20addons/YDLoadconfig%20addons/YDMysqlDump%0A%09addons/YDPdfReport%20addons/YDSimpleCMS&In-Reply-To=%3C200701221605.l0MG5eEk004775%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000926.html">
+   <LINK REL="Next"  HREF="000928.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2334 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers	YDClasses/YDFormElements YDClasses/YDFormRenderers	addons/YDAjax addons/YDAkismet addons/YDBBCode	addons/YDCMComponent addons/YDCaptcha addons/YDCart	addons/YDDatabaseObject addons/YDDatabaseQuery	addons/YDDatabaseQuery/YDDatabaseQueryDrivers	addons/YDFeedCreator addons/YDGraph addons/YDGraphPie	addons/YDInstaller addons/YDLoadconfig addons/YDMysqlDump	addons/YDPdfReport addons/YDSimpleCMS</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2334%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20YDClasses/YDDatabaseDrivers%0A%09YDClasses/YDFormElements%20YDClasses/YDFormRenderers%0A%09addons/YDAjax%20addons/YDAkismet%20addons/YDBBCode%0A%09addons/YDCMComponent%20addons/YDCaptcha%20addons/YDCart%0A%09addons/YDDatabaseObject%20addons/YDDatabaseQuery%0A%09addons/YDDatabaseQuery/YDDatabaseQueryDrivers%0A%09addons/YDFeedCreator%20addons/YDGraph%20addons/YDGraphPie%0A%09addons/YDInstaller%20addons/YDLoadconfig%20addons/YDMysqlDump%0A%09addons/YDPdfReport%20addons/YDSimpleCMS&In-Reply-To=%3C200701221605.l0MG5eEk004775%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2334 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers	YDClasses/YDFormElements YDClasses/YDFormRenderers	addons/YDAjax addons/YDAkismet addons/YDBBCode	addons/YDCMComponent addons/YDCaptcha addons/YDCart	addons/YDDatabaseObject addons/YDDatabaseQuery	addons/YDDatabaseQuery/YDDatabaseQueryDrivers	addons/YDFeedCreator addons/YDGraph addons/YDGraphPie	addons/YDInstaller addons/YDLoadconfig addons/YDMysqlDump	addons/YDPdfReport addons/YDSimpleCMS">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Jan 22 17:05:40 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000926.html">[ydf-devel] r2333 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+        <LI>Next message: <A HREF="000928.html">[ydf-devel] r2335 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#927">[ date ]</a>
+              <a href="thread.html#927">[ thread ]</a>
+              <a href="subject.html#927">[ subject ]</a>
+              <a href="author.html#927">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-22 17:05:35 +0100 (Mon, 22 Jan 2007)
+New Revision: 2334
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+Log:
+Added modules to API documentation to make it easier to browse through the API docs.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -67,6 +71,8 @@
+      *  - getPageUrl: the URL of the given page
+      *
+      *  All these options are available as class variables.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDRecordSet extends YDBase {
+ 
+@@ -614,6 +620,8 @@
+ 
+     /**
+      *  This class defines a database object.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabase extends YDBase {
+ 
+@@ -795,6 +803,8 @@
+ 
+     /**
+      *  This class defines a database driver.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseDriver extends YDBase {
+ 
+@@ -1552,6 +1562,8 @@
+ 
+     /**
+      *  This class defines a database driver for MySQL.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseDriver_mysql extends YDDatabaseDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This class defines a database driver for Oracle8i using the OCI8 interface.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseDriver_oracle extends YDDatabaseDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This class defines a database driver for PostgreSQL.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseDriver_postgres extends YDDatabaseDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This class defines a database driver for SQLite.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseDriver_sqlite extends YDDatabaseDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+     /**
+      *  This class allows you to query the internal metadata from a database. It allows you to list tables, fields and
+      *  indexes for all supported database engines in the Yellow Duck Framework.
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseMetaData extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+     /**
+      *  This class implements a database tree as described on:
+      *  <A HREF="http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/">http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/</A>
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseTree extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,36 +35,36 @@
+ 
+     /**
+      *  This class implements a database tree
+-
+-	    CREATE TABLE nested_tree (
+-            id int NOT NULL auto_increment,
+-            parent_id int NULL,
+-			lineage varchar(255) NOT NULL default '//',
+-            level int NOT NULL default '1',
+-            position int NOT NULL default '1',
+-            title varchar(255) NOT NULL default '',
+-            PRIMARY KEY (id),
+-			FOREIGN KEY (parent_id)
+-                REFERENCES nested_tree(id)
+-                     ON DELETE CASCADE
+-                     ON UPDATE CASCADE
+-        );
+-
+-
+-        INSERT INTO nested_tree VALUES ( 1, null, '',         0, 1, '');
+-        INSERT INTO nested_tree VALUES ( 2,    1, '//',       1, 1, 'General Resources');
+-        INSERT INTO nested_tree VALUES ( 3,    2, '//2/',     2, 1, 'Code Paste');
+-        INSERT INTO nested_tree VALUES ( 4,    2, '//2/',     2, 2, 'Documentation');
+-        INSERT INTO nested_tree VALUES ( 5,    2, '//2/',     2, 3, 'Books &amp; Publications');
+-        INSERT INTO nested_tree VALUES ( 6,    5, '//2/5/',   3, 1, 'Apache');
+-        INSERT INTO nested_tree VALUES ( 7,    5, '//2/5/',   3, 2, 'PostgreSQL');
+-        INSERT INTO nested_tree VALUES ( 8,    5, '//2/4/',   3, 3, 'MySQL');
+-        INSERT INTO nested_tree VALUES ( 9,    2, '//2/',     2, 1, 'Links');
+-        INSERT INTO nested_tree VALUES (10,    9, '//2/9/',   3, 1, 'Databases');
+-        INSERT INTO nested_tree VALUES (11,    9, '//2/10/',  3, 1, 'Generators');
+-        INSERT INTO nested_tree VALUES (12,    9, '//2/10/',  3, 2, 'Portals');
++     *
++     *  CREATE TABLE nested_tree (
++     *      id int NOT NULL auto_increment,
++     *      parent_id int NULL,
++     *      lineage varchar(255) NOT NULL default '//',
++     *      level int NOT NULL default '1',
++     *      position int NOT NULL default '1',
++     *      title varchar(255) NOT NULL default '',
++     *      PRIMARY KEY (id),
++     *      FOREIGN KEY (parent_id)
++     *          REFERENCES nested_tree(id)
++     *               ON DELETE CASCADE
++     *               ON UPDATE CASCADE
++     *  );
++     *
++     *  INSERT INTO nested_tree VALUES ( 1, null, '',         0, 1, '');
++     *  INSERT INTO nested_tree VALUES ( 2,    1, '//',       1, 1, 'General Resources');
++     *  INSERT INTO nested_tree VALUES ( 3,    2, '//2/',     2, 1, 'Code Paste');
++     *  INSERT INTO nested_tree VALUES ( 4,    2, '//2/',     2, 2, 'Documentation');
++     *  INSERT INTO nested_tree VALUES ( 5,    2, '//2/',     2, 3, 'Books &amp; Publications');
++     *  INSERT INTO nested_tree VALUES ( 6,    5, '//2/5/',   3, 1, 'Apache');
++     *  INSERT INTO nested_tree VALUES ( 7,    5, '//2/5/',   3, 2, 'PostgreSQL');
++     *  INSERT INTO nested_tree VALUES ( 8,    5, '//2/4/',   3, 3, 'MySQL');
++     *  INSERT INTO nested_tree VALUES ( 9,    2, '//2/',     2, 1, 'Links');
++     *  INSERT INTO nested_tree VALUES (10,    9, '//2/9/',   3, 1, 'Databases');
++     *  INSERT INTO nested_tree VALUES (11,    9, '//2/10/',  3, 1, 'Generators');
++     *  INSERT INTO nested_tree VALUES (12,    9, '//2/10/',  3, 2, 'Portals');
++     *
++     *  @ingroup YDDatabase
+      */
+-
+     class YDDatabaseTree2 extends YDBase {
+ 
+         /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabase Core - Database
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,23 +35,23 @@
+ 
+ 
+     /** Database scheme example
+-		
+-	    CREATE TABLE nested_tree (
++        
++        CREATE TABLE nested_tree (
+             id int NOT NULL auto_increment,
+             parent_id int NULL,
+-			lineage varchar(255) NOT NULL default '//',
++            lineage varchar(255) NOT NULL default '//',
+             level int NOT NULL default '1',
+             position int NOT NULL default '1',
+             title varchar(255) NOT NULL default '',
+             PRIMARY KEY (id),
+-			FOREIGN KEY (parent_id)
++            FOREIGN KEY (parent_id)
+                 REFERENCES nested_tree(id)
+                      ON DELETE CASCADE
+                      ON UPDATE CASCADE
+         )TYPE=InnoDB;
+-
+-		Note: root node must have ID 1, PARENT null and LINEAGE '' !
+-
++    
++        Note: root node must have ID 1, PARENT null and LINEAGE '' !
++       
+         INSERT INTO nested_tree VALUES ( 1, null, '',         0, 1, '');
+         INSERT INTO nested_tree VALUES ( 2,    1, '//',       1, 1, 'General Resources');
+         INSERT INTO nested_tree VALUES ( 3,    2, '//2/',     2, 1, 'Code Paste');
+@@ -64,6 +68,8 @@
+ 
+     /**
+      *	This is the actual implementation of the lineage tree algorithm but as an YDDatabaseObject
++     *
++     *  @ingroup YDDatabase
+      */
+     class YDDatabaseTree3 extends YDDatabaseObject {
+     
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -33,6 +37,8 @@
+      *  This class defines a YDDateFormat object.
+      *
+      *  @author  David Bittencourt &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">muitocomplicado at hotmail.com</A>&gt;
++     *
++     *  @ingroup YDFramework
+      */
+     class YDDateFormat extends YDBase {
+         
+@@ -159,6 +165,8 @@
+      *  This class defines a YDDate object.
+      *
+      *  @author  David Bittencourt &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">muitocomplicado at hotmail.com</A>&gt;
++     *
++     *  @ingroup YDFramework
+      */
+     class YDDate extends YDBase {
+         
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -37,6 +41,8 @@
+ 
+     /**
+      *	This class defines an email message.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDEmail extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -28,6 +32,8 @@
+ 
+     /**
+      *  This class is able to encrypt and decrypt data.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDEncryption extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -57,6 +61,8 @@
+ 
+     /**
+      *  This class defines an YDError object.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDError extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -126,6 +130,8 @@
+ 
+     /**
+      *	This class houses all different path related functions.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDPath extends YDBase {
+ 
+@@ -458,6 +464,8 @@
+ 
+     /**
+      *  This class defines a filesystem file.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDFSFile extends YDBase {
+ 
+@@ -855,6 +863,8 @@
+ 
+     /**
+      *	This class defines an image file.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDFSImage extends YDFSFile {
+ 
+@@ -1240,6 +1250,8 @@
+ 
+     /**
+      *  This class defines a filesystem directory.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDFSDirectory extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -37,6 +41,8 @@
+ 
+     /**
+      *  This class defines an object oriented HTML form.
++     *
++     *  @ingroup YDForm
+      */
+     class YDForm extends YDBase {
+ 
+@@ -1266,6 +1272,8 @@
+ 
+     /**
+      *  This is the base class for all form elements.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement extends YDBase {
+ 
+@@ -1654,6 +1662,8 @@
+ 
+     /**
+      *  This is the class that is able to render a form object to whatever.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormRenderer extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a text form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Autocompleter extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+     /**
+      *	This is the class that define a textarea form element that has support for a toolbar which can insert BBCode
+      *	style tags to the content.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_BBTextArea extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Button extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that define a captcha form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Captcha extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a checkbox form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Checkbox extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that define a checkbox form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_CheckboxGroup extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *  This is the class that define a datetime select form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Date extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that define a datetime select form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_DateSelect extends YDFormElement_Date {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that define a datetime select form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_DateTimeSelect extends YDFormElement_Date {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Div extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that define a file upload form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_File extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *        This is the class that defines a simple ajax grid element
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Grid extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a hidden form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Hidden extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define an image form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Image extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Img extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Link extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a password form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Password extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a radio button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Radio extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a reset button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Reset extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a select button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Select extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a select button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_SelectImage extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Span extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that define a submit button form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Submit extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a switch menu form element
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_SwitchMenu extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a text form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Text extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a text area form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_TextArea extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that define a text area form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_TextAreaCounter extends YDFormElement {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that define a datetime select form element.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_TimeSelect extends YDFormElement_Date {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that define a select timezone.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormElement_Timezone extends YDFormElement_Select {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This is the class that is able to render a form object to HTML.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormRenderer_array extends YDFormRenderer {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -30,7 +34,9 @@
+     include_once( YD_DIR_HOME_CLS . '/YDForm.php');
+ 
+     /**
+-     *        This is the class that is able to render a form object to HTML.
++     *  This is the class that is able to render a form object to HTML.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormRenderer_html extends YDFormRenderer {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *	This is the class that is able to render/import a form to/from XML.
++     *
++     *  @ingroup YDForm
+      */
+     class YDFormRenderer_xml extends YDFormRenderer {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -37,6 +41,8 @@
+     /**
+      *	This is the YDHttpClient class. It extends the HttpClient class and adds support for specifying the content
+      *	type.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDHttpClient extends HttpClient {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -47,6 +51,8 @@
+ 
+     /**
+      *  This class defines the logging static functions.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDLog extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -39,6 +43,8 @@
+     /**
+      *  This class is able to save and load persistent data. This data stay active between different requests and allows
+      *  you to share data between different requests and different sessions.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDPersistent extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -30,6 +34,8 @@
+      *	This class implements a request. The request is the base class you can use to base your scripts on. The request
+      *	class is the one taking care of the action dispatching when a script is executed. Also the authentication
+      *	framework is implemented in this class.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDRequest extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -59,6 +63,8 @@
+ 
+     /**
+      *  This class defines an YDResult object.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDResult extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -45,7 +49,9 @@
+         include_once( SMARTY_DIR . '/Smarty.class.php' );
+ 
+         /**
+-         *	This class is a wrapper around Smarty. Documentation can be found on: <A HREF="http://smarty.php.net/">http://smarty.php.net/</A>
++         *  This class is a wrapper around Smarty. Documentation can be found on: <A HREF="http://smarty.php.net/">http://smarty.php.net/</A>
++         *
++         *  @ingroup YDFramework
+          */
+         class YDTemplate extends Smarty {
+ 
+@@ -342,7 +348,9 @@
+     } else {
+ 
+         /**
+-         *	This class is template engine based on PHP.
++         *  This class is template engine based on PHP.
++         *
++         *  @ingroup YDFramework
+          */
+         class YDTemplate extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -36,6 +40,8 @@
+ 
+     /**
+      *  This class defines a url.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDUrl extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -29,6 +33,8 @@
+     /**
+      *	This is a general timer class that starts counting when it's instantiated, and which returns the elapsed time as
+      *	soon as the finish method is called.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDTimer extends YDBase {
+ 
+@@ -108,6 +114,8 @@
+     /**
+      *  This class houses all the array related utility functions. All the methods are implemented as static methods and
+      *	do not require you to create a class instance in order to use them.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDArrayUtil extends YDBase {
+ 
+@@ -380,6 +388,8 @@
+     /**
+      *	This class houses all the debug related utility functions. All the methods are implemented as static methods and
+      *	do not require you to create a class instance in order to use them.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDDebugUtil extends YDBase {
+ 
+@@ -515,6 +525,8 @@
+     /**
+      *	This class houses all the object and class related utility functions. All the methods are implemented as static
+      *	methods and do not require you to create a class instance in order to use them.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDObjectUtil extends YDBase {
+ 
+@@ -600,6 +612,8 @@
+     /**
+      *	This class houses all the string related utility functions. All the methods are implemented as static methods
+      *	and do not require you to create a class instance in order to use them.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDStringUtil extends YDBase {
+ 
+@@ -1047,6 +1061,8 @@
+     /**
+      *	This class uses the HTTP_USER_AGENT varaible to get information about the browser the visitor used to perform
+      *	the request. We determine the browser name, the version and the platform it's running on.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDBrowserInfo extends YDBase {
+ 
+@@ -1230,6 +1246,8 @@
+      *  This class allows you to generate GUIDs (global unique identifier).
+      *
+      *  More info: <A HREF="http://www.ietf.org/rfc/rfc4122.txt">http://www.ietf.org/rfc/rfc4122.txt</A>
++     *
++     *  @ingroup YDFramework
+      */
+     class YDGuidUtil extends YDBase {
+ 
+@@ -1270,6 +1288,8 @@
+ 
+     /**
+      *  This class allows you to perform LDAP releated tasks.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDLdapUtil extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -28,6 +32,8 @@
+ 
+     /**
+      *	This class contains abstract functions implementing the validation rules.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDValidateRules extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -38,6 +42,8 @@
+     /**
+      *  This class is a wrapper around phpdomxml. Documentation can be found on:
+      *  <A HREF="http://phpdomxml.webtweakers.com/">http://phpdomxml.webtweakers.com/</A>
++     *
++     *  @ingroup YDFramework
+      */
+     class YDXml extends _XML {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -34,6 +38,8 @@
+     /**
+      *	This is the actual implementation of the YDXmlRpcClient class. It extends the IXR_Client class and adds support
+      *	for GZip compressed communications based on the YDHttpClient class.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDXmlRpcClientCore extends IXR_Client {
+ 
+@@ -124,6 +130,8 @@
+ 
+     /**
+      *	This class defines an XML/RPC client.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDXmlRpcClient extends YDBase {
+ 
+@@ -183,6 +191,8 @@
+      *	This class implements the actual XML/RPC server.
+      *
+      *	@internal
++     *
++     *  @ingroup YDFramework
+      */
+     class YDXmlRpcServerImpl extends IXR_IntrospectionServer {
+ 
+@@ -249,6 +259,8 @@
+      *		When raising errors in this class, make sure you raise the right kind or error. If you have an XML/RPC
+      *		request that needs to return an error, you need to return an IXR_Error. If you are not serving an XML/RPC
+      *		request, you need to return a YDError or YDFatalError.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDXmlRpcServer extends YDRequest {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -33,6 +33,10 @@
+      *	Author: Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+      */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Set the error reporting correctly.
+     error_reporting( E_ALL );
+ 
+@@ -202,6 +206,8 @@
+      *	knows about the include path for the Yellow Duck Framework.
+      *
+      *	@param $file	File to be included.
++     *
++     *  @ingroup YDFramework
+      */
+     function YDInclude( $file ) {
+ 
+@@ -235,6 +241,8 @@
+ 
+     /**
+      *	This function will include a upgrade file that simulates php functions not present in this php system
++     *
++     *  @ingroup YDFramework
+      */
+     function YDIncludeCompatibility() {
+         include_once( dirname( __FILE__ ) . '/3rdparty/upgrade/upgrade.php' );
+@@ -246,6 +254,8 @@
+      *	This function will add a marker to the global timer.
+      *
+      *	@param $name	The name of the marker.
++     *
++     *  @ingroup YDFramework
+      */
+     function YDGlobalTimerMarker( $name ) {
+         if ( ! isset( $GLOBALS['timer'] ) ) {
+@@ -261,6 +271,8 @@
+      *	@param $value	The value to fix.
+      *
+      *	@returns	The fixed value.
++     *
++     *  @ingroup YDFramework
+      */
+     function YDRemoveMagicQuotes( &amp; $value ) {
+         if ( get_magic_quotes_gpc() == 1 ) {
+@@ -284,19 +296,23 @@
+      *  @param  $params (optional) An array of parameters that are passed to the sprintf function.
+      *
+      *  @returns    The translated string.
++     *
++     *  @ingroup YDFramework
+      */
+     function t( $t, $params=array() ) {
+         if ( empty( $t ) ) {
+             return '';
+         }
+         $t = strtolower( $t );
+-        $out = ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;&lt;font color=\&quot;red\&quot;&gt;%%$t%%&lt;/font&gt;&quot; );
++        $out = ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%%$t%%&quot; );
+         array_unshift( $params, $out );
+         return call_user_func_array( 'sprintf', $params );
+     }
+ 
+     /**
+      *  This is the base class for all other YD classes.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDBase {
+ 
+@@ -421,6 +437,8 @@
+ 
+     /**
+      *	This is the class that hold the global configuration.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDConfig extends YDBase {
+ 
+@@ -488,6 +506,8 @@
+ 
+     /**
+      *	This is the class that hold the locale information.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDLocale extends YDBase {
+ 
+@@ -558,6 +578,8 @@
+ 
+     /**
+      *	This is the base class for all other YD classes.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDAddOnModule extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFramework Core
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+     /**
+      *	This is the executor class that contains all the logic for executing requests. It will instantiate the request
+      *	class and execute the right functions to get the request processed correctly.
++     *
++     *  @ingroup YDFramework
+      */
+     class YDExecutor extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDAjax Addons - Ajax
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -56,6 +60,8 @@
+ 
+     /**
+      *  Class definition for the YDAjax addon.
++     *
++     *  @ingroup YDAjax
+      */
+     class YDAjax extends xajax{
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDAkismet Addons - Akismet
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *	This class is an interface to the Akismet comment spam checking webservice.
++     *
++     *  @ingroup YDAkismet
+      */
+     class YDAkismet extends YDAddOnModule {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDBBCode Addons - BBCode
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -36,6 +40,8 @@
+     /**
+      *	This class implements a BBCode parser. By default, it supports a number of standard codes that can be
+      *	implemented. The following codes are supported by default: img, url, mail, email, color, b, i, u, code, quote, p
++     *
++     *  @ingroup YDBBCode
+      */
+     class YDBBCode extends YDAddOnModule {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,11 +21,18 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMAudit extends YDDatabaseObject {
+     
+         function YDCMAudit() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -29,6 +33,9 @@
+ 	require_once( dirname( __FILE__ ) . '/YDCMTree.php' );
+ 	require_once( dirname( __FILE__ ) . '/YDCMLanguages.php' );
+ 
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMComp extends YDDatabaseObject {
+     
+         function YDCMComp( $type, $id ) {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,28 +21,35 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
+-	// include YDF libs
++    // include YDF libs
+     YDInclude( 'YDDatabaseObject.php' );
+-	YDInclude( 'YDDatabaseTree.php' );
+-	YDInclude( 'YDUrl.php' );
+-	YDInclude( 'YDResult.php' );
++    YDInclude( 'YDDatabaseTree.php' );
++    YDInclude( 'YDUrl.php' );
++    YDInclude( 'YDResult.php' );
+ 
+-	// include YDCM libs
+-	YDInclude( 'YDCMComp.php' );
++    // include YDCM libs
++    YDInclude( 'YDCMComp.php' );
+ 
+-	// add generic translation directory
+-	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
++    // add generic translation directory
++    YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
+ 
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMComponent extends YDDatabaseObject {
+ 
+         function YDCMComponent( $type, $id ) {
+ 
+-			// init DB object
++            // init DB object
+             $this-&gt;YDDatabaseObject();
+ 
+             $this-&gt;_author = 'unknown author';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -122,6 +126,9 @@
+ 	define( 'YD_FORUM_ANNOUNCEMENTS_ONHOMEPAGEANDFORUMS', 20 );
+ 	define( 'YD_FORUM_ANNOUNCEMENTS_ONHOMEPAGE',          10 );
+ 
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMForum_announcements extends YDDatabaseObject {
+     
+         function YDCMForum_announcements() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -41,8 +45,9 @@
+ 	// add YDCM libs
+ 	YDInclude( 'YDCMUserobject.php' );
+ 
+-
+-	// user class
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMGroup extends YDDatabaseObject {
+     
+         function YDCMGroup() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -51,7 +55,9 @@
+                                                     'medium'       =&gt; array( 'color' =&gt; '#FF9900' ), 
+ 													'high'         =&gt; array( 'color' =&gt; '#FF9900' ) ), false );
+ 
+-
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMHelpdesk extends YDCMComponent {
+     
+         function YDCMHelpdesk() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,12 +21,18 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
+-
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMLanguages extends YDDatabaseObject {
+ 
+         function YDCMLanguages() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -28,7 +32,9 @@
+ 
+ 	YDInclude( 'YDCMComponent.php' );
+ 
+-
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMLink extends YDCMComponent {
+     
+         function YDCMLink() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,11 +21,18 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMLocks extends YDDatabaseObject {
+     
+         function YDCMLocks() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -34,7 +38,9 @@
+ 	// set page form name
+ 	YDConfig::set( 'YDCMPAGE_FORMPAGE', 'YDCMPageForm', false );
+ 
+-
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMPage extends YDCMComponent {
+     
+         function YDCMPage( $id = null ) {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -36,7 +40,9 @@
+ 	// add translations directory for generic translations
+ 	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
+ 
+-
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMPermission extends YDDatabaseObject {
+     
+         function YDCMPermission() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -28,7 +32,9 @@
+ 
+ 	YDInclude( 'YDCMComponent.php' );
+ 
+-
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMRootmenu extends YDCMComponent {
+     
+         function YDCMRootmenu( $id = null ) {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,12 +21,18 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
+-
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMStatistics {
+ 
+         function YDCMStatistics() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,11 +21,18 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMStatistics_system {
+     
+         function YDCMStatistics_system() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,11 +21,18 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMStatistics_visits extends YDDatabaseObject {
+     
+         function YDCMStatistics_visits() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -43,7 +47,12 @@
+ 	YDConfig::set( 'YDCMTEMPLATES_PACK', false, false );
+ 
+ 
+-	// this is a very special component because don't have any DB table (that's way do not extends YDCMComponent)
++
++    /**
++     *  This is a very special component because don't have any DB table (that's way do not extends YDCMComponent)
++     *
++     *  @ingroup YDCMComponent
++     */
+     class YDCMTemplates {
+ 
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -30,7 +34,9 @@
+ 	// add YD libs
+ 	YDInclude( 'YDDatabaseTree3.php' );
+ 
+-	// userobject class
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMTree extends YDDatabaseTree3 {
+     
+         function YDCMTree() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -46,8 +50,9 @@
+ 	YDInclude( 'YDCMTemplates.php' );
+ 	YDInclude( 'YDCMUserobject.php' );
+ 
+-
+-	// user class
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMUser extends YDDatabaseObject {
+     
+         function YDCMUser() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /*
++     *  @addtogroup YDCMComponent Addons - CMComponent
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -30,7 +34,9 @@
+ 	// add YD libs
+ 	YDInclude( 'YDDatabaseTree3.php' );
+ 
+-	// userobject class
++    /**
++     *  @ingroup YDCMComponent
++     */
+     class YDCMUserobject extends YDDatabaseTree3 {
+     
+         function YDCMUserobject() {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,17 +21,22 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDCaptcha Addons - Captcha
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
+-	// include antispam lib
++    // include antispam lib
+     include_once( YD_DIR_HOME . '/3rdparty/captcha/php-captcha.inc.php' );
+ 
+-
+     /**
+      *  This class handles a captcha image
++     *
++     *  @ingroup YDCaptcha
+      */
+     class YDCaptcha extends YDAddOnModule {
+ 
+@@ -49,70 +54,66 @@
+             $this-&gt;_copyright = '(c) 2006 Francisco Azevedo, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>';
+             $this-&gt;_description = 'This class manages a captcha image system.';
+ 
+-			// compute fonts directory
+-			$fdir = YD_DIR_HOME . '/3rdparty/fonts/';
++            // compute fonts directory
++            $fdir = YD_DIR_HOME . '/3rdparty/fonts/';
+ 
+-			// define fonts to use
+-			$fonts = array( $fdir . 'VeraBd.ttf', $fdir . 'VeraIt.ttf', $fdir . 'Vera.ttf');
++            // define fonts to use
++            $fonts = array( $fdir . 'VeraBd.ttf', $fdir . 'VeraIt.ttf', $fdir . 'Vera.ttf');
+ 
+-			// create image object
+-			$this-&gt;_img = new PhpCaptcha( $fonts, 200, 40 );
+-			
+-			$this-&gt;_img-&gt;DisplayShadow( false );
+-			$this-&gt;_img-&gt;UseColour( false );
+-			$this-&gt;_img-&gt;SetNumChars( 5 );
++            // create image object
++            $this-&gt;_img = new PhpCaptcha( $fonts, 200, 40 );
++            
++            $this-&gt;_img-&gt;DisplayShadow( false );
++            $this-&gt;_img-&gt;UseColour( false );
++            $this-&gt;_img-&gt;SetNumChars( 5 );
+ 
+-			// add simbols ;) 
+-			// don't add possible character problems for user, eg, l &lt;--&gt; 1 (lower L or number ONE?), 0 &lt;--&gt; O (ZERO OR upper O?)
+-			$this-&gt;_img-&gt;SetCharSet( &quot;a-h,!,j-k,#,&amp;,%,$,m-n,@,p-r,2-4,6,&#163;,?,8-9,t-w,y-z,#,&amp;,%,$,A-H,!,J-K,#,&amp;,%,$,M-N,@,P-R,T-W,Y-Z,2-4,6,&#163;,?,8-9&quot; );
++            // add simbols ;) 
++            // don't add possible character problems for user, eg, l &lt;--&gt; 1 (lower L or number ONE?), 0 &lt;--&gt; O (ZERO OR upper O?)
++            $this-&gt;_img-&gt;SetCharSet( &quot;a-h,!,j-k,#,&amp;,%,$,m-n,@,p-r,2-4,6,&#163;,?,8-9,t-w,y-z,#,&amp;,%,$,A-H,!,J-K,#,&amp;,%,$,M-N,@,P-R,T-W,Y-Z,2-4,6,&#163;,?,8-9&quot; );
++
+         }
+ 
+-
+         /**
+          *	This function set the number of characters to display
+          *
+          *	@param $num		Number of characters
+          */
+         function setNumChars( $num ){
+-			$this-&gt;_img-&gt;setNumChars( $num );
+-		}
++            $this-&gt;_img-&gt;setNumChars( $num );
++        }
+ 
+-
+         /**
+          *	This function set the number of interference lines
+          *
+          *	@param $num		Number of lines
+          */
+         function setNumLines( $num ){
+-			$this-&gt;_img-&gt;setNumLines( $num );
+-		}
++            $this-&gt;_img-&gt;setNumLines( $num );
++        }
+ 
+-
+         /**
+          *	This function defines use of shadows
+          *
+          *	@param $flag		True or false boolean
+          */
+         function displayShadow( $flag ){
+-			$this-&gt;_img-&gt;displayShadow( $flag );
+-		}
++            $this-&gt;_img-&gt;displayShadow( $flag );
++        }
+ 
+-
+         /**
+          *	This function defines use of colours
+          *
+          *	@param $flag		True or false boolean
+          */
+         function useColour( $flag ){
+-			$this-&gt;_img-&gt;useColour( $flag );
+-		}
++            $this-&gt;_img-&gt;useColour( $flag );
++        }
+ 
+-
+         /**
+          *  This function exports the image
+          */
+         function create() {
+-			return $this-&gt;_img-&gt;Create();
++            return $this-&gt;_img-&gt;Create();
+         }
+ 
+   }
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDCart Addons - Cart
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -34,6 +38,8 @@
+ 
+     /**
+      *	This class defines a shopping cart object.
++     *
++     *  @ingroup YDCart
+      */
+     class YDCart extends YDAddOnModule {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabaseObject Addons - DatabaseObject
++     */
++
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+@@ -79,6 +83,8 @@
+ 
+     /**
+      *  This class defines a YDDatabaseObject object.
++     *
++     *  @ingroup YDDatabaseObject
+      */
+     class YDDatabaseObject extends YDAddOnModule {
+ 
+@@ -2259,6 +2265,8 @@
+ 
+     /**
+      *  This class defines a YDDatabaseObject_Field object.
++     *
++     *  @ingroup YDDatabaseObject
+      */
+     class YDDatabaseObject_Field extends YDBase {
+ 
+@@ -2468,6 +2476,8 @@
+ 
+     /**
+      *  This class defines a YDDatabaseObject_Relation object.
++     *
++     *  @ingroup YDDatabaseObject
+      */
+     class YDDatabaseObject_Relation extends YDBase {
+ 
+@@ -2972,6 +2982,8 @@
+ 
+     /**
+      *  This class defines a YDDatabaseObject_Select object.
++     *
++     *  @ingroup YDDatabaseObject
+      */
+     class YDDatabaseObject_Select extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabaseQuery Addons - DatabaseQuery
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -28,6 +32,8 @@
+ 
+     /**
+      *  The YDDatabaseQuery class defines an object-oriented interface to create SQL queries.
++     *
++     *  @ingroup YDDatabaseQuery
+      */
+     class YDDatabaseQuery extends YDAddOnModule {
+ 
+@@ -106,6 +112,8 @@
+ 
+     /**
+      *  This class defines a YDSqlQueryDriver object.
++     *
++     *  @ingroup YDDatabaseQuery
+      */
+     class YDDatabaseQueryDriver extends YDBase {
+ 
+@@ -1083,6 +1091,8 @@
+     
+     /**
+      *  This class defines a YDSqlQueryDriver_mysql object.
++     *
++     *  @ingroup YDDatabaseQuery
+      */
+     class YDDatabaseQueryDriver_mysql extends YDDatabaseQueryDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabaseQuery Addons - DatabaseQuery
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *  This class defines a YDSqlQueryDriver_oracle object.
++     *
++     *  @ingroup YDDatabaseQuery
+      */
+     class YDDatabaseQueryDriver_oracle extends YDDatabaseQueryDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabaseQuery Addons - DatabaseQuery
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *  This class defines a YDSqlQueryDriver_postgres object.
++     *
++     *  @ingroup YDDatabaseQuery
+      */
+     class YDDatabaseQueryDriver_postgres extends YDDatabaseQueryDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDDatabaseQuery Addons - DatabaseQuery
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *  This class defines a YDSqlQueryDriver_sqlite object.
++     *
++     *  @ingroup YDDatabaseQuery
+      */
+     class YDDatabaseQueryDriver_sqlite extends YDDatabaseQueryDriver {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDFeedCreator Addons - FeedCreator
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -35,6 +39,8 @@
+      *	This class defines a RSS/ATOM feed. You can use this class to create RSS and Atom feeds in a very easy and
+      *	straightforward way. If you set up your class instance, you can automatically output to the different versions
+      *	of RSS and ATOM with the same source data.
++     *
++     *  @ingroup YDFeedCreator
+      */
+     class YDFeedCreator extends YDAddOnModule {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -29,6 +29,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDGraph Addons - Graph
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -54,6 +58,8 @@
+ 
+     /**
+      *	This class implements an addon module that is able to draw graphs using the GD library.
++     *
++     *  @ingroup YDGraph
+      */
+     class YDGraph extends YDAddOnModule {
+ 
+@@ -745,6 +751,8 @@
+ 
+     /**
+      *  @internal
++     *
++     *  @ingroup YDGraph
+      */
+     class series{
+         var $m_values, $m_seriesTitle, $m_strokeColor, $m_fillColor;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -29,6 +29,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDGraphPie Addons - GraphPie
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -40,8 +44,9 @@
+ 
+     /**
+      * This class implements an addon module that is able to draw pie graphs using the GD library.
++     *
++     *  @ingroup YDGraphPie
+      */
+-
+     class YDGraphPie extends YDAddOnModule {
+ 
+         
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -20,6 +20,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDInstaller Addons - Installer
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -35,6 +39,8 @@
+ 
+     /**
+      *  This class defines a YDInstaller object.
++     *
++     *  @ingroup YDInstaller
+      */
+     class YDInstaller extends YDRequest {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDInstaller Addons - Installer
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *        This is the class that is able to render a form object to HTML.
++     *
++     *  @ingroup YDInstaller
+      */
+     class YDInstaller_renderer extends YDFormRenderer {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDLoadconfig Addons - Loadconfig
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -29,6 +33,8 @@
+ 
+     /**
+      *  This class reads a database table to apply correspondent YDConfig
++     *
++     *  @ingroup YDLoadconfig
+      */
+     class YDLoadconfig extends YDAddOnModule {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDMysqlDump Addons - MysqlDump
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -32,6 +36,8 @@
+ 
+     /**
+      *  This class defines a mySql backup/restore system object.
++     *
++     *  @ingroup YDMysqlDump
+      */
+     class YDMysqlDump extends YDAddOnModule {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     *  @addtogroup YDPdfReport Addons - PdfReport
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -31,6 +35,8 @@
+ 
+     /**
+      *  This class defines a YDPdfProject object.
++     *
++     *  @ingroup YDPdfReport
+      */
+     class YDPdfReport extends YDAddOnModule {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -21,6 +21,10 @@
+ 
+     */
+ 
++    /**
++     * @addtogroup YDSimpleCMS Addons - Simple CMS
++     */
++
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+@@ -60,11 +64,24 @@
+     // The database connection
+     $GLOBALS['db'] = YDDatabase::getNamedInstance();
+ 
+-    // Global YDSimpleCMS class
+-    class YDSimpleCMS extends YDBase {
++    /**
++     *  This is the global YDSimpleCMS class that houses all cms related functions.
++     *
++     *  @ingroup YDSimpleCMS
++     */
++    class YDSimpleCMS {
+ 
+-        // Run the request in the indicated scope
+-        // @static
++        /**
++         *  This is a static function that will run a request.
++         *
++         *  @param  $scope  The scope in which the request needs to run. You can choose between public and admin. If you
++         *                  choose admin, authentication will be enforced, with public, it's not.
++         *
++         *  @static
++         *
++         *  @todo
++         *      Replace scope with a defined constant (YD_SIMPLECMS_SCOPE_PUBLIC and YD_SIMPLECMS_SCOPE_ADMIN)
++         */
+         function run( $scope ) {
+             $baseClass = ( strtolower( $scope ) == 'public' ) ? 'YDSimpleCMSPublicRequest' : 'YDSimpleCMSAdminRequest';
+             $clsInst = new YDExecutor( $baseClass . '.php' );
+@@ -72,7 +89,13 @@
+             $clsInst-&gt;execute();
+         }
+ 
+-        // Function to show an error
++        /**
++         *  This function will show an error for the CMS application.
++         *
++         *  The parameters that are supported are the same ones as the sprintf and printf functions.
++         *
++         *  @static
++         */
+         function showError() {
+             $args = func_get_args();
+             if ( sizeof( $args &gt; 0 ) ) {
+@@ -82,7 +105,17 @@
+             die();
+         }
+ 
+-        // Function to add an admin menu item
++        /**
++         *  This function will add an entry to the administration menu.
++         *
++         *  @param  $title      The title of the menu in which this needs to appear.
++         *  @param  $subtitle   The title of the submenu item that needs to be added. If you use a null value for this
++         *                      parameter, only the main menu item is created.
++         *  @param  $module     The module that is linked to this menu item.
++         *  @param  $action     The module action that is linked to this menu item.
++         *
++         *  @static
++         */
+         function addAdminMenu( $title, $subtitle, $module, $action ) {
+ 
+             // Link to the menu items
+@@ -113,7 +146,11 @@
+ 
+     }
+ 
+-    // Override the template class
++    /**
++     *  Override the template class
++     *
++     *  @ingroup YDSimpleCMS
++     */
+     class YDSimpleCMSTemplate extends YDTemplate {
+ 
+         // The scope of the template
+@@ -160,7 +197,11 @@
+ 
+     }
+ 
+-    // Define the CMS request class
++    /**
++     *  Define the CMS request class.
++     *
++     *  @ingroup YDSimpleCMS
++     */
+     class YDSimpleCMSPublicRequest extends YDRequest {
+ 
+         // Class variables
+@@ -178,7 +219,11 @@
+ 
+     }
+ 
+-    // Define the CMS request class
++    /**
++     *  Define the CMS request class.
++     *
++     *  @ingroup YDSimpleCMS
++     */
+     class YDSimpleCMSAdminRequest extends YDSimpleCMSPublicRequest {
+ 
+         // Class variables
+@@ -301,7 +346,11 @@
+ 
+     }
+ 
+-    // Define a CMS module
++    /**
++     *  Define a CMS module
++     *
++     *  @ingroup YDSimpleCMS
++     */
+     class YDSimpleCMSModule extends YDBase {
+ 
+         // Class variables
+@@ -366,7 +415,11 @@
+ 
+     }
+ 
+-    // The module manager class
++    /**
++     *  The module manager class
++     *
++     *  @ingroup YDSimpleCMS
++     */
+     class YDSimpleCMSModuleManager extends YDBase {
+ 
+         // Load the plugins
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-22 13:41:11 UTC (rev 2333)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-22 16:05:35 UTC (rev 2334)
+@@ -1,6 +1,35 @@
+ &lt;?php
+ 
+-    // The page module
++    /*
++
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    /**
++     * @addtogroup YDSimpleCMS Addons - Simple CMS
++     */
++
++    /**
++     *  The page module
++     *
++     *  @ingroup YDSimpleCMS
++     */
+     class module_page extends YDSimpleCMSModule {
+ 
+         // Class variables
+@@ -23,7 +52,11 @@
+ 
+     }
+ 
+-    // The admin module
++    /**
++     *  The admin module
++     *
++     *  @ingroup YDSimpleCMS
++     */
+     class module_admin extends YDSimpleCMSModule {
+ 
+         // Class variables
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000926.html">[ydf-devel] r2333 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+	<LI>Next message: <A HREF="000928.html">[ydf-devel] r2335 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#927">[ date ]</a>
+              <a href="thread.html#927">[ thread ]</a>
+              <a href="subject.html#927">[ subject ]</a>
+              <a href="author.html#927">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

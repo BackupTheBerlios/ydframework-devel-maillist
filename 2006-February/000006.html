@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1646 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog examples/weblog/include/languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1646%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples/weblog%20examples/weblog/include/languages&In-Reply-To=%3C200602081426.k18EQsal025204%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000009.html">
+   <LINK REL="Next"  HREF="000008.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1646 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog examples/weblog/include/languages</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1646%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples/weblog%20examples/weblog/include/languages&In-Reply-To=%3C200602081426.k18EQsal025204%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1646 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog examples/weblog/include/languages">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Feb  8 15:26:54 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000009.html">[ydf-devel] YDWeblog typos in adding strip_html filters
+</A></li>
+        <LI>Next message: <A HREF="000008.html">[ydf-devel] r1647 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#6">[ date ]</a>
+              <a href="thread.html#6">[ thread ]</a>
+              <a href="subject.html#6">[ subject ]</a>
+              <a href="author.html#6">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-08 15:26:48 +0100 (Wed, 08 Feb 2006)
+New Revision: 1646
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+Log:
+Fixed the basic spam filter by implementing it properly as a form filter.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-08 12:29:21 UTC (rev 1645)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-08 14:26:48 UTC (rev 1646)
+@@ -153,6 +153,7 @@
+             $this-&gt;registerRule( 'minlength_escape', array( 'YDValidateRules', 'minlength_escape' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'maxlength_escape', array( 'YDValidateRules', 'maxlength_escape' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'rangelength_escape', array( 'YDValidateRules', 'rangelength_escape' ), 'YDValidateRules.php' );
++            $this-&gt;registerRule( 'httpurl', array( 'YDValidateRules', 'httpurl' ), 'YDValidateRules.php' );
+ 
+             // Add the filters
+             $this-&gt;registerFilter( 'trim', 'trim' );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-02-08 12:29:21 UTC (rev 1645)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-02-08 14:26:48 UTC (rev 1646)
+@@ -659,6 +659,52 @@
+             return YDValidateRules::date( $val, $opts );
+         }
+ 
++        /**
++         *  This checks if the specified text is a valid HTTP url. It should start with <A HREF="http://">http://</A> and it should have at
++         *  least one dot in there.
++         *
++         *  @param $val     The value to test.
++         *  @param $opts    (not required)
++         */
++        function httpurl( $val, $opts=array() ) {
++
++            // Return true if empty
++            if ( empty( $val ) ) {
++                return true;
++            }
++
++            // Convert to lowercase and trim
++            $val = strtolower( trim( $val ) );
++
++            // Add <A HREF="http://">http://</A> if needed
++            if ( substr( $val, 0, 7 ) != '<A HREF="http://">http://</A>' ) {
++                $val = '<A HREF="http://">http://</A>' . $val;
++            }
++
++            // Check if it starts with <A HREF="http://">http://</A>
++            if ( ! YDStringUtil::startsWith( $val, '<A HREF="http://">http://</A>' ) ) {
++                return false;
++            }
++
++            // Check the hostname
++            $host = substr( $val, 7 );
++            if ( strpos( $host, '/' ) !== false ) {
++                $host = trim( substr( $host, 0, strpos( $host, '/' ) ) );
++            }
++            if ( strpos( $host, ':' ) !== false ) {
++                $host = trim( substr( $host, 0, strpos( $host, ':' ) ) );
++            }
++
++            // Localhost is allowed
++            if ( $host == 'localhost' ) {
++                return true;
++            }
++
++            // Check that we have at least a dot
++            return ( strpos( $host, '.' ) === false ) ? false : true;
++
++        }
++
+     }
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-08 12:29:21 UTC (rev 1645)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-08 14:26:48 UTC (rev 1646)
+@@ -84,6 +84,7 @@
+ $GLOBALS['t']['err_name'] = 'Name is missing';
+ $GLOBALS['t']['err_name_email'] = 'Name should not be an email address';
+ $GLOBALS['t']['err_email'] = 'Email is missing or invalid';
++$GLOBALS['t']['err_website'] = 'The website specified is not a valid URL';
+ $GLOBALS['t']['err_comment'] = 'Comment is required';
+ $GLOBALS['t']['with'] = 'for';
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-08 12:29:21 UTC (rev 1645)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-08 14:26:48 UTC (rev 1646)
+@@ -84,6 +84,7 @@
+ $GLOBALS['t']['err_name'] = 'Le nom est manquant';
+ $GLOBALS['t']['err_name_email'] = 'Le nom ne doit pas &#234;tre une adresse email';
+ $GLOBALS['t']['err_email'] = 'Email manquant ou invalide';
++$GLOBALS['t']['err_website'] = 'Le site web n\'est pas une URL valide';
+ $GLOBALS['t']['err_comment'] = 'Le commentaire est requis';
+ $GLOBALS['t']['with'] = 'pour';
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-08 12:29:21 UTC (rev 1645)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-08 14:26:48 UTC (rev 1646)
+@@ -84,6 +84,7 @@
+ $GLOBALS['t']['err_name'] = 'Naam is niet ingegeven';
+ $GLOBALS['t']['err_name_email'] = 'Naam mag geen email adres zijn';
+ $GLOBALS['t']['err_email'] = 'Email is niet ingegeven of niet correct';
++$GLOBALS['t']['err_website'] = 'De website is geen geldige URL';
+ $GLOBALS['t']['err_comment'] = 'Een commentaar is vereist';
+ $GLOBALS['t']['with'] = 'bij';
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-02-08 12:29:21 UTC (rev 1645)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-02-08 14:26:48 UTC (rev 1646)
+@@ -62,11 +62,12 @@
+             $form-&gt;setDefaults( $defaults );
+ 
+             // Set the rules
+-            $form-&gt;addRule( 'username',  'required',  t( 'err_name' ) );
+-            $form-&gt;addRule( 'username',  'not_email', t( 'err_name_email' ) );
+-            $form-&gt;addRule( 'useremail', 'email',     t( 'err_email' ) );
+-            $form-&gt;addRule( 'useremail', 'required',  t( 'err_email' ) );
+-            $form-&gt;addRule( 'comment',   'required',  t( 'err_comment' ) );
++            $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
++            $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
++            $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
++            $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
++            $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
++            $form-&gt;addRule( 'comment',     'required',  t( 'err_comment' ) );
+ 
+             // Add the filters
+             $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
+@@ -78,56 +79,56 @@
+                 $values = $form-&gt;getValues();
+ 
+                 // Simple spam protection
+-                if ( ! empty( $values['userwebsite'] ) &amp;&amp; strpos( $values['userwebsite'], '.' ) !== false ) {
++                if ( ! empty( $values['userwebsite'] ) &amp;&amp; strpos( $values['userwebsite'], '.' ) === false ) {
++                    $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment_id ) );
++                }
+ 
+-                    // Fix any faulty web addresses
+-                    if ( ! empty( $values['userwebsite'] ) &amp;&amp; substr( strtolower( $values['userwebsite'] ), 0, 7 ) != '<A HREF="http://">http://</A>' ) {
+-                        $values['userwebsite'] = '<A HREF="http://">http://</A>' . $values['userwebsite'];
+-                    }
++                // Fix any faulty web addresses
++                if ( ! empty( $values['userwebsite'] ) &amp;&amp; substr( strtolower( $values['userwebsite'] ), 0, 7 ) != '<A HREF="http://">http://</A>' ) {
++                    $values['userwebsite'] = '<A HREF="http://">http://</A>' . $values['userwebsite'];
++                }
+ 
+-                    // Save the username, useremail and userwebsite
+-                    setcookie( 'YD_USER_NAME',    $values['username'],    time() + 31536000, '/' );
+-                    setcookie( 'YD_USER_EMAIL',   $values['useremail'],   time() + 31536000, '/' );
+-                    setcookie( 'YD_USER_WEBSITE', $values['userwebsite'], time() + 31536000, '/' );
++                // Save the username, useremail and userwebsite
++                setcookie( 'YD_USER_NAME',    $values['username'],    time() + 31536000, '/' );
++                setcookie( 'YD_USER_EMAIL',   $values['useremail'],   time() + 31536000, '/' );
++                setcookie( 'YD_USER_WEBSITE', $values['userwebsite'], time() + 31536000, '/' );
+ 
+-                    // Add the values to the database
+-                    $comment_id = $this-&gt;weblog-&gt;addComment( $values );
++                // Add the values to the database
++                $comment_id = $this-&gt;weblog-&gt;addComment( $values );
+ 
+-                    // Send an email if configured
+-                    if ( YDConfig::get( 'email_new_comment', true ) ) {
++                // Send an email if configured
++                if ( YDConfig::get( 'email_new_comment', true ) ) {
+ 
+-                        // Include the YDEmail library
+-                        YDInclude( 'YDEmail.php' );
++                    // Include the YDEmail library
++                    YDInclude( 'YDEmail.php' );
+ 
+-                        // Get the list of subscriptions
+-                        $subscribers = $this-&gt;weblog-&gt;getCommentSubscribers( $id );
++                    // Get the list of subscriptions
++                    $subscribers = $this-&gt;weblog-&gt;getCommentSubscribers( $id );
+ 
+-                        // Add the comment to the email template
+-                        $this-&gt;tpl-&gt;assign( 'eml_comment', $values );
++                    // Add the comment to the email template
++                    $this-&gt;tpl-&gt;assign( 'eml_comment', $values );
+ 
+-                        // Create the email and send it
+-                        $eml = new YDEmail();
+-                        if ( ! empty( $item['user_email'] ) ) {
+-                            $eml-&gt;setFrom( $item['user_email'], YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+-                        } else {
+-                            $eml-&gt;setFrom( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">nobody at nowhere.com</A>', YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+-                        }
+-                        $eml-&gt;setReplyTo( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">no at reply.net</A>' );
+-                        $eml-&gt;addBcc( $item['user_email'] );
+-                        foreach ( $subscribers as $subscriber ) {
+-                            $eml-&gt;addBcc( $subscriber );
+-                        }
+-                        $eml-&gt;setSubject( 'New comment: ' . strip_tags( $item['title'] ) );
+-                        $eml-&gt;setHtmlBody( $this-&gt;fetch( 'comment_email' ) );
+-                        $eml-&gt;send();
+-
++                    // Create the email and send it
++                    $eml = new YDEmail();
++                    if ( ! empty( $item['user_email'] ) ) {
++                        $eml-&gt;setFrom( $item['user_email'], YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
++                    } else {
++                        $eml-&gt;setFrom( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">nobody at nowhere.com</A>', YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+                     }
++                    $eml-&gt;setReplyTo( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">no at reply.net</A>' );
++                    $eml-&gt;addBcc( $item['user_email'] );
++                    foreach ( $subscribers as $subscriber ) {
++                        $eml-&gt;addBcc( $subscriber );
++                    }
++                    $eml-&gt;setSubject( 'New comment: ' . strip_tags( $item['title'] ) );
++                    $eml-&gt;setHtmlBody( $this-&gt;fetch( 'comment_email' ) );
++                    $eml-&gt;send();
+ 
+-                    // Clear the cache
+-                    $this-&gt;clearCache();
+-
+                 }
+ 
++                // Clear the cache
++                $this-&gt;clearCache();
++
+                 // Redirect to the item
+                 $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment_id ) );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000009.html">[ydf-devel] YDWeblog typos in adding strip_html filters
+</A></li>
+	<LI>Next message: <A HREF="000008.html">[ydf-devel] r1647 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#6">[ date ]</a>
+              <a href="thread.html#6">[ thread ]</a>
+              <a href="subject.html#6">[ subject ]</a>
+              <a href="author.html#6">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

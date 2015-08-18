@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2429 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDFormElements addons/YDCaptcha
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2429%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%09YDClasses/YDFormElements%20addons/YDCaptcha&In-Reply-To=%3C200705181105.l4IB5gWk001423%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001022.html">
+   <LINK REL="Next"  HREF="001024.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2429 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDFormElements addons/YDCaptcha</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2429%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%09YDClasses/YDFormElements%20addons/YDCaptcha&In-Reply-To=%3C200705181105.l4IB5gWk001423%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2429 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDFormElements addons/YDCaptcha">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri May 18 13:05:42 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001022.html">[ydf-devel] r2428 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="001024.html">[ydf-devel] r2430 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1023">[ date ]</a>
+              <a href="thread.html#1023">[ thread ]</a>
+              <a href="subject.html#1023">[ subject ]</a>
+              <a href="author.html#1023">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-05-18 13:05:06 +0200 (Fri, 18 May 2007)
+New Revision: 2429
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+Log:
+captcha now renders the correct text form field size:
+ - changed captcha definition from methods to global YDConfigs. Be carefull.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-05-16 21:02:47 UTC (rev 2428)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-05-18 11:05:06 UTC (rev 2429)
+@@ -103,9 +103,11 @@
+          */
+         function toHtml() {
+ 
++            $size = YDConfig::get( 'YD_CAPTCHA_NUMCHARS', 5 );
++
+             // Create the list of attributes
+             $attribs = array(
+-                'type' =&gt; 'text', 'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name, 'value' =&gt; $this-&gt;_value, 'size' =&gt; 7
++                'type' =&gt; 'text', 'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name, 'value' =&gt; $this-&gt;_value, 'size' =&gt; $size, 'maxlength' =&gt; $size 
+             );
+             $attribs = array_merge( $this-&gt;_attributes, $attribs );
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-05-16 21:02:47 UTC (rev 2428)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-05-18 11:05:06 UTC (rev 2429)
+@@ -30,9 +30,33 @@
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++
++    /**
++     *  This config defines the total characters to use
++     *  Default: 5.
++     */
++    YDConfig::set( 'YD_CAPTCHA_NUMCHARS', 5, false );
++
++
++    /**
++     *  This config defines if image should have color
++     *  Default: false.
++     */
++    YDConfig::set( 'YD_CAPTCHA_COLOR', false, false );
++
++
++    /**
++     *  This config defines if image should have shadow
++     *  Default: false.
++     */
++    YDConfig::set( 'YD_CAPTCHA_SHADOW', false, false );
++
++
++
+     // include antispam lib
+     include_once( YD_DIR_HOME . '/3rdparty/captcha/php-captcha.inc.php' );
+ 
++
+     /**
+      *  This class handles a captcha image
+      *
+@@ -63,56 +87,21 @@
+             // create image object
+             $this-&gt;_img = new PhpCaptcha( $fonts, 200, 40 );
+             
+-            $this-&gt;_img-&gt;DisplayShadow( false );
+-            $this-&gt;_img-&gt;UseColour( false );
+-            $this-&gt;_img-&gt;SetNumChars( 5 );
+-
+             // add simbols ;) 
+             // don't add possible character problems for user, eg, l &lt;--&gt; 1 (lower L or number ONE?), 0 &lt;--&gt; O (ZERO OR upper O?)
+             $this-&gt;_img-&gt;SetCharSet( &quot;a-h,!,j-k,#,&amp;,%,$,m-n,@,p-r,2-4,6,&#163;,?,8-9,t-w,y-z,#,&amp;,%,$,A-H,!,J-K,#,&amp;,%,$,M-N,@,P-R,T-W,Y-Z,2-4,6,&#163;,?,8-9&quot; );
+-
+         }
+ 
+-        /**
+-         *	This function set the number of characters to display
+-         *
+-         *	@param $num		Number of characters
+-         */
+-        function setNumChars( $num ){
+-            $this-&gt;_img-&gt;setNumChars( $num );
+-        }
+ 
+         /**
+-         *	This function set the number of interference lines
+-         *
+-         *	@param $num		Number of lines
+-         */
+-        function setNumLines( $num ){
+-            $this-&gt;_img-&gt;setNumLines( $num );
+-        }
+-
+-        /**
+-         *	This function defines use of shadows
+-         *
+-         *	@param $flag		True or false boolean
+-         */
+-        function displayShadow( $flag ){
+-            $this-&gt;_img-&gt;displayShadow( $flag );
+-        }
+-
+-        /**
+-         *	This function defines use of colours
+-         *
+-         *	@param $flag		True or false boolean
+-         */
+-        function useColour( $flag ){
+-            $this-&gt;_img-&gt;useColour( $flag );
+-        }
+-
+-        /**
+          *  This function exports the image
+          */
+         function create() {
++
++            $this-&gt;_img-&gt;DisplayShadow( YDConfig::get( 'YD_CAPTCHA_SHADOW' ) );
++            $this-&gt;_img-&gt;useColour( YDConfig::get( 'YD_CAPTCHA_COLOR' ) );
++            $this-&gt;_img-&gt;SetNumChars( YDConfig::get( 'YD_CAPTCHA_NUMCHARS' ) );
++
+             return $this-&gt;_img-&gt;Create();
+         }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001022.html">[ydf-devel] r2428 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="001024.html">[ydf-devel] r2430 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1023">[ date ]</a>
+              <a href="thread.html#1023">[ thread ]</a>
+              <a href="subject.html#1023">[ subject ]</a>
+              <a href="author.html#1023">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

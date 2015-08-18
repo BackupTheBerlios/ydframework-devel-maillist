@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2466 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2466%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708062240.l76MeLrm025537%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001059.html">
+   <LINK REL="Next"  HREF="001061.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2466 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2466%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708062240.l76MeLrm025537%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2466 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  7 00:40:21 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001059.html">[ydf-devel] r2465 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001061.html">[ydf-devel] r2467 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1060">[ date ]</a>
+              <a href="thread.html#1060">[ thread ]</a>
+              <a href="subject.html#1060">[ subject ]</a>
+              <a href="author.html#1060">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-08-07 00:40:10 +0200 (Tue, 07 Aug 2007)
+New Revision: 2466
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+Log:
+on YDUrl:
+ - FEATURE: 3 YDConfig variables to define url separators that should be used on rendering. (Useful on rewrite operations)
+ - FEATURE: getQueryVar now accepts a default value when name don't exist
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-08-02 23:13:49 UTC (rev 2465)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-08-06 22:40:10 UTC (rev 2466)
+@@ -35,6 +35,12 @@
+     YDConfig::set( 'YD_HTTP_CACHE_TIMEOUT', 3600, false );
+     YDConfig::set( 'YD_HTTP_CACHE_USEHEAD', 1, false );
+ 
++    // Default separators
++    YDConfig::set( 'YD_URL_SEPARATOR_QUERIES', '&amp;', false );
++    YDConfig::set( 'YD_URL_SEPARATOR_VARIABLES', '=', false );
++    YDConfig::set( 'YD_URL_SEPARATOR_PATH', '?', false );
++
++
+     // Includes
+     include_once( YD_DIR_HOME_CLS . '/YDRequest.php' );
+ 
+@@ -339,24 +345,31 @@
+          */
+         function getUri() {
+ 
++            $sep_queries   = YDConfig::get( 'YD_URL_SEPARATOR_QUERIES' );
++            $sep_variables = YDConfig::get( 'YD_URL_SEPARATOR_VARIABLES' );
++            $sep_path      = YDConfig::get( 'YD_URL_SEPARATOR_PATH' );
++
+             // Build the query string
+             $querystr = '';
+-            foreach ( $this-&gt;getNamedPart( 'query' ) as $key=&gt;$value ) {
++            $query = $this-&gt;getNamedPart( 'query' );
++            ksort( $query );
++
++            foreach ( $query as $key=&gt;$value ) {
+                 if ( is_array( $value ) ) {
+                     foreach ( $value as $key1=&gt;$val ) {
+-                        $querystr .= ( strlen( $querystr ) &lt; 1 ) ? '' : '&amp;';
+-                        $querystr .= rawurlencode( $key  . '[' . $key1 . ']' ) . '=' . rawurlencode( $val );
++                        $querystr .= ( strlen( $querystr ) &lt; 1 ) ? '' : $sep_queries;
++                        $querystr .= rawurlencode( $key  . '[' . $key1 . ']' ) . $sep_variables . rawurlencode( $val );
+                     }
+                 } else {
+-                    $querystr .= ( strlen( $querystr ) &lt; 1 ) ? '' : '&amp;';
+-                    $querystr .= rawurlencode( $key ) . '=' . rawurlencode( $value );
++                    $querystr .= ( strlen( $querystr ) &lt; 1 ) ? '' : $sep_queries;
++                    $querystr .= rawurlencode( $key ) . $sep_variables . rawurlencode( $value );
+                 }
+             }
+ 
+             // Build the URI
+             $uri = $this-&gt;getNamedPart( 'path' ) ? $this-&gt;getNamedPart( 'path' ) : '';
+-            $uri .= $querystr ? '?'.$querystr : '';
+-            $uri .= $this-&gt;getNamedPart( 'fragment' ) ? '#'.$this-&gt;getNamedPart( 'fragment' ) : '';
++            $uri .= $querystr ? $sep_path . $querystr : '';
++            $uri .= $this-&gt;getNamedPart( 'fragment' ) ? '#' . $this-&gt;getNamedPart( 'fragment' ) : '';
+ 
+             // Return the URI
+             return $uri;
+@@ -368,11 +381,12 @@
+          *	the named query variable is not existing. If the name of the query variable indicates that it should be an
+          *	array, it will makes sure an array is returned.
+          *
+-         *	@param	$name	The name of the query variable to retrieve.
++         *	@param	$name		The name of the query variable to retrieve.
++         *	@param	$default	(Optional) return value if name doesn't exist. By default: ''
+          *
+          *	@returns	The contents of the query variable.
+          */
+-        function getQueryVar( $name ) {
++        function getQueryVar( $name, $default = '' ) {
+             if ( isset( $this-&gt;_url_parsed['query'][$name] ) ) {
+                 if ( substr( $name, -2, 2 ) == '[]' ) {
+                     if ( ! is_array( $this-&gt;_url_parsed['query'][$name] ) ) {
+@@ -381,7 +395,11 @@
+                 }
+                 return $this-&gt;_url_parsed['query'][$name];
+             } else {
+-                return ( substr( $name, -2, 2 ) == '[]' ) ? array() : '';
++                if( substr( $name, -2, 2 ) == '[]' &amp;&amp; $default == '' ){
++                    return array();
++                }else{
++                    return $default;
++                }
+             }
+         }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001059.html">[ydf-devel] r2465 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001061.html">[ydf-devel] r2467 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1060">[ date ]</a>
+              <a href="thread.html#1060">[ thread ]</a>
+              <a href="subject.html#1060">[ subject ]</a>
+              <a href="author.html#1060">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

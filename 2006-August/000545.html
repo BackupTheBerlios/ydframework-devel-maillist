@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2036 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2036%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200608222200.k7MM091I007180%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000543.html">
+   <LINK REL="Next"  HREF="000546.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2036 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2036%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200608222200.k7MM091I007180%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2036 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 23 00:00:09 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000543.html">[ydf-devel] r2035 - YDFramework2.0/trunk/examples/cm
+</A></li>
+        <LI>Next message: <A HREF="000546.html">[ydf-devel] r2037 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#545">[ date ]</a>
+              <a href="thread.html#545">[ thread ]</a>
+              <a href="subject.html#545">[ subject ]</a>
+              <a href="author.html#545">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-22 23:59:43 +0200 (Tue, 22 Aug 2006)
+New Revision: 2036
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php
+Log:
+added experimental class YDResult to handle results
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-08-22 20:11:51 UTC (rev 2035)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-08-22 21:59:43 UTC (rev 2036)
+@@ -30,6 +30,7 @@
+     YDInclude( 'YDDatabaseObject.php' );
+ 	YDInclude( 'YDDatabaseTree.php' );
+ 	YDInclude( 'YDUrl.php' );
++	YDInclude( 'YDError.php' );
+ 
+ 	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMComp.php' );
+ 
+@@ -387,4 +388,34 @@
+ 
+     }
+ 
++
++	@define ( YD_ERROR_OK, 1000 );
++	
++    YDConfig::set( 'YD_ERROR_LEVELS', array(
++            YD_ERROR_NOTICE  =&gt; 'Notice',
++            YD_ERROR_WARNING =&gt; 'Warning',
++            YD_ERROR_FATAL   =&gt; 'Fatal',
++            YD_ERROR_OK      =&gt; 'Ok'
++        ));
++
++	// experimental class to handle all YDCM method results
++	class YDResult extends YDError{
++	
++        /**
++         *  This method creates a OK type
++         *
++         *  @param  $message  The message.
++         *  @param  $value    (optional) A custom value
++         *
++         *  @returns     An YDCMResult object.
++         *
++         *  @static
++         */
++        function ok( $message, $value = null ) {
++            return YDError::_error( YD_ERROR_OK, $message, $value );
++        }
++
++
++	}
++
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php	2006-08-22 20:11:51 UTC (rev 2035)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php	2006-08-22 21:59:43 UTC (rev 2036)
+@@ -89,7 +89,8 @@
+             $this-&gt;run_line     = null;
+             $this-&gt;md5          = md5( $level . $message . $file . $line . $function . $stacktrace . mt_rand() );
+             $this-&gt;stacktrace   = $stacktrace;
+-            
++            $this-&gt;ok           = ( $level === 1000 );
++            $this-&gt;value        = $custom;
+         }
+         
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000543.html">[ydf-devel] r2035 - YDFramework2.0/trunk/examples/cm
+</A></li>
+	<LI>Next message: <A HREF="000546.html">[ydf-devel] r2037 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#545">[ date ]</a>
+              <a href="thread.html#545">[ thread ]</a>
+              <a href="subject.html#545">[ subject ]</a>
+              <a href="author.html#545">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

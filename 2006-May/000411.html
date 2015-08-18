@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1938 - YDFramework2.0/trunk/examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1938%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200605191202.k4JC21Z4006411%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000410.html">
+   <LINK REL="Next"  HREF="000412.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1938 - YDFramework2.0/trunk/examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1938%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200605191202.k4JC21Z4006411%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1938 - YDFramework2.0/trunk/examples/weblog/manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Fri May 19 14:02:01 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000410.html">[ydf-devel] r1937 - in YDFramework2.0/trunk/examples/weblog: include skins/default
+</A></li>
+        <LI>Next message: <A HREF="000412.html">[ydf-devel] r1939 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#411">[ date ]</a>
+              <a href="thread.html#411">[ thread ]</a>
+              <a href="subject.html#411">[ subject ]</a>
+              <a href="author.html#411">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-05-19 14:02:00 +0200 (Fri, 19 May 2006)
+New Revision: 1938
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php
+   YDFramework2.0/trunk/examples/weblog/manage/dbbackup.tpl
+Log:
+Added a table that shows the database contents to the database backup screen.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php	2006-05-19 11:43:46 UTC (rev 1937)
++++ YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php	2006-05-19 12:02:00 UTC (rev 1938)
+@@ -20,6 +20,19 @@
+         // Default action
+         function actionDefault() {
+ 
++            // Get the table statistics
++            $tables_size = 0;
++            $tables = $this-&gt;weblog-&gt;db-&gt;getRecords( 'SHOW TABLE STATUS' );
++            foreach ( $tables as $key=&gt;$table ) {
++                $tables[$key] = array();
++                $tables[$key]['name'] = $table['name'];
++                $tables[$key]['rows'] = intval( $table['rows'] );
++                $tables[$key]['size'] = intval( $table['data_length'] ) + intval( $table['index_length'] );
++                $tables_size = $tables_size + $tables[$key]['size'];
++            }
++            $this-&gt;tpl-&gt;assign( 'tables', $tables );
++            $this-&gt;tpl-&gt;assign( 'tables_size', $tables_size );
++
+             // The backup types we have
+             $bck_types = array(
+                 0 =&gt; t( 'bck_full' ) . '&lt;br/&gt;',
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/dbbackup.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/dbbackup.tpl	2006-05-19 11:43:46 UTC (rev 1937)
++++ YDFramework2.0/trunk/examples/weblog/manage/dbbackup.tpl	2006-05-19 12:02:00 UTC (rev 1938)
+@@ -17,6 +17,24 @@
+     &lt;/table&gt;&lt;/p&gt;
+ {/if}
+ 
++&lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++    &lt;tr&gt;
++        &lt;th class=&quot;adminRowLG&quot; colspan=&quot;3&quot;&gt;&raquo; {t w=&quot;tables&quot;}&lt;/th&gt;
++    &lt;/tr&gt;
++    {foreach from=$tables item=&quot;table&quot;}
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{$table.name}&lt;/td&gt;
++            &lt;td class=&quot;adminRowR&quot; width=&quot;200&quot;&gt;{$table.size|fmtfilesize}&lt;/td&gt;
++            &lt;td class=&quot;adminRowR&quot; width=&quot;200&quot;&gt;{$table.rows} {t w=&quot;rows&quot;}&lt;/td&gt;
++        &lt;/tr&gt;
++    {/foreach}
++    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++        &lt;td class=&quot;adminRowLNB&quot;&gt;&lt;/td&gt;
++        &lt;td class=&quot;adminRowRNB&quot; align=&quot;right&quot; width=&quot;200&quot;&gt;{$tables_size|fmtfilesize}&lt;/td&gt;
++        &lt;td class=&quot;adminRowLNB&quot;&gt;&lt;/td&gt;
++    &lt;/tr&gt;
++&lt;/table&gt;
++
+ {$form.tag}
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+         &lt;tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000410.html">[ydf-devel] r1937 - in YDFramework2.0/trunk/examples/weblog: include skins/default
+</A></li>
+	<LI>Next message: <A HREF="000412.html">[ydf-devel] r1939 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#411">[ date ]</a>
+              <a href="thread.html#411">[ thread ]</a>
+              <a href="subject.html#411">[ subject ]</a>
+              <a href="author.html#411">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2015 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2015%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200608152131.k7FLVS8K018714%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000521.html">
+   <LINK REL="Next"  HREF="000523.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2015 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2015%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200608152131.k7FLVS8K018714%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2015 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug 15 23:31:28 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000521.html">[ydf-devel] r2014 - in YDFramework2.0/trunk/examples: . cm	cm/backend cm/backend/templates
+</A></li>
+        <LI>Next message: <A HREF="000523.html">[ydf-devel] r2016 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#522">[ date ]</a>
+              <a href="thread.html#522">[ thread ]</a>
+              <a href="subject.html#522">[ subject ]</a>
+              <a href="author.html#522">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-15 23:31:18 +0200 (Tue, 15 Aug 2006)
+New Revision: 2015
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+YDStringUtil::formatDate was working just for datetimeselect form elements (because of a previous patch). now is ok for all date elements.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-08-15 17:04:22 UTC (rev 2014)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-08-15 21:31:18 UTC (rev 2015)
+@@ -549,10 +549,15 @@
+ 
+             // If array, is a date YDForm element value
+             if ( is_array( $timestamp ) ) {
+-			
+-				// check if timestamp exists. otherwise create it
+-				if ( !isset( $timestamp[ 'timestamp' ] ) ) $timestamp[ 'timestamp' ] = mktime( $timestamp['hours'], $timestamp['minutes'], $timestamp['seconds'], $timestamp['month'], $timestamp['day'], $timestamp['year'] );
+-                $timestamp = $timestamp[ 'timestamp' ];
++
++                // check if timestamp exists. otherwise create it
++                $hours   = isset( $timestamp[ 'hours' ] ) ?   $timestamp[ 'hours' ] : 0;
++                $minutes = isset( $timestamp[ 'minutes' ] ) ? $timestamp[ 'minutes' ] : 0;
++                $seconds = isset( $timestamp[ 'seconds' ] ) ? $timestamp[ 'seconds' ] : 0;
++                $month   = isset( $timestamp[ 'month' ] ) ?   $timestamp[ 'month' ] : 1;
++                $day     = isset( $timestamp[ 'day' ] ) ?     $timestamp[ 'day' ] : 1;
++                $year    = isset( $timestamp[ 'year' ] ) ?    $timestamp[ 'year' ] : 1970;
++                $timestamp = mktime( $hours, $minutes, $seconds, $month, $day, $year );
+             }
+ 
+             // Check the standard formats
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000521.html">[ydf-devel] r2014 - in YDFramework2.0/trunk/examples: . cm	cm/backend cm/backend/templates
+</A></li>
+	<LI>Next message: <A HREF="000523.html">[ydf-devel] r2016 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#522">[ date ]</a>
+              <a href="thread.html#522">[ thread ]</a>
+              <a href="subject.html#522">[ subject ]</a>
+              <a href="author.html#522">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

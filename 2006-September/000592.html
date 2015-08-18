@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDForm::addFilter with __ALL__
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDForm%3A%3AaddFilter%20with%20__ALL__&In-Reply-To=%3C12260be20609041821y3e52e601p328b503ed058928d%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000591.html">
+   <LINK REL="Next"  HREF="000593.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDForm::addFilter with __ALL__</H1>
+    <B>David Bittencourt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDForm%3A%3AaddFilter%20with%20__ALL__&In-Reply-To=%3C12260be20609041821y3e52e601p328b503ed058928d%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] YDForm::addFilter with __ALL__">muitocomplicado at gmail.com
+       </A><BR>
+    <I>Tue Sep  5 03:21:16 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000591.html">[ydf-devel] r2077 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+        <LI>Next message: <A HREF="000593.html">[ydf-devel] YDForm::addFilter with __ALL__
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#592">[ date ]</a>
+              <a href="thread.html#592">[ thread ]</a>
+              <a href="subject.html#592">[ subject ]</a>
+              <a href="author.html#592">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In revision 1994 Ximian added a special check in YDForm::_applyFilters for
+the date form element that broke addFilter with the special element __ALL__
+when using date elements in a form.
+
+The reason is that when the value is an array (e.g. date elements) we have
+this code:
+
+$element = &amp; $this-&gt;getElement( $name );
+
+But when $name = __ALL__ an error returns because is not an element.
+
+I tried to add a check for the element name but we still get a problem with
+the date element because it will always pass an array to the callback
+function. So we get errors with trim, for example.
+
+The thing is some filters we want to pass the complete array, and another
+ones we want to filter all elements of the array.
+
+I tried to define in addFilter what Ximian did in addRule:
+
+// Check if element is special element '__ALL__'
+if ( is_string( $element) &amp;&amp; $element == '__ALL__' ) $element = array_keys(
+$this-&gt;_elements );
+
+But this will only add filters to the current defined elements. This is
+reasonable but maybe someone is adding filters with __ALL__ before adding
+any elements to the form (I was doing it).
+
+I don't have a good solution for it. Maybe someone could help us out.
+
+-db
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060904/5c279c58/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060904/5c279c58/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000591.html">[ydf-devel] r2077 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+	<LI>Next message: <A HREF="000593.html">[ydf-devel] YDForm::addFilter with __ALL__
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#592">[ date ]</a>
+              <a href="thread.html#592">[ thread ]</a>
+              <a href="subject.html#592">[ subject ]</a>
+              <a href="author.html#592">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

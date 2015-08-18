@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1818 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1818%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200603270921.k2R9LVeD026126%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000248.html">
+   <LINK REL="Next"  HREF="000250.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1818 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1818%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200603270921.k2R9LVeD026126%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1818 - YDFramework2.0/trunk/YDFramework2">ximian at berlios.de
+       </A><BR>
+    <I>Mon Mar 27 11:21:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000248.html">[ydf-devel] r1817 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000250.html">[ydf-devel] r1819 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#249">[ date ]</a>
+              <a href="thread.html#249">[ thread ]</a>
+              <a href="subject.html#249">[ subject ]</a>
+              <a href="author.html#249">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-03-27 11:21:17 +0200 (Mon, 27 Mar 2006)
+New Revision: 1818
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+Log:
+new YDLocale::addDirectory( $dir ). Feature #2045
+
+now, it's possible to define directories that contains language files using YDLocale::addDirectory().
+
+when changing locale (using YDLocale::set) all added directories will be read to include the correspondent translation.
+
+
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-03-26 19:16:34 UTC (rev 1817)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-03-27 09:21:17 UTC (rev 1818)
+@@ -160,11 +160,6 @@
+             return '';
+         }
+ 
+-        // Initialize the language array
+-        if ( ! isset( $GLOBALS['t'] ) ) {
+-            $GLOBALS['t'] = array();
+-        }
+-
+         // Return the right translation
+         $t = strtolower( $t );
+         return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
+@@ -384,8 +379,16 @@
+             // Set the locale
+             YDConfig::set( YD_LOCALE_KEY, $locale );
+ 
++            // initialize t array
++            $GLOBALS['t'] = array();
++
++            // if directories array exist we must include all files
++            if ( isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
++                foreach ( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] as $dir )
++                    @include_once( $dir . '/' . YDLocale::get() . '.php' );
+         }
+ 
++
+         /**
+          *	@returns	The current locale.
+          */
+@@ -394,8 +397,32 @@
+             return strtolower( YDConfig::get( YD_LOCALE_KEY ) );
+         }
+ 
++
++        /**
++         *	This function adds a new directory
++         *
++         *	@param	$dir       Directory to add
++         */
++        function addDirectory( $dir ){
++
++            // check if directories array exists
++            if ( !isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
++                $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] = array();
++
++            // add directory to array. Needed when changing locale
++            $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ][] = $dir;
++
++            // check if translations array exists
++            if ( !isset( $GLOBALS['t'] ) )
++                $GLOBALS['t'] = array();
++
++            // include directory
++            include_once( $dir . '/' . YDLocale::get() . '.php' );
++        }
++
+     }
+ 
++
+     /**
+      *	This is the base class for all other YD classes.
+      */
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000248.html">[ydf-devel] r1817 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000250.html">[ydf-devel] r1819 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#249">[ date ]</a>
+              <a href="thread.html#249">[ thread ]</a>
+              <a href="subject.html#249">[ subject ]</a>
+              <a href="author.html#249">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

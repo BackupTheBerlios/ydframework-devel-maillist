@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1726 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1726%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602251523.k1PFNVdd012023%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000140.html">
+   <LINK REL="Next"  HREF="000142.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1726 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1726%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602251523.k1PFNVdd012023%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1726 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Sat Feb 25 16:23:31 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000140.html">[ydf-devel] r1725 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000142.html">[ydf-devel] r1727 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#141">[ date ]</a>
+              <a href="thread.html#141">[ thread ]</a>
+              <a href="subject.html#141">[ subject ]</a>
+              <a href="author.html#141">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-02-25 16:22:52 +0100 (Sat, 25 Feb 2006)
+New Revision: 1726
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+new method YDTemplate::addCss() to add custom css code to templates
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-02-24 14:58:16 UTC (rev 1725)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-02-25 15:22:52 UTC (rev 1726)
+@@ -82,6 +82,9 @@
+ 
+                 // custom javascript code
+                 $this-&gt;customJavascript = null;
++
++                // custom Css code
++                $this-&gt;customCss = null;
+             }
+ 
+             /**
+@@ -137,7 +140,7 @@
+                 $this-&gt;assign( 'YD_ACTION', YDRequest::getActionName() );
+ 
+                 // Add custom javascript
+-                $this-&gt;register_outputfilter( array( &amp;$this, &quot;__assignJavascript&quot;) );
++                $this-&gt;register_outputfilter( array( &amp;$this, &quot;__assignHeadCode&quot;) );
+ 
+                 // Get the template name
+                 $tplName = $this-&gt;_getTemplateName( $file );
+@@ -192,23 +195,30 @@
+             }
+ 
+             /**
+-             *	This function will parse the template and will assign custom javascript.
++             *	This function will parse the template and will assign custom code to head.
+              *
+              *	@param $tpl_source		Template source
+              *	@param $smarty		    Smarty pointer
+              *
+              *	@returns	Template code parsed
+              */
+-            function __assignJavascript( $tpl_source, &amp;$smarty ){
++            function __assignHeadCode( $tpl_source, &amp;$smarty ){
+ 
++                // code to add
++                $code = '';
++
++                // test if customCss is set
++                if ( !is_null( $this-&gt;customCss ) )
++                    $code  = &quot;\n&lt;style type=\&quot;text/css\&quot;&gt;\n&quot; . $this-&gt;customCss . &quot;&lt;/style&gt;&quot;;
++
+                 // test if customJavascript is set
+-                if ( is_null( $this-&gt;customJavascript ) ) return $tpl_source;
++                if ( !is_null( $this-&gt;customJavascript ) ) 
++                    $code .= &quot;\n&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot; . $this-&gt;customJavascript . &quot;&lt;/script&gt;\n&quot;;
+ 
+-                // add javascript tags
+-                $this-&gt;customJavascript = &quot;\n&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot; . $this-&gt;customJavascript . &quot;&lt;/script&gt;\n&quot;;
++                if ( $code == '' ) return $tpl_source;
+ 
+                 // replace head end tag
+-                return eregi_replace( &quot;&lt;/head&gt;&quot;, $this-&gt;customJavascript . &quot;&lt;/head&gt;&quot;, $tpl_source );
++                return eregi_replace( &quot;&lt;/head&gt;&quot;, $code . &quot;&lt;/head&gt;&quot;, $tpl_source );
+             }
+ 
+             /**
+@@ -224,6 +234,18 @@
+             }
+ 
+             /**
++             *	This function will add custom css to the template head
++             *
++             *	@param $cssCode	   Css code to add
++             *	@param $prepend    (Optional) Boolean that defines if code should be prepended
++             */
++            function addCss( $cssCode, $prepend = false ) {
++
++                if (!$prepend) $this-&gt;customCss = $this-&gt;customCss . $cssCode . &quot;\n&quot;;
++                else           $this-&gt;customCss = $cssCode . $this-&gt;customCss . &quot;\n&quot;;
++            }
++
++            /**
+              *	This function will add a YDForm object to the template. It will automatically convert the form to an array
+              *	using the template object so that you don't have to do it manually.
+              *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000140.html">[ydf-devel] r1725 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000142.html">[ydf-devel] r1727 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#141">[ date ]</a>
+              <a href="thread.html#141">[ thread ]</a>
+              <a href="subject.html#141">[ subject ]</a>
+              <a href="author.html#141">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

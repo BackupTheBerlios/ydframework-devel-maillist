@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDAjax v2.4
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20v2.4&In-Reply-To=%20%20%20%20%20%3C1082.84.39.86.68.1141576198.fusewebmail-15630%40webmail.fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000189.html">
+   <LINK REL="Next"  HREF="000188.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDAjax v2.4</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20v2.4&In-Reply-To=%20%20%20%20%20%3C1082.84.39.86.68.1141576198.fusewebmail-15630%40webmail.fusemail.com%3E"
+       TITLE="[ydf-devel] YDAjax v2.4">francisco at fusemail.com
+       </A><BR>
+    <I>Sun Mar  5 17:29:58 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000189.html">[ydf-devel] r1766 - in YDFramework2.0/trunk: YDFramework2/YDClasses/YDFormElements YDFramework2/addons/YDAjax examples/ajax
+</A></li>
+        <LI>Next message: <A HREF="000188.html">[ydf-devel] r1767 - in YDFramework2.0/trunk: YDFramework2/addons/YDAjax examples examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#187">[ date ]</a>
+              <a href="thread.html#187">[ thread ]</a>
+              <a href="subject.html#187">[ subject ]</a>
+              <a href="author.html#187">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi all
+
+A new YDAjax release is out. All your YDAjax implementations should  be
+upgraded, otherwise they wouldn't work.
+So far, we defined the YDAjax constructor as: YDAjax( $template, $form ).
+
+Now, only the template is required so, YDAjax only accepts the $template: 
+YDAjax( $template ).
+
+This means that, not only we can use YDAjax without forms but we can
+define one, two... and up to 10 forms. We only need to use the new method
+YDAjax::addForm( $formObject ).
+
+So, you should upgrade you implementations from:
+$ajax = new YDAjax( $template, $form );
+
+to:
+$ajax = new YDAjax( $template );
+$ajax-&gt;addForm( $form );
+
+.. and everything else should be transparent.
+
+Btw, YDAjax is faster too. Some internal impruvements were made.
+
+Francisco A
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000189.html">[ydf-devel] r1766 - in YDFramework2.0/trunk: YDFramework2/YDClasses/YDFormElements YDFramework2/addons/YDAjax examples/ajax
+</A></li>
+	<LI>Next message: <A HREF="000188.html">[ydf-devel] r1767 - in YDFramework2.0/trunk: YDFramework2/addons/YDAjax examples examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#187">[ date ]</a>
+              <a href="thread.html#187">[ thread ]</a>
+              <a href="subject.html#187">[ subject ]</a>
+              <a href="author.html#187">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

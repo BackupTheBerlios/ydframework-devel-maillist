@@ -1,0 +1,522 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1935 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples examples/weblog examples/weblog/include examples/weblog/include/languages examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1935%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples%20examples/weblog%20examples/weblog/include%20examples/weblog/include/languages%20examples/weblog/manage&In-Reply-To=%3C200605190525.k4J5PTMP002439%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000404.html">
+   <LINK REL="Next"  HREF="000409.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1935 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples examples/weblog examples/weblog/include examples/weblog/include/languages examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1935%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples%20examples/weblog%20examples/weblog/include%20examples/weblog/include/languages%20examples/weblog/manage&In-Reply-To=%3C200605190525.k4J5PTMP002439%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1935 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples examples/weblog examples/weblog/include examples/weblog/include/languages examples/weblog/manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Fri May 19 07:25:29 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000404.html">[ydf-devel] r1934 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000409.html">[ydf-devel] r1936 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#408">[ date ]</a>
+              <a href="thread.html#408">[ thread ]</a>
+              <a href="subject.html#408">[ subject ]</a>
+              <a href="author.html#408">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-05-19 07:25:25 +0200 (Fri, 19 May 2006)
+New Revision: 1935
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/examples/browserinfo.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/stats.php
+   YDFramework2.0/trunk/examples/weblog/manage/stats.tpl
+   YDFramework2.0/trunk/examples/weblog/xml.php
+Log:
+- Rewrote the browser sniffer to improve the statistics logged by the weblog application.
+- Browser sniffer supports more browsers now
+- Recognizes feedreaders and automatic bots
+- Removed the version information sniffer from YDBrowserInfo as the information it returns was too ambigous
+- Added the total avarage statistics without bots
+- Added an option to reset the statistics
+- Added the neccesary translations
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -806,59 +806,63 @@
+             // Initialize YDBase
+             $this-&gt;YDBase();
+ 
+-            // Check if the user agent was specified
+-            if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
++            // The matching list for browsers
++            $browsers = array(
++                'bot'       =&gt; array( 'bot', 'Yahoo! Slurp', 'crawler' ),
++                'opera'     =&gt; array( 'opera' ),
++                'ie'        =&gt; array( 'msie' ),
++                'safari'    =&gt; array( 'safari' ),
++                'konqueror' =&gt; array( 'Konqueror' ),
++                'feed'      =&gt; array( 'feed', 'rss', 'synd', 'bloglines', 'newsgator' ),
++                'mozilla'   =&gt; array( 'mozilla', 'firefox' ),
++            );
+ 
+-                // Mark everything as unknown
+-                $this-&gt;agent = 'unknown';
+-                $this-&gt;browser = 'unknown';
+-                $this-&gt;version = 'unknown';
+-                $this-&gt;platform = 'unknown';
+-                $this-&gt;dotnet = 'unknown';
++            // The matching list for platforms
++            $platforms = array(
++                'win'       =&gt; array( 'win' ),
++                'mac'       =&gt; array( 'mac', 'apple' ),
++                'linux'     =&gt; array( 'linux', 'bsd' ),
++                'unix'      =&gt; array( 'unix', 'sun', 'risc', 'aix' ),
++                'bot'       =&gt; array( 'bot', 'Yahoo! Slurp', 'crawler' ),
++                'feed'      =&gt; array( 'feed', 'rss', 'synd', 'bloglines', 'newsgator' ),
++            );
+ 
+-            } else {
++            // Mark everything as unknown
++            $this-&gt;agent = 'unknown';
++            $this-&gt;browser = 'unknown';
++            $this-&gt;platform = 'unknown';
++            $this-&gt;dotnet = 'unknown';
+ 
++            // Check if the user agent was specified
++            if ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
++
+                 // Get the user agent
+                 $this-&gt;agent = $_SERVER['HTTP_USER_AGENT'];
+ 
+-                // Determine the browser name
+-                if ( substr( strtolower( $this-&gt;agent ), 0, 10 ) == 'rss reader' ) {
+-                    $this-&gt;version = '';
+-                    $this-&gt;browser = 'rss reader';
+-                } elseif ( preg_match( '/MSIE ([0-9].[0-9]{1,2})/', $this-&gt;agent, $ver ) ) {
+-                    $this-&gt;version = $ver[1];
+-                    $this-&gt;browser = 'ie';
+-                } elseif ( preg_match( '/Safari\/([0-9]+)/', $this-&gt;agent, $ver ) ) {
+-                    $this-&gt;version = '1.0b' . $ver[1];
+-                    $this-&gt;browser = 'safari';
+-                } elseif ( preg_match( '/Opera ([0-9].[0-9]{1,2})/', $this-&gt;agent, $ver ) ) {
+-                    $this-&gt;version = $ver[1];
+-                    $this-&gt;browser = 'opera';
+-                } elseif ( preg_match( '/Opera\/([0-9].[0-9]{1,2})/', $this-&gt;agent, $ver ) ) {
+-                    $this-&gt;version = $ver[1];
+-                    $this-&gt;browser = 'opera';
+-                } elseif ( preg_match( '/Firefox\/([0-9].[0-9]{1,2})/', $this-&gt;agent, $ver ) ) {
+-                    $this-&gt;version = $ver[1];
+-                    $this-&gt;browser = 'firefox';
+-                } elseif ( preg_match( '/Mozilla\/([0-9].[0-9]{1,2})/', $this-&gt;agent, $ver ) ) {
+-                    $this-&gt;version = $ver[1];
+-                    $this-&gt;browser = 'mozilla';
+-                } else {
+-                    $this-&gt;version = 0;
+-                    $this-&gt;browser = 'other';
++                // Get the browser name
++                foreach ( $browsers as $browser =&gt; $browserpatterns ) {
++                    foreach ( $browserpatterns as $browserpattern ) {
++                        if ( stristr( $this-&gt;agent, $browserpattern ) ) {
++                            $this-&gt;browser = $browser;
++                            continue;
++                        }
++                    }
++                    if ( $this-&gt;browser != 'unknown' ) {
++                        break;
++                    }
+                 }
+ 
+-                // Determine the platform
+-                if ( stristr( $this-&gt;agent,'Win' ) ) {
+-                    $this-&gt;platform = 'win';
+-                } elseif ( stristr( $this-&gt;agent,'Mac' ) ) {
+-                    $this-&gt;platform = 'mac';
+-                } elseif ( stristr( $this-&gt;agent,'Linux' ) ) {
+-                    $this-&gt;platform = 'linux';
+-                } elseif ( stristr( $this-&gt;agent,'Unix' ) ) {
+-                    $this-&gt;platform = 'unix';
+-                } else {
+-                    $this-&gt;platform = 'other';
++                // Get the browser name
++                foreach ( $platforms as $platform =&gt; $platformpatterns ) {
++                    foreach ( $platformpatterns as $platformpattern ) {
++                        if ( stristr( $this-&gt;agent, $platformpattern ) ) {
++                            $this-&gt;platform = $platform;
++                            continue;
++                        }
++                    }
++                    if ( $this-&gt;platform != 'unknown' ) {
++                        break;
++                    }
+                 }
+ 
+                 // Get the .NET runtime version
+
+Modified: YDFramework2.0/trunk/examples/browserinfo.php
+===================================================================
+--- YDFramework2.0/trunk/examples/browserinfo.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/browserinfo.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -21,7 +21,6 @@
+             $browser = new YDBrowserInfo();
+             YDDebugUtil::dump( $browser-&gt;agent, 'Agent' );
+             YDDebugUtil::dump( $browser-&gt;browser, 'Browser name' );
+-            YDDebugUtil::dump( $browser-&gt;version, 'Version' );
+             YDDebugUtil::dump( $browser-&gt;platform, 'Platform' );
+             YDDebugUtil::dump( $browser-&gt;dotnet, 'Installed .NET runtimes' );
+             YDDebugUtil::dump( $browser-&gt;getBrowserLanguages(), 'Languages supported by the browser' );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -555,12 +555,22 @@
+         // Get the total num of hits
+         function getTotalHits() {
+             $result = $this-&gt;db-&gt;getValue( 'SELECT SUM(hits) FROM #_statistics' );
+-            if ( empty( $result ) ) {
+-                $result = 0;
+-            }
+-            return $result;
++            return empty( $result ) ? 0 : $result;
+         }
+ 
++        // Get the total num of hits without the bots
++        function getTotalHitsNoBots() {
++            $result = $this-&gt;db-&gt;getValue( 'SELECT SUM(hits) FROM #_statistics WHERE browser != \'bot\'' );
++            return empty( $result ) ? 0 : $result;
++        }
++
++        // Reset the statistics
++        function resetStats() {
++            $this-&gt;db-&gt;executeSql( 'truncate #_statistics' );
++            $this-&gt;db-&gt;executeSql( 'truncate #_statistics_init' );
++            $this-&gt;db-&gt;executeInsert( '#_statistics_init', array( 'created' =&gt; $this-&gt;db-&gt;getDate( '__NOW__' ) ) );
++        }
++
+         // Get the number of items
+         function getStatsItemCount() {
+             return $this-&gt;db-&gt;getValue( 'SELECT count(*) FROM #_items' );
+@@ -608,9 +618,14 @@
+         // Get the browser statistics
+         function getStatsBrowser() {
+             $browsers = array(
+-                'ie' =&gt; 'Internet Explorer', 'mozilla' =&gt; 'Netscape/Mozilla', 'safari' =&gt; 'Apple Safari',
+-                'opera' =&gt; 'Opera', 'firefox' =&gt; 'FireFox', 'other' =&gt; t('other'), 'unknown' =&gt; t('other'),
+-                'rss reader' =&gt; 'RSS Reader'
++                'bot'       =&gt; 'Automatic Bots',
++                'opera'     =&gt; 'Opera',
++                'ie'        =&gt; 'Internet Explorer',
++                'safari'    =&gt; 'Apple Safari',
++                'konqueror' =&gt; 'Konqueror',
++                'feed'      =&gt; 'RSS Reader',
++                'mozilla'   =&gt; 'Netscape/Mozilla/FireFox',
++                'unknown'   =&gt; t('other'),
+             );
+             $browserStats = $this-&gt;db-&gt;getRecords(
+                 'SELECT browser, SUM(hits) AS hits FROM #_statistics GROUP BY browser ORDER BY hits DESC'
+@@ -626,7 +641,13 @@
+         // Get the OS statistics
+         function getStatsOs() {
+             $platforms = array(
+-                'win' =&gt; 'Windows', 'mac' =&gt; 'Macintosh', 'linux' =&gt; 'Linux', 'unix' =&gt; 'Unix', 'other' =&gt; 'Other', 'unknown' =&gt; t('other')
++                'win'       =&gt; 'Microsoft Windows',
++                'mac'       =&gt; 'Apple Macintosh',
++                'linux'     =&gt; 'Linux',
++                'unix'      =&gt; 'Unix',
++                'bot'       =&gt; 'Automatic Bots',
++                'feed'      =&gt; 'RSS Reader',
++                'unknown'   =&gt; t('other'),
+             );
+             $osStats = $this-&gt;db-&gt;getRecords(
+                 'SELECT platform, SUM(hits) AS hits FROM #_statistics GROUP BY platform ORDER BY hits DESC'
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -27,6 +27,7 @@
+ $GLOBALS['t']['back'] = 'Go back';
+ $GLOBALS['t']['yes'] = 'yes';
+ $GLOBALS['t']['no'] = 'no';
++$GLOBALS['t']['confirm_action'] = 'Are you sure you want to perform the following action?';
+ 
+ // __std_header.tpl
+ $GLOBALS['t']['another_powered_by'] = 'Just another weblog powered by the ' . YD_FW_NAME . '!';
+@@ -168,8 +169,12 @@
+ $GLOBALS['t']['num_days_online'] = 'Number of days online';
+ $GLOBALS['t']['days'] = 'day(s)';
+ $GLOBALS['t']['hits'] = 'hit(s)';
++$GLOBALS['t']['no_bots'] = ' (without automatic bots)';
+ $GLOBALS['t']['total_hits'] = 'Total number of hits';
++$GLOBALS['t']['total_hits_no_bots'] = $GLOBALS['t']['total_hits'] . $GLOBALS['t']['no_bots'];
+ $GLOBALS['t']['avg_hits_per_day'] = 'Average number of hits per day';
++$GLOBALS['t']['avg_hits_per_day_no_bots'] = $GLOBALS['t']['avg_hits_per_day'] . $GLOBALS['t']['no_bots'];
++$GLOBALS['t']['total_average_stats'] = 'Totals and averages';
+ $GLOBALS['t']['hits_last_6_months'] = 'Hits last 6 months';
+ $GLOBALS['t']['all_months'] = 'All months';
+ $GLOBALS['t']['hits_last_7_days'] = 'Hits last 7 days';
+@@ -185,6 +190,7 @@
+ $GLOBALS['t']['items'] = 'item(s)';
+ $GLOBALS['t']['top_10_commenters'] = 'The 10 most active commenters';
+ $GLOBALS['t']['all_commenters'] = 'All commenters';
++$GLOBALS['t']['reset_stats'] = 'Reset all statistics';
+ 
+ // manage/users.tpl
+ $GLOBALS['t']['useremail'] = 'Email address';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -167,8 +167,12 @@
+ $GLOBALS['t']['num_days_online'] = 'Nombre de jours en ligne';
+ $GLOBALS['t']['days'] = 'jour(s)';
+ $GLOBALS['t']['hits'] = 'hit(s)';
++$GLOBALS['t']['no_bots'] = ' (sans automatic bots)';
+ $GLOBALS['t']['total_hits'] = 'Nombre total de hits';
++$GLOBALS['t']['total_hits_no_bots'] = $GLOBALS['t']['total_hits'] . $GLOBALS['t']['no_bots'];
+ $GLOBALS['t']['avg_hits_per_day'] = 'Nombre moyen de hits par jour';
++$GLOBALS['t']['avg_hits_per_day_no_bots'] = $GLOBALS['t']['avg_hits_per_day'] . $GLOBALS['t']['no_bots'];
++$GLOBALS['t']['total_average_stats'] = 'Totals et moyens';
+ $GLOBALS['t']['hits_last_6_months'] = 'Hits les 6 derniers mois';
+ $GLOBALS['t']['all_months'] = 'Tous les mois';
+ $GLOBALS['t']['hits_last_7_days'] = 'Hits les 7 derniers jours';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -27,6 +27,7 @@
+ $GLOBALS['t']['back'] = 'Ga terug';
+ $GLOBALS['t']['yes'] = 'ja';
+ $GLOBALS['t']['no'] = 'nee';
++$GLOBALS['t']['confirm_action'] = 'Bent u zeker dat u de volgende actie wil uitvoeren?';
+ 
+ // __std_header.tpl
+ $GLOBALS['t']['another_powered_by'] = 'Weer een weblog aangedreven door het ' . YD_FW_NAME . '!';
+@@ -168,9 +169,13 @@
+ $GLOBALS['t']['num_days_online'] = 'Aantal dagen online';
+ $GLOBALS['t']['days'] = 'dag(en)';
+ $GLOBALS['t']['hits'] = 'hit(s)';
++$GLOBALS['t']['no_bots'] = ' (zonder automatic bots)';
+ $GLOBALS['t']['total_hits'] = 'Totaal aantal hits';
++$GLOBALS['t']['total_hits_no_bots'] = $GLOBALS['t']['total_hits'] . $GLOBALS['t']['no_bots'];
+ $GLOBALS['t']['avg_hits_per_day'] = 'Gemiddeld aantal hits per dag';
++$GLOBALS['t']['avg_hits_per_day_no_bots'] = $GLOBALS['t']['avg_hits_per_day'] . $GLOBALS['t']['no_bots'];
+ $GLOBALS['t']['hits_last_6_months'] = 'Hits van de laatste 6 maanden';
++$GLOBALS['t']['total_average_stats'] = 'Totalen en gemiddelden';
+ $GLOBALS['t']['all_months'] = 'Alle maanden';
+ $GLOBALS['t']['hits_last_7_days'] = 'Hits laatste 7 dagen';
+ $GLOBALS['t']['all_days'] = 'Alle dagen';
+@@ -185,6 +190,7 @@
+ $GLOBALS['t']['items'] = 'item(s)';
+ $GLOBALS['t']['top_10_commenters'] = 'De 10 meest actieve commentators';
+ $GLOBALS['t']['all_commenters'] = 'Alle commentators';
++$GLOBALS['t']['reset_stats'] = 'Reset alle statistieken';
+ 
+ // manage/users.tpl
+ $GLOBALS['t']['useremail'] = 'Email adres';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -9,10 +9,14 @@
+     &lt;script language=&quot;JavaScript&quot;&gt;
+     &lt;!--
+ 
+-        {literal}function YDConfirmDelete( img ) {{/literal}
+-            return confirm( '{t w=&quot;confirm_delete&quot;}\n\n&quot;' + img + '&quot;?');
++        {literal}function YDConfirmDelete( name ) {{/literal}
++            return confirm( '{t w=&quot;confirm_delete&quot;}\n\n&quot;' + name + '&quot;?');
+         {literal}}{/literal}
+ 
++        {literal}function YDConfirmAction( name ) {{/literal}
++            return confirm( '{t w=&quot;confirm_action&quot;}\n\n&quot;' + name + '&quot;' );
++        {literal}}{/literal}
++
+         {literal}function YDRowMouseOver( obj ) {{/literal}
+             obj.bgColor = '#EDF3FE';
+         {literal}}{/literal}
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/stats.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/stats.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/manage/stats.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -20,6 +20,13 @@
+                 &quot;update #_statistics set uri = concat( 'item', uri ) where uri like '.php?id=%'&quot;
+             );
+ 
++            // Merge the other and unknown values
++            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'unknown' where browser = 'other'&quot; );
++            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'bot' where browser = 'search'&quot; );
++            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'feed' where browser = 'rss reader'&quot; );
++            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'mozilla' where browser = 'firefox'&quot; );
++            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set platform = 'unknown' where platform = 'other'&quot; );
++
+         }
+ 
+         // Special template function to draw a graph
+@@ -45,20 +52,24 @@
+         function actionDefault() {
+ 
+             // Get the install date
+-            $installDate   = $this-&gt;weblog-&gt;getInstallDate();
+-            $daysOnline    = round( ( time() - $installDate ) / 86400 );
+-            $totalHits     = $this-&gt;weblog-&gt;getTotalHits();
+-            $avg_hitsaday  = @ intval( $totalHits / $daysOnline );
+-            $totalItems    = $this-&gt;weblog-&gt;getStatsItemCount();
+-            $totalComments = $this-&gt;weblog-&gt;getStatsCommentCount();
++            $installDate        = $this-&gt;weblog-&gt;getInstallDate();
++            $daysOnline         = round( ( time() - $installDate ) / 86400 );
++            $totalHits          = $this-&gt;weblog-&gt;getTotalHits();
++            $totalHitsNoBots    = $this-&gt;weblog-&gt;getTotalHitsNoBots();
++            $avg_hitsaday       = @ intval( $totalHits / $daysOnline );
++            $avg_hitsadayNoBots = @ intval( $totalHitsNoBots / $daysOnline );
++            $totalItems         = $this-&gt;weblog-&gt;getStatsItemCount();
++            $totalComments      = $this-&gt;weblog-&gt;getStatsCommentCount();
+ 
+             // Assign these to the template
+-            $this-&gt;tpl-&gt;assign( 'installDate',   $installDate );
+-            $this-&gt;tpl-&gt;assign( 'daysOnline',    $daysOnline );
+-            $this-&gt;tpl-&gt;assign( 'totalHits',     $totalHits );
+-            $this-&gt;tpl-&gt;assign( 'avg_hitsaday',  $avg_hitsaday );
+-            $this-&gt;tpl-&gt;assign( 'totalItems',    $totalItems );
+-            $this-&gt;tpl-&gt;assign( 'totalComments', $totalComments );
++            $this-&gt;tpl-&gt;assign( 'installDate',        $installDate );
++            $this-&gt;tpl-&gt;assign( 'daysOnline',         $daysOnline );
++            $this-&gt;tpl-&gt;assign( 'totalHits',          $totalHits );
++            $this-&gt;tpl-&gt;assign( 'totalHitsNoBots',    $totalHitsNoBots );
++            $this-&gt;tpl-&gt;assign( 'avg_hitsaday',       $avg_hitsaday );
++            $this-&gt;tpl-&gt;assign( 'avg_hitsadayNoBots', $avg_hitsadayNoBots );
++            $this-&gt;tpl-&gt;assign( 'totalItems',         $totalItems );
++            $this-&gt;tpl-&gt;assign( 'totalComments',      $totalComments );
+ 
+             // Get the list of the last 6 months
+             $last6Months  = $this-&gt;weblog-&gt;getStatsMonths();
+@@ -129,6 +140,12 @@
+ 
+         }
+ 
++        // Reset the statistics
++        function actionReset() {
++            $this-&gt;weblog-&gt;resetStats();
++            $this-&gt;redirectToAction();
++        }
++
+         // Function to calculate the width of the graph elements
+         function _calculateGraph( $data, $field='hits' ) {
+             if ( sizeof( $data ) &gt; 0 ) {
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/stats.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/stats.tpl	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/manage/stats.tpl	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -6,7 +6,11 @@
+ 
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+         &lt;tr&gt;
+-            &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;general_stats&quot;}&lt;/th&gt;
++            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;general_stats&quot;}&lt;/th&gt;
++            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLGR&quot;&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=reset&quot;
++                 onClick=&quot;return YDConfirmAction( '{t w=&quot;reset_stats&quot;}' );&quot;&gt;&lt;b&gt;{t w=&quot;reset_stats&quot;}&lt;/b&gt;&lt;/a&gt;
++            &lt;/th&gt;
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot; width=&quot;350&quot;&gt;{t w=&quot;installed_since&quot;}&lt;/td&gt;
+@@ -24,18 +28,30 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalComments&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalComments} {t w=&quot;comments&quot; lower=true}&lt;/td&gt;
+         &lt;/tr&gt;
++    &lt;/table&gt;
++
++    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;total_average_stats&quot;}&lt;/th&gt;
++        &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;total_hits&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalHits} {t w=&quot;hits&quot;}&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;total_hits_no_bots&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalHitsNoBots} {t w=&quot;hits&quot;}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;avg_hits_per_day&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$avg_hitsaday} {t w=&quot;hits&quot;}&lt;/td&gt;
+         &lt;/tr&gt;
+-    &lt;/table&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;avg_hits_per_day_no_bots&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$avg_hitsadayNoBots} {t w=&quot;hits&quot;}&lt;/td&gt;
++        &lt;/tr&gt;
+ 
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-
+         &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;hits_last_6_months&quot;}&lt;/th&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/xml.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/xml.php	2006-05-16 09:45:45 UTC (rev 1934)
++++ YDFramework2.0/trunk/examples/weblog/xml.php	2006-05-19 05:25:25 UTC (rev 1935)
+@@ -12,9 +12,6 @@
+         // Class constructor
+         function xml() {
+ 
+-            // Fix up the user agent (to make sure RSS Readers show up in the user agents)
+-            $_SERVER['HTTP_USER_AGENT'] = 'RSS Reader ' . $_SERVER['HTTP_USER_AGENT'];
+-
+             // Initialize the parent
+             $this-&gt;YDWeblogRequest();
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000404.html">[ydf-devel] r1934 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000409.html">[ydf-devel] r1936 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#408">[ date ]</a>
+              <a href="thread.html#408">[ thread ]</a>
+              <a href="subject.html#408">[ subject ]</a>
+              <a href="author.html#408">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

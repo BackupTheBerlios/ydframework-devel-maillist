@@ -1,0 +1,488 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2314 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2314%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701161246.l0GCknwa031115%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000905.html">
+   <LINK REL="Next"  HREF="000907.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2314 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2314%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701161246.l0GCknwa031115%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2314 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 16 13:46:49 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000905.html">[ydf-devel] r2313 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000907.html">[ydf-devel] r2315 - YDFramework2.0/trunk/doc_src
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#906">[ date ]</a>
+              <a href="thread.html#906">[ thread ]</a>
+              <a href="subject.html#906">[ subject ]</a>
+              <a href="author.html#906">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-16 13:46:48 +0100 (Tue, 16 Jan 2007)
+New Revision: 2314
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php
+   YDFramework2.0/trunk/examples/weblog/manage/cache.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php
+   YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php
+   YDFramework2.0/trunk/examples/weblog/manage/users.php
+   YDFramework2.0/trunk/examples/weblog/manage/users.tpl
+Log:
+Added the concept of user levels (admin or not). The non admin users only get a subset of the admin interface.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -206,7 +206,7 @@
+         function upgradeSchemaIfNeeded() {
+ 
+             // The current weblog schema version
+-            $current_schema = 7;
++            $current_schema = 8;
+ 
+             // Get the schema version
+             $installed_schema = $this-&gt;getSchemaVersion();
+@@ -227,10 +227,14 @@
+                 $this-&gt;executeIfPresent( 'allow_comments', $fields, 'ALTER TABLE #_items DROP allow_comments' );
+                 $this-&gt;executeIfPresent( 'auto_close', $fields, 'ALTER TABLE #_items DROP auto_close' );
+ 
+-                // Add any missing pages field
++                // Add any missing pages fields
+                 $fields = $this-&gt;dbmeta-&gt;getFields( '#_pages' );
+                 $this-&gt;executeIfMissing( 'is_draft', $fields, 'ALTER TABLE #_pages ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER body' );
+ 
++                // Add any missing users fields
++                $fields = $this-&gt;dbmeta-&gt;getFields( '#_users' );
++                $this-&gt;executeIfMissing( 'is_admin', $fields, 'ALTER TABLE #_users ADD is_admin TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER password' );
++
+                 // Get the list of indexes for the items table
+                 $indexes = $this-&gt;dbmeta-&gt;getIndexes( '#_items' );
+                 $this-&gt;executeIfMissing( 'is_draft', $indexes, 'ALTER TABLE #_items ADD INDEX is_draft (is_draft)' );
+@@ -243,6 +247,7 @@
+                 $indexes = $this-&gt;dbmeta-&gt;getIndexes( '#_users' );
+                 $this-&gt;executeIfPresent( 'email', $indexes, 'ALTER TABLE #_users DROP INDEX email' );
+                 $this-&gt;executeIfMissing( 'name',  $indexes, 'ALTER TABLE #_users ADD UNIQUE name (name)' );
++                $this-&gt;executeIfMissing( 'is_admin',  $indexes, 'ALTER TABLE #_users ADD INDEX is_admin (is_admin)' );
+ 
+                 // Fix the shemaversion table if needed
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_schemaversion CHANGE installed installed INT(11)' );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -234,7 +234,7 @@
+     class YDWeblogAdminRequest extends YDWeblogRequest {
+ 
+         // Class constructor
+-        function YDWeblogAdminRequest() {
++        function YDWeblogAdminRequest( $req_admin=false ) {
+ 
+             // Initialize the parent
+             $this-&gt;YDWeblogRequest();
+@@ -258,6 +258,9 @@
+                 $this-&gt;weblog-&gt;db-&gt;executeSql( 'optimize table ' . $table );
+             }
+ 
++            // Check for admin access
++            $this-&gt;req_admin = $req_admin;
++
+         }
+ 
+         // Init the template
+@@ -389,6 +392,16 @@
+             return false;
+         }
+ 
++        // Function when authentication has succeeded
++        function authenticationSucceeded() {
++
++            // Check if allowed
++            if ( $this-&gt;req_admin === true &amp;&amp; $this-&gt;user['is_admin'] != '1' ) {
++                $this-&gt;redirect( 'index.php' );
++            }
++
++        }
++
+         // Failed authentication, forwards to the login action
+         function authenticationFailed() {
+             $this-&gt;forward( 'login' );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -215,6 +215,7 @@
+ $GLOBALS['t']['req_loginpass'] = 'Password is required';
+ $GLOBALS['t']['user_dup'] = 'User already exists';
+ $GLOBALS['t']['change_user_desc'] = 'Changing user:';
++$GLOBALS['t']['is_admin_user'] = 'Administrator';
+ 
+ // manage/images.tpl
+ $GLOBALS['t']['upload_image'] = 'Upload image';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -215,6 +215,7 @@
+ $GLOBALS['t']['req_loginpass'] = 'Paswoord is vereist';
+ $GLOBALS['t']['user_dup'] = 'Gebruiker bestaat al';
+ $GLOBALS['t']['change_user_desc'] = 'Wijzig gebruiker:';
++$GLOBALS['t']['is_admin_user'] = 'Administrator';
+ 
+ // manage/images.tpl
+ $GLOBALS['t']['upload_image'] = 'Upload beeld';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -123,26 +123,28 @@
+                         &raquo; &lt;a href=&quot;categories.php&quot;&gt;{t w=&quot;a_categories&quot;}&lt;/a&gt;&lt;br/&gt;
+                     &lt;/td&gt;
+                 &lt;/tr&gt;
+-                &lt;tr&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        &lt;b&gt;{t w=&quot;h_global_settings&quot;}&lt;/b&gt;&lt;br/&gt;
+-                        &raquo; &lt;a href=&quot;users.php&quot;&gt;{t w=&quot;a_users&quot;}&lt;/a&gt;&lt;br/&gt;
+-                        &raquo; &lt;a href=&quot;config.php&quot;&gt;{t w=&quot;a_settings&quot;}&lt;/a&gt;&lt;br/&gt;
+-                    &lt;/td&gt;
+-                &lt;/tr&gt;
+-                &lt;tr&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        &lt;b&gt;{t w=&quot;h_diagtools&quot;}&lt;/b&gt;&lt;br/&gt;
+-                        &raquo; &lt;a href=&quot;serverinfo.php&quot;&gt;{t w=&quot;a_server_info&quot;}&lt;/a&gt;&lt;br/&gt;
+-                        &raquo; &lt;a href=&quot;dbbackup.php&quot;&gt;{t w=&quot;a_db_backup&quot;}&lt;/a&gt;&lt;br/&gt;
+-                        &raquo; &lt;a href=&quot;cache.php&quot;&gt;{t w=&quot;a_cleanup_cache&quot;}&lt;/a&gt;&lt;br/&gt;
+-                    &lt;/td&gt;
+-                &lt;/tr&gt;
+-                {if $google_analytics}
++                {if $user.is_admin}
+                     &lt;tr&gt;
+                         &lt;td class=&quot;adminRowL&quot;&gt;
++                            &lt;b&gt;{t w=&quot;h_global_settings&quot;}&lt;/b&gt;&lt;br/&gt;
++                            &raquo; &lt;a href=&quot;users.php&quot;&gt;{t w=&quot;a_users&quot;}&lt;/a&gt;&lt;br/&gt;
++                            &raquo; &lt;a href=&quot;config.php&quot;&gt;{t w=&quot;a_settings&quot;}&lt;/a&gt;&lt;br/&gt;
++                        &lt;/td&gt;
++                    &lt;/tr&gt;
++                    &lt;tr&gt;
++                        &lt;td class=&quot;adminRowL&quot;&gt;
++                            &lt;b&gt;{t w=&quot;h_diagtools&quot;}&lt;/b&gt;&lt;br/&gt;
++                            &raquo; &lt;a href=&quot;serverinfo.php&quot;&gt;{t w=&quot;a_server_info&quot;}&lt;/a&gt;&lt;br/&gt;
++                            &raquo; &lt;a href=&quot;dbbackup.php&quot;&gt;{t w=&quot;a_db_backup&quot;}&lt;/a&gt;&lt;br/&gt;
++                            &raquo; &lt;a href=&quot;cache.php&quot;&gt;{t w=&quot;a_cleanup_cache&quot;}&lt;/a&gt;&lt;br/&gt;
++                        &lt;/td&gt;
++                    &lt;/tr&gt;
++                    &lt;tr&gt;
++                        &lt;td class=&quot;adminRowL&quot;&gt;
+                             &lt;b&gt;{t w=&quot;h_statistics&quot;}&lt;/b&gt;&lt;br/&gt;
+-                            &raquo; &lt;a href=&quot;<A HREF="https://www.google.com/analytics/home/">https://www.google.com/analytics/home/</A>&quot; target=&quot;_blank&quot;&gt;{t w=&quot;cfg_google_analytics&quot;}&lt;/a&gt;&lt;br/&gt;
++                            {if $google_analytics}
++                                &raquo; &lt;a href=&quot;<A HREF="https://www.google.com/analytics/home/">https://www.google.com/analytics/home/</A>&quot; target=&quot;_blank&quot;&gt;{t w=&quot;cfg_google_analytics&quot;}&lt;/a&gt;&lt;br/&gt;
++                            {/if}
+                             &raquo; &lt;a href=&quot;bad_behavior.php&quot;&gt;{t w=&quot;a_bad_behavior&quot;}&lt;/a&gt;&lt;br/&gt;
+                         &lt;/td&gt;
+                     &lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -8,7 +8,10 @@
+ 
+         // Class constructor
+         function bad_behavior() {
+-            $this-&gt;YDWeblogAdminRequest();
++
++            // Initialize parent
++            $this-&gt;YDWeblogAdminRequest( true );
++
+         }
+ 
+         // Default action
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/cache.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/cache.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/cache.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -8,7 +8,10 @@
+ 
+         // Class constructor
+         function cache() {
+-            $this-&gt;YDWeblogAdminRequest();
++
++            // Initialize parent
++            $this-&gt;YDWeblogAdminRequest( true );
++
+         }
+ 
+         // Default action
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -13,7 +13,7 @@
+         function config() {
+ 
+             // Initialize the parent
+-            $this-&gt;YDWeblogAdminRequest();
++            $this-&gt;YDWeblogAdminRequest( true );
+ 
+         }
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/dbbackup.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -13,7 +13,7 @@
+         function dbbackup() {
+ 
+             // Initialize the parent
+-            $this-&gt;YDWeblogAdminRequest();
++            $this-&gt;YDWeblogAdminRequest( true );
+ 
+         }
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -55,41 +55,43 @@
+     &lt;/table&gt;
+ {/if}
+ 
+-&lt;p class=&quot;title&quot;&gt;&nbsp;&lt;br/&gt;{t w=&quot;a_admin_home&quot;} &raquo; {t w=&quot;overview&quot;}&lt;/p&gt;
++{if $user.is_admin}
++    &lt;p class=&quot;title&quot;&gt;&nbsp;&lt;br/&gt;{t w=&quot;a_admin_home&quot;} &raquo; {t w=&quot;overview&quot;}&lt;/p&gt;
+ 
+-&lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-&lt;tr&gt;&lt;td width=&quot;350&quot; align=&quot;left&quot; valign=&quot;top&quot;&gt;
++    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++    &lt;tr&gt;&lt;td width=&quot;350&quot; align=&quot;left&quot; valign=&quot;top&quot;&gt;
+ 
+-    &lt;table width=&quot;340&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; &lt;a href=&quot;serverinfo.php&quot;&gt;&lt;b&gt;{t w=&quot;a_server_info&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-            &lt;th class=&quot;adminRowLGR&quot; colspan=&quot;2&quot;&gt;&lt;a href=&quot;serverinfo.php&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;&lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;username&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot; colspan=&quot;2&quot;&gt;{$user.name|lower}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;server&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$smarty.server.SERVER_NAME}{if $smarty.server.SERVER_PORT != '80'}:{$smarty.server.SERVER_PORT}{/if}&lt;/td&gt;
+-        &lt;/tr&gt;
++        &lt;table width=&quot;340&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++            &lt;tr&gt;
++                &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; &lt;a href=&quot;serverinfo.php&quot;&gt;&lt;b&gt;{t w=&quot;a_server_info&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
++                &lt;th class=&quot;adminRowLGR&quot; colspan=&quot;2&quot;&gt;&lt;a href=&quot;serverinfo.php&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;username&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot; colspan=&quot;2&quot;&gt;{$user.name|lower}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;server&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$smarty.server.SERVER_NAME}{if $smarty.server.SERVER_PORT != '80'}:{$smarty.server.SERVER_PORT}{/if}&lt;/td&gt;
++            &lt;/tr&gt;
++        &lt;/table&gt;
++    &lt;/td&gt;
++    &lt;td width=&quot;350&quot; align=&quot;right&quot; valign=&quot;top&quot;&gt;
++        &lt;table width=&quot;340&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++            &lt;tr&gt;
++                &lt;th class=&quot;adminRowLG&quot; colspan=&quot;3&quot;&gt;&raquo; {t w=&quot;a_statistics&quot;}&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalItems&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalItems} {t w=&quot;items&quot;}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalComments&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalComments} {t w=&quot;comments&quot; lower=true}&lt;/td&gt;
++            &lt;/tr&gt;
++        &lt;/table&gt;
++    &lt;/td&gt;&lt;/tr&gt;
+     &lt;/table&gt;
+-&lt;/td&gt;
+-&lt;td width=&quot;350&quot; align=&quot;right&quot; valign=&quot;top&quot;&gt;
+-    &lt;table width=&quot;340&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;3&quot;&gt;&raquo; {t w=&quot;a_statistics&quot;}&lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalItems&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalItems} {t w=&quot;items&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalComments&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalComments} {t w=&quot;comments&quot; lower=true}&lt;/td&gt;
+-        &lt;/tr&gt;
+-    &lt;/table&gt;
+-&lt;/td&gt;&lt;/tr&gt;
+-&lt;/table&gt;
++{/if}
+ 
+ {include file=&quot;__mng_footer.tpl&quot;}
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -13,7 +13,7 @@
+         function serverinfo() {
+ 
+             // Initialize the parent
+-            $this-&gt;YDWeblogAdminRequest();
++            $this-&gt;YDWeblogAdminRequest( true );
+ 
+         }
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/users.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/users.php	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/users.php	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -10,7 +10,7 @@
+         function users() {
+ 
+             // Initialize the parent
+-            $this-&gt;YDWeblogAdminRequest();
++            $this-&gt;YDWeblogAdminRequest( true );
+ 
+         }
+ 
+@@ -118,6 +118,31 @@
+ 
+         }
+ 
++        // Change the user level
++        function actionChangeUserLevel() {
++
++            // Get the ID from the query string
++            $id = $this-&gt;getIdFromQS();
++
++            // Get the user details
++            $user = $this-&gt;weblog-&gt;getUserByID( $id );
++            unset( $user['password'] );
++
++            // Redirect if we are changing ourselves
++            if ( $this-&gt;user['id'] == $user['id'] ) {
++                $this-&gt;redirectToAction();
++            }
++
++            // Change the values
++            $user['is_admin'] = ( $user['is_admin'] == '1' ) ? '0' : '1';
++
++            // Save the userdata
++            $this-&gt;weblog-&gt;saveUser( $user );
++
++            // Redirect to the default action
++            $this-&gt;redirectToAction();
++
++
+         // Check the user credentials
+         function checkUserCredentials( $params ) {
+ 
+@@ -132,6 +157,7 @@
+             }
+ 
+         }
++        }
+ 
+     }
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/users.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/users.tpl	2007-01-16 12:15:48 UTC (rev 2313)
++++ YDFramework2.0/trunk/examples/weblog/manage/users.tpl	2007-01-16 12:46:48 UTC (rev 2314)
+@@ -30,15 +30,29 @@
+     {if $users}
+         &lt;tr&gt;
+             &lt;th class=&quot;adminRowL&quot; width=&quot;20%&quot; style=&quot;vertical-align: bottom;&quot;&gt;{t w=&quot;username&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowL&quot; width=&quot;30%&quot; style=&quot;vertical-align: bottom;&quot;&gt;{t w=&quot;useremail&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowL&quot; width=&quot;25%&quot; style=&quot;vertical-align: bottom;&quot;&gt;{t w=&quot;created&quot;}&lt;/th&gt;
++            &lt;th class=&quot;adminRowL&quot; width=&quot;35%&quot; style=&quot;vertical-align: bottom;&quot;&gt;{t w=&quot;useremail&quot;}&lt;/th&gt;
++            &lt;th class=&quot;adminRowL&quot; width=&quot;20%&quot; style=&quot;vertical-align: bottom;&quot;&gt;{t w=&quot;is_admin_user&quot;}&lt;/th&gt;
+             &lt;th class=&quot;adminRowR&quot; width=&quot;25%&quot; style=&quot;vertical-align: bottom;&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+         &lt;/tr&gt;
+         {foreach from=$users item=&quot;usr&quot;}
+             &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$usr.name}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;&lt;a href=&quot;mailto:{$usr.email}&quot;&gt;{$usr.email}&lt;/a&gt;&nbsp;&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$usr.created|date|lower}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if strtolower( $usr.name ) neq strtolower( $user.name )}
++                        {if $usr.is_admin}
++                            &lt;a style=&quot;color: green;&quot; href=&quot;{$YD_SELF_SCRIPT}?do=changeUserLevel&amp;id={$usr.id}&quot;&gt;{t w=&quot;yes&quot;}&lt;/a&gt;
++                        {else}
++                            &lt;a style=&quot;color: red;&quot; href=&quot;{$YD_SELF_SCRIPT}?do=changeUserLevel&amp;id={$usr.id}&quot;&gt;{t w=&quot;no&quot;}&lt;/a&gt;
++                        {/if}
++                    {else}
++                        {if $usr.is_admin}
++                            &lt;span class=&quot;disabled&quot;&gt;{t w=&quot;yes&quot;}&lt;/span&gt;
++                        {else}
++                            &lt;span class=&quot;disabled&quot;&gt;{t w=&quot;no&quot;}&lt;/span&gt;
++                        {/if}
++                    {/if}
++                &lt;/td&gt;
+                 &lt;td class=&quot;adminRowR&quot;&gt;
+                     &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$usr.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
+                     |
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000905.html">[ydf-devel] r2313 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000907.html">[ydf-devel] r2315 - YDFramework2.0/trunk/doc_src
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#906">[ date ]</a>
+              <a href="thread.html#906">[ thread ]</a>
+              <a href="subject.html#906">[ subject ]</a>
+              <a href="author.html#906">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

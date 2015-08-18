@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2092 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2092%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20manage%0A%09skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200609071408.k87E8b8u007967%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000608.html">
+   <LINK REL="Next"  HREF="000610.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2092 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2092%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20manage%0A%09skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200609071408.k87E8b8u007967%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2092 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep  7 16:08:37 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000608.html">[ydf-devel] r2091 -	YDFramework2.0/trunk/YDFramework2/addons/YDBBCode
+</A></li>
+        <LI>Next message: <A HREF="000610.html">[ydf-devel] r2093 - in YDFramework2.0/trunk/examples/weblog/skins:	default default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#609">[ date ]</a>
+              <a href="thread.html#609">[ thread ]</a>
+              <a href="subject.html#609">[ subject ]</a>
+              <a href="author.html#609">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-07 16:08:37 +0200 (Thu, 07 Sep 2006)
+New Revision: 2092
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/__std_header.tpl
+Log:
+Fixed the XHTML output of the YDWeblog skin.
+
+See also: [ Bug #7538 ] simple fixes in default weblog skin
+
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-09-07 14:07:02 UTC (rev 2091)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-09-07 14:08:37 UTC (rev 2092)
+@@ -6,9 +6,9 @@
+ 
+     &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;manage.css&quot; /&gt;
+ 
+-    &lt;script language=&quot;JavaScript&quot; src=&quot;../tiny_mce/tiny_mce_gzip.php&quot;&gt;&lt;/script&gt;
++    &lt;script type=&quot;text/javascript&quot; src=&quot;../tiny_mce/tiny_mce_gzip.php&quot;&gt;&lt;/script&gt;
+ 
+-    &lt;script language=&quot;JavaScript&quot;&gt;
++    &lt;script type=&quot;text/javascript&quot;&gt;
+     &lt;!--
+ 
+         {literal}function YDConfirmDelete( name ) {{/literal}
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl	2006-09-07 14:07:02 UTC (rev 2091)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl	2006-09-07 14:08:37 UTC (rev 2092)
+@@ -33,7 +33,7 @@
+     &lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Atom 0.3&quot; href=&quot;{$weblog_link_atom}&quot; /&gt;
+ 
+     {if $user.name}
+-        &lt;script language=&quot;JavaScript&quot;&gt;
++        &lt;script type=&quot;text/javascript&quot;&gt;
+         &lt;!--
+ 
+             {literal}function YDConfirmDelete( img ) {{/literal}
+@@ -46,9 +46,9 @@
+ 
+     {$weblog_google_analytics}
+ 
+-    &lt;script language=&quot;JavaScript&quot; src=&quot;tiny_mce/tiny_mce_gzip.php&quot;&gt;&lt;/script&gt;
++    &lt;script type=&quot;text/javascript&quot; src=&quot;tiny_mce/tiny_mce_gzip.php&quot;&gt;&lt;/script&gt;
+ 
+-    &lt;script language=&quot;JavaScript&quot;&gt;
++    &lt;script type=&quot;text/javascript&quot;&gt;
+     &lt;!--
+ 
+         {literal}tinyMCE.init({
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/__std_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/__std_header.tpl	2006-09-07 14:07:02 UTC (rev 2091)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/__std_header.tpl	2006-09-07 14:08:37 UTC (rev 2092)
+@@ -39,7 +39,7 @@
+     &lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Atom 0.3&quot; href=&quot;{$weblog_link_atom}&quot; /&gt;
+ 
+     {if $user.name}
+-        &lt;script language=&quot;JavaScript&quot;&gt;
++        &lt;script type=&quot;text/javascript&quot;&gt;
+         &lt;!--
+ 
+             {literal}function YDConfirmDelete( img ) {{/literal}
+@@ -52,9 +52,9 @@
+ 
+     {$weblog_google_analytics}
+ 
+-    &lt;script language=&quot;JavaScript&quot; src=&quot;tiny_mce/tiny_mce_gzip.php&quot;&gt;&lt;/script&gt;
++    &lt;script type=&quot;text/javascript&quot; src=&quot;tiny_mce/tiny_mce_gzip.php&quot;&gt;&lt;/script&gt;
+ 
+-    &lt;script language=&quot;JavaScript&quot;&gt;
++    &lt;script type=&quot;text/javascript&quot;&gt;
+     &lt;!--
+ 
+         {literal}tinyMCE.init({
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000608.html">[ydf-devel] r2091 -	YDFramework2.0/trunk/YDFramework2/addons/YDBBCode
+</A></li>
+	<LI>Next message: <A HREF="000610.html">[ydf-devel] r2093 - in YDFramework2.0/trunk/examples/weblog/skins:	default default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#609">[ date ]</a>
+              <a href="thread.html#609">[ thread ]</a>
+              <a href="subject.html#609">[ subject ]</a>
+              <a href="author.html#609">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

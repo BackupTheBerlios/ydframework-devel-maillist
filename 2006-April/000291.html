@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDCM feedback
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C44460860.1070605%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000290.html">
+   <LINK REL="Next"  HREF="000292.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDCM feedback</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C44460860.1070605%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDCM feedback">francisco at fusemail.com
+       </A><BR>
+    <I>Wed Apr 19 11:52:32 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000290.html">[ydf-devel] YDCM feedback
+</A></li>
+        <LI>Next message: <A HREF="000292.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#291">[ date ]</a>
+              <a href="thread.html#291">[ thread ]</a>
+              <a href="subject.html#291">[ subject ]</a>
+              <a href="author.html#291">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Pieter
+&gt;<i> Just to be clear, the forum part was not written by me. The stuff in 
+</I>&gt;<i> the examples/cms directory is.
+</I>Ufff.... ;)
+
+&gt;<i> I never got my head around YDDatabaseObject to be honest, but I guess 
+</I>&gt;<i> I should start looking into it.
+</I>Yes, i was using the common YDDatabase for db operations but with 
+YDDatabaObject it's much much easier..
+&gt;<i> I'm just wondering what would be the easiest way of combining 
+</I>&gt;<i> YDDatabaseObject with YDDatabaseTree for the CMS part. I do want to 
+</I>&gt;<i> have the modular approach, but also the hierarchical approach of items 
+</I>&gt;<i> having parents and children. Add on top of that the multilingual part, 
+</I>&gt;<i> which is key in this, and you get a difficult combination, believe me.
+</I>I was thinking about that some time ago too.. and i think i found a cool 
+way of doing this. The concept is.. everything is a component (eg, page, 
+guestbook.. etc) and these components must be part of a tree that 
+represents the whole portal. The first nodes of a portal must be always 
+menus (component menu).
+Then, i will have a portal that starts like the next image where all 
+first nodes of the portal must always be menus:
+
+Portal tree
+
+Inside a menu we can create any other component.. Eg we can create pages 
+(that are html/xhtml content).
+
+Each menu has a &quot;reference&quot;. &quot;Reference&quot; is a internal label that 
+defines the menu name. In the menu properties we must define the real 
+name for all portal languages.
+For a page component we must do the same... a page has a &quot;reference&quot; and 
+a title and content for each language.
+
+This is the simpler way but for expert admins, it's possible to, eg, 
+create a guestbook that is a child of a page.. this means that the 
+guestbook will not appear in the menu (because it's not a direct child) 
+but will appear rendered in the bottom of the page (when the visitor 
+enters that page).
+
+So, this is the concept i made.. a hierarchical component system, with 
+multi-language (every component has multi-language but only displays the 
+correspondent &quot;reference&quot; in the administrator menu).
+
+Now, how is this done.. Basically, every component has this parts:
+- dbobject
+- phobject
+- template directory added to the master template directory
+- languages directory
+
+A dbobject is a class that extends YDDatabaseObject as has all methods 
+about this component and how it handles its db operations.
+
+A phobject is a class (optionaly extends YDRequest) that cares about 
+forms, templating and only _uses_ dbobject methods
+
+Every component has its own template(s) but we need to store that 
+directory inside a common directory (eg, &quot;templates) to permit the use 
+of skins. Then if the component is a &quot;guestbook&quot; we will have a 
+&quot;guestbook&quot; directory inside all possible skins. Eg:
++ templates
+                +  default
+                |            +  page
+                |            + guestbook
+               + orange
+                            + page
+                            + guestbook
+
+Every component has its own language strings and own language directory.
+
+&gt;<i>  
+</I>&gt;<i> I like the approach an application like Drupal (drupal.org 
+</I>&gt;<i> &lt;<A HREF="http://drupal.org">http://drupal.org</A>&gt;) takes for implementing the modules, but the way 
+</I>&gt;<i> they added multi-lingual content is really bad and far from working.
+</I>I don't know the drupal internals..
+
+&gt;<i>  
+</I>&gt;<i> Francisco, would you mind putting together a small example using 
+</I>&gt;<i> YDDatabaseObject to illustrate how you would see the module 
+</I>&gt;<i> infrastructure working for the CMS part?
+</I>
+Take a look to how the db is organized...
+DBscheme
+
+Content_tree is the portal tree. Every row is a component and every 
+component has common attributes (like 
+state:published/notpublished/approval.., publish schedule, ...). So, 
+this is generic.
+
+Then, like a said above, every direct child of the root must be a menu.. 
+and what is a menu? well, its just a component that has a title (that 
+depends of the language.. and that's way it's related with the languages 
+table).
+
+For pages, we have component_page that has specific attributes for pages 
+(eg: metatags, html..) and it's related with languages too..
+
+Then we have users that have it's own language (for administration) and 
+are related with the tree because we want locks. Locks are information 
+that defines that a user is, eg, editing a component. This way we don't 
+have more than one user editing.
+
+And we have other tables too (for configurations, statistics..) but 
+these are what you want for component definition.
+
+
+What you think?
+
+Francisco A
+
+
+&gt;<i> On 4/18/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> 
+</I>&gt;<i> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt; wrote:
+</I>&gt;<i>
+</I>&gt;<i>     Hi Pieter
+</I>&gt;<i>
+</I>&gt;<i>     I saw your initial commit about the cms and forum.. and i think we
+</I>&gt;<i>     could
+</I>&gt;<i>     share some ideas about it.
+</I>&gt;<i>
+</I>&gt;<i>     IMHO, a content framework must:
+</I>&gt;<i>
+</I>&gt;<i>     - _not_ include specific code (eg: design/templating code),
+</I>&gt;<i>     otherwise in
+</I>&gt;<i>     most cases it will be useless.
+</I>&gt;<i>
+</I>&gt;<i>     - should be a collection of modules that have all _logic_ about all
+</I>&gt;<i>     possible operations about that module.
+</I>&gt;<i>
+</I>&gt;<i>     I saw that you are creating some modules extending a sqlclass
+</I>&gt;<i>     (that has
+</I>&gt;<i>     only a simple contructor about a connection).. and this doesn't seems
+</I>&gt;<i>     the best approach because almost all forum logic implements what
+</I>&gt;<i>     YDDatabaseObject already does (updates/deletes/inserts...).. all
+</I>&gt;<i>     we need
+</I>&gt;<i>     is a YDDatabaseObject extension and 80% of the job about the forum is
+</I>&gt;<i>     done ;)
+</I>&gt;<i>
+</I>&gt;<i>     I propose that every module (eg: forum) has:
+</I>&gt;<i>     - a YDDatabaseObject extension that contains all possible operations
+</I>&gt;<i>
+</I>&gt;<i>     - a language directory that contains all language files about the
+</I>&gt;<i>     module
+</I>&gt;<i>     (no news here)
+</I>&gt;<i>
+</I>&gt;<i>     - a sql directory that contains the sql needed and a DBDesigner4
+</I>&gt;<i>     source
+</I>&gt;<i>     file (this is free and excellent for db designing and exporting)
+</I>&gt;<i>
+</I>&gt;<i>     ... and these, imho, could be included has a &quot;ydf addon/module&quot;
+</I>&gt;<i>     or  &quot;ydf
+</I>&gt;<i>     cm addon/module&quot; and not has a example.
+</I>&gt;<i>
+</I>&gt;<i>     .. in the ydf &quot;example&quot; directory i think we could add a
+</I>&gt;<i>     demonstration
+</I>&gt;<i>     class (that uses the YDDatabaseObject extension about that module) and
+</I>&gt;<i>     the correspondent templating directory that shows how the module
+</I>&gt;<i>     works.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     .. just my 0.02
+</I>&gt;<i>
+</I>&gt;<i>     Francisco A
+</I>&gt;<i>     _______________________________________________
+</I>&gt;<i>     YDFramework-devel mailing list
+</I>&gt;<i>     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i>     <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>     &lt;<A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>&gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> -- 
+</I>&gt;<i> pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; 
+</I>&gt;<i> . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A> 
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060419/dfbbc466/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060419/dfbbc466/attachment.html</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: tree.JPG
+Type: image/jpeg
+Size: 4536 bytes
+Desc: not available
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060419/dfbbc466/attachment.jpe">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060419/dfbbc466/attachment.jpe</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: scheme.JPG
+Type: image/jpeg
+Size: 93088 bytes
+Desc: not available
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060419/dfbbc466/attachment-0001.jpe">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060419/dfbbc466/attachment-0001.jpe</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000290.html">[ydf-devel] YDCM feedback
+</A></li>
+	<LI>Next message: <A HREF="000292.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#291">[ date ]</a>
+              <a href="thread.html#291">[ thread ]</a>
+              <a href="subject.html#291">[ subject ]</a>
+              <a href="author.html#291">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

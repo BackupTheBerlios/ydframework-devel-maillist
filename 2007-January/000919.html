@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2326 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2326%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701212102.l0LL2nIs032444%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000918.html">
+   <LINK REL="Next"  HREF="000920.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2326 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2326%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701212102.l0LL2nIs032444%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2326 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan 21 22:02:49 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000918.html">[ydf-devel] r2325 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000920.html">[ydf-devel] r2327 - in YDFramework2.0/trunk/examples: . simplecms	simplecms/includes simplecms/includes/modules	simplecms/includes/skins_admin simplecms/includes/skins_public	simplecms/includes/skins_public/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#919">[ date ]</a>
+              <a href="thread.html#919">[ thread ]</a>
+              <a href="subject.html#919">[ subject ]</a>
+              <a href="author.html#919">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-21 22:02:49 +0100 (Sun, 21 Jan 2007)
+New Revision: 2326
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+Added the url template modifier.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-21 21:02:14 UTC (rev 2325)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-21 21:02:49 UTC (rev 2326)
+@@ -82,6 +82,7 @@
+                 $this-&gt;register_modifier( 'bbcode', 'YDTemplate_modifier_bbcode' );
+                 $this-&gt;register_modifier( 'absoluteurl', 'YDTemplate_modifier_absoluteurl' );
+                 $this-&gt;register_modifier( 'timesince', 'YDTemplate_modifier_timesince' );
++                $this-&gt;register_modifier( 'url', 'YDTemplate_modifier_url' );
+ 
+                 // Register the custom functions
+                 $this-&gt;register_function( 't', 'YDTemplate_function_t' );
+@@ -139,6 +140,7 @@
+                 $this-&gt;assign( 'YD_FW_VERSION', YD_FW_VERSION );
+                 $this-&gt;assign( 'YD_FW_NAMEVERS', YD_FW_NAMEVERS );
+                 $this-&gt;assign( 'YD_FW_HOMEPAGE', YD_FW_HOMEPAGE );
++                $this-&gt;assign( 'YD_FW_POWERED_BY', YD_FW_POWERED_BY );
+                 $this-&gt;assign( 'YD_FW_COPYRIGHT', YD_FW_COPYRIGHT );
+                 $this-&gt;assign( 'YD_SELF_SCRIPT', YD_SELF_SCRIPT );
+                 $this-&gt;assign( 'YD_SELF_FILE', YD_SELF_FILE );
+@@ -662,4 +664,19 @@
+         return YDStringUtil::timesince( $obj );
+     }
+ 
++    /**
++     *	This template modifier formats an url with an optional title.
++     *
++     *  @param  $url        The url to format as a HTML hyperlink
++     *  @param  $title      (optional) If null and no string is given, the url will be used.
++     *
++     *  @returns    The formatted url.
++     */
++    function YDTemplate_modifier_url( $url, $title=null ) {
++        if ( empty( $title ) ) {
++            $title = $url;
++        }
++        return sprintf( '&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;', $url, $title );
++    }
++
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000918.html">[ydf-devel] r2325 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000920.html">[ydf-devel] r2327 - in YDFramework2.0/trunk/examples: . simplecms	simplecms/includes simplecms/includes/modules	simplecms/includes/skins_admin simplecms/includes/skins_public	simplecms/includes/skins_public/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#919">[ date ]</a>
+              <a href="thread.html#919">[ thread ]</a>
+              <a href="subject.html#919">[ subject ]</a>
+              <a href="author.html#919">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

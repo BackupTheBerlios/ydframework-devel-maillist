@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2063 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2063%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609021755.k82HtL5S011140%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000573.html">
+   <LINK REL="Next"  HREF="000575.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2063 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2063%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609021755.k82HtL5S011140%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2063 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep  2 19:55:21 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000573.html">[ydf-devel] r2062 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000575.html">[ydf-devel] r2064 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#574">[ date ]</a>
+              <a href="thread.html#574">[ thread ]</a>
+              <a href="subject.html#574">[ subject ]</a>
+              <a href="author.html#574">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-02 19:55:01 +0200 (Sat, 02 Sep 2006)
+New Revision: 2063
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+- added support for custom options in YDForm::addFormRule.
+
+  Now it's possible to define a form rule like:
+  $form-&gt;addFormRule( array( &amp; $this, '_check' ), $simpleOption_or_array );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-01 22:14:43 UTC (rev 2062)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-02 17:55:01 UTC (rev 2063)
+@@ -625,9 +625,10 @@
+          *  __ALL__ to add a form wide error.
+          *
+          *  @param $callback    The callback of the funtion to perform for this form rule.
++         *  @param $options     (Optional) Custom rule options
+          */
+-        function addFormRule( $callback ) {
+-            array_push( $this-&gt;_formrules, $callback );
++        function addFormRule( $callback, $options = null ) {
++            array_push( $this-&gt;_formrules, array( $callback, $options ) );
+         }
+ 
+         /**
+@@ -1036,15 +1037,16 @@
+             foreach ( $this-&gt;_formrules as $rule ) {
+ 
+                 // Check if the callback is valid
+-                if ( ! is_callable( $rule ) ) {
+-                    trigger_error( 'The callback specified for the form &quot;' . $rule . '&quot; is not valid', YD_ERROR );
++                if ( ! is_callable( $rule[0] ) ) {
++                    trigger_error( 'The callback specified for the form &quot;' . $rule[0] . '&quot; is not valid', YD_ERROR );
+                 }
+ 
+                 // Get the form values
+                 $values = $this-&gt;getValues();
+ 
+                 // Execute the rule
+-                $result = call_user_func( $rule, $values );
++                if ( is_null( $rule[1] ) ) $result = call_user_func( $rule[0], $values );
++                else                       $result = call_user_func( $rule[0], $values, $rule[1] );
+ 
+                 // Check the result
+                 if ( is_array( $result ) ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000573.html">[ydf-devel] r2062 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000575.html">[ydf-devel] r2064 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#574">[ date ]</a>
+              <a href="thread.html#574">[ thread ]</a>
+              <a href="subject.html#574">[ subject ]</a>
+              <a href="author.html#574">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

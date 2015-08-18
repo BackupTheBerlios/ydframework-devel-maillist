@@ -1,0 +1,886 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2302 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses javascript
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2302%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20javascript&In-Reply-To=%3C200701081121.l08BLv6q013479%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000893.html">
+   <LINK REL="Next"  HREF="000895.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2302 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses javascript</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2302%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20javascript&In-Reply-To=%3C200701081121.l08BLv6q013479%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2302 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses javascript">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Jan  8 12:21:57 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000893.html">[ydf-devel] r2301 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000895.html">[ydf-devel] r2303 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#894">[ date ]</a>
+              <a href="thread.html#894">[ thread ]</a>
+              <a href="subject.html#894">[ subject ]</a>
+              <a href="author.html#894">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-08 12:21:56 +0100 (Mon, 08 Jan 2007)
+New Revision: 2302
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/javascript/sh_main.min.js
+   YDFramework2.0/trunk/YDFramework2/javascript/sh_sql.js
+   YDFramework2.0/trunk/YDFramework2/javascript/sh_style.css
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+Log:
+Added supercool debug output with syntax coloring if you set YD_DEBUG to 2.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-07 17:47:07 UTC (rev 2301)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-08 11:21:56 UTC (rev 2302)
+@@ -1502,25 +1502,15 @@
+             // Show debugging info if needed
+             if ( YDConfig::get( 'YD_DEBUG' ) == 1 || YDConfig::get( 'YD_DEBUG' ) == 2 ) {
+ 
+-                // Format the SQL statement
+-                $sql = $this-&gt;formatSql( $sql );
++                // Construct the array with the data for the SQL statement
++                $data = array(
++                    'trace' =&gt; YDDebugUtil::getStackTrace(),
++                    'sql'   =&gt; $sql = $this-&gt;formatSql( $sql ),
++                    'time'  =&gt; $elapsed
++                );
+ 
+-                // Get the backtrace
+-                $trace = debug_backtrace();
+-
+-                // Format the SQL
+-                $sql_final = '';
+-                foreach ( explode( YD_CRLF, YDDebugUtil::getStackTrace() ) as $line ) {
+-                    $sql_final .= $line . YD_CRLF;
+-                }
+-                $sql_final .= 'SQL Statement:' . YD_CRLF;
+-                foreach ( explode( YD_CRLF, $sql ) as $line ) {
+-                    $sql_final .= '    ' . $line . YD_CRLF;
+-                }
+-                $sql_final .= YD_CRLF . 'SQL Query Time: ' . $elapsed . ' ms' . YD_CRLF;
+-
+                 // Add it to the query log
+-                array_push( $GLOBALS['YD_SQL_QUERY'], $sql_final );
++                array_push( $GLOBALS['YD_SQL_QUERY'], $data );
+ 
+             }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-07 17:47:07 UTC (rev 2301)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-08 11:21:56 UTC (rev 2302)
+@@ -615,8 +615,6 @@
+         }
+ 
+         /**
+-         *  Action to include the JavaScript for the bbtextarea field.
+-         *
+          *  @internal
+          */
+         function actionJsBBTextArea() {
+@@ -624,6 +622,30 @@
+             die( readfile( dirname( __FILE__ ) . '/../javascript/bbtextarea.js' ) );
+         }
+ 
++        /**
++         *  @internal
++         */
++        function actionJsShMain() {
++            header( 'Content-Type: application/x-javascript' );
++            die( readfile( dirname( __FILE__ ) . '/../javascript/sh_main.min.js' ) );
++        }
++
++        /**
++         *  @internal
++         */
++        function actionJsShSql() {
++            header( 'Content-Type: application/x-javascript' );
++            die( readfile( dirname( __FILE__ ) . '/../javascript/sh_sql.js' ) );
++        }
++
++        /**
++         *  @internal
++         */
++        function actionCssShStyle() {
++            header( 'Content-Type: text/css' );
++            die( readfile( dirname( __FILE__ ) . '/../javascript/sh_style.css' ) );
++        }
++
+     }
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-07 17:47:07 UTC (rev 2301)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-08 11:21:56 UTC (rev 2302)
+@@ -120,8 +120,8 @@
+             // Stop the timer
+             $GLOBALS['timer']-&gt;finish();
+ 
+-            // Show debugging info if needed
+-            if ( YDConfig::get( 'YD_DEBUG' ) == 1 || YDConfig::get( 'YD_DEBUG' ) == 2 ) {
++            // Output visible debug info as a comment
++            if ( YDConfig::get( 'YD_DEBUG' ) == 1 ) {
+ 
+                 // Total size of include files
+                 $includeFiles = get_included_files();
+@@ -147,29 +147,34 @@
+                 }
+ 
+                 // Create the debug messages
+-                $debug = YD_CRLF . YD_CRLF;
++                $debug = YD_CRLF . YD_CRLF . YD_FW_NAMEVERS . ' DEBUG INFORMATION ' . YD_CRLF . YD_CRLF;
+ 
+                 // Create the timings report
+                 $debug .= 'PROCESSING TIME:' . YD_CRLF . YD_CRLF;
+-                $debug .= &quot;\tElapsed\t  Diff\t  Marker&quot; . YD_CRLF;
++                $debug .= &quot;    Elapsed\t  Diff\t  Marker&quot; . YD_CRLF;
+                 $timings = $GLOBALS['timer']-&gt;getReport();
+                 foreach ( $timings as $timing ) {
+-                    $debug .= &quot;\t&quot; . $timing[0] . ' ms' . &quot;\t  &quot; . $timing[1] . ' ms' . &quot;\t  &quot; .$timing[2] . YD_CRLF;
++                    $debug .= &quot;    &quot; . $timing[0] . ' ms' . &quot;\t  &quot; . $timing[1] . ' ms' . &quot;\t  &quot; .$timing[2] . YD_CRLF;
+                 }
+                 $debug .= YD_CRLF;
+ 
+                 // Create the include file details
+                 $debug .= 'INCLUDED FILES (' . sizeof( $includeFiles ) . ' files - ' . $includeFilesSize . ')' . YD_CRLF . YD_CRLF;
+-                $debug .= &quot;\t&quot; . implode( &quot;\n\t&quot;, $includeFiles ) . YD_CRLF . YD_CRLF;
++                $debug .= &quot;    &quot; . implode( &quot;\n    &quot;, $includeFiles ) . YD_CRLF . YD_CRLF;
+ 
+                 // Add the queries if any
+                 if ( sizeof( $GLOBALS['YD_SQL_QUERY'] ) &gt; 0 ) {
+                     $debug .= 'EXECUTED SQL QUERIES (' . sizeof( $GLOBALS['YD_SQL_QUERY'] ) . ' queries)' . YD_CRLF . YD_CRLF;
+                     foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
+-                        $debug .= &quot;\t&quot; . '---- SQL QUERY ' . ($key+1) . ' ----' . YD_CRLF;
+-                        foreach ( explode( YD_CRLF, trim( $query ) ) as $line ) {
+-                            $debug .= &quot;\t\t&quot; . rtrim( $line ) . YD_CRLF;
++                        $debug .= &quot;    &quot; . '---- SQL QUERY ' . ($key+1) . ' ----' . YD_CRLF;
++                        foreach ( explode( YD_CRLF, trim( $query['trace'] ) ) as $line ) {
++                            $debug .= &quot;    &quot; . rtrim( $line ) . YD_CRLF;
+                         }
++                        $debug .= YD_CRLF . &quot;    SQL Query:&quot; . YD_CRLF;
++                        foreach ( explode( YD_CRLF, trim( $query['sql'] ) ) as $line ) {
++                            $debug .= &quot;        &quot; . rtrim( $line ) . YD_CRLF;
++                        }
++                        $debug .= YD_CRLF . &quot;    Query Time: &quot; . $query['time'] . ' ms' . YD_CRLF;
+                         $debug .= YD_CRLF;
+                     }
+                 }
+@@ -179,6 +184,99 @@
+ 
+             }
+ 
++            // Output visible debug info
++            if ( YDConfig::get( 'YD_DEBUG' ) == 2 ) {
++
++                // Total size of include files
++                $includeFiles = get_included_files();
++
++                // Calculate the total size
++                $includeFilesSize = 0;
++                $includeFilesWithSize = array();
++                foreach ( $includeFiles as $key=&gt;$includeFile ) {
++                    if ( is_file( $includeFile ) ) {
++                        $includeFilesSize += filesize( $includeFile );
++                        $includeFilesWithSize[ filesize( $includeFile ) ] = realpath( $includeFile );
++                    }
++                }
++                $includeFilesSize = YDStringUtil::formatFileSize( $includeFilesSize );
++
++                // Sort the list of include files by file size
++                krsort( $includeFilesWithSize );
++
++                // Get the timing report
++                $timings = $GLOBALS['timer']-&gt;getReport();
++
++                // The font to use for the debug output
++                $font = ' style=&quot;font-family: Arial, Helvetica, sans-serif; text-align: left; vertical-align: top;&quot;';
++
++                // Include the needed libraries
++                $debug  = '';
++
++                // Create the output
++                $debug .= '&lt;br clear=&quot;all&quot;/&gt;&lt;hr size=&quot;1&quot;/&gt;';
++                $debug .= '&lt;p ' . $font . '&gt;&lt;b&gt;' . YD_FW_NAMEVERS . ' Debug Information&lt;/b&gt;&lt;/p&gt;';
++
++                // Add the processing time
++                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Processing time&lt;/i&gt;&lt;/p&gt;';
++                $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
++                $debug .= sprintf(
++                    '&lt;tr&gt;&lt;th %s&gt;Elapsed&lt;/th&gt;&lt;th %s&gt;Diff&lt;/th&gt;&lt;th %s&gt;Marker&lt;/th&gt;&lt;/tr&gt;',
++                    $font, $font, $font
++                );
++                foreach ( $timings as $timing ) {
++                    $debug .= sprintf(
++                        '&lt;tr&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;td %s&gt;%s&lt;/td&gt;&lt;/tr&gt;',
++                        $font, $timing[0], $font, $timing[0], $font, $timing[2]
++                    );
++                }
++                $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
++
++                // Add the included files
++                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Included files&lt;/i&gt;&lt;/p&gt;';
++                $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
++                $debug .= sprintf( '&lt;tr&gt;&lt;th %s&gt;File&lt;/th&gt;&lt;th %s&gt;Size&lt;/th&gt;&lt;/tr&gt;', $font, $font );
++                foreach ( $includeFilesWithSize as $size=&gt;$file ) {
++                    $debug .= sprintf(
++                        '&lt;tr&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;/tr&gt;',
++                        $font, realpath( $file ), $font, YDStringUtil::formatFileSize( $size )
++                    );
++                }
++                $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
++
++                // Add the query log
++                if ( sizeof( $GLOBALS['YD_SQL_QUERY'] ) &gt; 0 ) {
++                    $debug .= '&lt;script src=&quot;' . YD_SELF_SCRIPT . '?do=JsShMain&quot;&gt;&lt;/script&gt;';
++                    $debug .= '&lt;script src=&quot;' . YD_SELF_SCRIPT . '?do=JsShSql&quot;&gt;&lt;/script&gt;';
++                    $debug .= '&lt;link rel=&quot;stylesheet&quot; href=&quot;' . YD_SELF_SCRIPT . '?do=CssShStyle&quot; type=&quot;text/css&quot; /&gt;';
++                    $debug .= sprintf(
++                        '&lt;p ' . $font . '&gt;&lt;i&gt;SQL Query Log (%s queries)&lt;/i&gt;&lt;/p&gt;',
++                        sizeof( $GLOBALS['YD_SQL_QUERY'] )
++                    );
++                    $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
++                    $debug .= sprintf(
++                        '&lt;tr&gt;&lt;th %s&gt;Query #&lt;/th&gt;&lt;th %s&gt;Trace&lt;/th&gt;&lt;th %s&gt;SQL Statement&lt;/th&gt;&lt;th %s&gt;Elapsed&lt;/th&gt;&lt;/tr&gt;',
++                        $font, $font, $font, $font );
++                    foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
++                        $debug .= sprintf(
++                            '&lt;tr&gt;&lt;td width=&quot;5%%&quot; %s&gt;%s&lt;/td&gt;&lt;td width=&quot;15%%&quot; %s&gt;%s ms&lt;/td&gt;&lt;td width=&quot;40%%&quot; %s&gt;&lt;pre&gt;%s&lt;/pre&gt;&lt;/td&gt;&lt;td width=&quot;40%%&quot; %s&gt;&lt;pre class=&quot;sh_sql&quot;&gt;%s&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;',
++                            $font, $key, $font, $query['time'], $font, $query['trace'], $font, $query['sql']
++                        );
++                    }
++                    $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
++                    $debug .= '&lt;script&gt;sh_highlightDocument();&lt;/script&gt;';
++                    $debug .= '&lt;script&gt;sh_highlightDocument();&lt;/script&gt;';
++                }
++
++                // Add the elapsed time
++                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Elapsed Time&lt;/i&gt;&lt;/p&gt;';
++                $debug .= '&lt;dd&gt;&lt;p&gt;' . $GLOBALS['timer']-&gt;getElapsed() . ' ms&lt;/p&gt;&lt;/dd&gt;';
++
++                // Output the debug message
++                echo( $debug );
++
++            }
++
+             // Add the elapsed time
+             die( YD_CRLF . '&lt;!-- ' . $GLOBALS['timer']-&gt;getElapsed() . ' ms --&gt;' );
+ 
+
+Added: YDFramework2.0/trunk/YDFramework2/javascript/sh_main.min.js
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/javascript/sh_main.min.js	2007-01-07 17:47:07 UTC (rev 2301)
++++ YDFramework2.0/trunk/YDFramework2/javascript/sh_main.min.js	2007-01-08 11:21:56 UTC (rev 2302)
+@@ -0,0 +1,39 @@
++/* Copyright (C) 2007 <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">gnombat at users.sourceforge.net</A> */
++/* License: <A HREF="http://shjs.sourceforge.net/doc/license.html">http://shjs.sourceforge.net/doc/license.html</A> */
++
++function sh_highlightString(inputString,language,builder){var patternStack={_stack:[],getLength:function(){return this._stack.length;},getTop:function(){if(this._stack.length===0){return undefined;}
++return this._stack[this._stack.length-1];},push:function(state){this._stack.push(state);},pop:function(){if(this._stack.length===0){throw&quot;pop on empty stack&quot;;}
++this._stack.pop();}};var i;var pos=0;var currentStyle=null;var output=function(s,style){if(s.length===0){return;}
++if(style===null){var pattern=patternStack.getTop();if(pattern!==undefined&amp;&amp;('style'in pattern)&amp;&amp;!('state'in pattern)){style=pattern.style;}}
++if(currentStyle!==style){if(currentStyle!==null){builder.endElement();}
++if(style!==null){builder.startElement(style);}}
++builder.text(s);pos+=s.length;currentStyle=style;};var endOfLinePattern=/\r\n|\r|\n/g;endOfLinePattern.lastIndex=0;while(pos&lt;inputString.length){var start=pos;var endOfLineMatch=endOfLinePattern.exec(inputString);var end;var startOfNextLine;if(endOfLineMatch===null){end=inputString.length;startOfNextLine=inputString.length;}
++else{end=endOfLineMatch.index;startOfNextLine=endOfLinePattern.lastIndex;}
++var line=inputString.substring(start,end);for(;;){var pattern=patternStack.getTop();var stateIndex=pattern===undefined?0:pattern.next;var state=language[stateIndex];var bestMatch=null;var bestMatchIndex=-1;for(i=0;i&lt;state.length;i++){var regex=state[i].regex;regex.lastIndex=pos-start;var match=regex.exec(line);if(match!==null&amp;&amp;(bestMatch===null||match.index&lt;bestMatch.index)){bestMatch=match;bestMatchIndex=i;}}
++if(bestMatch===null){output(line.substring(pos-start),null);break;}
++else{if(bestMatch.index&gt;pos-start){output(line.substring(pos-start,bestMatch.index),null);}
++pattern=state[bestMatchIndex];var newStyle=null;if('style'in pattern){newStyle=pattern.style;}
++var matchedString=bestMatch[0];output(matchedString,newStyle);if('next'in pattern){patternStack.push(pattern);}
++else{if('exit'in pattern){patternStack.pop();}
++if('exitall'in pattern){while(patternStack.getLength()&gt;0){patternStack.pop();}}}}}
++if(currentStyle!==null){builder.endElement();}
++currentStyle=null;if(endOfLineMatch){builder.text(endOfLineMatch[0]);}
++pos=startOfNextLine;}}
++function sh_getClasses(element){var result=[];var htmlClass=element.className;if(htmlClass&amp;&amp;htmlClass.length&gt;0){var htmlClasses=htmlClass.split(&quot; &quot;);for(var i=0;i&lt;htmlClasses.length;i++){if(htmlClasses[i].length&gt;0){result.push(htmlClasses[i]);}}}
++return result;}
++function sh_addClass(element,name){var htmlClasses=sh_getClasses(element);for(var i=0;i&lt;htmlClasses.length;i++){if(name.toLowerCase()===htmlClasses[i].toLowerCase()){return;}}
++htmlClasses.push(name);element.className=htmlClasses.join(&quot; &quot;);}
++function sh_getText(element){if(element.nodeType===3||element.nodeType===4){return element.data;}
++else{var result='';for(var i=0;i&lt;element.childNodes.length;i++){result+=sh_getText(element.childNodes.item(i));}
++return result;}}
++var sh_builder={init:function(element){while(element.hasChildNodes()){element.removeChild(element.firstChild);}
++var newTextNode=document.createTextNode(&quot;&quot;);element.appendChild(newTextNode);this._currentTextNode=newTextNode;this._element=element;},startElement:function(style){var span=document.createElement(&quot;span&quot;);span.className=style;var newTextNode=document.createTextNode(&quot;&quot;);span.appendChild(newTextNode);this._currentTextNode.parentNode.appendChild(span);this._currentTextNode=newTextNode;},endElement:function(){var newTextNode=document.createTextNode(&quot;&quot;);this._currentTextNode.parentNode.parentNode.appendChild(newTextNode);this._currentTextNode=newTextNode;},text:function(s){this._currentTextNode.appendData(s);},close:function(){this._element.normalize();}};function sh_highlightElement(element,language){sh_addClass(element,&quot;sh_sourceCode&quot;);if(element.normalize){element.normalize();}
++var inputString;if(element.childNodes.length===0){return;}
++else if(element.childNodes.length===1){if(element.firstChild.nodeType===3||element.firstChild.nodeType===4){inputString=element.firstChild.data;}
++else{inputString=sh_getText(element);}}
++else{inputString=sh_getText(element);}
++sh_builder.init(element);sh_highlightString(inputString,language,sh_builder);sh_builder.close();}
++function sh_highlightDocument(){if(!window.sh_languages){return;}
++var nodeList=document.getElementsByTagName(&quot;pre&quot;);for(var i=0;i&lt;nodeList.length;i++){var element=nodeList.item(i);var htmlClasses=sh_getClasses(element);for(var j=0;j&lt;htmlClasses.length;j++){var htmlClass=htmlClasses[j].toLowerCase();if(htmlClass===&quot;sh_sourcecode&quot;){continue;}
++var prefix=htmlClass.substr(0,3);if(prefix===&quot;sh_&quot;){var language=htmlClass.substring(3);if(language in sh_languages){sh_highlightElement(element,sh_languages[language]);}
++else{throw&quot;Found &lt;pre&gt; element with class='&quot;+htmlClass+&quot;', but no such language exists&quot;;}}}}}
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/javascript/sh_sql.js
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/javascript/sh_sql.js	2007-01-07 17:47:07 UTC (rev 2301)
++++ YDFramework2.0/trunk/YDFramework2/javascript/sh_sql.js	2007-01-08 11:21:56 UTC (rev 2302)
+@@ -0,0 +1,371 @@
++if (! this.sh_languages) {
++  this.sh_languages = {};
++}
++sh_languages['sql'] = [
++  [
++    {
++      'regex': /\b(?:[Vv][Aa][Rr][Cc][Hh][Aa][Rr]|[Tt][Ii][Nn][Yy][Ii][Nn][Tt]|[Tt][Ee][Xx][Tt]|[Dd][Aa][Tt][Ee]|[Ss][Mm][Aa][Ll][Ll][Ii][Nn][Tt]|[Mm][Ee][Dd][Ii][Uu][Mm][Ii][Nn][Tt]|[Ii][Nn][Tt]|[Bb][Ii][Gg][Ii][Nn][Tt]|[Ff][Ll][Oo][Aa][Tt]|[Dd][Oo][Uu][Bb][Ll][Ee]|[Dd][Ee][Cc][Ii][Mm][Aa][Ll]|[Dd][Aa][Tt][Ee][Tt][Ii][Mm][Ee]|[Tt][Ii][Mm][Ee][Ss][Tt][Aa][Mm][Pp]|[Tt][Ii][Mm][Ee]|[Yy][Ee][Aa][Rr]|[Uu][Nn][Ss][Ii][Gg][Nn][Ee][Dd]|[Cc][Hh][Aa][Rr]|[Tt][Ii][Nn][Yy][Bb][Ll][Oo][Bb]|[Tt][Ii][Nn][Yy][Tt][Ee][Xx][Tt]|[Bb][Ll][Oo][Bb]|[Mm][Ee][Dd][Ii][Uu][Mm][Bb][Ll][Oo][Bb]|[Mm][Ee][Dd][Ii][Uu][Mm][Tt][Ee][Xx][Tt]|[Ll][Oo][Nn][Gg][Bb][Ll][Oo][Bb]|[Ll][Oo][Nn][Gg][Tt][Ee][Xx][Tt]|[Ee][Nn][Uu][Mm]|[Bb][Oo][Oo][Ll]|[Bb][Ii][Nn][Aa][Rr][Yy]|[Vv][Aa][Rr][Bb][Ii][Nn][Aa][Rr][Yy])\b/g,
++      'style': 'sh_type'
++    },
++    {
++      'regex': /\b(?:[Aa][Ll][Ll]|[Aa][Ss][Cc]|[Aa][Ss]|[Aa][Ll][Tt][Ee][Rr]|[Aa][Nn][Dd]|[Aa][Dd][Dd]|[Aa][Uu][Tt][Oo]_[Ii][Nn][Cc][Rr][Ee][Mm][Ee][Nn][Tt]|[Bb][Ee][Tt][Ww][Ee][Ee][Nn]|[Bb][Ii][Nn][Aa][Rr][Yy]|[Bb][Oo][Tt][Hh]|[Bb][Yy]|[Bb][Oo][Oo][Ll][Ee][Aa][Nn]|[Cc][Hh][Aa][Nn][Gg][Ee]|[Cc][Hh][Ee][Cc][Kk]|[Cc][Oo][Ll][Uu][Mm][Nn][Ss]|[Cc][Oo][Ll][Uu][Mm][Nn]|[Cc][Rr][Oo][Ss][Ss]|[Cc][Rr][Ee][Aa][Tt][Ee]|[Dd][Aa][Tt][Aa][Bb][Aa][Ss][Ee][Ss]|[Dd][Aa][Tt][Aa][Bb][Aa][Ss][Ee]|[Dd][Aa][Tt][Aa]|[Dd][Ee][Ll][Aa][Yy][Ee][Dd]|[Dd][Ee][Ss][Cc][Rr][Ii][Bb][Ee]|[Dd][Ee][Ss][Cc]|[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt]|[Dd][Ee][Ll][Ee][Tt][Ee]|[Dd][Rr][Oo][Pp]|[Dd][Ee][Ff][Aa][Uu][Ll][Tt]|[Ee][Nn][Cc][Ll][Oo][Ss][Ee][Dd]|[Ee][Ss][Cc][Aa][Pp][Ee][Dd]|[Ee][Xx][Ii][Ss][Tt][Ss]|[Ee][Xx][Pp][Ll][Aa][Ii][Nn]|[Ff][Ii][Ee][Ll][Dd][Ss]|[Ff][Ii][Ee][Ll][Dd]|[Ff][Ll][Uu][Ss][Hh]|[Ff][Oo][Rr]|[Ff][Oo][Rr][Ee][Ii][Gg][Nn]|[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]|[Ff][Rr][Oo][Mm]|[Gg][Rr][Oo][Uu][Pp]|[Gg][Rr][A!
+ a][Nn][Tt]|[Hh][Aa][Vv][Ii][Nn][Gg]|[Ii][Gg][Nn][Oo][Rr][Ee]|[Ii][Nn][Dd][Ee][Xx]|[Ii][Nn][Ff][Ii][Ll][Ee]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Ii][Nn][Nn][Ee][Rr]|[Ii][Nn][Tt][Oo]|[Ii][Dd][Ee][Nn][Tt][Ii][Ff][Ii][Ee][Dd]|[Ii][Nn]|[Ii][Ss]|[Ii][Ff]|[Jj][Oo][Ii][Nn]|[Kk][Ee][Yy][Ss]|[Kk][Ii][Ll][Ll]|[Kk][Ee][Yy]|[Ll][Ee][Aa][Dd][Ii][Nn][Gg]|[Ll][Ii][Kk][Ee]|[Ll][Ii][Mm][Ii][Tt]|[Ll][Ii][Nn][Ee][Ss]|[Ll][Oo][Aa][Dd]|[Ll][Oo][Cc][Aa][Ll]|[Ll][Oo][Cc][Kk]|[Ll][Oo][Ww]_[Pp][Rr][Ii][Oo][Rr][Ii][Tt][Yy]|[Ll][Ee][Ff][Tt]|[Ll][Aa][Nn][Gg][Uu][Aa][Gg][Ee]|[Mm][Oo][Dd][Ii][Ff][Yy]|[Nn][Aa][Tt][Uu][Rr][Aa][Ll]|[Nn][Oo][Tt]|[Nn][Uu][Ll][Ll]|[Nn][Ee][Xx][Tt][Vv][Aa][Ll]|[Oo][Pp][Tt][Ii][Mm][Ii][Zz][Ee]|[Oo][Pp][Tt][Ii][Oo][Nn]|[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll][Ll][Yy]|[Oo][Rr][Dd][Ee][Rr]|[Oo][Uu][Tt][Ff][Ii][Ll][Ee]|[Oo][Rr]|[Oo][Uu][Tt][Ee][Rr]|[Oo][Nn]|[Pp][Rr][Oo][Cc][Ee][Ee][Dd][Uu][Rr][Ee]|[Pp][Rr][Oo][Cc][Ee][Dd][Uu][Rr][Aa][Ll]|[Pp][Rr][Ii][Mm][Aa][Rr][Yy]|[Rr][Ee][Aa][Dd]|[Rr][Ee][Ff][Ee][R!
+ r][Ee][Nn][Cc][Ee][Ss]|[Rr][Ee][Gg][Ee][Xx][Pp]|[Rr][Ee][Nn][A!
+ a][Mm][E
+e]|[Rr][Ee][Pp][Ll][Aa][Cc][Ee]|[Rr][Ee][Tt][Uu][Rr][Nn]|[Rr][Ee][Vv][Oo][Kk][Ee]|[Rr][Ll][Ii][Kk][Ee]|[Rr][Ii][Gg][Hh][Tt]|[Ss][Hh][Oo][Ww]|[Ss][Oo][Nn][Aa][Mm][Ee]|[Ss][Tt][Aa][Tt][Uu][Ss]|[Ss][Tt][Rr][Aa][Ii][Gg][Hh][Tt]_[Jj][Oo][Ii][Nn]|[Ss][Ee][Ll][Ee][Cc][Tt]|[Ss][Ee][Tt][Vv][Aa][Ll]|[Ss][Ee][Tt]|[Tt][Aa][Bb][Ll][Ee][Ss]|[Tt][Ee][Mm][Ii][Nn][Aa][Tt][Ee][Dd]|[Tt][Oo]|[Tt][Rr][Aa][Ii][Ll][Ii][Nn][Gg]|[Tt][Rr][Uu][Nn][Cc][Aa][Tt][Ee]|[Tt][Aa][Bb][Ll][Ee]|[Tt][Ee][Mm][Pp][Oo][Rr][Aa][Rr][Yy]|[Tt][Rr][Ii][Gg][Gg][Ee][Rr]|[Tt][Rr][Uu][Ss][Tt][Ee][Dd]|[Uu][Nn][Ii][Qq][Uu][Ee]|[Uu][Nn][Ll][Oo][Cc][Kk]|[Uu][Ss][Ee]|[Uu][Ss][Ii][Nn][Gg]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Vv][Aa][Ll][Uu][Ee][Ss]|[Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee][Ss]|[Vv][Ii][Ee][Ww]|[Ww][Ii][Tt][Hh]|[Ww][Rr][Ii][Tt][Ee]|[Ww][Hh][Ee][Rr][Ee]|[Zz][Ee][Rr][Oo][Ff][Ii][Ll][Ll]|[Tt][Yy][Pp][Ee]|[Xx][Oo][Rr])\b/g,
++      'style': 'sh_keyword'
++    },
++    {
++      'next': 1,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    },
++    {
++      'next': 2,
++      'regex': /'/g,
++      'style': 'sh_string'
++    },
++    {
++      'next': 3,
++      'regex': /`/g,
++      'style': 'sh_string'
++    },
++    {
++      'next': 4,
++      'regex': /#/g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 5,
++      'regex': /\/\/\//g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 11,
++      'regex': /\/\//g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 12,
++      'regex': /\/\*\*/g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 18,
++      'regex': /\/\*/g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 19,
++      'regex': /--/g,
++      'style': 'sh_comment'
++    },
++    {
++      'regex': /~|!|%|\^|\*|\(|\)|-|\+|=|\[|\]|\\|:|;|,|\.|\/|\?|&amp;|&lt;|&gt;|\|/g,
++      'style': 'sh_symbol'
++    },
++    {
++      'regex': /\b[+-]?(?:(?:0x[A-Fa-f0-9]+)|(?:(?:[\d]*\.)?[\d]+(?:[eE][+-]?[\d]+)?))u?(?:(?:int(?:8|16|32|64))|L)?\b/g,
++      'style': 'sh_number'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    },
++    {
++      'regex': /\\./g,
++      'style': 'sh_specialchar'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /'/g,
++      'style': 'sh_string'
++    },
++    {
++      'regex': /\\./g,
++      'style': 'sh_specialchar'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /`/g,
++      'style': 'sh_string'
++    },
++    {
++      'regex': /\\./g,
++      'style': 'sh_specialchar'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /$/g
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /$/g
++    },
++    {
++      'regex': /(?:&lt;?)[A-Za-z0-9_\.\/\-_]+@[A-Za-z0-9_\.\/\-_]+(?:&gt;?)/g,
++      'style': 'sh_url'
++    },
++    {
++      'regex': /(?:&lt;?)[A-Za-z0-9_]+:\/\/[A-Za-z0-9_\.\/\-_]+(?:&gt;?)/g,
++      'style': 'sh_url'
++    },
++    {
++      'next': 6,
++      'regex': /&lt;!DOCTYPE/g,
++      'state': 1,
++      'style': 'sh_preproc'
++    },
++    {
++      'next': 8,
++      'regex': /&lt;!--/g,
++      'style': 'sh_comment'
++    },
++    {
++      'regex': /&lt;(?:\/)?[A-Za-z0-9]+(?:\/)?&gt;/g,
++      'style': 'sh_keyword'
++    },
++    {
++      'next': 9,
++      'regex': /&lt;(?:\/)?[A-Za-z0-9]+/g,
++      'state': 1,
++      'style': 'sh_keyword'
++    },
++    {
++      'regex': /&amp;(?:[A-Za-z0-9]+);/g,
++      'style': 'sh_preproc'
++    },
++    {
++      'regex': /@[A-Za-z]+/g,
++      'style': 'sh_type'
++    },
++    {
++      'regex': /(?:TODO|FIXME)(?:[:]?)/g,
++      'style': 'sh_todo'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /&gt;/g,
++      'style': 'sh_preproc'
++    },
++    {
++      'next': 7,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'regex': /\\&quot;/g
++    },
++    {
++      'exit': true,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /--&gt;/g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 8,
++      'regex': /&lt;!--/g,
++      'style': 'sh_comment'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /(?:\/)?&gt;/g,
++      'style': 'sh_keyword'
++    },
++    {
++      'regex': /[^=&quot; \t&gt;]+/g,
++      'style': 'sh_type'
++    },
++    {
++      'regex': /=/g,
++      'style': 'sh_symbol'
++    },
++    {
++      'next': 10,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'regex': /\\&quot;/g
++    },
++    {
++      'exit': true,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /$/g
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /\*\//g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 12,
++      'regex': /\/\*\*/g,
++      'style': 'sh_comment'
++    },
++    {
++      'regex': /(?:&lt;?)[A-Za-z0-9_\.\/\-_]+@[A-Za-z0-9_\.\/\-_]+(?:&gt;?)/g,
++      'style': 'sh_url'
++    },
++    {
++      'regex': /(?:&lt;?)[A-Za-z0-9_]+:\/\/[A-Za-z0-9_\.\/\-_]+(?:&gt;?)/g,
++      'style': 'sh_url'
++    },
++    {
++      'next': 13,
++      'regex': /&lt;!DOCTYPE/g,
++      'state': 1,
++      'style': 'sh_preproc'
++    },
++    {
++      'next': 15,
++      'regex': /&lt;!--/g,
++      'style': 'sh_comment'
++    },
++    {
++      'regex': /&lt;(?:\/)?[A-Za-z0-9]+(?:\/)?&gt;/g,
++      'style': 'sh_keyword'
++    },
++    {
++      'next': 16,
++      'regex': /&lt;(?:\/)?[A-Za-z0-9]+/g,
++      'state': 1,
++      'style': 'sh_keyword'
++    },
++    {
++      'regex': /&amp;(?:[A-Za-z0-9]+);/g,
++      'style': 'sh_preproc'
++    },
++    {
++      'regex': /@[A-Za-z]+/g,
++      'style': 'sh_type'
++    },
++    {
++      'regex': /(?:TODO|FIXME)(?:[:]?)/g,
++      'style': 'sh_todo'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /&gt;/g,
++      'style': 'sh_preproc'
++    },
++    {
++      'next': 14,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'regex': /\\&quot;/g
++    },
++    {
++      'exit': true,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /--&gt;/g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 15,
++      'regex': /&lt;!--/g,
++      'style': 'sh_comment'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /(?:\/)?&gt;/g,
++      'style': 'sh_keyword'
++    },
++    {
++      'regex': /[^=&quot; \t&gt;]+/g,
++      'style': 'sh_type'
++    },
++    {
++      'regex': /=/g,
++      'style': 'sh_symbol'
++    },
++    {
++      'next': 17,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'regex': /\\&quot;/g
++    },
++    {
++      'exit': true,
++      'regex': /&quot;/g,
++      'style': 'sh_string'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /\*\//g,
++      'style': 'sh_comment'
++    },
++    {
++      'next': 18,
++      'regex': /\/\*/g,
++      'style': 'sh_comment'
++    },
++    {
++      'regex': /(?:&lt;?)[A-Za-z0-9_\.\/\-_]+@[A-Za-z0-9_\.\/\-_]+(?:&gt;?)/g,
++      'style': 'sh_url'
++    },
++    {
++      'regex': /(?:&lt;?)[A-Za-z0-9_]+:\/\/[A-Za-z0-9_\.\/\-_]+(?:&gt;?)/g,
++      'style': 'sh_url'
++    },
++    {
++      'regex': /(?:TODO|FIXME)(?:[:]?)/g,
++      'style': 'sh_todo'
++    }
++  ],
++  [
++    {
++      'exit': true,
++      'regex': /$/g
++    }
++  ]
++];
+
+Added: YDFramework2.0/trunk/YDFramework2/javascript/sh_style.css
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/javascript/sh_style.css	2007-01-07 17:47:07 UTC (rev 2301)
++++ YDFramework2.0/trunk/YDFramework2/javascript/sh_style.css	2007-01-08 11:21:56 UTC (rev 2302)
+@@ -0,0 +1,136 @@
++pre.sh_sourceCode {
++  background-color: white;
++  color: black;
++  font-style: normal;
++  font-weight: normal;
++}
++
++pre.sh_sourceCode span.sh_keyword {
++  color: blue;
++}
++
++pre.sh_sourceCode span.sh_type {
++  color: #006400;
++}
++
++pre.sh_sourceCode span.sh_string {
++  color: red;
++}
++
++pre.sh_sourceCode span.sh_specialchar {
++  color: #FFC0CB;
++}
++
++pre.sh_sourceCode span.sh_comment {
++  color: #A52A2A;
++  font-style: italic;
++}
++
++pre.sh_sourceCode span.sh_number {
++  color: purple;
++}
++
++pre.sh_sourceCode span.sh_preproc {
++  color: #00008B;
++  font-weight: bold;
++}
++
++pre.sh_sourceCode span.sh_symbol {
++  color: #8B0000;
++}
++
++pre.sh_sourceCode span.sh_function {
++  color: black;
++  font-weight: bold;
++}
++
++pre.sh_sourceCode span.sh_cbracket {
++  color: red;
++}
++
++pre.sh_sourceCode span.sh_todo {
++  font-weight: bold;
++}
++
++pre.sh_sourceCode span.sh_linenum {
++  color: black;
++}
++
++pre.sh_sourceCode span.sh_url {
++  color: blue;
++}
++
++pre.sh_sourceCode span.sh_date {
++  color: blue;
++  font-weight: bold;
++}
++
++pre.sh_sourceCode span.sh_time {
++  color: #00008B;
++  font-weight: bold;
++}
++
++pre.sh_sourceCode span.sh_ip {
++  color: #006400;
++}
++
++pre.sh_sourceCode span.sh_file {
++  color: #00008B;
++  font-weight: bold;
++}
++
++pre.sh_sourceCode span.sh_name {
++  color: #006400;
++}
++
++pre.sh_sourceCode span.sh_variable {
++  color: #006400;
++}
++
++pre.sh_sourceCode span.sh_italics {
++  color: #006400;
++  font-style: italic;
++}
++
++pre.sh_sourceCode span.sh_bold {
++  color: #006400;
++  font-weight: bold
++}
++
++pre.sh_sourceCode span.sh_underline {
++  color: #006400;
++  text-decoration: underline;
++}
++
++pre.sh_sourceCode span.sh_fixed {
++  color: green;
++  font-family: monospace;
++}
++
++pre.sh_sourceCode span.sh_argument {
++  color: #006400;
++}
++
++pre.sh_sourceCode span.sh_optionalargument {
++  color: purple;
++}
++
++pre.sh_sourceCode span.sh_math {
++  color: #FFA500;
++}
++
++pre.sh_sourceCode span.sh_bibtex {
++  color: blue;
++}
++
++pre.sh_sourceCode span.sh_oldfile {
++  color: #FFA500;
++}
++
++pre.sh_sourceCode span.sh_newfile {
++  color: #006400;
++}
++
++pre.sh_sourceCode span.sh_difflines {
++  color: blue;
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000893.html">[ydf-devel] r2301 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000895.html">[ydf-devel] r2303 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#894">[ date ]</a>
+              <a href="thread.html#894">[ thread ]</a>
+              <a href="subject.html#894">[ subject ]</a>
+              <a href="author.html#894">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1972 - YDFramework2.0/trunk/examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1972%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200607101344.k6ADiVEp004126%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000456.html">
+   <LINK REL="Next"  HREF="000459.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1972 - YDFramework2.0/trunk/examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1972%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200607101344.k6ADiVEp004126%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1972 - YDFramework2.0/trunk/examples/weblog/manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Jul 10 15:44:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000456.html">[ydf-devel] r1971 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+        <LI>Next message: <A HREF="000459.html">[ydf-devel] r1973 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#458">[ date ]</a>
+              <a href="thread.html#458">[ thread ]</a>
+              <a href="subject.html#458">[ subject ]</a>
+              <a href="author.html#458">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-07-10 15:44:30 +0200 (Mon, 10 Jul 2006)
+New Revision: 1972
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/cache.php
+Log:
+The number of items and cache size are now listed in the manage cache section.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/cache.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/cache.php	2006-07-10 12:59:47 UTC (rev 1971)
++++ YDFramework2.0/trunk/examples/weblog/manage/cache.php	2006-07-10 13:44:30 UTC (rev 1972)
+@@ -17,15 +17,22 @@
+         // Default action
+         function actionDefault() {
+ 
++            // Get the list of files and file sizes
++            $cache_pub_lbl = 'Public cache ' . $this-&gt;_getTotalSizeAndCountAsText( YD_WEBLOG_CACHE_PREFIX . '*.' . YD_WEBLOG_CACHE_SUFFIX );
++            $cache_tmb_lbl = 'Thumbnail cache ' . $this-&gt;_getTotalSizeAndCountAsText( YD_TMP_PRE . 'N_*.*' );
++            $cache_web_lbl = 'Web download cache ' . $this-&gt;_getTotalSizeAndCountAsText( '*.wch' );
++            $cache_tpl_lbl = 'Template cache ' . $this-&gt;_getTotalSizeAndCountAsText( '*.tpl.php' );
++
+             // Create the delete form
+             $form = new YDForm( 'clearCacheForm' );
+-            $form-&gt;addElement( 'checkbox', 'cache_pub', 'Public cache', array( 'style' =&gt; 'border: none;' ) );
+-            $form-&gt;addElement( 'checkbox', 'cache_tmb', 'Thumbnail cache', array( 'style' =&gt; 'border: none;' ) );
+-            $form-&gt;addElement( 'checkbox', 'cache_web', 'Web download cache', array( 'style' =&gt; 'border: none;' ) );
+-            $form-&gt;addElement( 'checkbox', 'cache_tpl', 'Template cache', array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox', 'cache_pub', $cache_pub_lbl, array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox', 'cache_tmb', $cache_tmb_lbl, array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox', 'cache_web', $cache_web_lbl, array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox', 'cache_tpl', $cache_tpl_lbl, array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'submit', '_cmdSubmit', t( 'cleanup' ), array( 'class' =&gt; 'button' ) );
+             $form-&gt;setDefaults( array( 'cache_pub' =&gt; 1, 'cache_web' =&gt; 1, 'cache_tmb' =&gt; 1, 'cache_tpl' =&gt; 1 ) );
+ 
++
+             // Validate the form
+             if ( $form-&gt;validate() == true ) {
+ 
+@@ -64,13 +71,36 @@
+ 
+         // Helper function to delete files
+         function _deleteCacheFiles( $pattern ) {
+-            $dir = new YDFSDirectory( YD_DIR_TEMP );
+-            $filesToDelete = $dir-&gt;getContents( $pattern, null );
+-            foreach ( $filesToDelete as $file ) {
++            $files = $this-&gt;_getFileList( $pattern );
++            foreach ( $files as $file ) {
+                 @unlink( $file-&gt;getAbsolutePath() );
+             }
+         }
+ 
++        // Helper function to get the total file size and number of files
++        function _getTotalSizeAndCount( $pattern ) {
++            $count = 0;
++            $size  = 0;
++            $files = $this-&gt;_getFileList( $pattern );
++            foreach ( $files as $file ) {
++                $count++;
++                $size += $file-&gt;getSize();
++            }
++            return array( $count, $size );
++        }
++
++        // Get the total size and count as a piece of text
++        function _getTotalSizeAndCountAsText( $pattern ) {
++            $res = $this-&gt;_getTotalSizeAndCount( $pattern );
++            return sprintf( '(%s %s, %s)', $res[0], t('items'), YDStringUtil::formatFileSize( $res[0] ) );
++        }
++
++        // Get a filelist
++        function _getFileList( $pattern ) {
++            $dir = new YDFSDirectory( YD_DIR_TEMP );
++            return $dir-&gt;getContents( $pattern, null );
++        }
++
+     }
+ 
+     // Process the request
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000456.html">[ydf-devel] r1971 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+	<LI>Next message: <A HREF="000459.html">[ydf-devel] r1973 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#458">[ date ]</a>
+              <a href="thread.html#458">[ thread ]</a>
+              <a href="subject.html#458">[ subject ]</a>
+              <a href="author.html#458">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

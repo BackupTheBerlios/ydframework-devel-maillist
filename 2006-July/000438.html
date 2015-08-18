@@ -1,0 +1,411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1955 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1955%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20include/languages%20manage&In-Reply-To=%3C200607061806.k66I6Rnw005823%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000437.html">
+   <LINK REL="Next"  HREF="000439.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1955 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1955%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20include/languages%20manage&In-Reply-To=%3C200607061806.k66I6Rnw005823%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1955 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Thu Jul  6 20:06:27 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000437.html">[ydf-devel] r1954 - in YDFramework2.0/trunk/examples/weblog: . include include/languages manage skins/default tiny_mce tiny_mce/langs tiny_mce/plugins tiny_mce/plugins/fullscreen tiny_mce/plugins/fullscreen/images tiny_mce/plugins/fullscreen/langs tiny_mce/plugins/imgselector tiny_mce/plugins/imgselector/images tiny_mce/themes tiny_mce/themes/advanced tiny_mce/themes/advanced/css tiny_mce/themes/advanced/docs tiny_mce/themes/advanced/docs/en tiny_mce/themes/advanced/docs/en/images tiny_mce/themes/advanced/docs/nl tiny_mce/themes/advanced/docs/nl/images tiny_mce/themes/advanced/images tiny_mce/themes/advanced/images/xp tiny_mce/themes/advanced/jscripts tiny_mce/themes/advanced/langs tiny_mce/utils
+</A></li>
+        <LI>Next message: <A HREF="000439.html">[ydf-devel] r1956 - in YDFramework2.0/trunk/examples/weblog: . include skins/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#438">[ date ]</a>
+              <a href="thread.html#438">[ thread ]</a>
+              <a href="subject.html#438">[ subject ]</a>
+              <a href="author.html#438">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-07-06 20:06:23 +0200 (Thu, 06 Jul 2006)
+New Revision: 1955
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/index.php
+   YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/manage.css
+Log:
+Added support for disabling the internal statistics.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -229,38 +229,43 @@
+         // Function to disbable request logging
+         function _logRequest() {
+ 
+-            // Get the logging data
+-            $values = array();
+-            $values['uri'] = str_replace( dirname( YD_SELF_SCRIPT ) . '/', '', $this-&gt;getNormalizedUri() );
+-            if ( substr( $values['uri'], 0, 1 ) == '/' ) {
+-                $values['uri'] = substr( $values['uri'], 1 );
+-            }
+-            if ( substr( $values['uri'], 0, 4 ) == '.php' ) {
+-                $values['uri'] = basename( YD_SELF_SCRIPT ) . substr( $values['uri'], 4 );
+-            }
+-            $values['date'] = strftime( '%Y-%m-%d' );
+-            $values['browser'] = $this-&gt;browser-&gt;browser;
+-            $values['platform'] = $this-&gt;browser-&gt;platform;
++            // Check if we need to log statistics or not
++            if ( YDConfig::get( 'keep_stats', true ) ) {
+ 
+-            // Fix the short URLs so that they all look the same
+-            if ( YDConfig::get( 'friendly_urls', true ) &amp;&amp; strpos( $values['uri'], '_' ) ) {
+-                if ( YDStringUtil::startswith( $values['uri'], 'image/', false ) ) {
+-                    $values['uri'] = 'item_gallery.php?id=' . substr( $values['uri'], 6 );
+-                } elseif ( YDStringUtil::startswith( $values['uri'], 'archive' ) ) {
+-                } else {
+-                    $values['uri'] = substr( $values['uri'], 0, strpos( $values['uri'], '_' ) )
+-                                   . substr( $values['uri'], strpos( $values['uri'], '.php?id=' ) );
++                // Get the logging data
++                $values = array();
++                $values['uri'] = str_replace( dirname( YD_SELF_SCRIPT ) . '/', '', $this-&gt;getNormalizedUri() );
++                if ( substr( $values['uri'], 0, 1 ) == '/' ) {
++                    $values['uri'] = substr( $values['uri'], 1 );
+                 }
+-            }
++                if ( substr( $values['uri'], 0, 4 ) == '.php' ) {
++                    $values['uri'] = basename( YD_SELF_SCRIPT ) . substr( $values['uri'], 4 );
++                }
++                $values['date'] = strftime( '%Y-%m-%d' );
++                $values['browser'] = $this-&gt;browser-&gt;browser;
++                $values['platform'] = $this-&gt;browser-&gt;platform;
+ 
+-            // Add index.php
+-            if ( empty( $values['uri'] ) &amp;&amp; basename( YD_SELF_SCRIPT ) == 'index.php' ) {
+-                $values['uri'] = 'index.php';
++                // Fix the short URLs so that they all look the same
++                if ( YDConfig::get( 'friendly_urls', true ) &amp;&amp; strpos( $values['uri'], '_' ) ) {
++                    if ( YDStringUtil::startswith( $values['uri'], 'image/', false ) ) {
++                        $values['uri'] = 'item_gallery.php?id=' . substr( $values['uri'], 6 );
++                    } elseif ( YDStringUtil::startswith( $values['uri'], 'archive' ) ) {
++                    } else {
++                        $values['uri'] = substr( $values['uri'], 0, strpos( $values['uri'], '_' ) )
++                                       . substr( $values['uri'], strpos( $values['uri'], '.php?id=' ) );
++                    }
++                }
++
++                // Add index.php
++                if ( empty( $values['uri'] ) &amp;&amp; basename( YD_SELF_SCRIPT ) == 'index.php' ) {
++                    $values['uri'] = 'index.php';
++                }
++
++                // Add them to the database
++                $this-&gt;weblog-&gt;logRequestToStats( $values );
++
+             }
+ 
+-            // Add them to the database
+-            $this-&gt;weblog-&gt;logRequestToStats( $values );
+-
+         }
+ 
+         // Check for authentication
+@@ -335,6 +340,7 @@
+             $this-&gt;tpl-&gt;assign( 'weblog_description', YDConfig::get( 'weblog_description', 'Untitled Weblog Description' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_language',    YDConfig::get( 'weblog_language', 'en' ) );
+             $this-&gt;tpl-&gt;assign( 'google_analytics',   YDConfig::get( 'google_analytics', '' ) != '' );
++            $this-&gt;tpl-&gt;assign( 'keep_stats',         YDConfig::get( 'keep_stats', true ) );
+ 
+             // Get the link to the different directories
+             $uploads_dir = YDUrl::makeLinkAbsolute( '../' . $this-&gt;dir_uploads );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -286,6 +286,7 @@
+ $GLOBALS['t']['cfg_default_item_settings'] = 'Default values for new items';
+ $GLOBALS['t']['cfg_weblog_google_analytics'] = 'Google Analytics Account';
+ $GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
++$GLOBALS['t']['cfg_keep_stats'] = 'Track statistics';
+ 
+ // manage/item.tpl
+ $GLOBALS['t']['item_title'] = 'Item Title';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -286,6 +286,7 @@
+ $GLOBALS['t']['cfg_default_item_settings'] = 'Standaard waardes voor nieuwe posts';
+ $GLOBALS['t']['cfg_weblog_google_analytics'] = 'Google Analytics Account';
+ $GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
++$GLOBALS['t']['cfg_keep_stats'] = 'Houdt statistieken bij';
+ 
+ // manage/item.tpl
+ $GLOBALS['t']['item_title'] = 'Item Titel';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -121,17 +121,21 @@
+                         &raquo; &lt;a href=&quot;serverinfo.php&quot;&gt;{t w=&quot;a_server_info&quot;}&lt;/a&gt;&lt;br/&gt;
+                     &lt;/td&gt;
+                 &lt;/tr&gt;
++                {if $keep_stats or $google_analytics}
++                    &lt;tr&gt;
++                        &lt;td class=&quot;adminRowL&quot;&gt;
++                            &lt;b&gt;{t w=&quot;h_statistics&quot;}&lt;/b&gt;&lt;br/&gt;
++                            {if $keep_stats}
++                                &raquo; &lt;a href=&quot;stats.php&quot;&gt;{t w=&quot;a_statistics&quot;}&lt;/a&gt;&lt;br/&gt;
++                            {/if}
++                            {if $google_analytics}
++                                &raquo; &lt;a href=&quot;<A HREF="https://www.google.com/analytics/home/">https://www.google.com/analytics/home/</A>&quot; target=&quot;_blank&quot;&gt;{t w=&quot;cfg_google_analytics&quot;}&lt;/a&gt;&lt;br/&gt;
++                            {/if}
++                        &lt;/td&gt;
++                    &lt;/tr&gt;
++                {/if}
+                 &lt;tr&gt;
+                     &lt;td class=&quot;adminRowL&quot;&gt;
+-                        &lt;b&gt;{t w=&quot;h_statistics&quot;}&lt;/b&gt;&lt;br/&gt;
+-                        &raquo; &lt;a href=&quot;stats.php&quot;&gt;{t w=&quot;a_statistics&quot;}&lt;/a&gt;&lt;br/&gt;
+-                        {if $google_analytics}
+-                            &raquo; &lt;a href=&quot;<A HREF="https://www.google.com/analytics/home/">https://www.google.com/analytics/home/</A>&quot; target=&quot;_blank&quot;&gt;{t w=&quot;cfg_google_analytics&quot;}&lt;/a&gt;&lt;br/&gt;
+-                        {/if}
+-                    &lt;/td&gt;
+-                &lt;/tr&gt;
+-                &lt;tr&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+                         &lt;b&gt;{t w=&quot;h_logoff&quot;}&lt;/b&gt;&lt;br/&gt;
+                         &raquo; &lt;a href=&quot;index.php?do=logout&quot;&gt;{t w=&quot;a_logoff&quot;}&lt;/a&gt;&lt;br/&gt;
+                     &lt;/td&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -26,6 +26,7 @@
+             // Fix the boolean values
+             $config['email_new_comment']   = ( $config['email_new_comment'] ) ? t('yes') : t('no');
+             $config['email_new_item']      = ( $config['email_new_item'] ) ? t('yes') : t('no');
++            $config['keep_stats']          = ( $config['keep_stats'] ) ? t('yes') : t('no');
+             $config['use_cache']           = ( $config['use_cache'] ) ? t('yes') : t('no');
+             $config['friendly_urls']       = ( $config['friendly_urls'] ) ? t('yes') : t('no');
+             $config['include_debug_info']  = ( $config['include_debug_info'] ) ? t('yes') : t('no');
+@@ -80,6 +81,7 @@
+             $form-&gt;addElement( 'select', 'weblog_skin', t( 'cfg_weblog_skin' ), array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $skins );
+             $form-&gt;addElement( 'select', 'weblog_language', t( 'cfg_weblog_language' ), array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $languages );
+             $form-&gt;addElement( 'checkbox', 'include_debug_info', t( 'cfg_include_debug_info' ), array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox', 'keep_stats', t( 'cfg_keep_stats' ), array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'text', 'google_analytics', t( 'cfg_weblog_google_analytics' ), array( 'class' =&gt; 'tfM' ) );
+ 
+             $form-&gt;addElement( 'checkbox', 'email_new_comment', t( 'cfg_notification_email_comment' ),  array( 'style' =&gt; 'border: none;' ) );
+@@ -155,6 +157,7 @@
+             $config['weblog_entries_fp']    = YDConfig::get( 'weblog_entries_fp',    1 );
+             $config['weblog_skin']          = YDConfig::get( 'weblog_skin',          'default' );
+             $config['weblog_language']      = YDConfig::get( 'weblog_language',      'nl' );
++            $config['keep_stats']           = YDConfig::get( 'keep_stats',           true );
+             $config['google_analytics']     = YDConfig::get( 'google_analytics',     '' );
+             $config['include_debug_info']   = YDConfig::get( 'include_debug_info',   false );
+             $config['email_new_comment']    = YDConfig::get( 'email_new_comment',    true );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -77,6 +77,10 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{$config.include_debug_info}&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_keep_stats&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{$config.keep_stats}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_weblog_google_analytics&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{$config.google_analytics|default:'&nbsp;'}&lt;/td&gt;
+         &lt;/tr&gt;
+@@ -199,6 +203,10 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.include_debug_info.html}&lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.keep_stats.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.keep_stats.html}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.google_analytics.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.google_analytics.html}&lt;/td&gt;
+             &lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/index.php	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/manage/index.php	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -23,22 +23,31 @@
+             // Assign it to the template
+             $this-&gt;tpl-&gt;assign( 'items', $items );
+ 
+-            // Get the install date
++            // Get the global statistics
+             $installDate   = $this-&gt;weblog-&gt;getInstallDate();
+-            $totalHits     = $this-&gt;weblog-&gt;getTotalHits();
+             $daysOnline    = round( ( time() - $installDate ) / 86400 );
+-            $avg_hitsaday  = @ intval( $totalHits / $daysOnline );
+             $totalItems    = $this-&gt;weblog-&gt;getStatsItemCount();
+             $totalComments = $this-&gt;weblog-&gt;getStatsCommentCount();
+ 
+             // Assign these to the template
+             $this-&gt;tpl-&gt;assign( 'installDate',   $installDate );
+             $this-&gt;tpl-&gt;assign( 'daysOnline',    $daysOnline );
+-            $this-&gt;tpl-&gt;assign( 'totalHits',     $totalHits );
+-            $this-&gt;tpl-&gt;assign( 'avg_hitsaday',  $avg_hitsaday );
+             $this-&gt;tpl-&gt;assign( 'totalItems',    $totalItems );
+             $this-&gt;tpl-&gt;assign( 'totalComments', $totalComments );
+ 
++            // Check if we need to log statistics or not
++            if ( YDConfig::get( 'keep_stats', true ) ) {
++
++                // Get the averages
++                $totalHits     = $this-&gt;weblog-&gt;getTotalHits();
++                $avg_hitsaday  = @ intval( $totalHits / $daysOnline );
++
++                // Assign these to the template
++                $this-&gt;tpl-&gt;assign( 'totalHits',     $totalHits );
++                $this-&gt;tpl-&gt;assign( 'avg_hitsaday',  $avg_hitsaday );
++
++            }
++
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -64,36 +64,38 @@
+     &lt;/tr&gt;
+ &lt;/table&gt;
+ 
+-&lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-    &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-    &lt;tr&gt;
+-        &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; &lt;a href=&quot;stats.php&quot;&gt;&lt;b&gt;{t w=&quot;a_statistics&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-        &lt;th class=&quot;adminRowLGR&quot;&gt;&lt;a href=&quot;stats.php&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;&lt;/th&gt;
+-    &lt;/tr&gt;
+-    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-        &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;installed_since&quot;}&lt;/td&gt;
+-        &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot; colspan=&quot;2&quot;&gt;{$installDate|date:&quot;%d %B %Y&quot;|lower}&lt;/td&gt;
+-    &lt;/tr&gt;
+-    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-        &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;num_days_online&quot;}&lt;/td&gt;
+-        &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$daysOnline} {t w=&quot;days&quot;}&lt;/td&gt;
+-    &lt;/tr&gt;
+-    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-        &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalItems&quot;}&lt;/td&gt;
+-        &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalItems} {t w=&quot;items&quot;}&lt;/td&gt;
+-    &lt;/tr&gt;
+-    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-        &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalComments&quot;}&lt;/td&gt;
+-        &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalComments} {t w=&quot;comments&quot; lower=true}&lt;/td&gt;
+-    &lt;/tr&gt;
+-    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-        &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;total_hits&quot;}&lt;/td&gt;
+-        &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalHits} {t w=&quot;hits&quot;}&lt;/td&gt;
+-    &lt;/tr&gt;
+-    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-        &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;avg_hits_per_day&quot;}&lt;/td&gt;
+-        &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$avg_hitsaday} {t w=&quot;hits&quot;}&lt;/td&gt;
+-    &lt;/tr&gt;
+-&lt;/table&gt;
++    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; &lt;a href=&quot;stats.php&quot;&gt;&lt;b&gt;{t w=&quot;a_statistics&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
++            &lt;th class=&quot;adminRowLGR&quot;&gt;&lt;a href=&quot;stats.php&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;&lt;/th&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;installed_since&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot; colspan=&quot;2&quot;&gt;{$installDate|date:&quot;%d %B %Y&quot;|lower}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;num_days_online&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$daysOnline} {t w=&quot;days&quot;}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalItems&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalItems} {t w=&quot;items&quot;}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalComments&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalComments} {t w=&quot;comments&quot; lower=true}&lt;/td&gt;
++        &lt;/tr&gt;
++        {if $keep_stats}
++            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;total_hits&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalHits} {t w=&quot;hits&quot;}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;avg_hits_per_day&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$avg_hitsaday} {t w=&quot;hits&quot;}&lt;/td&gt;
++            &lt;/tr&gt;
++        {/if}
++    &lt;/table&gt;
+ 
+ {include file=&quot;__mng_footer.tpl&quot;}
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/manage.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-07-06 17:39:30 UTC (rev 1954)
++++ YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-07-06 18:06:23 UTC (rev 1955)
+@@ -84,7 +84,7 @@
+ 
+ textarea {
+     width: 700px;
+-    height: 200px;
++    height: 300px;
+     font-family: &quot;Lucida Sans Typewriter&quot;, &quot;Andale Mono&quot;, &quot;Courier New&quot;, &quot;Courier&quot;;
+     font-size: 9pt;
+     line-height: 14pt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000437.html">[ydf-devel] r1954 - in YDFramework2.0/trunk/examples/weblog: . include include/languages manage skins/default tiny_mce tiny_mce/langs tiny_mce/plugins tiny_mce/plugins/fullscreen tiny_mce/plugins/fullscreen/images tiny_mce/plugins/fullscreen/langs tiny_mce/plugins/imgselector tiny_mce/plugins/imgselector/images tiny_mce/themes tiny_mce/themes/advanced tiny_mce/themes/advanced/css tiny_mce/themes/advanced/docs tiny_mce/themes/advanced/docs/en tiny_mce/themes/advanced/docs/en/images tiny_mce/themes/advanced/docs/nl tiny_mce/themes/advanced/docs/nl/images tiny_mce/themes/advanced/images tiny_mce/themes/advanced/images/xp tiny_mce/themes/advanced/jscripts tiny_mce/themes/advanced/langs tiny_mce/utils
+</A></li>
+	<LI>Next message: <A HREF="000439.html">[ydf-devel] r1956 - in YDFramework2.0/trunk/examples/weblog: . include skins/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#438">[ date ]</a>
+              <a href="thread.html#438">[ thread ]</a>
+              <a href="subject.html#438">[ subject ]</a>
+              <a href="author.html#438">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

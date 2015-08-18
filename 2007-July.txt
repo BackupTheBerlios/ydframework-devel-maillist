@@ -1,0 +1,573 @@
+From ximian at mail.berlios.de  Tue Jul 10 23:34:47 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Tue, 10 Jul 2007 23:34:47 +0200
+Subject: [ydf-devel] r2450 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200707102134.l6ALYllB027115@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-10 23:34:32 +0200 (Tue, 10 Jul 2007)
+New Revision: 2450
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+- added UTF-8 support for YDDatabase
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-06-25 15:33:37 UTC (rev 2449)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-07-10 21:34:32 UTC (rev 2450)
+@@ -45,6 +45,7 @@
+     YDConfig::set( 'YD_DB_TABLEPREFIX', '', false );
+     YDConfig::set( 'YD_DB_ALLOW_PERSISTENT_SORT', false, false );
+     YDConfig::set( 'YD_DB_LANGUAGE_INDEX', null, false );
++    YDConfig::set( 'YD_DB_UTF8_SUPPORT', false, false );
+ 
+     YDConfig::set( 'YD_DB_RS_CYCLENAVIGATION', false, false );
+ 
+@@ -1649,6 +1650,9 @@
+                 if ( ! @mysql_select_db( $this->_db, $conn ) ) {
+                     return false;
+                 }
++                if ( YDConfig::get( 'YD_DB_UTF8_SUPPORT' ) ){
++                    @mysql_query( "SET NAMES 'utf8'", $conn );
++                }
+                 $this->_conn = $conn;
+             }
+             return true;
+
+
+
+From ximian at mail.berlios.de  Wed Jul 11 01:17:13 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Wed, 11 Jul 2007 01:17:13 +0200
+Subject: [ydf-devel] r2451 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200707102317.l6ANHDwv030484@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-11 01:16:58 +0200 (Wed, 11 Jul 2007)
+New Revision: 2451
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php
+Log:
+converted YDList states to html code, otherwise we got problems when using different charsets
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php	2007-07-10 21:34:32 UTC (rev 2450)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php	2007-07-10 23:16:58 UTC (rev 2451)
+@@ -110,18 +110,18 @@
+             $s = array( 'PT' => array(  'AV' => 'Aveiro',
+                                         'BE' => 'Beja',
+                                         'BR' => 'Braga',
+-                                        'BG' => 'Bragan?a',
++                                        'BG' => 'Bragan&ccedil;a',
+                                         'CB' => 'Castelo Branco',
+                                         'CO' => 'Coimbra',
+-                                        'EV' => '?vora',
++                                        'EV' => '&Eacute;vora',
+                                         'FA' => 'Faro',
+                                         'GU' => 'Guarda',
+                                         'LE' => 'Leiria',
+                                         'LI' => 'Lisboa',
+                                         'PL' => 'Portalegre',
+                                         'PO' => 'Porto',
+-                                        'SA' => 'Santar?m',
+-                                        'SE' => 'Set?bal',
++                                        'SA' => 'Santar&eacute;m',
++                                        'SE' => 'Set&uacute;bal',
+                                         'VC' => 'Viana do Castelo',
+                                         'VI' => 'Viseu',
+                                         'VR' => 'Vila Real' ) );
+
+
+
+From ximian at mail.berlios.de  Wed Jul 11 10:46:58 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Wed, 11 Jul 2007 10:46:58 +0200
+Subject: [ydf-devel] r2452 -
+	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+Message-ID: <200707110846.l6B8kwYm030459@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-11 10:46:47 +0200 (Wed, 11 Jul 2007)
+New Revision: 2452
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+Log:
+on YDFormElement_Date:
+  - added support for custom month names. 
+    Useful when we use different charsets and our php server don't support our locale settings correctly.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-07-10 23:16:58 UTC (rev 2451)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-07-11 08:46:47 UTC (rev 2452)
+@@ -34,6 +34,10 @@
+     include_once( YD_DIR_HOME_CLS . '/YDForm.php');
+     include_once( YD_DIR_HOME_CLS . '/YDFormElements/YDFormElement_Select.php');
+ 
++    // Custom month names
++    YDConfig::set( 'YD_FORMELEMENT_DATE_MONTHNAMES', null, false ); 
++
++
+     /**
+      *  This is the class that define a datetime select form element.
+      *
+@@ -167,15 +171,25 @@
+                 
+                 if ( $part == 'month' ) {
+                     if ( ! isset( $this->_options[ 'monthnumber' ] ) ) {
+-                        $format = '%B';
+-                        if ( isset( $this->_options[ 'monthabbr' ] ) ) {
+-                            $format = '%b';
++
++                        // check if we have a custom month list
++                        $month_list = YDConfig::get( 'YD_FORMELEMENT_DATE_MONTHNAMES' );
++
++                        if ( is_null( $month_list ) ){
++
++                            $format = '%B';
++                            if ( isset( $this->_options[ 'monthabbr' ] ) ) {
++                                $format = '%b';
++                            }
++                            $value = strtolower( strftime( $format, mktime( 0, 0, 0, $i, 1, 2000 ) ) );
++                            if ( isset( $this->_options[ 'monthucfirst' ] ) ) {
++                                $value = ucfirst( $value );
++                            }
++                            $arr[$i] = $value;
++                        }else{
++                            $arr[$i] = $month_list[ $i - 1 ];
+                         }
+-                        $value = strtolower( strftime( $format, mktime( 0, 0, 0, $i, 1, 2000 ) ) );
+-                        if ( isset( $this->_options[ 'monthucfirst' ] ) ) {
+-                            $value = ucfirst( $value );
+-                        }
+-                        $arr[$i] = $value;
++
+                     } else {
+                         $arr[$i] = ( strlen( $i ) == 1 ) ? '0' . $i : $i;
+                     }
+
+
+
+From ximian at mail.berlios.de  Sat Jul 14 00:45:32 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Sat, 14 Jul 2007 00:45:32 +0200
+Subject: [ydf-devel] r2453 - YDFramework2.0/trunk/YDFramework2
+Message-ID: <200707132245.l6DMjWMM020374@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-14 00:44:50 +0200 (Sat, 14 Jul 2007)
+New Revision: 2453
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+- added support for custom charsets in YDLocale::set()
+  UTF-8 seems to work ok with gettext now
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-07-11 08:46:47 UTC (rev 2452)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-07-13 22:44:50 UTC (rev 2453)
+@@ -519,10 +519,11 @@
+ 
+         /**
+          *	@param	$locale		Sets the current locale
+-         *	@param	$domain		(Optional) Filename to search in locale directory
+-         *	@param	$directory	(Optional) Directory name where language directories are stored
++         *	@param	$domain		(Optional) Gettext: Filename to search in locale directory
++         *	@param	$directory	(Optional) Gettext: Directory name where language directories are stored
++         *	@param	$charset	(Optional) Gettext: Custom charset, eg 'UTF-8'. By default not set.
+          */
+-        function set( $locale, $domain = null, $directory = null ) {
++        function set( $locale, $domain = null, $directory = null, $charset = null ) {
+ 
+             // Check if the locale exists or not
+             if ( ! array_key_exists( strtolower( $locale ), $GLOBALS[ 'YD_LANGUAGES' ] ) ) {
+@@ -560,6 +561,12 @@
+                 // set gettext domain
+                 bindtextdomain( $domain, $directory );
+                 textdomain( $domain );
++
++                // apply charset
++                if ( is_string( $charset ) ){
++                    bind_textdomain_codeset( $domain, $charset );
++                }
++
+                 return;
+             }
+ 
+
+
+
+From ximian at mail.berlios.de  Mon Jul 16 13:33:35 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Mon, 16 Jul 2007 13:33:35 +0200
+Subject: [ydf-devel] r2454 -
+	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+Message-ID: <200707161133.l6GBXZhu032743@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-16 13:33:26 +0200 (Mon, 16 Jul 2007)
+New Revision: 2454
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+Log:
+on captcha form element:
+ - when user applies for another image, text box is cleaned and has focus.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-07-13 22:44:50 UTC (rev 2453)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-07-16 11:33:26 UTC (rev 2454)
+@@ -144,10 +144,12 @@
+             );
+             $attribs = array_merge( $this->_attributes, $attribs );
+ 
++            // compute on click
++            $onclick = "document.getElementById('" . $this->img->getAttribute( 'id' ) . "').src = document.getElementById('" . $this->img->getAttribute( 'id' ) . "').src.split('&id=')[0] + '&id=' + Math.random();document.getElementById('" . $this->getAttribute( 'id' ) . "').value='';document.getElementById('" . $this->getAttribute( 'id' ) . "').focus();";
+ 
+             // add image auto-refresh
+             if ( $this->_refreshimage == true ){
+-                $this->img->setAttribute( 'onclick', "document.getElementById('" . $this->img->getAttribute( 'id' ) . "').src = document.getElementById('" . $this->img->getAttribute( 'id' ) . "').src.split('&id=')[0] + '&id=' + Math.random();" );
++                $this->img->setAttribute( 'onclick', $onclick );
+                 $this->img->setAttribute( 'style',   "vertical-align: middle;cursor:pointer;" );
+                 $this->img->setAttribute( 'title',   $this->_refreshcaption );
+             }else{
+@@ -162,7 +164,7 @@
+             if ( is_null( $this->_button ) ){
+                 $button_HTML = '';
+             }else{
+-                $this->_button->setAttribute( 'onclick', "document.getElementById('" . $this->img->getAttribute( 'id' ) . "').src = document.getElementById('" . $this->img->getAttribute( 'id' ) . "').src.split('&id=')[0] + '&id=' + Math.random();" );
++                $this->_button->setAttribute( 'onclick', $onclick );
+                 $button_HTML = $this->_button->toHTML();
+             }
+ 
+
+
+
+From ximian at mail.berlios.de  Mon Jul 16 13:37:02 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Mon, 16 Jul 2007 13:37:02 +0200
+Subject: [ydf-devel] r2455 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200707161137.l6GBb29T000491@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-16 13:36:54 +0200 (Mon, 16 Jul 2007)
+New Revision: 2455
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+added new method YDStringUtil::generatePassword( $length )
+  * Creates a password
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-07-16 11:33:26 UTC (rev 2454)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-07-16 11:36:54 UTC (rev 2455)
+@@ -1011,6 +1011,30 @@
+ 
+         }
+ 
++        /**
++         *  Creates a random password string
++         *
++         *  @param  $length   Password length. By default 6
++         *
++         *  @returns    String
++         */
++        function generatePassword( $length = 6 ) {
++
++            $chrs = "abcdefg12345hijklmnpABCDEFGHIJKLMNPqrstuvwxyzQRSTUVWXYZ6789";
++
++            // init generator ( used when php version is smaller than 4.2.0 )
++            srand( (double) microtime() * 1000000 );
++
++            $pass = "";
++
++            // add chars
++            while( $length-- ){
++                $pass .= $chrs[ rand( 0, 58 ) ];
++            }
++
++            return $pass;
++        }
++
+     }
+ 
+     /**
+
+
+
+From ximian at mail.berlios.de  Mon Jul 16 13:44:44 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Mon, 16 Jul 2007 13:44:44 +0200
+Subject: [ydf-devel] r2456 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200707161144.l6GBiivl001456@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-16 13:44:34 +0200 (Mon, 16 Jul 2007)
+New Revision: 2456
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php
+Log:
+on YDList::countries, country can be null (useful on searches)
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php	2007-07-16 11:36:54 UTC (rev 2455)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php	2007-07-16 11:44:34 UTC (rev 2456)
+@@ -106,7 +106,7 @@
+          *  @returns	Array.
+          *  @static
+          */
+-        function states( $country, $format = null ){
++        function states( $country = null, $format = null ){
+             $s = array( 'PT' => array(  'AV' => 'Aveiro',
+                                         'BE' => 'Beja',
+                                         'BR' => 'Braga',
+@@ -126,6 +126,11 @@
+                                         'VI' => 'Viseu',
+                                         'VR' => 'Vila Real' ) );
+ 
++            // check if country exists
++            if ( is_null( $country ) ){
++                return $s;
++            }
++
+             // check if country code exists
+             if ( ! isset( $s[ $country ] ) ){
+                 return array();
+
+
+
+From ximian at mail.berlios.de  Mon Jul 16 13:47:40 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Mon, 16 Jul 2007 13:47:40 +0200
+Subject: [ydf-devel] r2457 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200707161147.l6GBleSc002192@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-16 13:47:28 +0200 (Mon, 16 Jul 2007)
+New Revision: 2457
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+added new modifier YDTemplate_modifier_state that converts a state code to name
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-07-16 11:44:34 UTC (rev 2456)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-07-16 11:47:28 UTC (rev 2457)
+@@ -89,7 +89,9 @@
+                 $this->register_modifier( 'absoluteurl', 'YDTemplate_modifier_absoluteurl' );
+                 $this->register_modifier( 'timesince', 'YDTemplate_modifier_timesince' );
+                 $this->register_modifier( 'url', 'YDTemplate_modifier_url' );
++                $this->register_modifier( 'state', 'YDTemplate_modifier_state' );
+ 
++
+                 // Register the custom functions
+                 $this->register_function( 't', 'YDTemplate_function_t' );
+ 
+@@ -739,4 +741,26 @@
+         return sprintf( '<a href="%s">%s</a>', $url, $title );
+     }
+ 
++    /**
++     *	This template modifier replaces a state code with a name
++     *
++     *  @param  $statecode       The state code
++     *
++     *  @returns    The state name.
++     */
++    function YDTemplate_modifier_state( $statecode ) {
++
++        require_once( YD_DIR_HOME_CLS . '/YDList.php');
++
++        foreach( YDList::states() as $country => $stateList ){
++            foreach( $stateList as $code => $name ){
++                if( $statecode == $code ){
++                    return $name;
++                }
++            }
++        }
++
++        return $statecode;
++    }
++
+ ?>
+
+
+
+From ximian at mail.berlios.de  Mon Jul 16 16:55:21 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Mon, 16 Jul 2007 16:55:21 +0200
+Subject: [ydf-devel] r2458 - in YDFramework2.0/trunk/YDFramework2:
+	3rdparty/captcha addons/YDCaptcha
+Message-ID: <200707161455.l6GEtLpw016453@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-16 16:55:08 +0200 (Mon, 16 Jul 2007)
+New Revision: 2458
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+Log:
+new YDConfig "YD_CAPTCHA_BGCOLOR" that defines the captcha background color of the image
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php	2007-07-16 11:47:28 UTC (rev 2457)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php	2007-07-16 14:55:08 UTC (rev 2458)
+@@ -107,8 +107,11 @@
+          $this->SetFileType(CAPTCHA_FILE_TYPE);   
+          $this->SetWidth($iWidth);
+          $this->SetHeight($iHeight);
++         $this->_red = 255;
++         $this->_green = 255;
++         $this->_blue = 255;
+       }
+-      
++
+       function CalculateSpacing() {
+          $this->iSpacing = (int)($this->iWidth / $this->iNumChars);
+       }
+@@ -362,7 +365,7 @@
+          }
+          
+          // allocate white background colour
+-         imagecolorallocate($this->oImage, 255, 255, 255);
++         imagecolorallocate($this->oImage, $this->_red, $this->_green, $this->_blue);
+          
+          // check for owner text
+          if ($this->sOwnerText != '') {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-07-16 11:47:28 UTC (rev 2457)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-07-16 14:55:08 UTC (rev 2458)
+@@ -53,6 +53,13 @@
+ 
+ 
+     /**
++     *  This config defines the image background color
++     *  Default: "#FFFFFF".
++     */
++    YDConfig::set( 'YD_CAPTCHA_BGCOLOR', "#FFFFFF", false );
++
++
++    /**
+      *  This config defines the charset scheme.
+      *  Default: 'simple'. Can be: 'simple', 'complex', 'letters', 'numeric' or a custom scheme.
+      */
+@@ -123,6 +130,13 @@
+             $this->_img->useColour( YDConfig::get( 'YD_CAPTCHA_COLOR' ) );
+             $this->_img->SetNumChars( YDConfig::get( 'YD_CAPTCHA_NUMCHARS' ) );
+ 
++            // apply image color
++            $bgcolor = YDConfig::get( 'YD_CAPTCHA_BGCOLOR' ); 
++
++            $this->_img->_red   = hexdec( substr( $bgcolor, 1, 2 ) );
++            $this->_img->_green = hexdec( substr( $bgcolor, 3, 2 ) );
++            $this->_img->_blue  = hexdec( substr( $bgcolor, 5, 2 ) );
++
+             return $this->_img->Create();
+         }
+ 
+
+
+
+From ximian at mail.berlios.de  Mon Jul 16 16:56:24 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Mon, 16 Jul 2007 16:56:24 +0200
+Subject: [ydf-devel] r2459 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200707161456.l6GEuOja016501@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-16 16:56:15 +0200 (Mon, 16 Jul 2007)
+New Revision: 2459
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+small optimization of YDTemplate_modifier_state
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-07-16 14:55:08 UTC (rev 2458)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-07-16 14:56:15 UTC (rev 2459)
+@@ -753,10 +753,8 @@
+         require_once( YD_DIR_HOME_CLS . '/YDList.php');
+ 
+         foreach( YDList::states() as $country => $stateList ){
+-            foreach( $stateList as $code => $name ){
+-                if( $statecode == $code ){
+-                    return $name;
+-                }
++            if( isset( $stateList[ $statecode ] ) ){
++               return $stateList[ $statecode ];
+             }
+         }
+ 
+
+
+
+From ximian at mail.berlios.de  Thu Jul 26 11:20:58 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Thu, 26 Jul 2007 11:20:58 +0200
+Subject: [ydf-devel] r2460 -
+	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+Message-ID: <200707260920.l6Q9KwZK001671@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-07-26 11:20:06 +0200 (Thu, 26 Jul 2007)
+New Revision: 2460
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+Log:
+on select form element:
+ - FEATURE: a name check is done when using a multiple select ( multiple select name must end with '[]' )
+ - FEATURE: now it's possible to select more than one option ( when select box is multiple )
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2007-07-16 14:56:15 UTC (rev 2459)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2007-07-26 09:20:06 UTC (rev 2460)
+@@ -71,15 +71,23 @@
+          */
+         function toHtml() {
+ 
++            // when using a multiple select, we should check if name ends with '[]'
++            if( isset( $this->_attributes[ 'multiple' ] ) && strpos( $this->_name, '[]' ) === false ){
++                $this->_name .= '[]';
++            }
++
+             // Create the list of attributes
+             $attribs = array( 'name' => $this->_form . '_' . $this->_name );
+             $attribs = array_merge( $this->_attributes, $attribs );
+ 
++            // check if value is array ( used on multiple select ) or a simple value
++            if ( ! is_array( $this->_value ) ) $this->_value = array( $this->_value );
++
+             // Get the HTML
+             $html = '';
+             $html .= '<select' . YDForm::_convertToHtmlAttrib( $attribs ) . '>';
+             foreach ( $this->_options as $val=>$label ) {
+-                if ( strval( $this->_value ) == strval( $val ) ) {
++                if ( in_array( strval( $val ), $this->_value ) ) {
+                     $html .= '<option value="' . $val . '" selected="selected">' . $label . '</option>';
+                 } else {
+                     $html .= '<option value="' . $val . '">' . $label . '</option>';
+
+
+

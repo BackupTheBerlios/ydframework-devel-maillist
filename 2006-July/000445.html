@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1962 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1962%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200607070921.k679L3Qp021476%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000444.html">
+   <LINK REL="Next"  HREF="000446.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1962 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1962%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200607070921.k679L3Qp021476%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1962 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Fri Jul  7 11:21:03 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000444.html">[ydf-devel] r1961 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000446.html">[ydf-devel] r1963 - in YDFramework2.0/trunk/examples/weblog/skins: . default_with_lightbox default_with_lightbox/images default_with_lightbox/js
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#445">[ date ]</a>
+              <a href="thread.html#445">[ thread ]</a>
+              <a href="subject.html#445">[ subject ]</a>
+              <a href="author.html#445">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-07-07 11:21:01 +0200 (Fri, 07 Jul 2006)
+New Revision: 1962
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+Log:
+If the skin doesn't exist, it will default to the &quot;default&quot; skin.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-07-06 19:46:13 UTC (rev 1961)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-07-07 09:21:01 UTC (rev 1962)
+@@ -36,6 +36,13 @@
+             $this-&gt;dir_uploads = YDConfig::get( 'dir_uploads', 'uploads' );
+             $this-&gt;dir_skins   = YDConfig::get( 'dir_skins',   'skins' ) . '/';
+ 
++
++            // Default to default skin
++            if ( ! is_dir( dirname( __FILE__ ) . '/../' . $this-&gt;dir_skins . $this-&gt;skin . '/' ) ) {
++                YDConfig::set( 'weblog_skin', 'default' );
++                $this-&gt;skin = YDConfig::get( 'weblog_skin', 'default' );
++            }
++
+             // Initialize the template
+             $this-&gt;tpl = new YDTemplate();
+             $this-&gt;tpl-&gt;template_dir = dirname( __FILE__ ) . '/../' . $this-&gt;dir_skins . $this-&gt;skin . '/';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000444.html">[ydf-devel] r1961 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000446.html">[ydf-devel] r1963 - in YDFramework2.0/trunk/examples/weblog/skins: . default_with_lightbox default_with_lightbox/images default_with_lightbox/js
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#445">[ date ]</a>
+              <a href="thread.html#445">[ thread ]</a>
+              <a href="subject.html#445">[ subject ]</a>
+              <a href="author.html#445">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

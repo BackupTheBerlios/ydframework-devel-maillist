@@ -1,0 +1,270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseObject indirect relations
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject%20indirect%20relations&In-Reply-To=%3C12260be20603070438k7d53f7d9w20a3be8751ff734e%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000191.html">
+   <LINK REL="Next"  HREF="000206.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseObject indirect relations</H1>
+    <B>David Bittencourt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject%20indirect%20relations&In-Reply-To=%3C12260be20603070438k7d53f7d9w20a3be8751ff734e%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] YDDatabaseObject indirect relations">muitocomplicado at gmail.com
+       </A><BR>
+    <I>Tue Mar  7 13:38:32 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000191.html">[ydf-devel] r1769 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery
+</A></li>
+        <LI>Next message: <A HREF="000206.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#192">[ date ]</a>
+              <a href="thread.html#192">[ thread ]</a>
+              <a href="subject.html#192">[ subject ]</a>
+              <a href="author.html#192">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I thought a lot about this and the only way of doing it is to change the
+class usage a bit.
+
+This will break our current codes.
+
+I'm thinking more about it and will get back to you later.
+
+-db
+
+
+On 2/19/06, David Bittencourt &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">muitocomplicado at gmail.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> You are right.
+</I>&gt;<i>
+</I>&gt;<i> This would be really better.
+</I>&gt;<i>
+</I>&gt;<i> I'm gonna take a look at this.
+</I>&gt;<i>
+</I>&gt;<i> -db
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On 2/19/06, Francisco Azevedo &lt; <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt; Maybe my last commit yesterday can help you. You can do this now:
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; // phones class
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; $rel =&amp; $this-&gt;registerRelation( 'people', false, 'people' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setLocalKey( 'id_people' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setForeignKey( 'id_people' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setForeignVar( 'people' );
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; $rel =&amp; $this-&gt;registerRelation( 'car', false, 'car' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setLocalKey( 'people.id_car' ); // note: this is not a field
+</I>&gt;<i> &gt; from
+</I>&gt;<i> &gt; &gt; phones class but from people relation
+</I>&gt;<i> &gt; &gt; $rel-&gt;setForeignKey( 'id_car' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setForeignVar( 'car' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setForeignConditions( 'people.active = car.active' ); // more
+</I>&gt;<i> &gt; &gt; conditions with other relations
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Db, sorry but this is a ugly solution. I have defined all relations and
+</I>&gt;<i> &gt; the internal state of all classes. The problem is on find() and
+</I>&gt;<i> &gt; findAll(). These methods don't care about loaded classes. Imho, find()
+</I>&gt;<i> &gt; should search all arguments and find inside each if they are defined.
+</I>&gt;<i> &gt; In this case:
+</I>&gt;<i> &gt; $phone-&gt;find('people','car');
+</I>&gt;<i> &gt; find would:
+</I>&gt;<i> &gt; - get relations to 'people' and 'car' inside 'phone' class.
+</I>&gt;<i> &gt; // would find 1 relation
+</I>&gt;<i> &gt; - get relations to 'car' and 'phone' inside 'people' class.
+</I>&gt;<i> &gt; // would find 2 relations
+</I>&gt;<i> &gt; - get relations to 'phone' and 'people' inside 'car' class.
+</I>&gt;<i> &gt; // would find 1 relation
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; .. and then make the query.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; This has one more BIG advantage. All the internal states of the classes
+</I>&gt;<i> &gt; will be used. If you define inside 'cars':
+</I>&gt;<i> &gt; $this-&gt;registerProtected( 'active', 1 )
+</I>&gt;<i> &gt; The $phone::find() will use it and we don't need to define it _again_.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Imagine that, if we have 10 tables that are indirectly related to 'cars'
+</I>&gt;<i> &gt; we don't need to create _another_ 10 relations and in _each_ find the
+</I>&gt;<i> &gt; internal state of cars.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; $rel =&amp; $this-&gt;registerRelation( 'garage', false, 'garage' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setLocalKey( 'car.id_garage' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setForeignKey( 'id_garage' );
+</I>&gt;<i> &gt; &gt; $rel-&gt;setForeignVar( 'garage' );
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; // making the query
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; $phone = YDDatabaseObject::getInstance( 'phones' );
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; $phone-&gt;load( 'people', 'car', 'garage' );
+</I>&gt;<i> &gt; &gt; $phone-&gt;people-&gt;beautiful = 1;
+</I>&gt;<i> &gt; &gt; $phone-&gt;car-&gt;active = 1;
+</I>&gt;<i> &gt; &gt; $phone-&gt;garage-&gt;where( 'garage.size &gt; 10' );
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; $phone-&gt;find( 'people', 'car', 'garage' );
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; I think this can help you.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; -db
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; On 2/18/06, *Francisco Azevedo* &lt; <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt; &gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt; wrote:
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;      &gt; Another way is treating the people table as a cross table using
+</I>&gt;<i> &gt; a
+</I>&gt;<i> &gt; &gt;      &gt; many-to-many relation.
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt; $rel =&amp; $this-&gt;registerRelation( 'people_car', true, 'car',
+</I>&gt;<i> &gt; &gt;     'people' );
+</I>&gt;<i> &gt; &gt;      &gt; $rel-&gt;setLocalKey( 'id_people' );
+</I>&gt;<i> &gt; &gt;      &gt; $rel-&gt;setCrossLocalKey( 'id_people' );
+</I>&gt;<i> &gt; &gt;      &gt; $rel-&gt;setCrossForeignKey( 'id_car' );
+</I>&gt;<i> &gt; &gt;      &gt; $rel-&gt;setForeignKey( 'id_car' );
+</I>&gt;<i> &gt; &gt;      &gt; $rel-&gt;setCrossVar( 'people' );
+</I>&gt;<i> &gt; &gt;      &gt; $rel-&gt;setForeignVar( 'car' );
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;     Yes, but many-to-many is not an option. It works in this example
+</I>&gt;<i> &gt; but i
+</I>&gt;<i> &gt; &gt;     have db schemes much more complex with more than 6 tables.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;     If findAll cannot find indirect relations it's not possible to
+</I>&gt;<i> &gt; handle
+</I>&gt;<i> &gt; &gt;     this. Imagine that, if you define that a class has a column (eg:
+</I>&gt;<i> &gt; &gt;     'active') that must be 1 to be selected.. any table that it's not
+</I>&gt;<i> &gt; &gt;     directly related with this table will ignore those values and
+</I>&gt;<i> &gt; select
+</I>&gt;<i> &gt; &gt;     everything.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;     So, with current way, it's not possible to use relations that are
+</I>&gt;<i> &gt; &gt;     defined with a class that it's related with current class and many
+</I>&gt;<i> &gt; to
+</I>&gt;<i> &gt; &gt;     many cannot be used always.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;     Is there any way to make findAll check relations that are loaded?
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt; $phone = YDDatabaseObject::getInstance( 'Phones' );
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt; $phone-&gt;load( 'people_car' );
+</I>&gt;<i> &gt; &gt;      &gt; $phone-&gt;people-&gt;beautiful = 1;
+</I>&gt;<i> &gt; &gt;      &gt; $phone-&gt;car-&gt;active = 1;
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt; $phone-&gt;find( 'people_car' );
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt; The structure in the object isn't exactly the structure
+</I>&gt;<i> &gt; &gt;     described, but
+</I>&gt;<i> &gt; &gt;      &gt; does the trick.
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt; -db
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt; On 2/18/06, *Francisco Azevedo* &lt; <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt; &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i> &gt; &gt;      &gt; &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt; &gt;&gt;&gt;
+</I>&gt;<i> &gt; &gt;     wrote:
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     Hi
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     Imagine this &quot;strange&quot; example: I have an db scheme that
+</I>&gt;<i> &gt; have
+</I>&gt;<i> &gt; &gt;     3 tables:
+</I>&gt;<i> &gt; &gt;      &gt;     Cars, People, Phones.
+</I>&gt;<i> &gt; &gt;      &gt;     Table Cars has:  id_car (int key), description (string),
+</I>&gt;<i> &gt; &gt;     active (0 or 1)
+</I>&gt;<i> &gt; &gt;      &gt;     Table People has:  id_people (int key), id_car (points to
+</I>&gt;<i> &gt; &gt;     table Cars),
+</I>&gt;<i> &gt; &gt;      &gt;     name (string), beautiful (0 or 1)
+</I>&gt;<i> &gt; &gt;      &gt;     Table Phones has:  id_phone (int key), id_people  (points
+</I>&gt;<i> &gt; to
+</I>&gt;<i> &gt; &gt;     table
+</I>&gt;<i> &gt; &gt;      &gt;     People), description (string)
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     This means that: we can define phones, each phone belongs
+</I>&gt;<i> &gt; to
+</I>&gt;<i> &gt; &gt;     just one
+</I>&gt;<i> &gt; &gt;      &gt;     person, each person belongs to one car and each car can be
+</I>&gt;<i> &gt; &gt;     active or
+</I>&gt;<i> &gt; &gt;      &gt;     not.
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     So we have the next relations:
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     relation &quot;phone&quot; in class Phones and in class People:
+</I>&gt;<i> &gt; &gt;      &gt;     * Table Phones (id_phone) &lt;-----&gt; Table People (id_people)
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     relation &quot;car&quot; in class People and class Cars:
+</I>&gt;<i> &gt; &gt;      &gt;     * Table People (id_people) -----&gt; Table Cars (id_car)
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     Now, how can we get all Phones that belong to beautiful
+</I>&gt;<i> &gt; &gt;     persons that are
+</I>&gt;<i> &gt; &gt;      &gt;     in an &quot;active&quot; cars?
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     I have tryied the next solution, but YDDatabaseObject seems
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt;     ignoring
+</I>&gt;<i> &gt; &gt;      &gt;     relations that are indirectly connected to Phones table:
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     $phone = YDDatabaseObject::getInstance( 'Phones' );
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     $phone-&gt;load('people');
+</I>&gt;<i> &gt; &gt;      &gt;     $phone-&gt;people-&gt;beautiful = 1;
+</I>&gt;<i> &gt; &gt;      &gt;     $phone-&gt;people-&gt;load('car');
+</I>&gt;<i> &gt; &gt;      &gt;     $phone-&gt;people-&gt;car-&gt;active = 1;
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     $phone-&gt;findAll();
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     Is this possible or just a bug?
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt; &gt;      &gt;     Francisco Azevedo
+</I>&gt;<i> &gt; &gt;      &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; YDFramework-devel mailing list
+</I>&gt;<i> &gt; <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060307/1bb18fd2/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060307/1bb18fd2/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000191.html">[ydf-devel] r1769 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery
+</A></li>
+	<LI>Next message: <A HREF="000206.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#192">[ date ]</a>
+              <a href="thread.html#192">[ thread ]</a>
+              <a href="subject.html#192">[ subject ]</a>
+              <a href="author.html#192">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

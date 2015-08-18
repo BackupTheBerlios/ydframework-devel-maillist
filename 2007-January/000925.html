@@ -1,0 +1,491 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2332 - in YDFramework2.0/trunk: YDFramework2	YDFramework2/YDClasses YDFramework2/addons/YDAjax	YDFramework2/addons/YDBBCode YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDDatabaseObject doc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2332%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2%0A%09YDFramework2/YDClasses%20YDFramework2/addons/YDAjax%0A%09YDFramework2/addons/YDBBCode%20YDFramework2/addons/YDCMComponent%0A%09YDFramework2/addons/YDDatabaseObject%20doc&In-Reply-To=%3C200701221209.l0MC9ARI000411%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000924.html">
+   <LINK REL="Next"  HREF="000926.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2332 - in YDFramework2.0/trunk: YDFramework2	YDFramework2/YDClasses YDFramework2/addons/YDAjax	YDFramework2/addons/YDBBCode YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDDatabaseObject doc</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2332%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2%0A%09YDFramework2/YDClasses%20YDFramework2/addons/YDAjax%0A%09YDFramework2/addons/YDBBCode%20YDFramework2/addons/YDCMComponent%0A%09YDFramework2/addons/YDDatabaseObject%20doc&In-Reply-To=%3C200701221209.l0MC9ARI000411%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2332 - in YDFramework2.0/trunk: YDFramework2	YDFramework2/YDClasses YDFramework2/addons/YDAjax	YDFramework2/addons/YDBBCode YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDDatabaseObject doc">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Jan 22 13:09:10 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000924.html">[ydf-devel] r2331 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms	examples/simplecms/includes/modules
+</A></li>
+        <LI>Next message: <A HREF="000926.html">[ydf-devel] r2333 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#925">[ date ]</a>
+              <a href="thread.html#925">[ thread ]</a>
+              <a href="subject.html#925">[ subject ]</a>
+              <a href="author.html#925">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-22 13:09:08 +0100 (Mon, 22 Jan 2007)
+New Revision: 2332
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+   YDFramework2.0/trunk/doc/docs_api.dxy
+Log:
+Update the api documentation and added the missing documentation parts. YDSimpleCMS still needs to be done though.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -67,9 +67,6 @@
+      *  - getPageUrl: the URL of the given page
+      *
+      *  All these options are available as class variables.
+-     *
+-     *  @todo
+-     *      Improve performance with very large recordsets (millions of rows).
+      */
+     class YDRecordSet extends YDBase {
+ 
+@@ -544,6 +541,8 @@
+          *                          YD_BROWSEBAR_FULL. The full one shows all page numbers, the short one doesn't.
+          *  @param  $currentLink    (optional) Boolean indicating if you should be able to click on the link for the
+          *                          current page or not.
++         *  @param  $allLink        (optional) If not null or empty, a link to show all records is added. The contents
++         *                          of this variable is used as the title for the link.
+          *
+          *  @returns    The browsebar as formatted HTML.
+          */
+@@ -1071,9 +1070,6 @@
+ 
+          *
+          *  @returns    The records matching the SQL statement as a YDRecordSet object.
+-         *
+-         *  @todo
+-         *      Performance needs to be improved. This is a quick and dirty solution right now.
+          */
+         function getRecordsAsSet( $sql, $page=-1, $pagesize=-1, $pagevar = 'page', $sizevar = 'size' ) {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -253,6 +253,8 @@
+          *
+          *  @param $id             The ID of the node to fetch child data for.
+          *  @param $includeSelf    (optional) Whether or not to include the passed node in the the results.
++         *  @param $specificPart   (optional) Whether or not we want a specific column. Use the name of the column if
++         *                         want one, otherwise, set to null to get all columns.
+          *
+          *  @returns The children of the passed node
+          */
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -107,7 +107,7 @@
+         /**
+          *  This function defines the order used in all SELECTS
+          *
+-         *  @param $string  The sql order string.
++         *  @param $sql  The sql order string.
+          */
+         function setOrder( $sql ){
+ 
+@@ -666,9 +666,9 @@
+         /**
+          *  Move a node to a different parent node.
+          *
+-         *  @param  $id         	The ID of the node to move
++         *  @param  $id             The ID of the node to move
+          *  @param  $new_parent_id  (optional) The ID of the new parent node. If not set, will be moved in same parent
+-         *  @param  $position   	(optional) The new position.
++         *  @param  $new_position   (optional) The new position.
+          */
+         function moveNode( $id, $new_parent_id = null, $new_position = null ) {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -122,7 +122,7 @@
+          *  @param $columns		    The number of columns the table should have.
+          *  @param $fillLastRow	    (optional) If true, the last row will be filled with null values so that it matches
+          *						    the number of columns.
+-         *  @param $horizontally	(optional) If true, rows will be filled first, then it will create an new row
++         *  @param $horizontal  	(optional) If true, rows will be filled first, then it will create an new row
+          *
+          *  @returns	A multi-dimension array with the contents of the original array converted to a table with the
+          *				indicated number of colums.
+@@ -386,7 +386,7 @@
+         /**
+          *  Trigger an error
+          *
+-         *  @param  $error  The error to raise.
++         *  @param  $msg    The error to raise.
+          *  @param  $sql    (optional) The SQL statement to log with the error.
+          *  @param  $level  (optional) The type of error to be raised. Default is YD_ERROR.
+          */
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -280,7 +280,8 @@
+     /**
+      *  This function is used to load translations from a $GLOBALS['t'] array.
+      *
+-     *  @param  $t  The name of the translated string.
++     *  @param  $t      The name of the translated string.
++     *  @param  $params (optional) An array of parameters that are passed to the sprintf function.
+      *
+      *  @returns    The translated string.
+      */
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -652,6 +652,7 @@
+          *	This is a helper method to compute all JS that is needed to get a form element
+          *
+          *	@param $formElement			Form element object
++         *  @param $options             The options for the form element
+          */		
+ 		function __getJSFormElement( $formElement, $options ){
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -163,11 +163,11 @@
+         /**
+          *  Function to handle the code tag.
+          *
+-         *  @params $action         The action that is executed.
+-         *  @params $attributes     The attributes specified in the tag
+-         *  @params $content        The content value of the tag.
+-         *  @params $params         The parameters for the tag
+-         *  @params $node_object    A reference to the node object.
++         *  @param $action         The action that is executed.
++         *  @param $attributes     The attributes specified in the tag
++         *  @param $content        The content value of the tag.
++         *  @param $params         The parameters for the tag
++         *  @param $node_object    A reference to the node object.
+          *
+          *  @returns    The html version of the tag.
+          */
+@@ -186,11 +186,11 @@
+         /**
+          *  Function to handle the color tag.
+          *
+-         *  @params $action         The action that is executed.
+-         *  @params $attributes     The attributes specified in the tag
+-         *  @params $content        The content value of the tag.
+-         *  @params $params         The parameters for the tag
+-         *  @params $node_object    A reference to the node object.
++         *  @param $action         The action that is executed.
++         *  @param $attributes     The attributes specified in the tag
++         *  @param $content        The content value of the tag.
++         *  @param $params         The parameters for the tag
++         *  @param $node_object    A reference to the node object.
+          *
+          *  @returns    The html version of the tag.
+          */
+@@ -209,11 +209,11 @@
+         /**
+          *  Function to handle the size tag.
+          *
+-         *  @params $action         The action that is executed.
+-         *  @params $attributes     The attributes specified in the tag
+-         *  @params $content        The content value of the tag.
+-         *  @params $params         The parameters for the tag
+-         *  @params $node_object    A reference to the node object.
++         *  @param $action         The action that is executed.
++         *  @param $attributes     The attributes specified in the tag
++         *  @param $content        The content value of the tag.
++         *  @param $params         The parameters for the tag
++         *  @param $node_object    A reference to the node object.
+          *
+          *  @returns    The html version of the tag.
+          */
+@@ -232,11 +232,11 @@
+         /**
+          *  Function to handle the quote tag.
+          *
+-         *  @params $action         The action that is executed.
+-         *  @params $attributes     The attributes specified in the tag
+-         *  @params $content        The content value of the tag.
+-         *  @params $params         The parameters for the tag
+-         *  @params $node_object    A reference to the node object.
++         *  @param $action         The action that is executed.
++         *  @param $attributes     The attributes specified in the tag
++         *  @param $content        The content value of the tag.
++         *  @param $params         The parameters for the tag
++         *  @param $node_object    A reference to the node object.
+          *
+          *  @returns    The html version of the tag.
+          */
+@@ -254,11 +254,11 @@
+         /**
+          *  Function to handle the url tag.
+          *
+-         *  @params $action         The action that is executed.
+-         *  @params $attributes     The attributes specified in the tag
+-         *  @params $content        The content value of the tag.
+-         *  @params $params         The parameters for the tag
+-         *  @params $node_object    A reference to the node object.
++         *  @param $action         The action that is executed.
++         *  @param $attributes     The attributes specified in the tag
++         *  @param $content        The content value of the tag.
++         *  @param $params         The parameters for the tag
++         *  @param $node_object    A reference to the node object.
+          *
+          *  @returns    The html version of the tag.
+          */
+@@ -277,11 +277,11 @@
+         /**
+          *  Function to handle the email tag.
+          *
+-         *  @params $action         The action that is executed.
+-         *  @params $attributes     The attributes specified in the tag
+-         *  @params $content        The content value of the tag.
+-         *  @params $params         The parameters for the tag
+-         *  @params $node_object    A reference to the node object.
++         *  @param $action         The action that is executed.
++         *  @param $attributes     The attributes specified in the tag
++         *  @param $content        The content value of the tag.
++         *  @param $params         The parameters for the tag
++         *  @param $node_object    A reference to the node object.
+          *
+          *  @returns    The html version of the tag.
+          */
+@@ -300,11 +300,11 @@
+         /**
+          *  Function to handle the img tag.
+          *
+-         *  @params $action         The action that is executed.
+-         *  @params $attributes     The attributes specified in the tag
+-         *  @params $content        The content value of the tag.
+-         *  @params $params         The parameters for the tag
+-         *  @params $node_object    A reference to the node object.
++         *  @param $action         The action that is executed.
++         *  @param $attributes     The attributes specified in the tag
++         *  @param $content        The content value of the tag.
++         *  @param $params         The parameters for the tag
++         *  @param $node_object    A reference to the node object.
+          *
+          *  @returns    The html version of the tag.
+          */
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -155,7 +155,7 @@
+         /**
+          *  This method return an element
+          *
+-         *  @param $is  Id to search for
++         *  @param $id  Id to search for
+          *
+          *  @returns    Element as array
+          */
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -112,6 +112,7 @@
+          *  This method adds form elements for group editing
+ 		 *
+ 		 * @param $group_id     Group id to edit
++		 * @param $permObj    The permission object.
+          */
+ 		function &amp; addFormEdit( $group_id, $permObj = null ){
+ 
+@@ -125,7 +126,8 @@
+         /**
+          *  This method adds form elements for addind a new group
+ 		 *
+-		 * @param $parent_group_id    Parent id (a user id)
++		 * @param $user_id    User ID
++		 * @param $permObj    The permission object.
+          */
+ 		function &amp; addFormNew( $user_id, $permObj = null ){
+ 
+@@ -143,6 +145,7 @@
+          *                      If you will ADD a new group this is the parent id. Use NULL to add it to the root tree
+          *
+ 		 * @param $edit         TRUE: We are editing a group, FALSE: we are creating a group
++		 * @param $permObj    The permission object.
+          */
+ 		function &amp; _addFormDetails( $id, $edit, $permObj ){
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -242,6 +242,7 @@
+          *  This function returns a class description
+          *
+          *  @param     $class    Class name
++         *  @param     $title    The title for the class
+          *
+          *  @returns   description STRING
+          */
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -153,7 +153,7 @@
+         /**
+          *  This method deletes a user (and all children) or just the children
+          *
+-         *  @param $userobject_id  Userobject id
++         *  @param $user_id       Userobject id
+          *  @param $deleteAll     (Optional) Delete id and all children (true by default. if false, deletes children only)
+          *
+          *  @returns    YDResult object. OK      - user deleted
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -85,7 +85,7 @@
+          *  This method returns an associative array of nodes that belogs to a specific type
+          *
+          *  @param $type       Node type (or array of types)
+-         *  @param $attribute  (Optional) Attribute name or (array of attributes) to get only
++         *  @param $attributes (Optional) Attribute name or (array of attributes) to get only
+          *
+          *  @returns    Associative array
+          */
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -1046,7 +1046,7 @@
+          *  @param $messages   (optional) Array with predefined messages:
+          *                                'ok' for ok message, 'error' for fatal messages, 'form_err' for no validation
+          *
+-         *  @param $forvalues  (optional) Custom form validation values
++         *  @param $formvalues (optional) Custom form validation values
+          *
+          *  @param $onDate     (optional) When element is a date (read: array ), we should convert to this format. Default: 'datetimesql'
+          *
+
+Modified: YDFramework2.0/trunk/doc/docs_api.dxy
+===================================================================
+--- YDFramework2.0/trunk/doc/docs_api.dxy	2007-01-22 11:28:52 UTC (rev 2331)
++++ YDFramework2.0/trunk/doc/docs_api.dxy	2007-01-22 12:09:08 UTC (rev 2332)
+@@ -12,32 +12,32 @@
+ EXTRACT_PRIVATE        = NO
+ EXTRACT_STATIC         = NO
+ EXTRACT_LOCAL_CLASSES  = YES
+-HIDE_UNDOC_MEMBERS     = YES
+-HIDE_UNDOC_CLASSES     = YES
++HIDE_UNDOC_MEMBERS     = NO
++HIDE_UNDOC_CLASSES     = NO
+ HIDE_FRIEND_COMPOUNDS  = NO
+ #HIDE_IN_BODY_DOCS      = NO
+ BRIEF_MEMBER_DESC      = NO
+ REPEAT_BRIEF           = NO
+ ALWAYS_DETAILED_SEC    = NO
+ INLINE_INHERITED_MEMB  = YES
+-FULL_PATH_NAMES        = NO
+-STRIP_FROM_PATH        = 
++FULL_PATH_NAMES        = YES
++STRIP_FROM_PATH        = &quot;C:/Program Files/Apache/htdocs/ydframework&quot;
+ INTERNAL_DOCS          = YES
+ CASE_SENSE_NAMES       = YES
+ SHORT_NAMES            = NO
+ HIDE_SCOPE_NAMES       = YES
+-SHOW_INCLUDE_FILES     = YES
++SHOW_INCLUDE_FILES     = NO
+ JAVADOC_AUTOBRIEF      = NO
+ MULTILINE_CPP_IS_BRIEF = NO
+ DETAILS_AT_TOP         = NO
+-INHERIT_DOCS           = YES
++INHERIT_DOCS           = NO
+ INLINE_INFO            = YES
+ SORT_MEMBER_DOCS       = YES
+ DISTRIBUTE_GROUP_DOC   = NO
+ TAB_SIZE               = 4
+ GENERATE_TODOLIST      = YES
+-GENERATE_TESTLIST      = YES
+-GENERATE_BUGLIST       = YES
++GENERATE_TESTLIST      = NO
++GENERATE_BUGLIST       = NO
+ GENERATE_DEPRECATEDLIST= YES
+ ALIASES                = 
+ ENABLED_SECTIONS       = 
+@@ -68,7 +68,11 @@
+                          &quot;../YDFramework2/addons/YDPdfReport/html2pdf.php&quot; \
+                          &quot;../YDFramework2/addons/YDPdfReport/font&quot; \
+                          &quot;../YDFramework2/addons/YDXmlForm/xmlize.inc.php&quot; \
+-                         &quot;../YDFramework2/addons/YDAjax/xajax.inc.php&quot;
++                         &quot;../YDFramework2/addons/YDBBCode/stringparser.class.php&quot; \
++                         &quot;../YDFramework2/addons/YDBBCode/stringparser_bbcode.class.php&quot; \
++                         &quot;../YDFramework2/addons/YDAjax/xajax.inc.php&quot; \
++                         &quot;../YDFramework2/addons/YDAjax/xajaxResponse.inc.php&quot; \
++                         &quot;../YDFramework2/addons/YDCMComponent/languages&quot;
+ EXCLUDE_SYMLINKS       = NO
+ EXCLUDE_PATTERNS       = 
+ EXAMPLE_PATH           = 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000924.html">[ydf-devel] r2331 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms	examples/simplecms/includes/modules
+</A></li>
+	<LI>Next message: <A HREF="000926.html">[ydf-devel] r2333 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#925">[ date ]</a>
+              <a href="thread.html#925">[ thread ]</a>
+              <a href="subject.html#925">[ subject ]</a>
+              <a href="author.html#925">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

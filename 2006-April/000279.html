@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1847 - in YDFramework2.0/trunk: YDFramework2/YDClasses/YDFormElements examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1847%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses/YDFormElements%20examples&In-Reply-To=%3C200604102230.k3AMUxGg019852%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000278.html">
+   <LINK REL="Next"  HREF="000280.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1847 - in YDFramework2.0/trunk: YDFramework2/YDClasses/YDFormElements examples</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1847%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses/YDFormElements%20examples&In-Reply-To=%3C200604102230.k3AMUxGg019852%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1847 - in YDFramework2.0/trunk: YDFramework2/YDClasses/YDFormElements examples">ximian at berlios.de
+       </A><BR>
+    <I>Tue Apr 11 00:30:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000278.html">[ydf-devel] r1846 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000280.html">[ydf-devel] r1848 - in YDFramework2.0/trunk: YDFramework2/YDClasses/YDFormElements examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#279">[ date ]</a>
+              <a href="thread.html#279">[ thread ]</a>
+              <a href="subject.html#279">[ subject ]</a>
+              <a href="author.html#279">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-11 00:30:57 +0200 (Tue, 11 Apr 2006)
+New Revision: 1847
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+   YDFramework2.0/trunk/examples/form_checkboxgroup.php
+   YDFramework2.0/trunk/examples/form_checkboxgroup.tpl
+Log:
+on checkboxgroup it's now possible to use predefined structures ( take a look to example )
+
+feature #2094
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-04-10 22:23:00 UTC (rev 1846)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-04-10 22:30:57 UTC (rev 1847)
+@@ -57,6 +57,9 @@
+             foreach ( $options as $key=&gt;$val ) {
+                 $item = new YDFormElement_Checkbox( $form, $name . '[' . $key . ']', $val, $attributes, $options );
+                 $this-&gt;_items[ $key ] = $item;
++
++                // delete attribute. otherwise we would get a 'sep' attribute in html
++                $item-&gt;delAttribute( 'sep' );
+             }
+ 
+             // Indicate if filters need to be applied
+@@ -65,8 +68,21 @@
+             // Indicate that the label should be appended
+             $this-&gt;_placeLabel = 'before';
+ 
++            // set default separator and default position
++            $this-&gt;_separator = '&lt;br /&gt;';
++            $this-&gt;_position  = 'right';
++
++            // parse separator and position from array
++            if ( isset ( $attributes['sep'] ) ) {
++
++                // find horizontal and left tags
++                if ( is_int( strpos( $attributes['sep'], 'h' ) ) ) $this-&gt;_separator = '&nbsp;&nbsp;&nbsp;';
++                if ( is_int( strpos( $attributes['sep'], 'l' ) ) ) $this-&gt;_position  = 'left';
++            }
++
+         }
+-        
++
++
+         /**
+          *      This function returns a boolean indicating if the element value was
+          *      modified from it's default value.
+@@ -126,12 +142,11 @@
+ 
+             // Output the HTML
+             $output = '';
+-            foreach ( $this-&gt;_items as $item ) {
+-                $output .= '&lt;nowrap&gt;' . $item-&gt;toHtml();
+-                $output .= '&nbsp;&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;';
+-                $output .= '&lt;/nowrap&gt;##ITEMSEP##';
+-            }
+-            $output = rtrim( $output, '##ITEMSEP##' );
++
++            foreach ( $this-&gt;_items as $item )
++                if ( $this-&gt;_position == 'right' ) $output .= $item-&gt;toHtml() . '&nbsp;&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;' . $this-&gt;_separator;
++                else                               $output .= '&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;&nbsp;' . $item-&gt;toHtml() . $this-&gt;_separator;
++
+             return $output;
+ 
+         }
+
+Modified: YDFramework2.0/trunk/examples/form_checkboxgroup.php
+===================================================================
+--- YDFramework2.0/trunk/examples/form_checkboxgroup.php	2006-04-10 22:23:00 UTC (rev 1846)
++++ YDFramework2.0/trunk/examples/form_checkboxgroup.php	2006-04-10 22:30:57 UTC (rev 1847)
+@@ -21,8 +21,16 @@
+             // Create the form
+             $form = new YDForm( 'form1' );
+ 
+-            // Add the radiobutton
+-            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple', 'Choose multiple', array(), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            // Add the checkboxgroup
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple',  'Choose multiple default',                       array(), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple2', 'Choose multiple HORIZONTAL',       array('sep' =&gt; 'h' ), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple3', 'Choose multiple VERTICAL',         array('sep' =&gt; 'v' ), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple4', 'Choose multiple LEFT',             array('sep' =&gt; 'l' ), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple5', 'Choose multiple RIGHT',            array('sep' =&gt; 'r' ), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple6', 'Choose multiple VERTICAL LEFT',    array('sep' =&gt; 'vl'), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple7', 'Choose multiple VERTICAL RIGHT',   array('sep' =&gt; 'vr'), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple8', 'Choose multiple HORIZONTAL LEFT',  array('sep' =&gt; 'hl'), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple9', 'Choose multiple HORIZONTAL RIGHT', array('sep' =&gt; 'hr'), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
+ 
+             // Add the submit button
+             $form-&gt;addElement( 'submit', 'btnSubmit', 'submit' );
+@@ -39,7 +47,7 @@
+             $tpl = new YDTemplate();
+ 
+             // Add the form to the template
+-            $tpl-&gt;assignForm ( 'form',$form );
++            $tpl-&gt;assign ( 'form', $form-&gt;toHTML() );
+ 
+             // Display the template
+             $tpl-&gt;display();
+
+Modified: YDFramework2.0/trunk/examples/form_checkboxgroup.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/form_checkboxgroup.tpl	2006-04-10 22:23:00 UTC (rev 1846)
++++ YDFramework2.0/trunk/examples/form_checkboxgroup.tpl	2006-04-10 22:30:57 UTC (rev 1847)
+@@ -1,5 +1 @@
+-{$form.tag}
+-    {$form.choose_multiple.html|@replace:'##ITEMSEP##':'&lt;br/&gt;'}
+-    &lt;br/&gt;
+-    {$form.btnSubmit.html}
+-{$form.endtag}
++{$form}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000278.html">[ydf-devel] r1846 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000280.html">[ydf-devel] r1848 - in YDFramework2.0/trunk: YDFramework2/YDClasses/YDFormElements examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#279">[ date ]</a>
+              <a href="thread.html#279">[ thread ]</a>
+              <a href="subject.html#279">[ subject ]</a>
+              <a href="author.html#279">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

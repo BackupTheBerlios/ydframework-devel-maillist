@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2049 - in YDFramework2.0/trunk/examples/weblog: .	include include/dbupdates manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2049%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/dbupdates%20manage&In-Reply-To=%3C200608301256.k7UCuMtC022627%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000559.html">
+   <LINK REL="Next"  HREF="000561.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2049 - in YDFramework2.0/trunk/examples/weblog: .	include include/dbupdates manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2049%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/dbupdates%20manage&In-Reply-To=%3C200608301256.k7UCuMtC022627%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2049 - in YDFramework2.0/trunk/examples/weblog: .	include include/dbupdates manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 30 14:56:22 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000559.html">[ydf-devel] r2048 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000561.html">[ydf-devel] r2050 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#560">[ date ]</a>
+              <a href="thread.html#560">[ thread ]</a>
+              <a href="subject.html#560">[ subject ]</a>
+              <a href="author.html#560">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-30 14:56:04 +0200 (Wed, 30 Aug 2006)
+New Revision: 2049
+
+Added:
+   YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_004_CommentsUriAgent.php
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/install.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+The user agent and request url are now saved for new comments.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-29 17:14:37 UTC (rev 2048)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-30 12:56:04 UTC (rev 2049)
+@@ -114,7 +114,12 @@
+             // Get a link to the database metadata
+             $dbmeta = new YDDatabaseMetaData( $this-&gt;db );
+ 
+-            // Add any missing items field
++            // Add any missing comments fields
++            $fields = $dbmeta-&gt;getFields( '#_comments' );
++            $this-&gt;executeIfMissing( 'useragent', $fields, 'ALTER TABLE #_comments ADD useragent varchar(255) AFTER userip' );
++            $this-&gt;executeIfMissing( 'userrequrl', $fields, 'ALTER TABLE #_comments ADD userrequrl varchar(255) AFTER useragent' );
++
++            // Add any missing items fields
+             $fields = $dbmeta-&gt;getFields( '#_items' );
+             $this-&gt;executeIfMissing( 'body_more', $fields, 'ALTER TABLE #_items ADD body_more LONGTEXT AFTER body' );
+             $this-&gt;executeIfMissing( 'allow_comments', $fields, 'ALTER TABLE #_items ADD allow_comments TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER num_comments' );
+@@ -389,18 +394,8 @@
+ 
+         // Get the comments for an item
+         function getComments( $item_id=null, $order='created', $limit=-1, $offset=-1, $public_only=false ) {
+-            /*
++            $query = 'SELECT c.id as id, c.item_id as item_id, c.username as username, c.useremail as useremail, c.userwebsite as userwebsite, c.userip as userip, c.useragent as useragent, c.userrequrl as userrequrl, c.comment as comment, c.created as created, c.modified as modified, i.title as item_title, i.is_draft as item_is_draft FROM #_comments c, #_items i WHERE c.item_id = i.id';
+             if ( $item_id ) {
+-                $query = 'SELECT * FROM #_comments WHERE item_id = ' . $this-&gt;str( $item_id );
+-            } else {
+-                $query = 'SELECT c.id as id, c.item_id as item_id, c.username as username, c.useremail as useremail, c.userwebsite as userwebsite, c.userip as userip, c.comment as comment, c.created as created, c.modified as modified, i.title as item_title, i.is_draft as item_is_draft FROM #_comments c, #_items i WHERE c.item_id = i.id';
+-                if ( $public_only == true ) {
+-                    $query .= ' and i.is_draft = 0';
+-                }
+-            }
+-            */
+-            $query = 'SELECT c.id as id, c.item_id as item_id, c.username as username, c.useremail as useremail, c.userwebsite as userwebsite, c.userip as userip, c.comment as comment, c.created as created, c.modified as modified, i.title as item_title, i.is_draft as item_is_draft FROM #_comments c, #_items i WHERE c.item_id = i.id';
+-            if ( $item_id ) {
+                 $query .= ' and item_id = ' . $this-&gt;str( $item_id );
+             }
+             if ( $public_only == true ) {
+@@ -415,7 +410,7 @@
+ 
+         // Get a comment by it's ID
+         function getCommentById( $comment_id ) {
+-            $sql = $this-&gt;_prepareQuery( 'SELECT c.id as id, c.item_id as item_id, c.username as username, c.useremail as useremail, c.userwebsite as userwebsite, c.userip as userip, c.comment as comment, c.created as created, c.modified as modified, i.title as item_title FROM #_comments c, #_items i WHERE c.item_id = i.id and c.id = ' . $this-&gt;str( $comment_id ) );
++            $sql = $this-&gt;_prepareQuery( 'SELECT c.id as id, c.item_id as item_id, c.username as username, c.useremail as useremail, c.userwebsite as userwebsite, c.userip as userip, c.useragent as useragent, c.userrequrl as userrequrl, c.comment as comment, c.created as created, c.modified as modified, i.title as item_title FROM #_comments c, #_items i WHERE c.item_id = i.id and c.id = ' . $this-&gt;str( $comment_id ) );
+             $record  = $this-&gt;db-&gt;getRecord( $sql );
+             $record['comment'] = trim( strip_tags( $record['comment'] ) );
+             return $record;
+@@ -424,6 +419,8 @@
+         // Add a comment
+         function addComment( $values ) {
+             $values['userip'] = $_SERVER['REMOTE_ADDR'];
++            $values['useragent'] = $_SERVER['HTTP_USER_AGENT'];
++            $values['userrequrl'] = $_SERVER['REQUEST_URI'];
+             $result = $this-&gt;_executeInsert( '#_comments', $values );
+             $comment_id = $this-&gt;db-&gt;getLastInsertID();
+             $sql = 'UPDATE #_items SET num_comments = num_comments+1 WHERE id = ' . $this-&gt;str( $values['item_id'] );
+
+Added: YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_004_CommentsUriAgent.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_004_CommentsUriAgent.php	2006-08-29 17:14:37 UTC (rev 2048)
++++ YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_004_CommentsUriAgent.php	2006-08-30 12:56:04 UTC (rev 2049)
+@@ -0,0 +1,29 @@
++&lt;?php
++
++    // Class definition
++    class UPD_004_CommentsUriAgent {
++
++        // Class constructor
++        function UPD_004_CommentsUriAgent( $db ) {
++
++            // Publish the database
++            $this-&gt;db = $db;
++
++        }
++
++        // Install the update
++        function update() {
++
++            // The SQL to add the useragent field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'comments ADD useragent varchar(255) AFTER userip';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++            // The SQL to add the userrequrl field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'comments ADD userrequrl varchar(255) AFTER useragent';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/weblog/install.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/install.php	2006-08-29 17:14:37 UTC (rev 2048)
++++ YDFramework2.0/trunk/examples/weblog/install.php	2006-08-30 12:56:04 UTC (rev 2049)
+@@ -133,6 +133,8 @@
+                       useremail varchar(255) NOT NULL default \'\',
+                       userwebsite varchar(255) default NULL,
+                       userip varchar(20) default NULL,
++                      useragent varchar(255) default NULL,
++                      userrequrl varchar(255) default NULL,
+                       comment longtext NOT NULL,
+                       created int(11) default NULL,
+                       modified int(11) default NULL,
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-08-29 17:14:37 UTC (rev 2048)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-08-30 12:56:04 UTC (rev 2049)
+@@ -150,10 +150,18 @@
+                 &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;&lt;a href=&quot;items.php?do=edit&amp;id={$comment.item_id}&quot;&gt;&lt;b&gt;{$comment.item_title}&lt;/b&gt;&lt;/a&gt;&lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;posted_from&quot;}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$comment.userip}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;posted_from&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$comment.userip}&lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;User Agent&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$comment.useragent|default:'-'}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;Request URI&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$comment.userrequrl|default:'-'}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.username.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowC&quot;&gt;{$form.username.html}&lt;/td&gt;
+             &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000559.html">[ydf-devel] r2048 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000561.html">[ydf-devel] r2050 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#560">[ date ]</a>
+              <a href="thread.html#560">[ thread ]</a>
+              <a href="subject.html#560">[ subject ]</a>
+              <a href="author.html#560">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

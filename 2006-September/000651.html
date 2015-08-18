@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2132 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2132%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200609140912.k8E9CO2o001892%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000650.html">
+   <LINK REL="Next"  HREF="000652.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2132 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2132%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200609140912.k8E9CO2o001892%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2132 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep 14 11:12:24 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000650.html">[ydf-devel] r2131 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+        <LI>Next message: <A HREF="000652.html">[ydf-devel] r2133 - in YDFramework2.0/trunk/examples/cm: .	backend/templates/default backend/templates/green	backend/templates/orange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#651">[ date ]</a>
+              <a href="thread.html#651">[ thread ]</a>
+              <a href="subject.html#651">[ subject ]</a>
+              <a href="author.html#651">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-14 11:12:07 +0200 (Thu, 14 Sep 2006)
+New Revision: 2132
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+Log:
+- user editing/creation now uses a selectimage form element for template (instead of a simple select)
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-09-14 09:10:22 UTC (rev 2131)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-09-14 09:12:07 UTC (rev 2132)
+@@ -92,7 +92,7 @@
+          *  @param $username  User username
+          *  @param $password  User password (if password length is smaller than 32 we must md5 it, password form elements must have max 31)
+          *
+-         *  @returns    user_id if valid, false otherwise
++         *  @returns    ARRAY with user attributes, FALSE otherwise
+          */
+ 		function valid( $username = '', $password = '' ){
+ 
+@@ -122,9 +122,9 @@
+ 			$this-&gt;where( '(state = 1 OR (state = 2 AND login_start &lt; &quot;' . $now . '&quot; AND login_end &gt; &quot;' . $now . '&quot;))' );
+ 
+ 			// test if we get just one user
+-			if ( $this-&gt;find( 'ydcmuserobject' ) == 1 ) return intval( $this-&gt;get( 'user_id' ) );
+-
+-			return false;
++			if ( $this-&gt;find( 'ydcmuserobject' ) != 1 ) return false;
++			
++			return $this-&gt;getValues();
+ 		}
+ 
+ 
+@@ -174,8 +174,10 @@
+ 		 *
+ 		 * @param $id           User id to edit
+ 		 * @param $noneditable  (Optional) Array with form element names that are NOT editable (are spans).
++         *
++		 * @returns    YDForm object pointer         
+          */
+-		function addFormEdit( $id, $noneditable = array() ){
++		function &amp; addFormEdit( $id, $noneditable = array() ){
+ 
+ 		 	return $this-&gt;_addFormDetails( $id, true, $noneditable );
+ 		}
+@@ -185,8 +187,10 @@
+          *  This method adds form elements for addind a new user
+ 		 *
+ 		 * @param $id    Group id of this new user
++         *
++		 * @returns    YDForm object pointer         
+          */
+-		function addFormNew( $id ){
++		function &amp; addFormNew( $id ){
+ 
+ 		 	return $this-&gt;_addFormDetails( $id, false );
+ 		}
+@@ -198,10 +202,11 @@
+ 		 * @param $id           If you will EDIT some user this is the user id to edit. On $edit (next argument) you must set TRUE
+          *                      If you will ADD a new user this is the parent id of the new user. On $edit (next argument) you must set FALSE
+ 		 * @param $edit         The edit parameter
++		 * @param $noneditable  Array with form element names that are NOT editable
+          *
+-		 * @param $noneditable  Array with form element names that are NOT editable
+-         */
+-		function _addFormDetails( $id, $edit, $noneditable = array() ){
++		 * @returns    YDForm object pointer         
++		 */
++		function &amp; _addFormDetails( $id, $edit, $noneditable = array() ){
+ 
+ 			YDInclude( 'YDForm.php' );
+ 
+@@ -251,8 +256,12 @@
+ 				$this-&gt;_form-&gt;addElement( 'select',    'lang_id',       t( 'ydcmuser label language' ), array(), $languages );
+ 
+ 				$templates = new YDCMTemplates();
+-    	        $this-&gt;_form-&gt;addElement( 'select',    'template',      t( 'ydcmuser label template' ), array(), $templates-&gt;admin_templates() );
+ 
++				// get url to templates and set shot.png as filename
++				$attributes = array( 'border' =&gt; 1, 'src' =&gt; YDConfig::get( 'YDCMTEMPLATES_ADMIN_URL' ), 'ext' =&gt; '/shot.png' );
++
++    	        $this-&gt;_form-&gt;addElement( 'selectimage',    'template', t( 'ydcmuser label template' ), $attributes, $templates-&gt;admin_templates() );
++
+ 				$this-&gt;_form-&gt;addRule( 'name',        'maxlength',      t( 'ydcmuser mess name too big' ),  255 );
+ 				$this-&gt;_form-&gt;addRule( 'email',       'email',          t( 'ydcmuser mess email not valid' ) );
+ 				$this-&gt;_form-&gt;addRule( 'other',       'maxlength',      t( 'ydcmuser mess other too big' ), 5000 );
+@@ -286,6 +295,8 @@
+ 					$this-&gt;_form-&gt;setDefault( 'login_end', time() + 7 * 24 * 3600 );
+ 			}
+ 
++
++			return $this-&gt;_form;
+ 		}
+ 
+         /**
+@@ -445,8 +456,10 @@
+          * @param $oldpassword  (Optional) Flag the defines if we should include a box with old password confirmation.
+          *                                 This box is used when the user wants to change its pass and not when we want to change another user pass
+          *                                 TRUE: include box; FALSE: don't include
++         *
++         * @returns YDForm object pointer
+          */
+-		function addFormPassword( $oldpassword = true ){
++		function &amp; addFormPassword( $oldpassword = true ){
+ 
+ 			YDInclude( 'YDForm.php' );
+ 
+@@ -467,6 +480,8 @@
+ 
+ 			// add compare rule to new password and confirmation password
+ 			$this-&gt;_form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
++
++			return $this-&gt;_form;
+ 		}
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000650.html">[ydf-devel] r2131 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+	<LI>Next message: <A HREF="000652.html">[ydf-devel] r2133 - in YDFramework2.0/trunk/examples/cm: .	backend/templates/default backend/templates/green	backend/templates/orange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#651">[ date ]</a>
+              <a href="thread.html#651">[ thread ]</a>
+              <a href="subject.html#651">[ subject ]</a>
+              <a href="author.html#651">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

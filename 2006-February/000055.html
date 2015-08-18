@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1663 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDDatabaseObject addons/YDDatabaseQuery addons/YDInstaller
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1663%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20addons/YDDatabaseObject%20addons/YDDatabaseQuery%20addons/YDInstaller&In-Reply-To=%3C200602122043.k1CKhOBu032691%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000054.html">
+   <LINK REL="Next"  HREF="000056.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1663 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDDatabaseObject addons/YDDatabaseQuery addons/YDInstaller</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1663%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20addons/YDDatabaseObject%20addons/YDDatabaseQuery%20addons/YDInstaller&In-Reply-To=%3C200602122043.k1CKhOBu032691%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1663 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDDatabaseObject addons/YDDatabaseQuery addons/YDInstaller">pclaerhout at berlios.de
+       </A><BR>
+    <I>Sun Feb 12 21:43:24 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000054.html">[ydf-devel] r1662 - YDFramework2.0/tags
+</A></li>
+        <LI>Next message: <A HREF="000056.html">[ydf-devel] r1664 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#55">[ date ]</a>
+              <a href="thread.html#55">[ thread ]</a>
+              <a href="subject.html#55">[ subject ]</a>
+              <a href="author.html#55">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-12 21:43:08 +0100 (Sun, 12 Feb 2006)
+New Revision: 1663
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php
+Log:
+Did some post 2.0 final cleanup:
+- Fixed some docstrings
+- Removed the deprecated functions
+- Cleaned up some todo items from doxygen
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-11 11:19:03 UTC (rev 1662)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-12 20:43:08 UTC (rev 1663)
+@@ -888,40 +888,6 @@
+          *
+          *  @param $string  The string to escape.
+          *
+-         *  @returns     The escaped string.
+-         *  
+-         *  @deprecated  Will be removed in version 2.0 final. Use escape() instead.
+-         */
+-        function string( $string ) {
+-            
+-            trigger_error( 'The method YDDatabaseDriver::string is deprecated and will be removed in version 2.0 final. Use YDDatabaseDriver::escape instead.', YD_WARNING );
+-            
+-            return $this-&gt;escape( $string );
+-        }
+-
+-        /**
+-         *  This function will escape a string so that it's safe to include it in an SQL statement and will surround it
+-         *  with the quotes appropriate for the database backend.
+-         *
+-         *  @param $string  The string to escape.
+-         *
+-         *  @returns     The escaped string surrounded by quotes.
+-         *  
+-         *  @deprecated  Will be removed in version 2.0 final. Use escapeSql() instead.
+-         */
+-        function sqlString( $string ) {
+-            
+-            trigger_error( 'The method YDDatabaseDriver::sqlString is deprecated and will be removed in version 2.0 final. Use YDDatabaseDriver::escapeSql instead.', YD_WARNING );
+-            
+-            return $this-&gt;escapeSql( $string );
+-        
+-        }
+-
+-        /**
+-         *  This function will escape a string so that it's safe to include it in an SQL statement.
+-         *
+-         *  @param $string  The string to escape.
+-         *
+          *  @returns    The escaped string.
+          */
+         function escape( $string ) {
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-02-11 11:19:03 UTC (rev 1662)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-02-12 20:43:08 UTC (rev 1663)
+@@ -191,7 +191,9 @@
+         /**
+          *  Fetch the node data for the node identified by $id.
+          *
+-         *  @param $id  The ID of the node to fetch
++         *  @param $id      The ID of the node to fetch.
++         *  @param $field   The unique field to select on. Defaults to null, which means that the ID field specified
++         *                  when the object was instantiated will be used.
+          *
+          *  @returns An object containing the node's data, or false if node not found
+          */
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-11 11:19:03 UTC (rev 1662)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-12 20:43:08 UTC (rev 1663)
+@@ -1391,8 +1391,8 @@
+         /**
+          *      Gets a specific option
+          *
+-         *      @param  $att    Attribute to search
+-         *      @returns        The value
++         *      @param  $option    Attribute to search
++         *      @returns           The value
+          */
+         function getOption( $option ) {
+             return isset( $this-&gt;_options[ $option ] ) ? $this-&gt;_options[ $option ] : null ;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php	2006-02-11 11:19:03 UTC (rev 1662)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php	2006-02-12 20:43:08 UTC (rev 1663)
+@@ -37,11 +37,6 @@
+     /**
+      *	This is the YDHttpClient class. It extends the HttpClient class and adds support for specifying the content
+      *	type.
+-     *
+-     *	@todo
+-     *		Redirects to different sites are not supported, and make retrieving of images from pbase fail. This might
+-     *		result in the fact that we need to move to a different HTTP library. Another option is to rewrite the ]
+-     *		library completely.
+      */
+     class YDHttpClient extends HttpClient {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-11 11:19:03 UTC (rev 1662)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-12 20:43:08 UTC (rev 1663)
+@@ -556,6 +556,7 @@
+          *  This function prepares a query based on the object values.
+          *
+          *  @param $only_keys  (optional) Use only the keys for the WHERE clause. Default: true.
++         *  @param $update     (optional) Default: false.
+          *
+          *  @internal
+          */
+@@ -1203,7 +1204,7 @@
+                     // Cross table
+                     $c_var   = $rel-&gt;getCrossVar();
+                     $c_table = $this-&gt;$c_var-&gt;getTable();
+-                    
++                    
+                     if ( $this-&gt;$c_var-&gt;_all == true ) {
+                         $all = true;
+                     }
+@@ -1340,7 +1341,7 @@
+                 
+                 if ( $this-&gt;_count &gt; 0 ) {
+                     $this-&gt;_results = array_fill( 0, $this-&gt;_count, array() );
+-                }
++                }
+                 
+                 $this-&gt;resetQuery();
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-02-11 11:19:03 UTC (rev 1662)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-02-12 20:43:08 UTC (rev 1663)
+@@ -999,7 +999,7 @@
+             return '';
+ 
+         }
+-        
++
+         /**
+          *  This function will escape a string so that it's safe to include 
+          *  it in an SQL statement.
+@@ -1007,43 +1007,7 @@
+          *  @param $string  The string to escape.
+          *
+          *  @returns    The escaped string.
+-         *
+-         *  @deprecated  Will be removed in version 2.0 final. Use escape() instead.
+          */
+-        function string( $string ) {
+-            
+-            trigger_error( 'The method YDDatabaseQueryDriver::string is deprecated and will be removed in version 2.0 final. Use YDDatabaseQueryDriver::escape instead.', YD_WARNING );
+-            
+-            return $this-&gt;escape( $string );
+-        }
+-        
+-        /**
+-         *  This function will escape a string so that it's safe to include it 
+-         *  in an SQL statement and will surround it with the quotes appropriate 
+-         *  for the database backend.
+-         *
+-         *  @param $string  The string to escape.
+-         *
+-         *  @returns    The escaped string surrounded by quotes.
+-         *
+-         *  @deprecated  Will be removed in version 2.0 final. Use escapeSql() instead.
+-         */
+-        function sqlString( $string ) {
+-            
+-            trigger_error( 'The method YDDatabaseQueryDriver::sqlString is deprecated and will be removed in version 2.0 final. Use YDDatabaseQueryDriver::escapeSql instead.', YD_WARNING );
+-            
+-            return $this-&gt;escapeSql( $string );
+-        
+-        }
+-        
+-        /**
+-         *  This function will escape a string so that it's safe to include 
+-         *  it in an SQL statement.
+-         *
+-         *  @param $string  The string to escape.
+-         *
+-         *  @returns    The escaped string.
+-         */
+         function escape( $string ) {
+             if ( is_string( $string ) ) {
+                 if ( strtolower( $string ) != 'null' ) {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php	2006-02-11 11:19:03 UTC (rev 1662)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php	2006-02-12 20:43:08 UTC (rev 1663)
+@@ -174,7 +174,7 @@
+         }
+         
+         /**
+-         *  This function adds a &lt;pre&gt; container to the installer body.
++         *  This function adds a &lt;pre&gt; container to the installer body.
+          *
+          *  @param  $text        The text
+          *  @param  $attributes  (optional) Array of attributes
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000054.html">[ydf-devel] r1662 - YDFramework2.0/tags
+</A></li>
+	<LI>Next message: <A HREF="000056.html">[ydf-devel] r1664 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#55">[ date ]</a>
+              <a href="thread.html#55">[ thread ]</a>
+              <a href="subject.html#55">[ subject ]</a>
+              <a href="author.html#55">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

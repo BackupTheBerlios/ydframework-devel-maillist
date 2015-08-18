@@ -1,0 +1,733 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2060 - in YDFramework2.0/trunk/examples/weblog: .	include manage skins/default skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2060%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20manage%20skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200608311531.k7VFVbn1012869%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000570.html">
+   <LINK REL="Next"  HREF="000572.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2060 - in YDFramework2.0/trunk/examples/weblog: .	include manage skins/default skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2060%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20manage%20skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200608311531.k7VFVbn1012869%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2060 - in YDFramework2.0/trunk/examples/weblog: .	include manage skins/default skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Aug 31 17:31:37 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000570.html">[ydf-devel] r2059 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000572.html">[ydf-devel] r2061 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#571">[ date ]</a>
+              <a href="thread.html#571">[ thread ]</a>
+              <a href="subject.html#571">[ subject ]</a>
+              <a href="author.html#571">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-31 17:31:35 +0200 (Thu, 31 Aug 2006)
+New Revision: 2060
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items.php
+   YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+Log:
+Removed the auto comment closer and allow comments from the items as they were not really useful.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -21,15 +21,9 @@
+         if ( ! isset( $values['max_syndicated_items'] ) ) {
+             $values['max_syndicated_items'] = 20;
+         }
+-        if ( ! isset( $values['auto_close_items'] ) ) {
+-            $values['auto_close_items'] = 45;
+-        }
+         if ( ! isset( $values['include_debug_info'] ) ) {
+             $values['include_debug_info'] = 0;
+         }
+-        if ( ! isset( $values['dflt_allow_comments'] ) ) {
+-            $values['dflt_allow_comments'] = true;
+-        }
+         if ( ! isset( $values['dflt_is_draft'] ) ) {
+             $values['dflt_is_draft'] = false;
+         }
+@@ -131,9 +125,6 @@
+             // Upgrade the schema if needed
+             $this-&gt;upgradeSchemaIfNeeded();
+ 
+-            // Auto close the old items
+-            $this-&gt;autoCloseOldItems();
+-
+         }
+ 
+         // Get the schema version
+@@ -149,7 +140,7 @@
+             }
+ 
+             // Check the schema version
+-            $schema_version = $this-&gt;db-&gt;getValue( 'select version from #_schemaversion order by installed desc' );
++            $schema_version = $this-&gt;db-&gt;getValue( 'select version from #_schemaversion order by installed desc, version desc' );
+ 
+             // Return the schema version
+             return ( $schema_version === false  ) ? 0 : intval( $schema_version );
+@@ -159,7 +150,7 @@
+         // Get the full schema information
+         function getFullSchemaVersion() {
+             $this-&gt;getSchemaVersion();
+-            return $this-&gt;db-&gt;getRecord( 'select installed, version from #_schemaversion order by installed desc' );
++            return $this-&gt;db-&gt;getRecord( 'select installed, version from #_schemaversion order by installed desc, version desc' );
+         }
+ 
+         // Function to set the schema version
+@@ -174,7 +165,7 @@
+         function upgradeSchemaIfNeeded() {
+ 
+             // The current weblog schema version
+-            $current_schema = 2;
++            $current_schema = 3;
+ 
+             // Get the schema version
+             $installed_schema = $this-&gt;getSchemaVersion();
+@@ -190,9 +181,9 @@
+                 // Add any missing items fields
+                 $fields = $this-&gt;dbmeta-&gt;getFields( '#_items' );
+                 $this-&gt;executeIfMissing( 'body_more', $fields, 'ALTER TABLE #_items ADD body_more LONGTEXT AFTER body' );
+-                $this-&gt;executeIfMissing( 'allow_comments', $fields, 'ALTER TABLE #_items ADD allow_comments TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER num_comments' );
+-                $this-&gt;executeIfMissing( 'auto_close', $fields, 'ALTER TABLE #_items ADD auto_close TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER allow_comments' );
+                 $this-&gt;executeIfMissing( 'is_draft', $fields, 'ALTER TABLE #_items ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER auto_close' );
++                $this-&gt;executeIfPresent( 'allow_comments', $fields, 'ALTER TABLE #_items DROP allow_comments' );
++                $this-&gt;executeIfPresent( 'auto_close', $fields, 'ALTER TABLE #_items DROP auto_close' );
+ 
+                 // Add any missing pages field
+                 $fields = $this-&gt;dbmeta-&gt;getFields( '#_pages' );
+@@ -200,8 +191,6 @@
+ 
+                 // Get the list of indexes for the items table
+                 $indexes = $this-&gt;dbmeta-&gt;getIndexes( '#_items' );
+-                $this-&gt;executeIfMissing( 'allow_comments', $indexes, 'ALTER TABLE #_items ADD INDEX allow_comments (allow_comments)' );
+-                $this-&gt;executeIfMissing( 'auto_close', $indexes, 'ALTER TABLE #_items ADD INDEX auto_close (auto_close)' );
+                 $this-&gt;executeIfMissing( 'is_draft', $indexes, 'ALTER TABLE #_items ADD INDEX is_draft (is_draft)' );
+ 
+                 // Get the list of indexes for the pages table
+@@ -217,6 +206,9 @@
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_schemaversion CHANGE installed installed INT(11)' );
+                 $this-&gt;db-&gt;executeSql( 'UPDATE #_schemaversion SET installed = unix_timestamp() WHERE installed = 0' );
+ 
++                // Remove the auto close fields from the items
++
++
+                 // Update the schema information
+                 $this-&gt;setSchemaVersion( $current_schema );
+ 
+@@ -238,24 +230,6 @@
+             }
+         }
+ 
+-        // Function to auto close old items
+-        function autoCloseOldItems() {
+-
+-            // Auto close the old items if needed
+-            $auto_close_items = YDConfig::get( 'auto_close_items', '' );
+-            if ( $auto_close_items != '' &amp;&amp; is_numeric( $auto_close_items ) ) {
+-
+-                // Calculate the treshold
+-                $treshold = time() - ( $auto_close_items * 86400 );
+-
+-                // Close the items
+-                $this-&gt;db-&gt;executeSql( 'UPDATE #_items SET allow_comments=1 WHERE auto_close = 1' );
+-                $this-&gt;db-&gt;executeSql( 'UPDATE #_items SET allow_comments=0 WHERE auto_close = 1 AND created &lt; ' . $treshold );
+-
+-            }
+-
+-        }
+-
+         // Function to log a request to the statistics
+         function logRequestToStats( $values ) {
+ 
+@@ -406,7 +380,7 @@
+         // Function to get the items of the weblog
+         function getItems( $limit=-1, $offset=-1, $order='created desc, title', $where='' ) {
+             $sql = 'SELECT i.id, i.category_id, i.title, i.body, i.body_more, i.num_comments, i.created, i.modified, '
+-                 . 'i.allow_comments, i.auto_close, i.is_draft, '
++                 . 'i.is_draft, '
+                  . 'c.title as category, u.email as user_email, u.name as user_name FROM #_items i, #_categories c, '
+                  . '#_users u WHERE i.category_id = c.id AND i.user_id = u.id ';
+             $sql = $this-&gt;_prepareQuery( $sql . $where, $order );
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -47,125 +47,120 @@
+             $this-&gt;tpl-&gt;assign( 'related_items', $related_items );
+             $this-&gt;tpl-&gt;assign( 'comments', $comments );
+ 
+-            // Only if comments are allowed
+-            if ( $item['allow_comments'] == '1' ) {
++            // Create the comments form
++            $form = new YDWeblogForm(
++                'comments', 'POST', YDTplModLinkItemRespond( $item ), '_self', array( 'id' =&gt; 'commentform' )
++            );
+ 
+-                // Create the comments form
+-                $form = new YDWeblogForm(
+-                    'comments', 'POST', YDTplModLinkItemRespond( $item ), '_self', array( 'id' =&gt; 'commentform' )
+-                );
++            // Add the fields
++            $form-&gt;addElement( 'text', 'username', t( 'name' ) );
++            $form-&gt;addElement( 'text', 'useremail', t( 'mail_not_published' ) );
++            $form-&gt;addElement( 'text', 'userwebsite', t( 'website' ) );
++            $form-&gt;addElement( 'hidden', '_userspam', t('choose_no_spam'), array() );
++            $form-&gt;addElement( 'textarea', 'comment', '' );
++            $form-&gt;addElement(
++                'submit', 'cmdSubmit', t( 'submit_comment' ),
++                array(
++                    'id' =&gt; 'submit',
++                    'onClick' =&gt; 'this.document.getElementById(\'comments__userspam\').value = 3; return true;'
++                )
++            );
++            $form-&gt;addElement( 'hidden', 'item_id' );
+ 
+-                // Add the fields
+-                $form-&gt;addElement( 'text', 'username', t( 'name' ) );
+-                $form-&gt;addElement( 'text', 'useremail', t( 'mail_not_published' ) );
+-                $form-&gt;addElement( 'text', 'userwebsite', t( 'website' ) );
+-                $form-&gt;addElement( 'hidden', '_userspam', t('choose_no_spam'), array() );
+-                $form-&gt;addElement( 'textarea', 'comment', '' );
+-                $form-&gt;addElement(
+-                    'submit', 'cmdSubmit', t( 'submit_comment' ),
+-                    array(
+-                        'id' =&gt; 'submit',
+-                        'onClick' =&gt; 'this.document.getElementById(\'comments__userspam\').value = 3; return true;'
+-                    )
+-                );
+-                $form-&gt;addElement( 'hidden', 'item_id' );
++            // Set the defaults
++            $defaults = array();
++            $defaults['item_id']     = $id;
++            $defaults['username']    = empty( $_COOKIE['YD_USER_NAME'] ) ? '' : $_COOKIE['YD_USER_NAME'];
++            $defaults['useremail']   = empty( $_COOKIE['YD_USER_EMAIL'] ) ? '' : $_COOKIE['YD_USER_EMAIL'];
++            $defaults['userwebsite'] = empty( $_COOKIE['YD_USER_WEBSITE'] ) ? '' : $_COOKIE['YD_USER_WEBSITE'];
++            $defaults['_userspam']   = 1;
++            $form-&gt;setDefaults( $defaults );
+ 
+-                // Set the defaults
+-                $defaults = array();
+-                $defaults['item_id']     = $id;
+-                $defaults['username']    = empty( $_COOKIE['YD_USER_NAME'] ) ? '' : $_COOKIE['YD_USER_NAME'];
+-                $defaults['useremail']   = empty( $_COOKIE['YD_USER_EMAIL'] ) ? '' : $_COOKIE['YD_USER_EMAIL'];
+-                $defaults['userwebsite'] = empty( $_COOKIE['YD_USER_WEBSITE'] ) ? '' : $_COOKIE['YD_USER_WEBSITE'];
+-                $defaults['_userspam']   = 1;
+-                $form-&gt;setDefaults( $defaults );
++            // Set the rules
++            $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
++            $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
++            $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), 35 );
++            $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
++            $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
++            $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
++            $form-&gt;addRule( '_userspam',   'value',     t( 'err_userspam' ), '3' );
++            $form-&gt;addRule( 'comment',     'required',  t( 'err_comment' ) );
+ 
+-                // Set the rules
+-                $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
+-                $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
+-                $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), 35 );
+-                $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
+-                $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
+-                $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
+-                $form-&gt;addRule( '_userspam',   'value',     t( 'err_userspam' ), '3' );
+-                $form-&gt;addRule( 'comment',     'required',  t( 'err_comment' ) );
++            // Add the filters
++            $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
++            $form-&gt;addFilter( 'comment', 'safe_html' );
+ 
+-                // Add the filters
+-                $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
+-                $form-&gt;addFilter( 'comment', 'safe_html' );
++            // Process the form
++            if ( $form-&gt;validate() === true ) {
+ 
+-                // Process the form
+-                if ( $form-&gt;validate() === true ) {
++                // Get the form values
++                $values = $form-&gt;getValues();
+ 
+-                    // Get the form values
+-                    $values = $form-&gt;getValues();
++                // Simple spam protection
++                if ( ! empty( $values['userwebsite'] ) &amp;&amp; strpos( $values['userwebsite'], '.' ) === false ) {
++                    $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment_id ) );
++                }
+ 
+-                    // Simple spam protection
+-                    if ( ! empty( $values['userwebsite'] ) &amp;&amp; strpos( $values['userwebsite'], '.' ) === false ) {
+-                        $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment_id ) );
+-                    }
++                // Fix any faulty web addresses
++                if ( ! empty( $values['userwebsite'] ) &amp;&amp; substr( strtolower( $values['userwebsite'] ), 0, 7 ) != '<A HREF="http://">http://</A>' ) {
++                    $values['userwebsite'] = '<A HREF="http://">http://</A>' . $values['userwebsite'];
++                }
+ 
+-                    // Fix any faulty web addresses
+-                    if ( ! empty( $values['userwebsite'] ) &amp;&amp; substr( strtolower( $values['userwebsite'] ), 0, 7 ) != '<A HREF="http://">http://</A>' ) {
+-                        $values['userwebsite'] = '<A HREF="http://">http://</A>' . $values['userwebsite'];
+-                    }
++                // Save the username, useremail and userwebsite
++                setcookie( 'YD_USER_NAME',    $values['username'],    time() + 31536000, '/' );
++                setcookie( 'YD_USER_EMAIL',   $values['useremail'],   time() + 31536000, '/' );
++                setcookie( 'YD_USER_WEBSITE', $values['userwebsite'], time() + 31536000, '/' );
+ 
+-                    // Save the username, useremail and userwebsite
+-                    setcookie( 'YD_USER_NAME',    $values['username'],    time() + 31536000, '/' );
+-                    setcookie( 'YD_USER_EMAIL',   $values['useremail'],   time() + 31536000, '/' );
+-                    setcookie( 'YD_USER_WEBSITE', $values['userwebsite'], time() + 31536000, '/' );
++                // Add the values to the database
++                $comment_id = $this-&gt;weblog-&gt;addComment( $values );
+ 
+-                    // Add the values to the database
+-                    $comment_id = $this-&gt;weblog-&gt;addComment( $values );
++                // Send an email if configured
++                if ( $comment_id &gt; 0 &amp;&amp; YDConfig::get( 'email_new_comment', true ) ) {
+ 
+-                    // Send an email if configured
+-                    if ( $comment_id &gt; 0 &amp;&amp; YDConfig::get( 'email_new_comment', true ) ) {
++                    // Include the YDEmail library
++                    YDInclude( 'YDEmail.php' );
+ 
+-                        // Include the YDEmail library
+-                        YDInclude( 'YDEmail.php' );
++                    // Get the list of subscriptions
++                    $subscribers = $this-&gt;weblog-&gt;getCommentSubscribers( $id );
+ 
+-                        // Get the list of subscriptions
+-                        $subscribers = $this-&gt;weblog-&gt;getCommentSubscribers( $id );
++                    // Get the list of subscriptions
++                    $users = $this-&gt;weblog-&gt;getUsers();
+ 
+-                        // Get the list of subscriptions
+-                        $users = $this-&gt;weblog-&gt;getUsers();
++                    // Add the comment to the email template
++                    $this-&gt;tpl-&gt;assign( 'eml_comment', $values );
+ 
+-                        // Add the comment to the email template
+-                        $this-&gt;tpl-&gt;assign( 'eml_comment', $values );
+-
+-                        // Create the email and send it
+-                        $eml = new YDEmail();
+-                        if ( ! empty( $item['user_email'] ) ) {
+-                            $eml-&gt;setFrom( $item['user_email'], YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+-                        } else {
+-                            $eml-&gt;setFrom( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">nobody at nowhere.com</A>', YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+-                        }
+-                        $eml-&gt;setReplyTo( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">no at reply.net</A>' );
+-                        $eml-&gt;addBcc( $item['user_email'] );
+-                        foreach ( $subscribers as $subscriber ) {
+-                            $eml-&gt;addBcc( $subscriber );
+-                        }
+-                        foreach ( $users as $user ) {
+-                            $eml-&gt;addBcc( $user['email'], $user['name'] );
+-                        }
+-                        $eml-&gt;setSubject( t('new_comment') . ': ' . strip_tags( $item['title'] ) );
+-                        $eml-&gt;setHtmlBody( $this-&gt;fetch( 'comment_email' ) );
+-                        $eml-&gt;send();
+-
++                    // Create the email and send it
++                    $eml = new YDEmail();
++                    if ( ! empty( $item['user_email'] ) ) {
++                        $eml-&gt;setFrom( $item['user_email'], YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
++                    } else {
++                        $eml-&gt;setFrom( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">nobody at nowhere.com</A>', YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+                     }
++                    $eml-&gt;setReplyTo( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">no at reply.net</A>' );
++                    $eml-&gt;addBcc( $item['user_email'] );
++                    foreach ( $subscribers as $subscriber ) {
++                        $eml-&gt;addBcc( $subscriber );
++                    }
++                    foreach ( $users as $user ) {
++                        $eml-&gt;addBcc( $user['email'], $user['name'] );
++                    }
++                    $eml-&gt;setSubject( t('new_comment') . ': ' . strip_tags( $item['title'] ) );
++                    $eml-&gt;setHtmlBody( $this-&gt;fetch( 'comment_email' ) );
++                    $eml-&gt;send();
+ 
+-                    // Clear the cache
+-                    $this-&gt;clearCache();
+-
+-                    // Redirect to the item
+-                    $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment_id ) );
+-
+                 }
+ 
+-                // Add the form to the template
+-                $this-&gt;tpl-&gt;assignForm( 'comments_form', $form );
++                // Clear the cache
++                $this-&gt;clearCache();
+ 
++                // Redirect to the item
++                $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment_id ) );
++
+             }
+ 
++            // Add the form to the template
++            $this-&gt;tpl-&gt;assignForm( 'comments_form', $form );
++
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -52,12 +52,6 @@
+             content_css : 'manage_editor.css'
+         });{/literal}
+ 
+-        {literal}function YDDisableAutoClose( obj ) {
+-            if ( obj.checked ) {
+-                document.getElementById(&quot;itemForm_auto_close&quot;).checked = false;
+-            }
+-        }{/literal}
+-
+     //--&gt;
+     &lt;/script&gt;
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -30,9 +30,7 @@
+             $config['use_cache']           = ( $config['use_cache'] ) ? t('yes') : t('no');
+             $config['friendly_urls']       = ( $config['friendly_urls'] ) ? t('yes') : t('no');
+             $config['include_debug_info']  = ( $config['include_debug_info'] ) ? t('yes') : t('no');
+-            $config['dflt_allow_comments'] = ( $config['dflt_allow_comments'] ) ? t('yes') : t('no');
+             $config['dflt_is_draft']       = ( $config['dflt_is_draft'] ) ? t('yes') : t('no');
+-            $config['auto_close_items']    = ( empty( $config['auto_close_items'] ) ) ? '-' : $config['auto_close_items'];
+ 
+             // Assign it to the template
+             $this-&gt;tpl-&gt;assign( 'config', $config );
+@@ -92,8 +90,6 @@
+ 
+             $form-&gt;addElement( 'checkbox', 'friendly_urls', t( 'cfg_friendly_urls' ), array( 'style' =&gt; 'border: none;' ) );
+ 
+-            $form-&gt;addElement( 'checkbox', 'dflt_allow_comments', t( 'allow_comments' ), array( 'style' =&gt; 'border: none;' ) );
+-            $form-&gt;addElement( 'text', 'auto_close_items', t( 'cfg_auto_close_items' ), array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'checkbox', 'dflt_is_draft', t( 'is_draft' ), array( 'style' =&gt; 'border: none;' ) );
+ 
+             $form-&gt;addElement( 'textarea', 'blocked_ips', t( 'cfg_blocked_ips' ), array( 'class' =&gt; 'tfMNoMCE' ) );
+@@ -112,7 +108,6 @@
+             $form-&gt;addRule( 'weblog_entries_fp', 'numeric', t( 'err_weblog_entries_fp_num' ) );
+             $form-&gt;addRule( 'max_syndicated_items', 'required', t( 'err_max_syndicated_items' ) );
+             $form-&gt;addRule( 'max_syndicated_items', 'numeric', t( 'err_max_syndicated_items_num' ) );
+-            $form-&gt;addRule( 'auto_close_items', 'numeric', t( 'err_auto_close_items' ) );
+ 
+             // Add the filters
+             $form-&gt;addFilters( 
+@@ -170,8 +165,6 @@
+             $config['max_syndicated_items'] = YDConfig::get( 'max_syndicated_items', 20 );
+             $config['use_cache']            = YDConfig::get( 'use_cache',            false );
+             $config['friendly_urls']        = YDConfig::get( 'friendly_urls',        false );
+-            $config['auto_close_items']     = YDConfig::get( 'auto_close_items',     '' );
+-            $config['dflt_allow_comments']  = YDConfig::get( 'dflt_allow_comments',  true );
+             $config['dflt_is_draft']        = YDConfig::get( 'dflt_is_draft',        false );
+             $config['blocked_ips']          = YDConfig::get( 'blocked_ips',          YDFormatStringWithListValues( '' ) );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -91,17 +91,9 @@
+             &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;cfg_default_item_settings&quot;}&lt;/th&gt;
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;allow_comments&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$config.dflt_allow_comments}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;is_draft&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$config.dflt_is_draft}&lt;/td&gt;
+         &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;cfg_auto_close_items&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$config.auto_close_items}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;is_draft&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{$config.dflt_is_draft}&lt;/td&gt;
+-        &lt;/tr&gt;
+     &lt;/table&gt;
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+         &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -19,21 +19,15 @@
+ 
+             // Get the filter
+             $filter = 'active';
+-            if ( isset( $_GET['filter'] ) ) {
+-                if ( strtolower( $_GET['filter'] ) == 'drafts' ) {
+-                    $filter = 'drafts';
+-                } elseif( strtolower( $_GET['filter'] ) == 'closed' ) {
+-                    $filter = 'closed';
+-                }
++            if ( isset( $_GET['filter'] ) &amp;&amp; strtolower( $_GET['filter'] ) == 'drafts' ) {
++                $filter = 'drafts';
+             }
+ 
+             // Get the list of items
+             if ( $filter == 'active' ) {
+-                $items = $this-&gt;weblog-&gt;getItems( -1, -1, 'created desc', 'AND is_draft = 0 AND allow_comments = 1' );
+-            } elseif ( $filter == 'drafts' ) {
+-                $items = $this-&gt;weblog-&gt;getItems( -1, -1, 'created desc', 'AND is_draft = 1' );
++                $items = $this-&gt;weblog-&gt;getItems( -1, -1, 'created desc', 'AND is_draft = 0' );
+             } else {
+-                $items = $this-&gt;weblog-&gt;getItems( -1, -1, 'created desc', 'AND allow_comments = 0' );
++                $items = $this-&gt;weblog-&gt;getItems( -1, -1, 'created desc', 'AND is_draft = 1' );
+             }
+ 
+             // Get the pagesize and current page from the URL
+@@ -65,8 +59,6 @@
+             $form-&gt;addElement( 'select',          'category_id',    t('category'),         array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $categories );
+             $form-&gt;addElement( 'datetimeselect',  'created',        t('created_on'),       array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'datetimeselect',  'modified',       t('last_modified_on'), array( 'class' =&gt; 'tfM' ) );
+-            $form-&gt;addElement( 'checkbox',        'allow_comments', t('allow_comments'),   array( 'style' =&gt; 'border: none;', 'onClick' =&gt; 'YDDisableAutoClose(this)') );
+-            $form-&gt;addElement( 'checkbox',        'auto_close',     t('auto_close_item'),  array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'checkbox',        'is_draft',       t('is_draft'),         array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'hidden',          'id' );
+             $form-&gt;addElement( 'submit',          '_cmdSubmit',  t('OK'),                  array( 'class' =&gt; 'button' ) );
+@@ -109,13 +101,6 @@
+ 
+                 // Get the defaults
+                 $defaults = array();
+-                $defaults['allow_comments'] = YDConfig::get( 'dflt_allow_comments', true );
+-                $auto_close_items = YDConfig::get( 'auto_close_items', true );
+-                if ( empty( $auto_close_items ) ) {
+-                    $defaults['auto_close'] = false;
+-                } else {
+-                    $defaults['auto_close'] = true;
+-                }
+                 $defaults['is_draft'] = YDConfig::get( 'dflt_is_draft', false );
+ 
+                 // Set the form defaults
+@@ -221,8 +206,6 @@
+                 // Redirect to the default action
+                 if ( $values['is_draft'] ) {
+                     $this-&gt;redirect( YD_SELF_SCRIPT . '?filter=drafts' );
+-                } elseif ( ! $values['allow_comments'] ) {
+-                    $this-&gt;redirect( YD_SELF_SCRIPT . '?filter=closed' );
+                 } else {
+                     $this-&gt;redirectToAction();
+                 }
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -56,8 +56,6 @@
+                 {if $filter == 'active'}&lt;b&gt;{/if}{t w=&quot;active_items&quot;}{if $filter == 'active'}&lt;/b&gt;{/if}&lt;/a&gt;
+             | &lt;a href=&quot;{$YD_SELF_SCRIPT}?filter=drafts&quot;&gt;
+                 {if $filter == 'drafts'}&lt;b&gt;{/if}{t w=&quot;drafts_items&quot;}{if $filter == 'drafts'}&lt;/b&gt;{/if}&lt;/a&gt;
+-            | &lt;a href=&quot;{$YD_SELF_SCRIPT}?filter=closed&quot;&gt;
+-                {if $filter == 'closed'}&lt;b&gt;{/if}{t w=&quot;closed_items&quot;}{if $filter == 'drafts'}&lt;/b&gt;{/if}&lt;/a&gt;
+         &lt;/th&gt;
+         &lt;th class=&quot;adminRowLGR&quot;&gt;
+             &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&quot;&gt;&lt;img src=&quot;images/icon_add.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
+@@ -88,9 +86,6 @@
+                     {if $item.is_draft eq '1'}&lt;i&gt;{/if}
+                     &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$item.id}&quot;&gt;{$item.title}&lt;/a&gt;
+                     &lt;br/&gt;
+-                    {if $item.allow_comments eq '0'}
+-                        {t w=&quot;closed&quot;}
+-                    {/if}
+                     {if $item.is_draft eq '1'}&lt;/i&gt;{/if}
+                 &lt;/td&gt;
+                 &lt;td class=&quot;adminRowR&quot;&gt;
+@@ -177,14 +172,6 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.modified.html}&lt;/td&gt; 
+             &lt;/tr&gt;
+             &lt;tr&gt; 
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.allow_comments.label_html}&lt;/td&gt; 
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.allow_comments.html}&lt;/td&gt; 
+-            &lt;/tr&gt;
+-            &lt;tr&gt; 
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.auto_close.label_html}&lt;/td&gt; 
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.auto_close.html}&lt;/td&gt; 
+-            &lt;/tr&gt;
+-            &lt;tr&gt; 
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_draft.label_html}&lt;/td&gt; 
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_draft.html}&lt;/td&gt; 
+             &lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -125,39 +125,31 @@
+     &lt;a name=&quot;respond&quot;&gt;&lt;/a&gt;
+     &lt;h3 id=&quot;respond&quot;&gt;{t w=&quot;leave_comment&quot;}&lt;/h3&gt;
+ 
+-    {if $comments_form}
++    {$comments_form.tag}
+ 
+-        {$comments_form.tag}
++        {$comments_form._userspam.html}
+ 
+-            {$comments_form._userspam.html}
++        {if $comments_form.errors_unique_messages}
++            &lt;p class=&quot;postmetadata alt&quot; style=&quot;color: red; text-align: left;&quot;&gt;
++                &lt;b&gt;{t w=&quot;error_comment&quot;}&lt;br/&gt;&lt;/b&gt;
++                {foreach from=$comments_form.errors_unique_messages item=&quot;error&quot;}
++                    {$error}&lt;br/&gt;
++                {/foreach}
++            &lt;/p&gt;
++        {/if}
+ 
+-            {if $comments_form.errors_unique_messages}
+-                &lt;p class=&quot;postmetadata alt&quot; style=&quot;color: red; text-align: left;&quot;&gt;
+-                    &lt;b&gt;{t w=&quot;error_comment&quot;}&lt;br/&gt;&lt;/b&gt;
+-                    {foreach from=$comments_form.errors_unique_messages item=&quot;error&quot;}
+-                        {$error}&lt;br/&gt;
+-                    {/foreach}
+-                &lt;/p&gt;
+-            {/if}
++        {$comments_form.item_id.html}
+ 
+-            {$comments_form.item_id.html}
++        &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
+ 
+-            &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+-            &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+-            &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+-            &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
++        &lt;p&gt;{$comments_form.cmdSubmit.html}&lt;/p&gt;
+ 
+-            &lt;p&gt;{$comments_form.cmdSubmit.html}&lt;/p&gt;
++    {$comments_form.endtag}
+ 
+-        {$comments_form.endtag}
+-
+-    {else}
+-
+-        &lt;p&gt;{t w=&quot;item_closed&quot;}&lt;/p&gt;
+-
+-    {/if}
+-
+ &lt;/div&gt;
+ 
+ {include file=&quot;__std_sidebar.tpl&quot;}
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-08-31 15:19:03 UTC (rev 2059)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-08-31 15:31:35 UTC (rev 2060)
+@@ -129,39 +129,31 @@
+     &lt;a name=&quot;respond&quot;&gt;&lt;/a&gt;
+     &lt;h3 id=&quot;respond&quot;&gt;{t w=&quot;leave_comment&quot;}&lt;/h3&gt;
+ 
+-    {if $comments_form}
++    {$comments_form.tag}
+ 
+-        {$comments_form.tag}
++        {$comments_form._userspam.html}
+ 
+-            {$comments_form._userspam.html}
++        {if $comments_form.errors_unique_messages}
++            &lt;p class=&quot;postmetadata alt&quot; style=&quot;color: red; text-align: left;&quot;&gt;
++                &lt;b&gt;{t w=&quot;error_comment&quot;}&lt;br/&gt;&lt;/b&gt;
++                {foreach from=$comments_form.errors_unique_messages item=&quot;error&quot;}
++                    {$error}&lt;br/&gt;
++                {/foreach}
++            &lt;/p&gt;
++        {/if}
+ 
+-            {if $comments_form.errors_unique_messages}
+-                &lt;p class=&quot;postmetadata alt&quot; style=&quot;color: red; text-align: left;&quot;&gt;
+-                    &lt;b&gt;{t w=&quot;error_comment&quot;}&lt;br/&gt;&lt;/b&gt;
+-                    {foreach from=$comments_form.errors_unique_messages item=&quot;error&quot;}
+-                        {$error}&lt;br/&gt;
+-                    {/foreach}
+-                &lt;/p&gt;
+-            {/if}
++        {$comments_form.item_id.html}
+ 
+-            {$comments_form.item_id.html}
++        &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
+ 
+-            &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+-            &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+-            &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
++        &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+-            &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
++        &lt;p&gt;{$comments_form.cmdSubmit.html}&lt;/p&gt;
+ 
+-            &lt;p&gt;{$comments_form.cmdSubmit.html}&lt;/p&gt;
++    {$comments_form.endtag}
+ 
+-        {$comments_form.endtag}
+-
+-    {else}
+-
+-        &lt;p&gt;{t w=&quot;item_closed&quot;}&lt;/p&gt;
+-
+-    {/if}
+-
+ &lt;/div&gt;
+ 
+ {include file=&quot;__std_sidebar.tpl&quot;}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000570.html">[ydf-devel] r2059 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000572.html">[ydf-devel] r2061 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#571">[ date ]</a>
+              <a href="thread.html#571">[ thread ]</a>
+              <a href="subject.html#571">[ subject ]</a>
+              <a href="author.html#571">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

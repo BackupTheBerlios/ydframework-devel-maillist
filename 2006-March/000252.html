@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1821 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1821%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200603301601.k2UG16W4024689%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000251.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1821 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1821%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200603301601.k2UG16W4024689%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1821 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at berlios.de
+       </A><BR>
+    <I>Thu Mar 30 18:01:06 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000251.html">[ydf-devel] r1820 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#252">[ date ]</a>
+              <a href="thread.html#252">[ thread ]</a>
+              <a href="subject.html#252">[ subject ]</a>
+              <a href="author.html#252">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-03-30 18:00:48 +0200 (Thu, 30 Mar 2006)
+New Revision: 1821
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+new experimental YDAjax release 2.7b
+
+- deleted addRuntimeEvent and included all logic inside addEvent.
+This means that we can use addEvent on a response to add runtime events.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-03-28 07:08:14 UTC (rev 1820)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-03-30 16:00:48 UTC (rev 1821)
+@@ -68,7 +68,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '2.63';
++            $this-&gt;_version = '2.7b';
+             $this-&gt;_copyright = '(c) Copyright 2002-2006 Francisco Azevedo';
+             $this-&gt;_description = 'This class makes ajax easy for YDF developers';
+ 
+@@ -329,8 +329,8 @@
+ 			// send array and method to display autocompleter
+ 			return $this-&gt;addScript( $js . 'autocompleterOpen(' . $jsvar . ');' );
+ 		}
+-		
+ 
++
+         /**
+          *	This method assigns a server function and arguments to a form element event.
+          *
+@@ -343,29 +343,28 @@
+          */		
+ 		 function addEvent( $formElementName, $serverFunction, $arguments = null, $event = null, $options = null, $effects = null ){ 
+ 		 
+-			// if formElementName is &quot;*&quot; we want to define a default event
++			// if formElementName is &quot;*&quot; we want to define a default event (only before responses)
+ 			if ( $formElementName === &quot;*&quot; )
+ 				return $this-&gt;registerCatchAllFunction( array( $serverFunction[1], $serverFunction[0], $serverFunction[1] ) );
+ 
+ 		 	if( !is_array( $options ) ) $options = array( $options );
++
++			// register function in xajax if not on reponse
++			if ( !$this-&gt;onResponse )
++				$this-&gt;registerFunction( array( $serverFunction[1], $serverFunction[0], $serverFunction[1] ) );
+ 		 
+ 			// serverFunction must be an array with a class and the method (get function name)
+ 			$functionName = $this-&gt;computeFunction( $formElementName, $serverFunction, $arguments, $options, $effects );
+ 
+ 			// if element don't have a form we must return
+-			$form = $this-&gt;__getForm( $formElementName );
++			if( is_null( $form = $this-&gt;__getForm( $formElementName ) ) ) return;
+ 
+-			if( is_null( $form ) ) return;
+-
+ 			// get form element
+ 			$formElement = &amp; $form-&gt;getElement( $formElementName );
+ 
+ 			// if event is null we must check the form element type to compute the default event
+ 			if( is_null( $event ) ) $event = $formElement-&gt;getJSEvent();
+ 
+-			// parse event
+-			$event = strtolower( $event );
+-
+ 			// get previous atribute
+ 			$previous = is_null( $formElement-&gt;getAttribute( $event ) ) ? '' : trim( $formElement-&gt;getAttribute( $event ) );
+ 
+@@ -385,15 +384,13 @@
+ 
+ 		function computeFunction( $formElementName, $serverFunction, $arguments = null, $options = null, $effects = null ){ 
+ 
+-			// register function in xajax
+-			$this-&gt;registerFunction( array( $serverFunction[1], $serverFunction[0], $serverFunction[1] ) );
++			if( !$this-&gt;onResponse ) $serverFunctionName = $serverFunction[1];
++			else                     $serverFunctionName = $serverFunction;
+ 
+-			$serverFunctionName = $serverFunction[1];
+-
+ 			if ( !is_array( $options ) ) $options = array( $options );
+ 			
+ 			// get function name
+-			$functionName = $this-&gt;_getWMFunctionShow() . $this-&gt;sWrapperPrefix . $serverFunctionName . '(' . $this-&gt;_computeFunctionArguments( $arguments, $options ) . ');';
++			$functionName = $this-&gt;_getWMFunctionShow() . $this-&gt;prefix . $serverFunctionName . '(' . $this-&gt;_computeFunctionArguments( $arguments, $options ) . ');';
+ 
+ 			// process effects
+ 			if ( !is_null( $effects ) ){
+@@ -418,12 +415,15 @@
+ 							// get id
+ 							$id = $element-&gt;getAttribute( 'id' );
+ 						
+-							$this-&gt;effects[ $effect-&gt;getVariable() ] = $effect-&gt;getJSHead( $id );
++							// if before response, add effect js to template. otherwise add it to response
++							if ( !$this-&gt;onResponse)	$this-&gt;effects[ $effect-&gt;getVariable() ] = $effect-&gt;getJSHead( $id );
++							else						$this-&gt;response-&gt;addScript( $effect-&gt;getJSHead( $id ) );
+ 						
+ 						}
+-						else
+-							$this-&gt;effects[ $effect-&gt;getVariable() ] = $effect-&gt;getJSHead();
+-				
++						else{
++							if ( !$this-&gt;onResponse )	$this-&gt;effects[ $effect-&gt;getVariable() ] = $effect-&gt;getJSHead();
++							else						$this-&gt;response-&gt;addScript( $effect-&gt;getJSHead() );
++							}
+ 					}
+ 
+ 					// function is now the effect js created
+@@ -432,11 +432,37 @@
+ 			}
+ 
+ 			// if formElementName is a js function we are not assigning an event to a form element but creating a js function
+-			if ( ereg ( &quot;^(.*)\(.*\)$&quot;, $formElementName, $function ) ){
+-				$this-&gt;customjs[ $function[0] ] = $functionName;
+-				return;
++			if ( ereg ( &quot;^(.*)(\(.*\))$&quot;, $formElementName, $res ) ){
++
++				// if we are before reponse we must add function to template
++				if ( !$this-&gt;onResponse ) return $this-&gt;customjs[ $res[0] ] = $functionName;
++				
++				// create js variable to handle ajax request
++				$js  = $this-&gt;prefix . $serverFunction .'=function(){return xajax.call(&quot;' . $serverFunction .'&quot;, arguments, 1);};';
++
++				// create custom js function
++				$js .= $res[1] . '=function'. $res[2] .'{' . $functionName . '};';
++
++				// add all js code to response
++				return $this-&gt;response-&gt;addScript( $js );
+ 			}
+ 
++			
++			if( $this-&gt;onResponse ){
++			
++				// create js variable to handle ajax request
++				$js  = $this-&gt;prefix . $serverFunction . '=function(){return xajax.call(&quot;' . $serverFunction . '&quot;, arguments, 1);};';
++
++				// create custom js function
++				$js .= $this-&gt;prefix . $serverFunction . 'get=function(){' .  $functionName . '};';
++
++				// add all js code to response
++				$this-&gt;response-&gt;addScript( $js );
++				
++				return $this-&gt;prefix . $serverFunction . 'get()';
++			}
++
++
+ 			return $functionName;
+ 		}
+ 		
+@@ -515,13 +541,14 @@
+ 					$js = $elem-&gt;getJS( $options );					
+ 
+ 					// compute javascript function name
+-					$jsfunction = $this-&gt;prefix . 'get' . $elem-&gt;getName() . '()';
++					$jsfunction = $this-&gt;prefix . 'get' . $elem-&gt;getName();
+ 
+ 					// add javascript function code to custom js (to be included in template head)
+-					$this-&gt;customjs[$jsfunction] = $js;
++					if ( !$this-&gt;onResponse ) $this-&gt;customjs[$jsfunction] = $js;
++					else                      $this-&gt;response-&gt;addScript( $jsfunction . '=function(){' . $js . '}' );
+ 					
+ 					// add function name to arguments list
+-					$args[] = $jsfunction;
++					$args[] = $jsfunction . '()';
+ 					
+ 					continue;
+ 				}
+@@ -536,35 +563,7 @@
+ 			return implode( &quot;,&quot;, $args );
+ 		}
+ 
+-
+-        /**
+-         *	This method adds an event to a response to loaded for future use.
+-         *
+-         *	@param $formElementName		Form element name (string) or js function.
+-         *	@param $serverFunction		Array with class and method.
+-         *	@param $arguments			(Optional) Arguments for this function call
+-         *	@param $event				(Optional) Html event name (auto-detection by default when using null).
+-         *	@param $options				(Optional) Custom options.
+-         *	@param $effects				(Optional) Effect or array of effects to execute on event (before ajax call).
+-         */		
+-		function addRuntimeEvent( $formElementName, $serverFunction, $arguments = null, $event = null, $options = null, $effects = null ){
+ 		
+-			// get function name
+-			$functionName = $this-&gt;_getWMFunctionShow() . $this-&gt;sWrapperPrefix . $serverFunction . '(' . $this-&gt;_computeFunctionArguments( $arguments, $options ) . ');';
+-
+-			// create js variable to handle ajax request
+-			$js  = $this-&gt;sWrapperPrefix . $serverFunction .'=function(){return xajax.call(&quot;' . $serverFunction .'&quot;, arguments, 1);};';
+-
+-			// parse harcoded js function
+-			ereg ( &quot;^(.*)(\(.*\))$&quot;, $formElementName, $res );
+-
+-			// create custom js function
+-			$js .= $res[1] . '=function'. $res[2] .'{' . $functionName . '};';
+-
+-			// add all js code to response
+-			$this-&gt;response-&gt;addScript( $js );
+-		}
+-		
+         /**
+          *	This method adds confirmation to a element event
+          *
+@@ -688,15 +687,15 @@
+          */	
+ 		function processEvents(){
+ 
+-			// we will start a response
+-			$this-&gt;onResponse = true;
+-
+ 			// check autocompleters
+ 			$this-&gt;__computeAutocompletersCode();
+ 			
+ 			// add js code
+ 			$this-&gt;__assignTemplateCode();
+ 
++			// we will start a response
++			$this-&gt;onResponse = true;
++
+ 			// process all requests and exit
+ 			return $this-&gt;processRequests();
+ 		}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000251.html">[ydf-devel] r1820 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#252">[ date ]</a>
+              <a href="thread.html#252">[ thread ]</a>
+              <a href="subject.html#252">[ subject ]</a>
+              <a href="author.html#252">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

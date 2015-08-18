@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1685 - in YDFramework2.0/trunk/examples/weblog: . include include/dbupdates include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1685%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%20include%20include/dbupdates%20include/languages%20manage&In-Reply-To=%3C200602142047.k1EKlD6V028949%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000083.html">
+   <LINK REL="Next"  HREF="000085.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1685 - in YDFramework2.0/trunk/examples/weblog: . include include/dbupdates include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1685%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%20include%20include/dbupdates%20include/languages%20manage&In-Reply-To=%3C200602142047.k1EKlD6V028949%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1685 - in YDFramework2.0/trunk/examples/weblog: . include include/dbupdates include/languages manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 21:47:13 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000083.html">[ydf-devel] r1684 - YDFramework2.0/trunk/examples/weblog/include/dbupdates
+</A></li>
+        <LI>Next message: <A HREF="000085.html">[ydf-devel] r1686 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#84">[ date ]</a>
+              <a href="thread.html#84">[ thread ]</a>
+              <a href="subject.html#84">[ subject ]</a>
+              <a href="author.html#84">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-14 21:47:09 +0100 (Tue, 14 Feb 2006)
+New Revision: 1685
+
+Added:
+   YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_003_DraftItems.php
+Modified:
+   YDFramework2.0/trunk/examples/weblog/archive.php
+   YDFramework2.0/trunk/examples/weblog/archive_gallery.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/index.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/item_gallery.php
+   YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items.php
+   YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/pages.php
+   YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+Log:
+Added support for draft to items and pages.
+
+Feature request #1746.
+
+Modified: YDFramework2.0/trunk/examples/weblog/archive.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/archive.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/archive.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -18,7 +18,7 @@
+         function actionDefault() {
+ 
+             // Get the weblog items
+-            $items = $this-&gt;weblog-&gt;getItems();
++            $items = $this-&gt;weblog-&gt;getPublicItems();
+ 
+             // Convert to a nested array
+             $items = YDArrayUtil::convertToNested( $items, 'yearmonth' );
+
+Modified: YDFramework2.0/trunk/examples/weblog/archive_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/archive_gallery.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/archive_gallery.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -18,7 +18,7 @@
+         function actionDefault() {
+ 
+             // Get the weblog items
+-            $items = $this-&gt;weblog-&gt;getItems();
++            $items = $this-&gt;weblog-&gt;getPublicItems();
+ 
+             // Strip out the items without images
+             foreach ( $items as $key=&gt;$item ) {
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -79,7 +79,7 @@
+                 YDConfig::get( 'db_pass', '' ), YDConfig::get( 'db_host', 'localhost' )
+             );
+ 
+-            // Add any missing body_more field
++            // Add any missing items field
+             $fields = $this-&gt;db-&gt;getValuesByName( 'show fields from #_items', 'field' );
+             if ( ! in_array( 'body_more', $fields ) ) {
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD body_more LONGTEXT AFTER body' );
+@@ -90,8 +90,17 @@
+             if ( ! in_array( 'auto_close', $fields ) ) {
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD auto_close TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER allow_comments' );
+             }
++            if ( ! in_array( 'is_draft', $fields ) ) {
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER auto_close' );
++            }
+ 
+-            // Get the list of index for the items table
++            // Add any missing pages field
++            $fields = $this-&gt;db-&gt;getValuesByName( 'show fields from #_pages', 'field' );
++            if ( ! in_array( 'is_draft', $fields ) ) {
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_pages ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER body' );
++            }
++
++            // Get the list of indexes for the items table
+             $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_items', 'key_name' );
+             if ( ! in_array( 'allow_comments', $indexes ) ) {
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX allow_comments (allow_comments)' );
+@@ -99,7 +108,16 @@
+             if ( ! in_array( 'auto_close', $indexes ) ) {
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX auto_close (auto_close)' );
+             }
++            if ( ! in_array( 'is_draft', $indexes ) ) {
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX is_draft (is_draft)' );
++            }
+ 
++            // Get the list of indexes for the items table
++            $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_pages', 'key_name' );
++            if ( ! in_array( 'is_draft', $indexes ) ) {
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_pages ADD INDEX is_draft (is_draft)' );
++            }
++
+             // Get the list of indexes
+             $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_users', 'key_name' );
+             if ( in_array( 'email', $indexes ) ) {
+@@ -255,16 +273,26 @@
+             return ( $result &amp;&amp; sizeof( $result ) == 1 ) ? $result[0] : $result;
+         }
+ 
++        // Get the non draft items
++        function getPublicItems( $limit=-1, $offset=-1, $order='created desc, title', $where='AND is_draft = 0' ) {
++            return $this-&gt;getItems( $limit, $offset, $order, $where );
++        }
++
+         // Function to get the items of the weblog
+         function getItems( $limit=-1, $offset=-1, $order='created desc, title', $where='' ) {
+             $sql = 'SELECT i.id, i.category_id, i.title, i.body, i.body_more, i.num_comments, i.created, i.modified, '
+-                 . 'i.allow_comments, i.auto_close, '
++                 . 'i.allow_comments, i.auto_close, i.is_draft, '
+                  . 'c.title as category, u.email as user_email, u.name as user_name FROM #_items i, #_categories c, '
+                  . '#_users u WHERE i.category_id = c.id AND i.user_id = u.id ';
+             $sql = $this-&gt;_prepareQuery( $sql . $where, $order );
+             return $this-&gt;_fixItems( $this-&gt;db-&gt;getRecords( $sql, $limit, $offset ) );
+         }
+ 
++        // Get a publc item by it's ID
++        function getPublicItemByID( $item_id ) {
++            return $this-&gt;getItem( 'AND is_draft = 0 AND i.id = ' . $this-&gt;str( $item_id ) );
++        }
++
+         // Get an item by it's ID
+         function getItemById( $item_id ) {
+             return $this-&gt;getItem( 'AND i.id = ' . $this-&gt;str( $item_id ) );
+@@ -345,7 +373,7 @@
+         // Get the categories
+         function getCategories( $order='title' ) {
+             $result = $this-&gt;_selectFromTable( '#_categories', $order );
+-            $sql = $this-&gt;_prepareQuery( 'SELECT category_id, COUNT(*) AS num_items FROM #_items i GROUP BY category_id' );
++            $sql = $this-&gt;_prepareQuery( 'SELECT category_id, COUNT(*) AS num_items FROM #_items i WHERE is_draft=0 GROUP BY category_id' );
+             $num_items = $this-&gt;db-&gt;getAsAssocArray( $sql, 'category_id', 'num_items' );
+             foreach ( $result as $key=&gt;$val ) {
+                 if ( isset( $num_items[ $val['id'] ] ) ) {
+@@ -376,7 +404,7 @@
+ 
+         // Get the items by category
+         function getItemsByCategoryId( $category_id, $limit=-1, $offset=-1, $order='created desc, title' ) {
+-            return $this-&gt;getItems( $limit, $offset, $order, 'AND i.category_id = ' . $this-&gt;str( $category_id ) );
++            return $this-&gt;getItems( $limit, $offset, $order, 'AND is_draft = 0 AND i.category_id = ' . $this-&gt;str( $category_id ) );
+         }
+ 
+         // Add a category
+@@ -394,19 +422,27 @@
+             return $this-&gt;_deleteFromTableUsingID( '#_categories', $category_id );
+         }
+ 
++        // Get the public pages
++        function getPublicPages( $order='title', $where=' AND is_draft=0' ) {
++            return $this-&gt;getPages( $order, $where );
++        }
++
+         // Get the pages
+-        function getPages( $order='title' ) {
++        function getPages( $order='title', $where='' ) {
+             $sql = $this-&gt;_prepareQuery(
+-                'SELECT p.id, p.title, p.body, p.created, p.modified, u.email as user_email, u.name as user_name '
++                'SELECT p.id, p.title, p.body, p.is_draft, p.created, p.modified, u.email as user_email, u.name as user_name '
+               . 'FROM #_pages p, #_users u WHERE p.user_id = u.id'
+             );
++            if ( ! empty( $where ) ) {
++                $sql .= ' ' . $where;
++            }
+             return $this-&gt;db-&gt;getRecords( $sql );
+         }
+ 
+         // Get a page by it's ID
+         function getPageByID( $page_id ) {
+             $sql = $this-&gt;_prepareQuery(
+-                'SELECT p.id, p.title, p.body, p.created, p.modified, u.email as user_email, u.name as user_name FROM '
++                'SELECT p.id, p.title, p.body, p.is_draft, p.created, p.modified, u.email as user_email, u.name as user_name FROM '
+                 . '#_pages p, #_users u WHERE p.user_id = u.id AND p.id = ' . $this-&gt;str( $page_id )
+             );
+             return $this-&gt;db-&gt;getRecord( $sql );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -128,7 +128,7 @@
+ 
+             // Standard stuff for the sidebar
+             $categories = $this-&gt;weblog-&gt;getCategories();
+-            $pages      = $this-&gt;weblog-&gt;getPages();
++            $pages      = $this-&gt;weblog-&gt;getPublicPages();
+             $links      = $this-&gt;weblog-&gt;getLinks();
+ 
+             // Assign them to the template
+
+Added: YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_003_DraftItems.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_003_DraftItems.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_003_DraftItems.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -0,0 +1,37 @@
++&lt;?php
++
++    // Class definition
++    class UPD_003_DraftItems {
++
++        // Class constructor
++        function UPD_003_DraftItems( $db ) {
++
++            // Publish the database
++            $this-&gt;db = $db;
++
++        }
++
++        // Install the update
++        function update() {
++
++            // The SQL to add the is_draft field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'items ADD is_draft TINYINT(1)  DEFAULT &quot;0&quot; NOT NULL AFTER auto_close';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++            // The SQL to add the is_draft field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'items ADD INDEX is_draft (is_draft)';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++            // The SQL to add the is_draft field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'pages ADD is_draft TINYINT(1)  DEFAULT &quot;0&quot; NOT NULL AFTER body';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++            // The SQL to add the is_draft field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'pages ADD INDEX is_draft (is_draft)';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -287,6 +287,7 @@
+ if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
+     $GLOBALS['t']['auto_close_item'] .= 'after ' . YDConfig::get( 'auto_close_items', '' ) . ' days';
+ }
++$GLOBALS['t']['is_draft'] = 'Draft (do not publish)';
+ 
+ // item_gallery.tpl
+ $GLOBALS['t']['no_images_yet'] = 'No images yet';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -286,6 +286,7 @@
+ if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
+     $GLOBALS['t']['auto_close_item'] .= 'apr&egrave;s ' . YDConfig::get( 'auto_close_items', '' ) . ' jours';
+ }
++$GLOBALS['t']['is_draft'] = 'Concept (pas publi&eacute;r)';
+ 
+ // item_gallery.tpl
+ $GLOBALS['t']['no_images_yet'] = 'Aucune image actuellement';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -287,6 +287,7 @@
+ if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
+     $GLOBALS['t']['auto_close_item'] .= 'na ' . YDConfig::get( 'auto_close_items', '' ) . ' dagen';
+ }
++$GLOBALS['t']['is_draft'] = 'Concept (niet publiceren)';
+ 
+ // item_gallery.tpl
+ $GLOBALS['t']['no_images_yet'] = 'Nog geen foto\'s';
+
+Modified: YDFramework2.0/trunk/examples/weblog/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/index.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/index.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -21,8 +21,8 @@
+             }
+ 
+             // Get the weblog items and 5 older items
+-            $items     = $this-&gt;weblog-&gt;getItems( YDConfig::get( 'weblog_entries_fp', 5 ) );
+-            $old_items = $this-&gt;weblog-&gt;getItems( 5, sizeof( $items ) );
++            $items     = $this-&gt;weblog-&gt;getPublicItems( YDConfig::get( 'weblog_entries_fp', 5 ) );
++            $old_items = $this-&gt;weblog-&gt;getPublicItems( 5, sizeof( $items ) );
+ 
+             // Assign them to the template
+             $this-&gt;tpl-&gt;assign( 'items',     $items );
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -27,7 +27,7 @@
+             $id = $this-&gt;getIdFromQS();
+ 
+             // Get the weblog details and go to the default view if none is matched
+-            $item  = @ $this-&gt;weblog-&gt;getItemById( $id );
++            $item  = @ $this-&gt;weblog-&gt;getPublicItemById( $id );
+             $this-&gt;redirectIfMissing( $item );
+ 
+             // Convert the list of images to a table of 3 columns
+
+Modified: YDFramework2.0/trunk/examples/weblog/item_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -30,7 +30,7 @@
+             $item_id = substr( $id, 5, strpos( $id, '/' )-5 );
+ 
+             // Get the weblog item
+-            $item  = @ $this-&gt;weblog-&gt;getItemById( $item_id );
++            $item  = @ $this-&gt;weblog-&gt;getPublicItemById( $item_id );
+             if ( ! $item ) {
+                 die( 'Invalid image specified' );
+             }
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -20,9 +20,15 @@
+     {$browsebar}
+     {foreach from=$items item=&quot;item&quot;}
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{$item.created|date:'%Y/%m/%d %H:%M'}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{$item.user_name}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{if $item.allow_comments eq '0'}[x] {/if}{$item.title}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;
++                {if $item.is_draft eq '1'}&lt;i&gt;{/if}{$item.created|date:'%Y/%m/%d %H:%M'}{if $item.is_draft eq '1'}&lt;/i&gt;{/if}
++            &lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;
++                {if $item.is_draft eq '1'}&lt;i&gt;{/if}{$item.user_name}{if $item.is_draft eq '1'}&lt;/i&gt;{/if}
++            &lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;
++                {if $item.is_draft eq '1'}&lt;i&gt;{/if}{if $item.allow_comments eq '0'}[x] {/if}{$item.title}{if $item.is_draft eq '1'}&lt;/i&gt;{/if}
++            &lt;/td&gt;
+             &lt;td class=&quot;adminRowR&quot;&gt;
+                 &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+                 |
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -50,8 +50,9 @@
+             $form-&gt;addElement( 'datetimeselect',  'modified',       t('last_modified_on'), array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'checkbox',        'allow_comments', t('allow_comments'),   array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'checkbox',        'auto_close',     t('auto_close_item'),  array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox',        'is_draft',       t('is_draft'),         array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'hidden',          'id' );
+-            $form-&gt;addElement( 'submit',          '_cmdSubmit',  t('OK'),               array( 'class' =&gt; 'button' ) );
++            $form-&gt;addElement( 'submit',          '_cmdSubmit',  t('OK'),                  array( 'class' =&gt; 'button' ) );
+ 
+             // Add the form rules
+             $form-&gt;addRule( 'title',  'required', t( 'err_item_title' ) );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -67,11 +67,15 @@
+         {$browsebar}
+         {foreach from=$items-&gt;set item=&quot;item&quot;}
+             &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$item.created|date:'%Y/%m/%d %H:%M'}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$item.user_name}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;
+-                    {if $item.allow_comments eq '0'}[x] {/if}{$item.title}
++                    {if $item.is_draft eq '1'}&lt;i&gt;{/if}{$item.created|date:'%Y/%m/%d %H:%M'}{if $item.is_draft eq '1'}&lt;/i&gt;{/if}
+                 &lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $item.is_draft eq '1'}&lt;i&gt;{/if}{$item.user_name}{if $item.is_draft eq '1'}&lt;/i&gt;{/if}
++                &lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $item.is_draft eq '1'}&lt;i&gt;{/if}{if $item.allow_comments eq '0'}[x] {/if}{$item.title}{if $item.is_draft eq '1'}&lt;/i&gt;{/if}
++                &lt;/td&gt;
+                 &lt;td class=&quot;adminRowR&quot;&gt;
+                     &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+                     |
+@@ -161,6 +165,10 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.auto_close.label_html}&lt;/td&gt; 
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.auto_close.html}&lt;/td&gt; 
+             &lt;/tr&gt;
++            &lt;tr&gt; 
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_draft.label_html}&lt;/td&gt; 
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_draft.html}&lt;/td&gt; 
++            &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;{$form._cmdSubmit.html}&lt;/td&gt;
+             &lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/pages.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/pages.php	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/manage/pages.php	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -17,6 +17,7 @@
+             $this-&gt;form-&gt;addElement( 'text', 'title', t('page_title'), array( 'class' =&gt; 'tfM' ) );
+             $this-&gt;form-&gt;addElement( 'wladmintextarea', 'body', t('page_body'), array( 'class' =&gt; 'taM' ) );
+             $this-&gt;form-&gt;addElement( 'datetimeselect', 'created',     t('created_on'), array( 'class' =&gt; 'tfM' ) );
++            $this-&gt;form-&gt;addElement( 'checkbox',       'is_draft',    t('is_draft'), array( 'style' =&gt; 'border: none;' ) );
+             $this-&gt;form-&gt;addElement( 'hidden', 'id' );
+             $this-&gt;form-&gt;addElement( 'submit', '_cmdSubmit', t('OK'), array( 'class' =&gt; 'button' ) );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-02-14 20:25:21 UTC (rev 1684)
++++ YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-02-14 20:47:09 UTC (rev 1685)
+@@ -66,9 +66,15 @@
+         &lt;/tr&gt;
+         {foreach from=$pages-&gt;set item=&quot;page&quot;}
+             &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$page.created|date:'%Y/%m/%d %H:%M'}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$page.user_name}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$page.title}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $page.is_draft eq '1'}&lt;i&gt;{/if}{$page.created|date:'%Y/%m/%d %H:%M'}{if $page.is_draft eq '1'}&lt;/i&gt;{/if}
++                &lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $page.is_draft eq '1'}&lt;i&gt;{/if}{$page.user_name}{if $page.is_draft eq '1'}&lt;/i&gt;{/if}
++                &lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $page.is_draft eq '1'}&lt;i&gt;{/if}{$page.title}{if $page.is_draft eq '1'}&lt;/i&gt;{/if}
++                &lt;/td&gt;
+                 &lt;td class=&quot;adminRowR&quot;&gt;
+                     &lt;a href=&quot;../page.php?id={$page.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+                     |
+@@ -119,6 +125,10 @@
+                     {$form.body.html}
+                 &lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt; 
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_draft.label_html}&lt;/td&gt; 
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_draft.html}&lt;/td&gt; 
++            &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.html}&lt;/td&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000083.html">[ydf-devel] r1684 - YDFramework2.0/trunk/examples/weblog/include/dbupdates
+</A></li>
+	<LI>Next message: <A HREF="000085.html">[ydf-devel] r1686 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#84">[ date ]</a>
+              <a href="thread.html#84">[ thread ]</a>
+              <a href="subject.html#84">[ subject ]</a>
+              <a href="author.html#84">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

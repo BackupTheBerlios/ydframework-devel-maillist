@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Remove session_start from YDF2_init() ?
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Remove%20session_start%20from%20YDF2_init%28%29%20%3F&In-Reply-To=%3C20060213123945.89936.qmail%40web53809.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000059.html">
+   <LINK REL="Next"  HREF="000063.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Remove session_start from YDF2_init() ?</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Remove%20session_start%20from%20YDF2_init%28%29%20%3F&In-Reply-To=%3C20060213123945.89936.qmail%40web53809.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Remove session_start from YDF2_init() ?">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Mon Feb 13 13:39:45 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000059.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+        <LI>Next message: <A HREF="000063.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#58">[ date ]</a>
+              <a href="thread.html#58">[ thread ]</a>
+              <a href="subject.html#58">[ subject ]</a>
+              <a href="author.html#58">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I have been working on setting up the session
+management for an 
+application I am building.
+
+YDF2 currently has the call to &quot;session_start()&quot; in
+YDF2_init.php
+
+To provide for more flexibility in configuring the
+session and php 
+settings, it would make sense for this call to be made
+within 
+YDrequest.php or YDF2_process.php .
+
+The svn trunk of YDF2_process.php contains the
+following code:
+
+    if ( YDConfig::get( 'YD_AUTO_EXECUTE', true ) ==
+true ) {
+   
+        // Instantiate the executor class
+        $clsInst = new YDExecutor( YD_SELF_FILE );
+
+        // Execute the execute function
+        $clsInst-&gt;execute();
+
+    }
+
+If session_start was removed from YDF2_init.php,
+session_start() could 
+be called just before the class is executed:
+
+    if ( YDConfig::get( 'YD_AUTO_EXECUTE', true ) ==
+true ) {
+   
+        // Instantiate the executor class
+        $clsInst = new YDExecutor( YD_SELF_FILE );
+
+
+        @session_start();
+
+        // Execute the execute function
+        $clsInst-&gt;execute();
+
+    }
+
+This would then allow custome php configuration to be
+defined before the 
+session is started by placing it in the main script
+file, e.g:
+
+    // custom php config and session setup goes here
+       .
+       .
+   
+    class index extends YDRequest() {
+       .
+       .
+    }
+
+    // Process the request
+    YDInclude( 'YDF2_process.php' );
+
+
+This of course could otherwise be achieved by
+providing the custom 
+config before YDF2_init.php is included, but then what
+happens if Has 
+anyone else been working with sessions or you want to
+use some of the 
+nice YDF2 utility clasess such as YDConfig and YDUrl ?
+
+Did you find that session_start is called too early?
+Is so did you just 
+comment it out?
+
+Regards,
+
+Graeme
+
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+<A HREF="http://mail.yahoo.com">http://mail.yahoo.com</A> 
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000059.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+	<LI>Next message: <A HREF="000063.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#58">[ date ]</a>
+              <a href="thread.html#58">[ thread ]</a>
+              <a href="subject.html#58">[ subject ]</a>
+              <a href="author.html#58">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

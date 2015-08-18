@@ -1,0 +1,554 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2100 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage skins/default	skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2100%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage%20skins/default%0A%09skins/default_with_lightbox&In-Reply-To=%3C200609071638.k87Gc3UG013688%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000616.html">
+   <LINK REL="Next"  HREF="000618.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2100 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage skins/default	skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2100%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage%20skins/default%0A%09skins/default_with_lightbox&In-Reply-To=%3C200609071638.k87Gc3UG013688%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2100 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage skins/default	skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep  7 18:38:03 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000616.html">[ydf-devel] r2099 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000618.html">[ydf-devel] r2101 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#617">[ date ]</a>
+              <a href="thread.html#617">[ thread ]</a>
+              <a href="subject.html#617">[ subject ]</a>
+              <a href="author.html#617">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-07 18:37:55 +0200 (Thu, 07 Sep 2006)
+New Revision: 2100
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+   YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/manage.css
+   YDFramework2.0/trunk/examples/weblog/skins/default/archive_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/lightbox.css
+Log:
+Added support for titles and descriptions in item images.
+
+See also: [ Feature Request #2217 ] Image label
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -125,6 +125,9 @@
+             // Upgrade the schema if needed
+             $this-&gt;upgradeSchemaIfNeeded();
+ 
++            // The array that will hold the image metadata
++            $this-&gt;imagemetadata = null;
++
+         }
+ 
+         // Get the schema version
+@@ -162,7 +165,7 @@
+         function upgradeSchemaIfNeeded() {
+ 
+             // The current weblog schema version
+-            $current_schema = 5;
++            $current_schema = 6;
+ 
+             // Get the schema version
+             $installed_schema = $this-&gt;getSchemaVersion();
+@@ -205,9 +208,25 @@
+                 $this-&gt;db-&gt;executeSql( 'UPDATE #_schemaversion SET installed = unix_timestamp() WHERE installed = 0' );
+ 
+                 // Drop the statistics tables
+-                $this-&gt;db-&gt;executeSql( 'DROP TABLE #_statistics' );
+-                $this-&gt;db-&gt;executeSql( 'DROP TABLE #_statistics_init' );
++                $this-&gt;db-&gt;executeSql( 'DROP TABLE IF EXISTS #_statistics' );
++                $this-&gt;db-&gt;executeSql( 'DROP TABLE IF EXISTS #_statistics_init' );
+ 
++                // Create the image_metadata table
++                if ( ! $this-&gt;dbmeta-&gt;tableExists( '#_imagemetadata' ) ) {
++                    $this-&gt;db-&gt;executeSql(
++                          'CREATE TABLE #_imagemetadata ('
++                        . '  id int(11) NOT NULL auto_increment,'
++                        . '  img_path varchar(255) NOT NULL default \'\','
++                        . '  title varchar(255) default NULL,'
++                        . '  description longtext,'
++                        . '  created int(11) default NULL,'
++                        . '  modified int(11) default NULL,'
++                        . '  PRIMARY KEY  (id),'
++                        . '  UNIQUE KEY img_path (img_path)'
++                        . ')'
++                    );
++                }
++
+                 // Update the schema information
+                 $this-&gt;setSchemaVersion( $current_schema );
+ 
+@@ -284,12 +303,10 @@
+                     $image-&gt;relative_path = str_replace( $dir_uploads-&gt;getAbsolutePath(), '', $image-&gt;getAbsolutePath() );
+ 
+                     // Update the backslashes
+-                    $image-&gt;relative_path = str_replace( '\\', '/', $image-&gt;relative_path );
++                    $image-&gt;relative_path = ltrim( str_replace( '\\', '/', $image-&gt;relative_path ), '/' );
+ 
+-                    // Remove the leading slash
+-                    if ( substr( $image-&gt;relative_path, 0, 1 ) == '/' ) {
+-                        $image-&gt;relative_path = substr( $image-&gt;relative_path, 1 );
+-                    }
++                    // Merge the title and description if any
++                    $image = $this-&gt;getItemImageMetaData( $image );
+ 
+                     // Make links to the thumbnails
+                     $image-&gt;relative_path_s = dirname( $image-&gt;relative_path ) . '/s_' . basename( $image-&gt;relative_path );
+@@ -337,6 +354,44 @@
+             return $items;
+         }
+ 
++        // Get the title and description for an item image
++        function getItemImageMetaData( $image ) {
++
++            // Get the image metadata if not there yet
++            if ( is_null( $this-&gt;imagemetadata ) ) {
++                $this-&gt;imagemetadata = $this-&gt;db-&gt;getRecords( 'SELECT * FROM #_imagemetadata' );
++                $this-&gt;imagemetadata = YDArrayUtil::convertToNested( $this-&gt;imagemetadata, 'img_path' );
++                foreach ( $this-&gt;imagemetadata as $key=&gt;$val ) {
++                    $this-&gt;imagemetadata[$key] = $val[0];
++                }
++            }
++
++            // Start with the default settings
++            $image-&gt;title = $image-&gt;getBasenameNoExt();
++            $image-&gt;description = '';
++
++            // Add the image data if any
++            if ( isset( $this-&gt;imagemetadata[ $image-&gt;relative_path ] ) ) {
++                $image-&gt;title = $this-&gt;imagemetadata[ $image-&gt;relative_path ]['title'];
++                $image-&gt;description = $this-&gt;imagemetadata[ $image-&gt;relative_path ]['description'];
++            }
++
++            // Return the image metadata
++            return $image;
++
++        }
++
++        // Update the image data for an item in the database
++        function setItemImageMetaData( $item, $data ) {
++            $values = $data;
++            $values['img_path'] = $item;
++            $result = $this-&gt;_executeUpdate( '#_imagemetadata', $values, 'img_path = ' . $this-&gt;str( $item ) );
++            if ( $result == '0' ) {
++                $result = $this-&gt;_executeInsert( '#_imagemetadata', $values );
++            }
++            return $result;
++        }
++
+         // Function to get a single item
+         function getItem( $where ) {
+             $result = $this-&gt;getItems( 1, 0, 'created desc, title', $where );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -327,6 +327,7 @@
+ $GLOBALS['t']['image'] = 'image';
+ $GLOBALS['t']['images'] = 'images';
+ $GLOBALS['t']['item'] = 'Item';
++$GLOBALS['t']['edit_meta'] = 'metadata';
+ 
+ // manage/index.tpl
+ $GLOBALS['t']['latest_items'] = 'Latest items';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -327,6 +327,7 @@
+ $GLOBALS['t']['image'] = 'foto';
+ $GLOBALS['t']['images'] = 'foto\'s';
+ $GLOBALS['t']['item'] = 'Item';
++$GLOBALS['t']['edit_meta'] = 'metadata';
+ 
+ // manage/index.tpl
+ $GLOBALS['t']['latest_items'] = 'Laatste items';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -36,6 +36,15 @@
+             obj.bgColor = '#FFFFFF';
+         {literal}}{/literal}
+ 
++        {literal}function YDShowHideElement( obj ) {
++            obj = document.getElementById( obj );
++            if ( obj.style.display == 'none' ) {
++                obj.style.display = '';
++            } else {
++                obj.style.display = 'none';
++            }
++        }{/literal}
++
+         {literal}tinyMCE.init({
+             mode : &quot;textareas&quot;,
+             editor_deselector : &quot;tfMNoMCE&quot;,
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -19,7 +19,7 @@
+             $id = $this-&gt;getIdFromQS();
+ 
+             // Get the weblog details and go to the default view if none is matched
+-            $this-&gt;item  = @ $this-&gt;weblog-&gt;getItemById( $id );
++            $this-&gt;item = @ $this-&gt;weblog-&gt;getItemById( $id );
+             if ( ! $this-&gt;item ) {
+                 $this-&gt;redirect( 'items.php' );
+             }
+@@ -161,6 +161,19 @@
+ 
+         }
+ 
++        // Action to edit the metadata
++        function actionEditMetaData() {
++
++            // Update the image metadata for the submitted items
++            foreach ( $_POST['metadata'] as $item =&gt; $data ) {
++                YDDebugUtil::dump( $this-&gt;weblog-&gt;setItemImageMetaData( $item, $data ) );
++            }
++
++            // Redirect to the list view
++            $this-&gt;redirect( YD_SELF_SCRIPT . '?id=' . $this-&gt;item['id'] );
++
++        }
++
+         // Function to get the itemtype details from the database
+         function getImage() {
+             foreach ( $this-&gt;item['images'] as $image ) {
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -49,37 +49,43 @@
+         {/if}
+     {/capture}
+ 
+-    {$form.tag}
+-        {$form.action.html}
++    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++    &lt;tr&gt;
++        &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
++            &raquo; &lt;a href=&quot;items.php?do=edit&amp;id={$item.id}&quot; style=&quot;font-weight: bold&quot;&gt;{t w=&quot;change_item_desc&quot;}&lt;/a&gt;
++            ({$item.title})
++            &nbsp;
++            &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
++        &lt;/th&gt;
++    &lt;/tr&gt;
+ 
+-        &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-                &raquo; &lt;a href=&quot;items.php?do=edit&amp;id={$item.id}&quot; style=&quot;font-weight: bold&quot;&gt;{t w=&quot;change_item_desc&quot;}&lt;/a&gt;
+-                ({$item.title})
+-                &nbsp;
+-                &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
++    &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++    &lt;tr&gt;
++        &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
++            &raquo; &lt;a href=&quot;comments.php?id={$item.id}&quot; style=&quot;font-weight: bold&quot;&gt;{t w=&quot;a_comments&quot;}&lt;/a&gt;
++            ({$item|@text_num_comments:true})
++        &lt;/th&gt;
++    &lt;/tr&gt;
+ 
+-        &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-                &raquo; &lt;a href=&quot;comments.php?id={$item.id}&quot; style=&quot;font-weight: bold&quot;&gt;{t w=&quot;a_comments&quot;}&lt;/a&gt;
+-                ({$item|@text_num_comments:true})
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
++    &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++    &lt;tr&gt;
++        &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
++            &raquo; {t w=&quot;gallery&quot;}
++        &lt;/th&gt;
++    &lt;/tr&gt;
++    &lt;/table&gt;
+ 
+-        &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++    {*&lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++    {$form.tag}
+         &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-                &raquo; {t w=&quot;gallery&quot;}
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;5&quot;&gt;{$form.image.html}&lt;/td&gt;
+             &lt;td class=&quot;adminRowR&quot; colspan=&quot;2&quot;&gt;{$form._cmdSubmit.html}&lt;/td&gt;
+         &lt;/tr&gt;
++    {$form.endtag}
++    &lt;/table&gt;*}
++
++    &lt;form name=&quot;metaDataForm&quot; id=&quot;metaDataForm&quot; action=&quot;{$YD_SELF_SCRIPT}?do=editMetaData&amp;id={$item.id}&quot; method=&quot;POST&quot;&gt;
++        &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+         {if $images-&gt;set}
+             &lt;tr&gt;
+                 &lt;th class=&quot;adminRowL&quot; width=&quot;20%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+@@ -106,8 +112,20 @@
+                     &lt;td class=&quot;adminRowR&quot; valign=&quot;top&quot;&gt;
+                         &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$item.id}&amp;img={$image-&gt;relative_path}&quot;
+                          onClick=&quot;return YDConfirmDelete( '{$image-&gt;getBaseName()|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
++                        &lt;br/&gt;
++                        &lt;a href=&quot;#&quot; onClick=&quot;YDShowHideElement( 'meta_{$image-&gt;getBaseName()|@addslashes}' );return false;&quot;&gt;{t w=&quot;edit_meta&quot;}&lt;/a&gt;
+                     &lt;/td&gt;
+                 &lt;/tr&gt;
++                &lt;tr id=&quot;meta_{$image-&gt;getBaseName()}&quot; style=&quot;display: none;&quot;&gt;
++                    &lt;td class=&quot;adminRowL&quot; colspan=&quot;5&quot;&gt;
++                        &lt;input class=&quot;tfM&quot; type=&quot;text&quot; name=&quot;metadata[{$image-&gt;relative_path}][title]&quot; value=&quot;{$image-&gt;title}&quot;/&gt;
++                        &lt;br/&gt;
++                        &lt;textarea class=&quot;tfMNoMCE&quot; name=&quot;metadata[{$image-&gt;relative_path}][description]&quot;&gt;{$image-&gt;description}&lt;/textarea&gt;
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowR&quot; colspan=&quot;2&quot;&gt;
++                        &lt;input type=&quot;submit&quot; class=&quot;button&quot; value=&quot;{t w=&quot;save&quot;}&quot; /&gt;
++                    &lt;/td&gt;
++                &lt;/tr&gt;
+             {/foreach}
+             {$browsebar}
+             &lt;tr&gt;
+@@ -121,9 +139,8 @@
+             &lt;/tr&gt;
+         {/if}
+         &lt;/table&gt;
++    &lt;/form&gt;
+ 
+-    {$form.endtag}
+-
+ {/if}
+ 
+ {include file=&quot;__mng_footer.tpl&quot;}
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/manage.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -169,6 +169,20 @@
+     text-align: left;
+ }
+ 
++td.adminRowCNB, th.adminRowCNB {
++    border-bottom: 0px solid #DDDDDD;
++    padding-top: 4px;
++    padding-bottom: 4px;
++    text-align: center;
++}
++
++td.adminRowRNB, th.adminRowRNB {
++    border-bottom: 0px solid #DDDDDD;
++    padding-top: 4px;
++    padding-bottom: 4px;
++    text-align: right;
++}
++
+ td.adminRowC, th.adminRowC {
+     border-bottom: 1px solid #DDDDDD;
+     padding-top: 4px;
+@@ -251,3 +265,7 @@
+ 
+ input[type=checkbox], input[type=radio] { border:none; }
+ input[type=submit], input[type=button] { background:white url(images/nav-bg.gif) bottom repeat-x; }
++
++form {
++	margin: 0px;
++}
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/archive_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/archive_gallery.tpl	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/archive_gallery.tpl	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -17,7 +17,7 @@
+                         {foreach from=$image_row item=&quot;image&quot;}
+                             &lt;td width=&quot;12%&quot; align=&quot;center&quot; valign=&quot;middle&quot; height=&quot;60&quot;&gt;
+                                 {if $image}
+-                                    &lt;a href=&quot;item_gallery.php?id={$image-&gt;relative_path}&quot;&gt;&lt;img src=&quot;{$image|link_thumb_small}&quot; alt=&quot;{$image-&gt;getBaseName()}&quot; width=&quot;{$image-&gt;relative_path_s_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_s_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
++                                    &lt;a href=&quot;item_gallery.php?id={$image-&gt;relative_path}&quot;&gt;&lt;img src=&quot;{$image|link_thumb_small}&quot; alt=&quot;{$image-&gt;title}&quot; width=&quot;{$image-&gt;relative_path_s_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_s_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
+                                 {else}
+                                     &nbsp;
+                                 {/if}
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -53,7 +53,7 @@
+                 {foreach from=$image_row item=&quot;image&quot;}
+                     &lt;td width=&quot;33%&quot; align=&quot;center&quot; style=&quot;vertical-align: middle;&quot; height=&quot;100&quot;&gt;
+                         {if $image}
+-                            &lt;a href=&quot;{$image-&gt;relative_path|@link_item_gallery}&quot;&gt;&lt;img src=&quot;{$image|link_thumb}&quot; alt=&quot;{$image-&gt;getBaseName()}&quot;
++                            &lt;a href=&quot;{$image-&gt;relative_path|@link_item_gallery}&quot;&gt;&lt;img src=&quot;{$image|link_thumb}&quot; alt=&quot;{$image-&gt;title}&quot;
+                              width=&quot;{$image-&gt;relative_path_m_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_m_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
+                         {else}
+                             &nbsp;
+@@ -65,7 +65,7 @@
+                 {foreach from=$image_row item=&quot;image&quot;}
+                     &lt;td width=&quot;33%&quot; align=&quot;center&quot;&gt;
+                         {if $image}
+-                            &lt;p&gt;&lt;a href=&quot;{$image-&gt;relative_path|@link_item_gallery}&quot;&gt;{$image-&gt;getBasenameNoExt()}&lt;/a&gt;&lt;br/&gt;&nbsp;&lt;/p&gt;
++                            &lt;p&gt;&lt;a href=&quot;{$image-&gt;relative_path|@link_item_gallery}&quot;&gt;{$image-&gt;title}&lt;/a&gt;&lt;br/&gt;&nbsp;&lt;/p&gt;
+                         {else}
+                             &nbsp;
+                         {/if}
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -25,7 +25,7 @@
+ 
+     &lt;div class=&quot;post&quot;&gt;
+ 
+-        &lt;h2 id=&quot;post-{$item.id}&quot;&gt;&lt;a href=&quot;{$item|@link_item}&quot;&gt;{$item.title}&lt;/a&gt; &raquo; {$image-&gt;getBasenameNoExt()}&lt;/h2&gt;
++        &lt;h2 id=&quot;post-{$item.id}&quot;&gt;&lt;a href=&quot;{$item|@link_item}&quot;&gt;{$item.title}&lt;/a&gt; &raquo; {$image-&gt;title}&lt;/h2&gt;
+ 
+         &lt;div class=&quot;entrytext&quot;&gt;
+ 
+@@ -33,15 +33,19 @@
+             {if $image-&gt;getWidth() &gt; $max_img_size}
+                 &lt;iframe src=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; width=&quot;{$max_img_size}&quot; height=&quot;{$image-&gt;getHeight()+20}&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot;&gt;&lt;/iframe&gt;
+             {else}
+-                &lt;img src=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; width=&quot;{$image-&gt;getWidth()}&quot; height=&quot;{$image-&gt;getHeight()}&quot;&gt;
++                &lt;img src=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; width=&quot;{$image-&gt;getWidth()}&quot; height=&quot;{$image-&gt;getHeight()}&quot; /&gt;
+             {/if}
+             &lt;/p&gt;
+ 
++            {if $image-&gt;description}
++                {$image-&gt;description|@bbcode}
++            {/if}
++
+             {$browsebar}
+ 
+             &lt;p class=&quot;postmetadata alt&quot;&gt;
+                 &lt;small&gt;
+-                    {t w=&quot;image&quot;}: {$image-&gt;getBaseName()}
++                    {t w=&quot;image&quot;}: {$image-&gt;title}
+                     ({t w=&quot;image&quot;} {$image-&gt;num} {t w=&quot;of&quot;} {$image-&gt;total_images})
+                     &lt;br/&gt;
+                     {t w=&quot;item&quot;}: &lt;a href=&quot;{$item|@link_item}&quot;&gt;{$item.title}&lt;/a&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -18,8 +18,8 @@
+                             &lt;td width=&quot;12%&quot; align=&quot;center&quot; valign=&quot;middle&quot; height=&quot;60&quot;&gt;
+                                 {if $image}
+                                     &lt;a href=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; rel=&quot;lightbox[{$item.id}]&quot;
+-                                    title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&quot;
+-                                    &gt;&lt;img src=&quot;{$image|link_thumb_small}&quot; alt=&quot;{$image-&gt;getBaseName()}&quot; width=&quot;{$image-&gt;relative_path_s_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_s_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
++                                    title=&quot;{$item.title} &raquo; {$image-&gt;title}{if $image-&gt;description}&lt;p class='img_description'&gt;{$image-&gt;description|@bbcode}&lt;/p&gt;{/if}&quot;
++                                    &gt;&lt;img src=&quot;{$image|link_thumb_small}&quot; alt=&quot;{$image-&gt;title}&quot; width=&quot;{$image-&gt;relative_path_s_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_s_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
+                                 {else}
+                                     &nbsp;
+                                 {/if}
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -54,8 +54,8 @@
+                     &lt;td width=&quot;33%&quot; align=&quot;center&quot; style=&quot;vertical-align: middle;&quot; height=&quot;100&quot;&gt;
+                         {if $image}
+                             &lt;a href=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; rel=&quot;lightbox[{$item.id}]&quot;
+-                             title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&quot;
+-                             &gt;&lt;img src=&quot;{$image|link_thumb}&quot; alt=&quot;{$image-&gt;getBaseName()}&quot;
++                             title=&quot;{$item.title} &raquo; {$image-&gt;title}{if $image-&gt;description}&lt;p class='img_description'&gt;{$image-&gt;description|@bbcode}&lt;/p&gt;{/if}&quot;
++                             &gt;&lt;img src=&quot;{$image|link_thumb}&quot; alt=&quot;{$image-&gt;title}&quot;
+                              width=&quot;{$image-&gt;relative_path_m_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_m_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
+                         {else}
+                             &nbsp;
+@@ -68,8 +68,8 @@
+                     &lt;td width=&quot;33%&quot; align=&quot;center&quot;&gt;
+                         {if $image}
+                             &lt;p&gt;&lt;a href=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; rel=&quot;lightbox[{$item.id}]&quot;
+-                             title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&quot;
+-                             &gt;{$image-&gt;getBasenameNoExt()}&lt;/a&gt;&lt;br/&gt;&nbsp;&lt;/p&gt;
++                             title=&quot;{$item.title} &raquo; {$image-&gt;title}{if $image-&gt;description}&lt;p class='img_description'&gt;{$image-&gt;description|@bbcode}&lt;/p&gt;{/if}&quot;
++                             &gt;{$image-&gt;title}&lt;/a&gt;&lt;br/&gt;&nbsp;&lt;/p&gt;
+                         {else}
+                             &nbsp;
+                         {/if}
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/lightbox.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/lightbox.css	2006-09-07 15:16:33 UTC (rev 2099)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/lightbox.css	2006-09-07 16:37:55 UTC (rev 2100)
+@@ -99,4 +99,11 @@
+ * html .clearfix {
+ 	height: 1%;
+ 	}	
+-	
+\ No newline at end of file
++	
++p.img_description {
++	font-style: italic;
++	font-weight: normal;
++	margin: 8px;
++	padding: 0px;
++	margin-left: 24px;
++}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000616.html">[ydf-devel] r2099 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000618.html">[ydf-devel] r2101 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#617">[ date ]</a>
+              <a href="thread.html#617">[ thread ]</a>
+              <a href="subject.html#617">[ subject ]</a>
+              <a href="author.html#617">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1922 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDCMComponent YDClasses/YDCMComponent/YDCMLocks addons
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1922%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20YDClasses/YDCMComponent%20YDClasses/YDCMComponent/YDCMLocks%20addons&In-Reply-To=%3C200605081433.k48EXtWJ017746%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000385.html">
+   <LINK REL="Next"  HREF="000387.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1922 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDCMComponent YDClasses/YDCMComponent/YDCMLocks addons</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1922%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20YDClasses/YDCMComponent%20YDClasses/YDCMComponent/YDCMLocks%20addons&In-Reply-To=%3C200605081433.k48EXtWJ017746%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1922 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDCMComponent YDClasses/YDCMComponent/YDCMLocks addons">ximian at berlios.de
+       </A><BR>
+    <I>Mon May  8 16:33:55 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000385.html">[ydf-devel] r1921 - in YDFramework2.0/trunk/YDFramework2/addons: YDCMHelpdesk YDCMLink YDCMPage YDCMRootmenu
+</A></li>
+        <LI>Next message: <A HREF="000387.html">[ydf-devel] r1923 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent YDCMComponent/YDCMAudit
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#386">[ date ]</a>
+              <a href="thread.html#386">[ thread ]</a>
+              <a href="subject.html#386">[ subject ]</a>
+              <a href="author.html#386">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-08 16:33:20 +0200 (Mon, 08 May 2006)
+New Revision: 1922
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks/YDCMLocks.php
+Removed:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMLocks/
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+Log:
+moved YDCMLocks to YDCMComponent core
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks/YDCMLocks.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks/YDCMLocks.php	2006-05-08 14:28:05 UTC (rev 1921)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks/YDCMLocks.php	2006-05-08 14:33:20 UTC (rev 1922)
+@@ -0,0 +1,58 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    class YDCMLocks extends YDDatabaseObject {
++    
++        function YDCMLocks() {
++        
++			// init component as non default
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMLocks' );
++
++            // register custom fields
++			$this-&gt;registerField( 'content_id' );
++			$this-&gt;registerField( 'user_id' );
++
++			// register custom relations
++            $relTree = &amp; $this-&gt;registerRelation( 'YDCMTree', false, 'YDCMTree' );
++			$relTree-&gt;setLocalKey( 'content_id' );
++            $relTree-&gt;setForeignKey( 'content_id' );
++
++            $relUsers = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
++			$relUsers-&gt;setLocalKey( 'user_id' );
++            $relUsers-&gt;setForeignKey( 'user_id' );
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-05-08 14:28:05 UTC (rev 1921)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-05-08 14:33:20 UTC (rev 1922)
+@@ -33,6 +33,7 @@
+ 	// include core YDCM libs
+ 	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMUsers/YDCMUsers.php' );
+ 	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMTree/YDCMTree.php' );
++	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMLocks/YDCMLocks.php' );
+ 	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMTemplates/YDCMTemplates.php' );
+ 	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMLanguages/YDCMLanguages.php' );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000385.html">[ydf-devel] r1921 - in YDFramework2.0/trunk/YDFramework2/addons: YDCMHelpdesk YDCMLink YDCMPage YDCMRootmenu
+</A></li>
+	<LI>Next message: <A HREF="000387.html">[ydf-devel] r1923 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent YDCMComponent/YDCMAudit
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#386">[ date ]</a>
+              <a href="thread.html#386">[ thread ]</a>
+              <a href="subject.html#386">[ subject ]</a>
+              <a href="author.html#386">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

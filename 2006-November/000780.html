@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2218 - in YDFramework2.0/trunk/examples: . ajax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2218%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20ajax&In-Reply-To=%3C200611191949.kAJJn9Ge028990%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000778.html">
+   <LINK REL="Next"  HREF="000781.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2218 - in YDFramework2.0/trunk/examples: . ajax</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2218%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20ajax&In-Reply-To=%3C200611191949.kAJJn9Ge028990%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2218 - in YDFramework2.0/trunk/examples: . ajax">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sun Nov 19 20:49:09 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000778.html">[ydf-devel] r2217 - YDFramework2.0/trunk/examples
+</A></li>
+        <LI>Next message: <A HREF="000781.html">[ydf-devel] r2219 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#780">[ date ]</a>
+              <a href="thread.html#780">[ thread ]</a>
+              <a href="subject.html#780">[ subject ]</a>
+              <a href="author.html#780">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-19 20:48:54 +0100 (Sun, 19 Nov 2006)
+New Revision: 2218
+
+Added:
+   YDFramework2.0/trunk/examples/ajax/form_runtime.php
+Modified:
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+- added new YDAjax example:
+  * &quot;How to add extra form elements to an existing form in a response&quot;
+  * examples index updated too
+
+Added: YDFramework2.0/trunk/examples/ajax/form_runtime.php
+===================================================================
+--- YDFramework2.0/trunk/examples/ajax/form_runtime.php	2006-11-18 22:34:19 UTC (rev 2217)
++++ YDFramework2.0/trunk/examples/ajax/form_runtime.php	2006-11-19 19:48:54 UTC (rev 2218)
+@@ -0,0 +1,117 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDTemplate.php' );
++    YDInclude( 'YDForm.php' );
++    YDInclude( 'YDAjax.php' );
++
++
++    // Class definition
++    class form_runtime extends YDRequest {
++
++        function form_runtime() {
++
++			$this-&gt;YDRequest();
++			$this-&gt;tpl = new YDTemplate();
++        }
++
++
++        // Default action
++        function actionDefault() {
++
++			$this-&gt;form = new YDForm( 'myform' );
++
++			// create form elements
++			$this-&gt;form-&gt;addElement( 'text',     'myname',     'Name' );
++			$this-&gt;form-&gt;addElement( 'text',     'mybill',     'Billing address' );
++			$this-&gt;form-&gt;addElement( 'checkbox', 'ship',       'Shipping address is not billing address' );
++			$this-&gt;form-&gt;addElement( 'span',     'shipform',   '' );
++			$this-&gt;form-&gt;addElement( 'button',   'mybutton',   'Send form details' );
++
++			// create form rules
++			$this-&gt;form-&gt;addRule( 'myname', 'required', 'Name is required' );
++			$this-&gt;form-&gt;addRule( 'mybill', 'required', 'Billing address is required' );
++
++			// create ajax object
++			$this-&gt;ajax = new YDAjax( $this-&gt;tpl );
++			$this-&gt;ajax-&gt;addForm( $this-&gt;form );
++
++			// add event to button (to send form details)
++			$this-&gt;ajax-&gt;addEvent( 'mybutton', array( &amp; $this, 'processform' ), $this-&gt;form-&gt;getName() );
++
++			// add event to checkbox to compute shipping address form extra elements
++			$this-&gt;ajax-&gt;addEvent( 'ship', array( &amp; $this, 'sendShipForm' ), 'ship' );
++
++			// process all events
++			$this-&gt;ajax-&gt;processEvents();
++
++			// assign title, form and display template
++			$this-&gt;tpl-&gt;assign( 'title', 'YDAjax form submition' );
++			$this-&gt;tpl-&gt;assign( 'form',  $this-&gt;form-&gt;toHTML() );
++			$this-&gt;tpl-&gt;display( 'general' );
++        }
++
++
++		// process form call invoked by ajax
++		function processform( $formvalues ){
++
++			// if form is not valid, send errors to client side using an alert
++			if ( ! $this-&gt;form-&gt;validate( $formvalues ) )
++				return YDAjax::message( $this-&gt;form-&gt;getErrors( true, &quot;\n* &quot;, &quot;* &quot; ) );
++
++			// if checkbox is ON we must add extra fields and validate them
++			if ( $this-&gt;form-&gt;getValue( 'ship' ) ){
++				
++				// add extra fields
++				$this-&gt;_computeExtra();
++				
++				// validate again
++				if ( ! $this-&gt;form-&gt;validate( $formvalues ) )
++ 					return YDAjax::message( $this-&gt;form-&gt;getErrors( true, &quot;\n* &quot;, &quot;* &quot; ) );
++			}
++
++			// return OK message
++			return YDAjax::message( &quot;Thanks! \nHere goes what i got:\n\n&quot; . var_export( $this-&gt;form-&gt;getValues(), true ) );
++		}
++
++
++		// Helper method to compute extra fields
++		function _computeExtra(){
++		
++			// lets's add some elements..
++			$this-&gt;form-&gt;addElement( 'text', 'sendname', 'Shipping name' );
++			$this-&gt;form-&gt;addElement( 'text', 'sendaddr', 'Shipping address' );
++
++			// add rules too
++			$this-&gt;form-&gt;addRule( 'sendaddr', 'required', &quot;You want to send to a different addr that is empty?!&quot; );
++			
++			// we need to get the html of these new elements
++			$arr = $this-&gt;form-&gt;toarray();
++			$extraHTML  = '';
++			$extraHTML .= $arr[ 'sendname' ][ 'label_html' ] . '&lt;br /&gt;' . $arr[ 'sendname' ][ 'html' ] . '&lt;br /&gt;&lt;br /&gt;';
++			$extraHTML .= $arr[ 'sendaddr' ][ 'label_html' ] . '&lt;br /&gt;' . $arr[ 'sendaddr' ][ 'html' ] . '&lt;br /&gt;&lt;br /&gt;';
++
++			return $extraHTML;
++		}
++
++
++		// send shipping address form (based on checkbox value)
++		function sendShipForm( $chk ){
++		
++			// test if checkbox is ON
++			if ( $chk ) $this-&gt;ajax-&gt;addResult( 'shipform', $this-&gt;_computeExtra() );
++			else        $this-&gt;ajax-&gt;addResult( 'shipform', '' );
++
++			return $this-&gt;ajax-&gt;processResults();
++		}
++
++   }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-11-18 22:34:19 UTC (rev 2217)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-11-19 19:48:54 UTC (rev 2218)
+@@ -574,7 +574,7 @@
+           &lt;td&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot; rowspan=&quot;19&quot;&gt;&nbsp;&lt;/td&gt;
++          &lt;td valign=&quot;top&quot; rowspan=&quot;20&quot;&gt;&nbsp;&lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/version.php&quot;&gt;Simple ajax example&lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/version.php&quot;&gt;ajax/version.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+@@ -611,6 +611,11 @@
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/persistent_store.php&quot;&gt;ajax/persistent_store.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/form_runtime.php&quot;&gt;Adding extra form elements in a response &lt;/a&gt;&lt;br/&gt;
++          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/form_runtime.php&quot;&gt;ajax/form_runtime.php&lt;/a&gt; &lt;/td&gt;
++          &lt;/tr&gt;
++        &lt;tr&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/list_options.php&quot;&gt;Adding elements to a select box dynamically &lt;/a&gt;&lt;br/&gt;&lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/list_options.php&quot;&gt;ajax/list_options.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000778.html">[ydf-devel] r2217 - YDFramework2.0/trunk/examples
+</A></li>
+	<LI>Next message: <A HREF="000781.html">[ydf-devel] r2219 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#780">[ date ]</a>
+              <a href="thread.html#780">[ thread ]</a>
+              <a href="subject.html#780">[ subject ]</a>
+              <a href="author.html#780">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,422 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2327 - in YDFramework2.0/trunk/examples: . simplecms	simplecms/includes simplecms/includes/modules	simplecms/includes/skins_admin simplecms/includes/skins_public	simplecms/includes/skins_public/default
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2327%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20simplecms%0A%09simplecms/includes%20simplecms/includes/modules%0A%09simplecms/includes/skins_admin%20simplecms/includes/skins_public%0A%09simplecms/includes/skins_public/default&In-Reply-To=%3C200701212104.l0LL4ON6032581%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000919.html">
+   <LINK REL="Next"  HREF="000921.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2327 - in YDFramework2.0/trunk/examples: . simplecms	simplecms/includes simplecms/includes/modules	simplecms/includes/skins_admin simplecms/includes/skins_public	simplecms/includes/skins_public/default</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2327%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20simplecms%0A%09simplecms/includes%20simplecms/includes/modules%0A%09simplecms/includes/skins_admin%20simplecms/includes/skins_public%0A%09simplecms/includes/skins_public/default&In-Reply-To=%3C200701212104.l0LL4ON6032581%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2327 - in YDFramework2.0/trunk/examples: . simplecms	simplecms/includes simplecms/includes/modules	simplecms/includes/skins_admin simplecms/includes/skins_public	simplecms/includes/skins_public/default">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan 21 22:04:24 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000919.html">[ydf-devel] r2326 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000921.html">[ydf-devel] r2328 - in	YDFramework2.0/trunk/examples/simplecms/includes: . database
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#920">[ date ]</a>
+              <a href="thread.html#920">[ thread ]</a>
+              <a href="subject.html#920">[ subject ]</a>
+              <a href="author.html#920">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-21 22:04:23 +0100 (Sun, 21 Jan 2007)
+New Revision: 2327
+
+Added:
+   YDFramework2.0/trunk/examples/simplecms/
+   YDFramework2.0/trunk/examples/simplecms/admin.php
+   YDFramework2.0/trunk/examples/simplecms/images/
+   YDFramework2.0/trunk/examples/simplecms/includes/
+   YDFramework2.0/trunk/examples/simplecms/includes/.htaccess
+   YDFramework2.0/trunk/examples/simplecms/includes/YDSimpleCMSApp.php
+   YDFramework2.0/trunk/examples/simplecms/includes/config.php
+   YDFramework2.0/trunk/examples/simplecms/includes/modules/
+   YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php
+   YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/page.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_public/
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/page.tpl
+   YDFramework2.0/trunk/examples/simplecms/index.php
+   YDFramework2.0/trunk/examples/simplecms/resources/
+Log:
+Added a very first stab at a very simple CMS (similar to YDCms from ages ago) that could help with building very simple websites. It's less powerful than the YDCMComponent but easier to use...
+
+Added: YDFramework2.0/trunk/examples/simplecms/admin.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/admin.php	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/admin.php	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,9 @@
++&lt;?php
++
++    // Include the CMS App module
++    include_once( dirname( __FILE__ ) . '/includes/YDSimpleCMSApp.php' );
++
++    // Run the CMS request
++    YDSimpleCMSRunRequest( 'admin' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/.htaccess
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/.htaccess	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/.htaccess	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1 @@
++deny from all
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/YDSimpleCMSApp.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/YDSimpleCMSApp.php	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/YDSimpleCMSApp.php	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,12 @@
++&lt;?php
++
++    // Include the Yellow Duck Framework
++    include_once( dirname( __FILE__ ) . '/../../../YDFramework2/YDF2_init.php' );
++
++    // Include the config
++    include_once( dirname( __FILE__ ) . '/config.php' );
++
++    // Include the CMS
++    include_once( YD_DIR_HOME_ADD . '/YDSimpleCMS/YDSimpleCMS.php' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/config.php	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/config.php	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,13 @@
++&lt;?php
++
++    YDConfig::set( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
++    YDConfig::set( 'YD_DEBUG', 2 );
++    YDConfig::set( 'YD_SIMPLECMS_PUBLIC_SKIN', 'default' );
++
++    YDConfig::set( 'db_host',   'localhost' );
++    YDConfig::set( 'db_name',   'ydsimplecms' );
++    YDConfig::set( 'db_user',   'root' );
++    YDConfig::set( 'db_pass',   '' );
++    YDConfig::set( 'db_prefix', 'cms_' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,23 @@
++&lt;?php
++
++    // Class definition
++    class module_contactus extends YDSimpleCMSModule {
++
++        // Class variables
++        var $name        = 'SimpleCMS Contact Us Module';
++        var $description = 'SimpleCMS module to manage a contact form.';
++        var $version     = '1.0';
++        var $authorName  = 'Pieter Claerhout';
++        var $authorEmail = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++        var $authorUrl   = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
++
++        // Main function
++        function action_public_show() {
++        }
++
++    }
++
++    // Add menu items
++    YDSimpleCMSAddAdminMenu( 'Content',    'Contact Us', 'contactus', 'show' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,24 @@
++&lt;?php
++
++    // Class definition
++    class module_newsletter extends YDSimpleCMSModule {
++
++        // Class variables
++        var $name        = 'SimpleCMS Newsletter Module';
++        var $description = 'SimpleCMS module to manage newsletters.';
++        var $version     = '1.0';
++        var $authorName  = 'Pieter Claerhout';
++        var $authorEmail = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++        var $authorUrl   = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
++
++        // Main function
++        function action_public_show() {
++        }
++
++    }
++
++    // Add menu items
++    YDSimpleCMSAddAdminMenu( 'Newsletters', 'Create Newsletter',    'newsletter', 'create' );
++    YDSimpleCMSAddAdminMenu( 'Newsletters', 'Archived Newsletters', 'newsletter', 'show' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,53 @@
++&lt;html&gt;
++
++&lt;head&gt;
++
++    &lt;title&gt;{$title}&lt;/title&gt;
++
++    {literal}&lt;style&gt;
++        td { vertical-align: top; }
++    &lt;/style&gt;{/literal}
++
++&lt;/head&gt;
++
++&lt;body&gt;
++
++    &lt;table width=&quot;100%&quot; border=&quot;1&quot;&gt;
++    {if $currentUser}
++        &lt;tr&gt;
++            &lt;td colspan=&quot;2&quot;&gt;
++                {$currentUser.name} | &lt;a href=&quot;{$YD_SELF_SCRIPT}?module=admin&amp;action=logout&quot;&gt;{t w=&quot;logout&quot;}&lt;/a&gt;
++            &lt;/td&gt;
++        &lt;/tr&gt;
++    {/if}
++    &lt;tr&gt;
++        &lt;td width=&quot;240&quot;&gt;
++            {if $currentUser}
++                {foreach from=$adminMenu item=&quot;menuItem&quot;}
++                    &lt;p&gt;
++                        {if $menuItem.url}
++                            &lt;a href=&quot;{$menuItem.url}&quot;&gt;&lt;b&gt;{$menuItem.title}&lt;/b&gt;&lt;/a&gt;
++                        {else}
++                            &lt;b&gt;{$menuItem.title}&lt;/b&gt;
++                        {/if}
++                        {foreach from=$menuItem.children item=&quot;menuSubItem&quot;}
++                            &lt;br/&gt;
++                            {if $menuSubItem.url}
++                                &lt;a href=&quot;{$menuSubItem.url}&quot;&gt;{$menuSubItem.title}&lt;/a&gt;
++                            {else}
++                                {$menuSubItem.title}
++                            {/if}
++                        {/foreach}
++                    &lt;/p&gt;
++                {/foreach}
++            {/if}
++        &lt;/td&gt;
++        &lt;td&gt;
++            ##content##
++        &lt;/td&gt;
++    &lt;/tr&gt;
++    &lt;/table&gt;
++
++&lt;/body&gt;
++
++&lt;/html&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,56 @@
++{if $currentAction == 'show'}
++    &lt;h1&gt;Admin Home&lt;/h1&gt;
++    {foreach from=$adminMenu item=&quot;menuItem&quot;}
++        &lt;p&gt;
++            {if $menuItem.url}
++                &lt;a href=&quot;{$menuItem.url}&quot;&gt;&lt;b&gt;{$menuItem.title}&lt;/b&gt;&lt;/a&gt;
++            {else}
++                &lt;b&gt;{$menuItem.title}&lt;/b&gt;
++            {/if}
++            {foreach from=$menuItem.children item=&quot;menuSubItem&quot;}
++                &lt;br/&gt;
++                {if $menuSubItem.url}
++                    &lt;a href=&quot;{$menuSubItem.url}&quot;&gt;{$menuSubItem.title}&lt;/a&gt;
++                {else}
++                    {$menuSubItem.title}
++                {/if}
++            {/foreach}
++        &lt;/p&gt;
++    {/foreach}
++{/if}
++
++{if $currentAction == 'modules'}
++    &lt;h1&gt;Modules&lt;/h1&gt;
++    &lt;h2&gt;Core Modules&lt;/h2&gt;
++    &lt;ul&gt;
++        {foreach from=$modules item=module}
++            {if $module-&gt;isRequired()}
++                &lt;li&gt;&lt;p&gt;
++                    &lt;b&gt;{$module-&gt;name} {t w=&quot;version&quot;} {$module-&gt;version}&lt;/b&gt;
++                    &lt;br/&gt;
++                    {t w=&quot;created_by&quot;} {$module-&gt;authorName}, {$module-&gt;authorUrl|url}
++                    &lt;br/&gt;
++                    {$module-&gt;description}
++                &lt;/p&gt;&lt;/li&gt;
++            {/if}
++        {/foreach}
++    &lt;/ul&gt;
++    &lt;h2&gt;Optional Modules&lt;/h2&gt;
++    &lt;ul&gt;
++        {foreach from=$modules item=module}
++            {if not $module-&gt;isRequired()}
++                &lt;li&gt;&lt;p&gt;
++                    &lt;b&gt;{$module-&gt;name} {t w=&quot;version&quot;} {$module-&gt;version}&lt;/b&gt;
++                    &lt;br/&gt;
++                    {t w=&quot;created_by&quot;} {$module-&gt;authorName}, {$module-&gt;authorUrl|url}
++                    &lt;br/&gt;
++                    {$module-&gt;description}
++                &lt;/p&gt;&lt;/li&gt;
++            {/if}
++        {/foreach}
++    &lt;/ul&gt;
++{/if}
++
++{if $currentAction == 'settings'}
++    &lt;h1&gt;Settings&lt;/h1&gt;
++{/if}
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,29 @@
++&lt;h1&gt;{t w=&quot;please_login&quot;}&lt;/h1&gt;
++
++{if $form.errors}
++    &lt;p style=&quot;color: red&quot;&gt;
++        {foreach from=$form.errors item=error}
++            {$error}&lt;br&gt;
++        {/foreach}
++    &lt;/p&gt;
++{/if}
++
++{$form.tag}
++    &lt;p&gt;
++        {$form.loginName.label}
++        &lt;br&gt;
++        {$form.loginName.html}
++    &lt;/p&gt;
++    &lt;p&gt;
++        {$form.loginPass.label}
++        &lt;br&gt;
++        {$form.loginPass.html}
++    &lt;/p&gt;
++    &lt;p&gt;
++        {$form.loginRememberMe.html}
++        {$form.loginRememberMe.label}
++    &lt;/p&gt;
++    &lt;p&gt;
++        {$form.cmdSubmit.html}
++    &lt;/p&gt;
++{$form.endtag}
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/page.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/page.tpl	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/page.tpl	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,3 @@
++{if $currentAction == 'show'}
++    &lt;h1&gt;Page&lt;/h1&gt;
++{/if}
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,17 @@
++&lt;html&gt;
++
++&lt;head&gt;
++
++    &lt;title&gt;{$title}&lt;/title&gt;
++
++&lt;/head&gt;
++
++&lt;body&gt;
++
++    ##content##
++
++    &lt;small&gt;{$YD_FW_POWERED_BY}&lt;/small&gt;
++
++&lt;/body&gt;
++
++&lt;/html&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/page.tpl
+===================================================================
+
+Added: YDFramework2.0/trunk/examples/simplecms/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/index.php	2007-01-21 21:02:49 UTC (rev 2326)
++++ YDFramework2.0/trunk/examples/simplecms/index.php	2007-01-21 21:04:23 UTC (rev 2327)
+@@ -0,0 +1,9 @@
++&lt;?php
++
++    // Include the CMS App module
++    include_once( dirname( __FILE__ ) . '/includes/YDSimpleCMSApp.php' );
++
++    // Run the CMS request
++    YDSimpleCMSRunRequest( 'public' );
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000919.html">[ydf-devel] r2326 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000921.html">[ydf-devel] r2328 - in	YDFramework2.0/trunk/examples/simplecms/includes: . database
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#920">[ date ]</a>
+              <a href="thread.html#920">[ thread ]</a>
+              <a href="subject.html#920">[ subject ]</a>
+              <a href="author.html#920">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

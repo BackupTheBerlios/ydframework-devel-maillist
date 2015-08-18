@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1654 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1654%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602101056.k1AAuFM4011493%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000038.html">
+   <LINK REL="Next"  HREF="000041.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1654 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1654%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602101056.k1AAuFM4011493%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1654 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 11:56:15 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000038.html">[ydf-devel] YDDatabaseObject warnings
+</A></li>
+        <LI>Next message: <A HREF="000041.html">[ydf-devel] YDDatabaseObject warnings
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#39">[ date ]</a>
+              <a href="thread.html#39">[ thread ]</a>
+              <a href="subject.html#39">[ subject ]</a>
+              <a href="author.html#39">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-10 11:56:06 +0100 (Fri, 10 Feb 2006)
+New Revision: 1654
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+Fixed a notice where we were using $_ENV['COMPUTERNAME'] while we should have used $_SERVER[&quot;SERVER_NAME&quot;] instead in YDGuidUTil.
+
+More info:
+<A HREF="http://developer.berlios.de/bugs/?func=detailbug&amp;bug_id=6348&amp;group_id=3988">http://developer.berlios.de/bugs/?func=detailbug&amp;bug_id=6348&amp;group_id=3988</A>
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-10 10:51:20 UTC (rev 1653)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-10 10:56:06 UTC (rev 1654)
+@@ -958,7 +958,7 @@
+          *  @returns    A new GUID as a string.
+          */
+         function create() {
+-            return md5( uniqid( rand(), true ) . $_ENV['COMPUTERNAME'] . $_SERVER['SERVER_ADDR'] );
++            return md5( uniqid( rand(), true ) . $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_ADDR'] );
+         }
+ 
+         /**
+@@ -968,12 +968,6 @@
+          */
+         function createFormatted() {
+             return YDGuidUtil::format( YDGuidUtil::create() );
+-//            YDDebugUtil::dump( $g );
+-//            return sprintf(
+-//                '%s-%s-%s-%s-%s',
+-//                substr( $g, 0, 8 ), substr( $g, 8, 4 ), substr( $g, 12, 4 ), substr( $g, 16, 4 ), substr( $g, 20 )
+-//            );
+-//            //substr( $g, 0, 8 ) . '-' . substr( $g, 8, 4 ) . '-' . substr( $g, 12, 4 ) . '-' . substr( $g, 16, 4 ) . '-' . substr( $g, 20 );
+         }
+ 
+         /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000038.html">[ydf-devel] YDDatabaseObject warnings
+</A></li>
+	<LI>Next message: <A HREF="000041.html">[ydf-devel] YDDatabaseObject warnings
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#39">[ date ]</a>
+              <a href="thread.html#39">[ thread ]</a>
+              <a href="subject.html#39">[ subject ]</a>
+              <a href="author.html#39">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2037 - YDFramework2.0/trunk/examples/cm/backend
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2037%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200608222202.k7MM22uC007327%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000545.html">
+   <LINK REL="Next"  HREF="000547.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2037 - YDFramework2.0/trunk/examples/cm/backend</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2037%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200608222202.k7MM22uC007327%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2037 - YDFramework2.0/trunk/examples/cm/backend">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 23 00:02:02 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000545.html">[ydf-devel] r2036 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000547.html">[ydf-devel] r2038 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-23 00:01:35 +0200 (Wed, 23 Aug 2006)
+New Revision: 2037
+
+Added:
+   YDFramework2.0/trunk/examples/cm/backend/returns.php
+Log:
+added an YDCM example on how to use experimental YDResult class
+
+Added: YDFramework2.0/trunk/examples/cm/backend/returns.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/backend/returns.php	2006-08-22 21:59:43 UTC (rev 2036)
++++ YDFramework2.0/trunk/examples/cm/backend/returns.php	2006-08-22 22:01:35 UTC (rev 2037)
+@@ -0,0 +1,93 @@
++&lt;?php
++
++    include_once( dirname( __FILE__ ) . '/../cm.php' );
++
++    // Class definition
++    class returns extends cm {
++
++        // Class constructor
++        function returns() {
++
++			// init parent class and test class
++            $this-&gt;cm();
++			$this-&gt;test = new mytest();
++        }
++
++
++        // Default action, demonstrates the simplest way of handle results
++        function actionDefault() {
++
++			// try to div by 0
++			$res = $this-&gt;test-&gt;div( 10 );
++			
++			// check if div processing was ok or we get errors
++			if ( $res-&gt;ok ) print $res-&gt;message;
++			else            print 'ERROR: ' . $res-&gt;message;
++        }
++
++
++        // Check error types
++        function actionErrors() {
++
++			// set internal test 5 ;) (we will get an error)
++			$this-&gt;test-&gt;set( 5 );
++
++			// try to div by 10
++			$res = $this-&gt;test-&gt;div( 10 );
++			
++			// check if div processing was ok
++			if ( $res-&gt;ok ) return print $res-&gt;message . ' ' . $res-&gt;value;
++
++			// get error
++			if ( $res-&gt;custom == 0 ){
++
++				// do something about 'x' argument being 0
++				print $res-&gt;message;
++			}
++
++			if ( $res-&gt;custom == 1 ){
++
++				// do something about internal 'a' variable being 5
++				print $res-&gt;message;
++			}
++
++			// in any case of error, show all information
++			$res-&gt;dump();
++        }
++
++
++    }
++
++
++	class mytest{
++	
++		function mytest(){
++			$this-&gt;a = 10;
++		}
++
++
++		function set( $a ){
++			$this-&gt;a = $a;
++		}
++
++
++		function div( $x ){
++		
++			// test if internal x is valid and test if $x is valid
++			if ( $x == 0 )       return YDResult::fatal( 'Argument cannot be zero', 0 );
++			if ( $this-&gt;a == 5 ) return YDResult::fatal( 'Internal value cannot be five :D', 1);
++			
++			// compute result value
++			$result = ( $this-&gt;a / 10 );
++			
++			// return a ok result
++			return YDResult::ok( 'Div made with sucess!', $result );
++		}
++
++	}
++	
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000545.html">[ydf-devel] r2036 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000547.html">[ydf-devel] r2038 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

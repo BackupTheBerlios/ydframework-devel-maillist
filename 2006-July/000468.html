@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDate::getYear
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDate%3A%3AgetYear&In-Reply-To=%3C44BD413D.9040107%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000467.html">
+   <LINK REL="Next"  HREF="000469.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDate::getYear</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDate%3A%3AgetYear&In-Reply-To=%3C44BD413D.9040107%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDDate::getYear">francisco at fusemail.com
+       </A><BR>
+    <I>Tue Jul 18 22:14:53 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000467.html">[ydf-devel] YDDate::getYear
+</A></li>
+        <LI>Next message: <A HREF="000469.html">[ydf-devel] YDDate::getYear
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#468">[ date ]</a>
+              <a href="thread.html#468">[ thread ]</a>
+              <a href="subject.html#468">[ subject ]</a>
+              <a href="author.html#468">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi db
+
+&gt;<i> If I do that I will have to create getDay, getMonth, getHours, 
+</I>&gt;<i> getMinutes and getSeconds. Also the setters, setDay, setMonth, etc.
+</I>&gt;<i> 
+</I>&gt;<i> The idea is to use the variables directly and not fill the code with 
+</I>&gt;<i> more functions.
+</I>
+I see. But let me explain my point of view.
+In the YDDate there are add's for almost any date element:
+
+	$date-&gt;addSecond( 70 )
+	$date-&gt;addMinute( 80 )
+	$date-&gt;addHour( 24 )
+	$date-&gt;addDay( 40 )
+	$date-&gt;addMonth( 1 )
+	$date-&gt;addYear( -20 )
+
+but there get's too.. but no year:
+
+	$date-&gt;getDayName()
+	$date-&gt;getDayName( true )
+	$date-&gt;getMonthName()
+
+.. that's way i talk about some 'getYear'. Maybe something like:
+
+
+	function getYear(){ return $this-&gt;year; }
+
+
+regards
+Francisco A
+
+
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000467.html">[ydf-devel] YDDate::getYear
+</A></li>
+	<LI>Next message: <A HREF="000469.html">[ydf-devel] YDDate::getYear
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#468">[ date ]</a>
+              <a href="thread.html#468">[ thread ]</a>
+              <a href="subject.html#468">[ subject ]</a>
+              <a href="author.html#468">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

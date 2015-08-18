@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2091 -	YDFramework2.0/trunk/YDFramework2/addons/YDBBCode
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2091%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDBBCode&In-Reply-To=%3C200609071407.k87E738s007871%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000607.html">
+   <LINK REL="Next"  HREF="000609.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2091 -	YDFramework2.0/trunk/YDFramework2/addons/YDBBCode</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2091%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDBBCode&In-Reply-To=%3C200609071407.k87E738s007871%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2091 -	YDFramework2.0/trunk/YDFramework2/addons/YDBBCode">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep  7 16:07:03 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000607.html">[ydf-devel] r2090 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000609.html">[ydf-devel] r2092 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#608">[ date ]</a>
+              <a href="thread.html#608">[ thread ]</a>
+              <a href="subject.html#608">[ subject ]</a>
+              <a href="author.html#608">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-07 16:07:02 +0200 (Thu, 07 Sep 2006)
+New Revision: 2091
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+Log:
+Fixed the XHTML output of the YDBBCode addon.
+
+See also: [ Bug #7538 ] simple fixes in default weblog skin
+
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2006-09-07 13:48:30 UTC (rev 2090)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2006-09-07 14:07:02 UTC (rev 2091)
+@@ -64,8 +64,8 @@
+             $this-&gt;addRule( &quot;/\[mail\]([^&lt;&gt; \n]+?)\[\/mail\]/i&quot;, '&lt;a href=&quot;mailto:\\1&quot;&gt;\\1&lt;/a&gt;' );
+             $this-&gt;addRule( &quot;/\[email=([^&lt;&gt; \n]+?)\](.+?)\[\/email\]/i&quot;, '&lt;a href=&quot;mailto:\\1&quot;&gt;\\2&lt;/a&gt;' );
+             $this-&gt;addRule( &quot;/\[email\]([^&lt;&gt; \n]+?)\[\/email\]/i&quot;, '&lt;a href=&quot;mailto:\\1&quot;&gt;\\1&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[img=([^&lt;&gt; \n]+?)\](.+?)\[\/img\]/i&quot;, '&lt;a href=&quot;\\1&quot;&gt;&lt;img border=&quot;0&quot; src=&quot;\\2&quot;&gt;&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[img\]([^&lt;&gt; \n]+?)\[\/img\]/i&quot;, '&lt;img border=&quot;0&quot; src=&quot;\\1&quot;&gt;' );
++            $this-&gt;addRule( &quot;/\[img=([^&lt;&gt; \n]+?)\](.+?)\[\/img\]/i&quot;, '&lt;a href=&quot;\\1&quot;&gt;&lt;img border=&quot;0&quot; src=&quot;\\2&quot; alt=&quot;\\2&quot; /&gt;&lt;/a&gt;' );
++            $this-&gt;addRule( &quot;/\[img\]([^&lt;&gt; \n]+?)\[\/img\]/i&quot;, '&lt;img border=&quot;0&quot; src=&quot;\\1&quot; alt=&quot;\\1&quot; /&gt;' );
+             $this-&gt;addRule( &quot;/\[color=([^&lt;&gt; \n]+?)\](.+?)\[\/color\]/i&quot;, '&lt;font color=&quot;\\1&quot;&gt;\\2&lt;/font&gt;' );
+ 
+             // Attributes to convert links
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000607.html">[ydf-devel] r2090 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000609.html">[ydf-devel] r2092 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#608">[ date ]</a>
+              <a href="thread.html#608">[ thread ]</a>
+              <a href="subject.html#608">[ subject ]</a>
+              <a href="author.html#608">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

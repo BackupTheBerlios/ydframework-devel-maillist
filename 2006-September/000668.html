@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2149 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2149%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609161654.k8GGseiV017752%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000667.html">
+   <LINK REL="Next"  HREF="000669.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2149 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2149%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609161654.k8GGseiV017752%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2149 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep 16 18:54:40 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000667.html">[ydf-devel] r2148 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000669.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#668">[ date ]</a>
+              <a href="thread.html#668">[ thread ]</a>
+              <a href="subject.html#668">[ subject ]</a>
+              <a href="author.html#668">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-16 18:54:39 +0200 (Sat, 16 Sep 2006)
+New Revision: 2149
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+Fixed my previous commit to that the right $_GET element would be taken.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-16 09:02:17 UTC (rev 2148)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-16 16:54:39 UTC (rev 2149)
+@@ -635,7 +635,7 @@
+ 
+             // Special treatment for GET forms
+             if ( $this-&gt;_method == 'get' ) {
+-                if ( ! isset( $_GET[$name] ) &amp;&amp; ! is_null( $element-&gt;_default ) ) {
++                if ( ! isset( $_GET[$this-&gt;_name . '_' . $name] ) &amp;&amp; ! is_null( $element-&gt;_default ) ) {
+                     $value = $element-&gt;getDefault();
+                 }
+             }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000667.html">[ydf-devel] r2148 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000669.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#668">[ date ]</a>
+              <a href="thread.html#668">[ thread ]</a>
+              <a href="subject.html#668">[ subject ]</a>
+              <a href="author.html#668">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

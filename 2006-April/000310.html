@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1866 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers: . languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1866%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers%3A%20.%20languages&In-Reply-To=%3C200604230011.k3N0B2Ur029389%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000309.html">
+   <LINK REL="Next"  HREF="000311.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1866 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers: . languages</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1866%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers%3A%20.%20languages&In-Reply-To=%3C200604230011.k3N0B2Ur029389%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1866 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers: . languages">ximian at berlios.de
+       </A><BR>
+    <I>Sun Apr 23 02:11:02 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000309.html">[ydf-devel] r1865 - YDFramework2.0/trunk/YDFramework2/addons/YDCMTemplates
+</A></li>
+        <LI>Next message: <A HREF="000311.html">[ydf-devel] r1867 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages addons/YDCMUsers addons/YDCMUsers/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#310">[ date ]</a>
+              <a href="thread.html#310">[ thread ]</a>
+              <a href="subject.html#310">[ subject ]</a>
+              <a href="author.html#310">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-23 02:10:19 +0200 (Sun, 23 Apr 2006)
+New Revision: 1866
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php
+Log:
+in YDCMUsers: fixed YDConfigs, added form rules and new translations
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php	2006-04-23 00:06:24 UTC (rev 1865)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php	2006-04-23 00:10:19 UTC (rev 1866)
+@@ -33,10 +33,10 @@
+ 	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
+ 
+ 	// set user form name
+-	YDConfig::set( 'YDCMUSERS_FORMUSER', 'YDCMUsersForm' );
++	YDConfig::set( 'YDCMUSERS_FORMUSER', 'YDCMUsersForm', false );
+ 
+ 	// set password form name
+-	YDConfig::set( 'YDCMUSERS_FORMPASSWORD', 'YDCMUsersFormPassword' );
++	YDConfig::set( 'YDCMUSERS_FORMPASSWORD', 'YDCMUsersFormPassword', false );
+ 
+ 
+     class YDCMUsers extends YDCMComponent {
+@@ -188,9 +188,8 @@
+ 			$form = $this-&gt;getFormUser();
+ 
+ 			// check form validation
+- 			// TODO: check if language exist in YDCMLanguages before update
+ 			if ( !$form-&gt;validate( $formvalues ) )
+-				return $form-&gt;getErrors( true );
++				return $form-&gt;getErrors();
+ 
+ 			return $this-&gt;changeCurrentUser( $form-&gt;getValues() );
+ 		}
+@@ -203,25 +202,38 @@
+          */
+ 		function getFormUser(){
+ 
++			// include languages and templates lib
++			YDInclude( 'YDCMLanguages.php' );
++			YDInclude( 'YDCMTemplates.php' );
++
++			// create languages and templates object
++			$languages = new YDCMLanguages();
++			$templates = new YDCMTemplates();
++
+ 			// create form object
+             $form = new YDForm( YDConfig::get( 'YDCMUSERS_FORMUSER' ) );
+ 
+-	        $form-&gt;addElement( 'span',		'username',		t('user_username') );
+-            $form-&gt;addElement( 'text',		'name',			t('user_name') );
+-            $form-&gt;addElement( 'text',		'email',		t('user_email') );
+-            $form-&gt;addElement( 'textarea',	'other',		t('user_other') );
+-            $form-&gt;addElement( 'select',	'language_id',	t('user_language') );
+-            $form-&gt;addElement( 'select',	'template',		t('user_template') );
++	        $form-&gt;addElement( 'span',      'username',     t('user_username') );
++            $form-&gt;addElement( 'text',      'name',         t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
++            $form-&gt;addElement( 'text',      'email',        t('user_email') );
++            $form-&gt;addElement( 'textarea',  'other',        t('user_other'),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
++            $form-&gt;addElement( 'select',    'language_id',  t('user_language'), array(), $languages-&gt;active() );
++            $form-&gt;addElement( 'select',    'template',     t('user_template'), array(), $templates-&gt;forAdministrators() );
++            $form-&gt;addElement( 'span',      'login_start',  t('login_start') );
++            $form-&gt;addElement( 'span',      'login_end',    t('login_end') );
++            $form-&gt;addElement( 'span',      'login_counter',t('login_counter') );
++            $form-&gt;addElement( 'span',      'login_last',   t('login_last') );
++            $form-&gt;addElement( 'span',      'login_current',t('login_current') );
++            $form-&gt;addElement( 'span',      'created_user', t('created_user') );
++            $form-&gt;addElement( 'span',      'created_date', t('created_date') );
+ 
+-            $form-&gt;addElement( 'span',		'login_start',	t('login_start') );
+-            $form-&gt;addElement( 'span',		'login_end',	t('login_end') );
+-            $form-&gt;addElement( 'span',		'login_counter',t('login_counter') );
+-            $form-&gt;addElement( 'span',		'login_last',	t('login_last') );
+-            $form-&gt;addElement( 'span',		'login_current',t('login_current') );
++			// add rules
++			$form-&gt;addRule( 'name',        'maxlength', t('name too big'),       255 );
++			$form-&gt;addRule( 'email',       'email',     t('email not valid') );
++			$form-&gt;addRule( 'other',       'maxlength', t('other too big'),      5000 );
++			$form-&gt;addRule( 'language_id', 'in_array',  t('language not valid'), array_keys( $languages-&gt;active() ) );
++			$form-&gt;addRule( 'template',    'in_array',  t('template not valid'), array_keys( $templates-&gt;forAdministrators() ) );
+ 
+-            $form-&gt;addElement( 'span',		'created_user',	t('created_user') );
+-            $form-&gt;addElement( 'span',		'created_date',	t('created_date') );
+-
+ 			return $form;
+ 		}
+ 
+@@ -263,7 +275,7 @@
+ 
+ 			// check form validation
+ 			if ( !$form-&gt;validate( $formvalues ) )
+-				return $form-&gt;getErrors( true );
++				return $form-&gt;getErrors();
+ 
+ 			return $this-&gt;changeCurrentUserPassword( $form-&gt;getValue( 'old' ), $form-&gt;getValue( 'new' ) );
+ 		}
+@@ -280,14 +292,15 @@
+             $form = new YDForm( YDConfig::get( 'YDCMUSERS_FORMPASSWORD' ) );
+ 
+ 			// add form elements
+-            $form-&gt;addElement( 'password', 'old',         t('password_old'),         array('size' =&gt; 40) );
+-            $form-&gt;addElement( 'password', 'new',         t('password_new'),         array('size' =&gt; 50) );
+-            $form-&gt;addElement( 'password', 'new_confirm', t('password_new_confirm'), array('size' =&gt; 50) );
++            $form-&gt;addElement( 'password', 'old',         t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
++            $form-&gt;addElement( 'password', 'new',         t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++            $form-&gt;addElement( 'password', 'new_confirm', t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+ 
+ 			// add rules
+-			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'maxlength', t('passwords too big'), 31 );
++			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'maxlength',    t('passwords too big'), 31 );
++			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'alphanumeric', t('passwords not alphanumeric') );
+ 
+-			// add compare rules
++			// add compare rule
+ 			$form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
+ 
+ 			return $form;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php	2006-04-23 00:06:24 UTC (rev 1865)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php	2006-04-23 00:10:19 UTC (rev 1866)
+@@ -16,7 +16,11 @@
+ $GLOBALS['t']['created_date'] = 'Created in';
+ 
+ // USER FORM RULES
+-$GLOBALS['t']['passwords dont match'] = 'Passwords do not match';
++$GLOBALS['t']['name too big'] = 'Name is too big';
++$GLOBALS['t']['email not valid'] = 'Email is not valid';
++$GLOBALS['t']['other too big'] = 'Other informations about the user are to big';
++$GLOBALS['t']['language not valid'] = 'Language is not valid';
++$GLOBALS['t']['template not valid'] = 'Template is not valid';
+ 
+ // PASSWORD FORM
+ $GLOBALS['t']['password_old'] = 'Current password';
+@@ -24,7 +28,9 @@
+ $GLOBALS['t']['password_new_confirm'] = 'Confirm new password';
+ 
+ // PASSWORD FORM RULES
++$GLOBALS['t']['passwords dont match'] = 'Passwords do not match';
+ $GLOBALS['t']['passwords too big'] = 'There is at least one password too big';
++$GLOBALS['t']['passwords not alphanumeric'] = 'All passwords must be alphanumeric';
+ 
+ // OTHER
+ $GLOBALS['t']['passwords'] = 'Passwords';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php	2006-04-23 00:06:24 UTC (rev 1865)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php	2006-04-23 00:10:19 UTC (rev 1866)
+@@ -16,7 +16,11 @@
+ $GLOBALS['t']['created_date'] = 'Criado em';
+ 
+ // USER FORM RULES
+-$GLOBALS['t']['passwords dont match'] = 'As passwords n&atilde;o s&atilde;o iguais';
++$GLOBALS['t']['name too big'] = 'O nome &eacute; demasiado grande';
++$GLOBALS['t']['email not valid'] = 'O email n&atilde;o &eacute; v&aacute;lido';
++$GLOBALS['t']['other too big'] = 'As informa&ccedil;&otilde;es adicionais s&atilde;o demasiado grandes';
++$GLOBALS['t']['language not valid'] = 'O idioma n&atilde;o &eacute; v&aacute;lido';
++$GLOBALS['t']['template not valid'] = 'O template n&atilde;o &eacute; v&aacute;lido';
+ 
+ // PASSWORD FORM
+ $GLOBALS['t']['password_old'] = 'Password actual';
+@@ -24,7 +28,9 @@
+ $GLOBALS['t']['password_new_confirm'] = 'Confirme a nova password';
+ 
+ // PASSWORD FORM RULES
++$GLOBALS['t']['passwords dont match'] = 'As passwords n&atilde;o s&atilde;o iguais';
+ $GLOBALS['t']['passwords too big'] = 'Existe pelo menos uma password demasiado grande';
++$GLOBALS['t']['passwords not alphanumeric'] = 'As password t&ecirc;em de ser alfanum&eacute;ricas';
+ 
+ // OTHER
+ $GLOBALS['t']['passwords'] = 'Passwords';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000309.html">[ydf-devel] r1865 - YDFramework2.0/trunk/YDFramework2/addons/YDCMTemplates
+</A></li>
+	<LI>Next message: <A HREF="000311.html">[ydf-devel] r1867 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages addons/YDCMUsers addons/YDCMUsers/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#310">[ date ]</a>
+              <a href="thread.html#310">[ thread ]</a>
+              <a href="subject.html#310">[ subject ]</a>
+              <a href="author.html#310">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

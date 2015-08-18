@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2127 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2127%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormRenderers&In-Reply-To=%3C200609131525.k8DFPKnW000338%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000645.html">
+   <LINK REL="Next"  HREF="000647.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2127 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2127%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormRenderers&In-Reply-To=%3C200609131525.k8DFPKnW000338%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2127 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Sep 13 17:25:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000645.html">[ydf-devel] r2126 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000647.html">[ydf-devel] r2128 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#646">[ date ]</a>
+              <a href="thread.html#646">[ thread ]</a>
+              <a href="subject.html#646">[ subject ]</a>
+              <a href="author.html#646">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-13 17:25:19 +0200 (Wed, 13 Sep 2006)
+New Revision: 2127
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php
+Log:
+Added support for form legends and fieldsets.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-13 11:35:56 UTC (rev 2126)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-13 15:25:19 UTC (rev 2127)
+@@ -63,6 +63,7 @@
+             $this-&gt;_action = empty( $action ) ? $_SERVER['REQUEST_URI'] : $action;
+             $this-&gt;_target = empty( $target ) ? '_self' : $target;
+             $this-&gt;_attributes = $attributes;
++            $this-&gt;_legend = null;
+ 
+             // The list of known elements, rules, filters and validators
+             $this-&gt;_regElements = array();
+@@ -192,6 +193,15 @@
+         }
+ 
+         /**
++         *  This function sets the legend for a form. This will generate a fieldset tag and legend tag in the HTML.
++         *
++         *  @param  $legend     The legend to set for the field.
++         */
++        function setLegend( $legend ) {
++            $this-&gt;_legend = $legend;
++        }
++
++        /**
+          *  This function will set the HTML that is added before and after the element
+          *  label to indicate that the element is required. This only has affect if
+          *  you use the default toHtml function.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2006-09-13 11:35:56 UTC (rev 2126)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2006-09-13 15:25:19 UTC (rev 2127)
+@@ -72,7 +72,18 @@
+             $form['requirednote'] = $this-&gt;_form-&gt;_requiredNote;
+             $form['endtag'] = '&lt;/form&gt;';
+             $form['name']   = $this-&gt;_form-&gt;_name;
+-            
++
++            // Add the fieldset and legend tag if any
++            if ( ! empty( $this-&gt;_form-&gt;_legend ) ) {
++
++                // Add it to the start tag
++                $form['tag'] .= '&lt;fieldset&gt;&lt;legend&gt;' . $this-&gt;_form-&gt;_legend . '&lt;/legend&gt;';
++
++                // Add it to the end tag
++                $form['endtag'] = '&lt;/fieldset&gt;' . $form['endtag'];
++
++            }
++
+             // Add the errors
+             $form['errors'] = $this-&gt;_form-&gt;_errors;
+             $form['errors_unique_messages' ] = array_unique( array_values( $this-&gt;_form-&gt;_errors ) );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2006-09-13 11:35:56 UTC (rev 2126)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2006-09-13 15:25:19 UTC (rev 2127)
+@@ -58,12 +58,15 @@
+ 
+             // Start with the form element
+             $html = $form['tag'] . YD_CRLF;
+-            
++
+             // Add form errors if any
+             if ( isset( $form['errors']['__ALL__'] ) ) {
+                 $html .= '&lt;p&gt;' . $this-&gt;_form-&gt;_htmlErrorStart . $form['errors']['__ALL__'] . $this-&gt;_form-&gt;_htmlErrorEnd . '&lt;/p&gt;' . YD_CRLF;
+             }
+ 
++            // Store the HTML end
++            $html_end = $form['endtag'];
++
+             // Remove some things from the array
+             unset( $form['attribs'] );
+             unset( $form['tag'] );
+@@ -71,7 +74,8 @@
+             unset( $form['errors'] );
+             unset( $form['errors_unique_messages'] );
+             unset( $form['requirednote'] );
+-            
++
++            // Remove the form name
+             if ( ! is_array( $form['name'] ) ) {
+                 unset( $form['name'] );
+             }
+@@ -133,7 +137,7 @@
+             }
+ 
+             // Close the form tag
+-            $html .= '&lt;/form&gt;';
++            $html .= $html_end;
+ 
+             // Return the HTML
+             return $html;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php	2006-09-13 11:35:56 UTC (rev 2126)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php	2006-09-13 15:25:19 UTC (rev 2127)
+@@ -60,7 +60,8 @@
+             $xml['form'][0]['@']['method'] = $this-&gt;_form-&gt;_method;
+             $xml['form'][0]['@']['action'] = $this-&gt;_form-&gt;_action;
+             $xml['form'][0]['@']['target'] = $this-&gt;_form-&gt;_target;
+-            
++            $xml['form'][0]['@']['legend'] = $this-&gt;_form-&gt;_legend;
++
+             $form = &amp; $xml['form'][0]['#'];
+             $attr = &amp; $form['attributes'][0]['#'];
+             $elem = &amp; $form['elements'][0]['#'];
+@@ -351,7 +352,8 @@
+             $f_method = $arr['form'][0]['@']['method'];
+             $f_action = $arr['form'][0]['@']['action'];
+             $f_target = $arr['form'][0]['@']['target'];
+-            
++            $f_legend = $arr['form'][0]['@']['legend'];
++
+             // References
+             $form = &amp; $arr['form'][0]['#'];
+             $attr = &amp; $form['attributes'][0]['#'];
+@@ -377,7 +379,7 @@
+             
+             // YDForm object
+             $f = new $class( $f_name, $f_method, $f_action, $f_target, $f_attr );
+-            
++            $f-&gt;setLegend( $f_legend );
+            
+             // Elements
+             if ( is_array( $elem ) ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000645.html">[ydf-devel] r2126 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000647.html">[ydf-devel] r2128 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#646">[ date ]</a>
+              <a href="thread.html#646">[ thread ]</a>
+              <a href="subject.html#646">[ subject ]</a>
+              <a href="author.html#646">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

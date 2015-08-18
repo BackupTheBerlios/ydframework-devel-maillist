@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2480 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2480%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200709101636.l8AGaoqO000057%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001073.html">
+   <LINK REL="Next"  HREF="001075.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2480 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2480%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200709101636.l8AGaoqO000057%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2480 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Sep 10 18:36:50 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001073.html">[ydf-devel] r2479 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001075.html">[ydf-devel] r2481 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1074">[ date ]</a>
+              <a href="thread.html#1074">[ thread ]</a>
+              <a href="subject.html#1074">[ subject ]</a>
+              <a href="author.html#1074">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-09-10 18:36:36 +0200 (Mon, 10 Sep 2007)
+New Revision: 2480
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+Log:
+on checkboxgroup:
+ - NEW: 'select all' string can be translated
+ - NEW: it's possible to use a string in setValue() (usefull when you use strings as options keys)
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-09-10 16:33:04 UTC (rev 2479)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-09-10 16:36:36 UTC (rev 2480)
+@@ -34,6 +34,9 @@
+     include_once( YD_DIR_HOME_CLS . '/YDForm.php');
+     include_once( YD_DIR_HOME_CLS . '/YDFormElements/YDFormElement_Checkbox.php');
+ 
++    // Custom selectall name
++    YDConfig::set( 'YD_FORMELEMENT_CHKGROUP_SELALL', null, false ); 
++
+     /**
+      *	This is the class that define a checkbox form element.
+      *
+@@ -142,7 +145,9 @@
+                         $this-&gt;_items[$k]-&gt;setValue( $v );
+                     }
+                 }
+-            }
++            }elseif( isset( $this-&gt;_items[ strval( $val ) ] ) ){
++				$this-&gt;_items[ strval( $val ) ]-&gt;setValue( 1 );
++			}
+         }
+ 
+ 
+@@ -273,12 +278,15 @@
+ 				foreach( $this-&gt;getValue() as $elem =&gt; $value )
+ 					if ( $value != 1 ){ $selall-&gt;setValue(0); break; }
+ 
+-				// check default translation
+-				if( !isset( $GLOBALS['t']['select all'] ) ) $GLOBALS['t']['select all'] = 'select all';
+-
++				// get global 'select all' parameter
++				$selall_label = YDConfig::get( 'YD_FORMELEMENT_CHKGROUP_SELALL' );
++				if( is_null( $selall_label ) ){
++					$selall_label = t( 'select all' );
++				}
++	
+ 				// compute button label
+-				if ( $this-&gt;_position == 'right' ) $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;' . $selall-&gt;toHTML() . '&nbsp;&lt;label for=&quot;' . $selall-&gt;getAttribute( 'id' ) . '&quot;&gt;' . t( 'select all' ) . '&lt;/label&gt;&lt;/span&gt;';
+-				else                               $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;&lt;label for=&quot;' . $selall-&gt;getAttribute( 'id' ) . '&quot;&gt;' . t( 'select all' ) . '&lt;/label&gt;&nbsp;' . $selall-&gt;toHTML() . '&lt;/span&gt;';
++				if ( $this-&gt;_position == 'right' ) $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;' . $selall-&gt;toHTML() . '&nbsp;&lt;label for=&quot;' . $selall-&gt;getAttribute( 'id' ) . '&quot;&gt;' . $selall_label . '&lt;/label&gt;&lt;/span&gt;';
++				else                               $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;&lt;label for=&quot;' . $selall-&gt;getAttribute( 'id' ) . '&quot;&gt;' . $selall_label . '&lt;/label&gt;&nbsp;' . $selall-&gt;toHTML() . '&lt;/span&gt;';
+ 			}
+ 
+ 			// check if we don't want columns format
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001073.html">[ydf-devel] r2479 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001075.html">[ydf-devel] r2481 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1074">[ date ]</a>
+              <a href="thread.html#1074">[ thread ]</a>
+              <a href="subject.html#1074">[ subject ]</a>
+              <a href="author.html#1074">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

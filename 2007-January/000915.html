@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2322 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2322%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses&In-Reply-To=%3C200701181512.l0IFCZ2T013141%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000914.html">
+   <LINK REL="Next"  HREF="000916.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2322 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2322%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses&In-Reply-To=%3C200701181512.l0IFCZ2T013141%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2322 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Jan 18 16:12:35 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000914.html">[ydf-devel] r2321 - YDFramework2.0/trunk/examples
+</A></li>
+        <LI>Next message: <A HREF="000916.html">[ydf-devel] r2323 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#915">[ date ]</a>
+              <a href="thread.html#915">[ thread ]</a>
+              <a href="subject.html#915">[ subject ]</a>
+              <a href="author.html#915">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-18 16:12:34 +0100 (Thu, 18 Jan 2007)
+New Revision: 2322
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+Added a rudimentary timesince function to YDStringUtil.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-18 11:27:19 UTC (rev 2321)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-18 15:12:34 UTC (rev 2322)
+@@ -81,6 +81,7 @@
+                 $this-&gt;register_modifier( 'dump', 'YDTemplate_modifier_dump' );
+                 $this-&gt;register_modifier( 'bbcode', 'YDTemplate_modifier_bbcode' );
+                 $this-&gt;register_modifier( 'absoluteurl', 'YDTemplate_modifier_absoluteurl' );
++                $this-&gt;register_modifier( 'timesince', 'YDTemplate_modifier_timesince' );
+ 
+                 // Register the custom functions
+                 $this-&gt;register_function( 't', 'YDTemplate_function_t' );
+@@ -652,4 +653,13 @@
+         return;
+     }
+ 
++    /*
++     *	This template modifier will dump the contents of the variable using var_dump.
++     *
++     *  @param  $obj    The object to dump.
++     */
++    function YDTemplate_modifier_timesince( $obj ) {
++        return YDStringUtil::timesince( $obj );
++    }
++
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-18 11:27:19 UTC (rev 2321)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-18 15:12:34 UTC (rev 2322)
+@@ -989,6 +989,59 @@
+             }
+         }
+ 
++        /**
++         *  Show the time that has elapsed since a given time.
++         *
++         *  @param  $time   The time in seconds
++         *
++         *  @returns    The elapsed time
++         */
++        function timesince( $time ) {
++
++            // Convert to integer
++            if ( is_string( $time ) &amp;&amp; is_numeric( $time ) ) {
++                $time = intval( $time );
++            }
++
++            // Array of time period chunks
++            $chunks = array(
++                array( 60 * 60 * 24 * 365 , t('years') ),
++                array( 60 * 60 * 24 * 30 , t('months') ),
++                array( 60 * 60 * 24 * 7, t('weeks') ),
++                array( 60 * 60 * 24 , t('days') ),
++                array( 60 * 60 , t('hours') ),
++                array( 60 , t('minutes') ),
++            );
++
++            // Difference in seconds
++            $since = time() - $time;
++
++            // The first chunk
++            for ( $i = 0, $j = sizeof( $chunks ); $i &lt; $j; $i++ ) {
++                $seconds = $chunks[$i][0];
++                $name = $chunks[$i][1];
++                if ( ( $count = floor( $since / $seconds ) ) != 0 ) {
++                    break;
++                }
++            }
++
++            // Set output var
++            $output = ( $count == 1 ) ? '1 '.$name : $count . ' ' . $name;
++
++            // step two: the second chunk
++            if ( $i + 1 &lt; $j ) {
++                $seconds2 = $chunks[$i + 1][0];
++                $name2 = $chunks[$i + 1][1];
++                if ( ( $count2 = floor( ( $since - ( $seconds * $count ) ) / $seconds2 ) ) != 0 ) {
++                    $output .= ($count2 == 1) ? ', 1 '.$name2 : &quot;, $count2 {$name2}s&quot;;
++                }
++            }
++
++            // Return the output
++            return $output . ' ' . t('ago');
++
++        }
++
+     }
+ 
+     /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-18 11:27:19 UTC (rev 2321)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-18 15:12:34 UTC (rev 2322)
+@@ -185,6 +185,17 @@
+         'trk' =&gt; array( 'turkish', 'tr' ),
+     );
+ 
++    // Default translations
++    $GLOBALS['t'] = array(
++        'years' =&gt; 'years',
++        'months' =&gt; 'months',
++        'weeks' =&gt; 'weeks',
++        'days' =&gt; 'days',
++        'hours' =&gt; 'hours',
++        'minutes' =&gt; 'minutes',
++        'ago' =&gt; 'ago',
++    );
++
+     /**
+      *	This function will include a file from the filesystem. It works similar to the require_once function but it
+      *	knows about the include path for the Yellow Duck Framework.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000914.html">[ydf-devel] r2321 - YDFramework2.0/trunk/examples
+</A></li>
+	<LI>Next message: <A HREF="000916.html">[ydf-devel] r2323 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#915">[ date ]</a>
+              <a href="thread.html#915">[ thread ]</a>
+              <a href="subject.html#915">[ subject ]</a>
+              <a href="author.html#915">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2052 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog/include examples/weblog/include/languages	examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2052%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples/weblog/include%20examples/weblog/include/languages%0A%09examples/weblog/manage&In-Reply-To=%3C200608301439.k7UEdwr9002513%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000562.html">
+   <LINK REL="Next"  HREF="000564.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2052 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog/include examples/weblog/include/languages	examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2052%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples/weblog/include%20examples/weblog/include/languages%0A%09examples/weblog/manage&In-Reply-To=%3C200608301439.k7UEdwr9002513%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2052 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog/include examples/weblog/include/languages	examples/weblog/manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 30 16:39:58 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000562.html">[ydf-devel] r2051 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000564.html">[ydf-devel] r2053 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#563">[ date ]</a>
+              <a href="thread.html#563">[ thread ]</a>
+              <a href="subject.html#563">[ subject ]</a>
+              <a href="author.html#563">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-30 16:39:46 +0200 (Wed, 30 Aug 2006)
+New Revision: 2052
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/manage.css
+Log:
+Added support for blocking IP addresses.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -813,6 +813,58 @@
+             return ( substr( $string, -strlen( $substring ) ) == $substring );
+         }
+ 
++        /**
++         *  This function is an fnmatch replacement.
++         *
++         *  $param $string      The string to test
++         *  $param $pattern     The pattern to match
++         *
++         *  @returns    Boolean indicating if the string matches the pattern or not.
++         */
++        function match( $string, $pattern ) {
++            for ( $op = 0, $npattern = '', $n = 0, $l = strlen( $pattern ); $n &lt; $l; $n++ ) {
++            switch ($c = $pattern[$n]) {
++                case '\\':
++                    $npattern .= '\\' . @$pattern[++$n];
++                    break;
++                case '.':
++                case '+':
++                case '^':
++                case '$':
++                case '(':
++                case ')':
++                case '{':
++                case '}':
++                case '=':
++                case '!':
++                case '&lt;':
++                case '&gt;':
++                case '|':
++                    $npattern .= '\\' . $c;
++                    break;
++                case '?': case '*':
++                    $npattern .= '.' . $c;
++                    break;
++                case '[':
++                case ']':
++                default:
++                    $npattern .= $c;
++                    if ($c == '[') {
++                        $op++;
++                    } else if ($c == ']') {
++                        if ($op == 0) return false;
++                            $op--;
++                        }
++                        break;
++                    }
++            }
++            if ( $op != 0 ) {
++                return false;
++            } else {
++                return preg_match( '/' . $npattern . '/i', $string );
++            }
++        }
++
+     }
+ 
+     /**
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -95,6 +95,16 @@
+ 
+     }
+ 
++    // Function to format a string with list values
++    function YDFormatStringWithListValues( $string ) {
++        $string = str_replace( ';', ',', $string );
++        $string = explode( ',', $string );
++        foreach ( $string as $k=&gt;$v ) {
++            $string[$k] = trim( $v );
++        }
++        return implode( ', ', $string );
++    }
++
+     // Class defining our weblog API
+     class YDWeblogAPI extends YDBase {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -53,6 +53,17 @@
+     YDInclude( dirname( __FILE__ ) . '/exifer/exif.php' );
+     YDInclude( YD_DIR_HOME . '/3rdparty/smarty/libs/plugins/modifier.truncate.php' );
+ 
++    // Check for blocked IP addresses
++    $blocked_ips = YDConfig::get( 'blocked_ips', '' );
++    $blocked_ips = explode( ', ', YDFormatStringWithListValues( $blocked_ips ) );
++
++    // Check if the current IP address is blocked or not
++    foreach ( $blocked_ips as $ip ) {
++        if ( YDStringUtil::match( $_SERVER['REMOTE_ADDR'], $ip ) ) {
++            die( 'IP address ' . $_SERVER['REMOTE_ADDR'] . ' is blocked.' );
++        }
++    }
++
+     // Check if the user wanted to use caching
+     if ( YDConfig::get( 'use_cache', false ) ) {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -293,6 +293,7 @@
+ $GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
+ $GLOBALS['t']['cfg_keep_stats'] = 'Track statistics';
+ $GLOBALS['t']['cfg_use_auto_update'] = 'Enable Auto Update';
++$GLOBALS['t']['cfg_blocked_ips'] = 'Blocked IP addresses separated by comma\'s. An asterix can be used as a wildcard.';
+ 
+ // manage/item.tpl
+ $GLOBALS['t']['item_title'] = 'Item Title';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -293,6 +293,7 @@
+ $GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
+ $GLOBALS['t']['cfg_keep_stats'] = 'Houdt statistieken bij';
+ $GLOBALS['t']['cfg_use_auto_update'] = 'Activeer Auto Update';
++$GLOBALS['t']['cfg_blocked_ips'] = 'Geblokkeerde IP adressen gescheiden door comma\'s. Je kan een sterretje gebruiken als wildcard.';
+ 
+ // manage/item.tpl
+ $GLOBALS['t']['item_title'] = 'Item Titel';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -38,6 +38,7 @@
+ 
+         {literal}tinyMCE.init({
+             mode : &quot;textareas&quot;,
++            editor_deselector : &quot;tfMNoMCE&quot;,
+             theme : &quot;advanced&quot;,
+             language: &quot;{/literal}{$weblog_language}{literal}&quot;,
+             plugins : &quot;imgselector,fullscreen&quot;,
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -98,6 +98,8 @@
+             $form-&gt;addElement( 'text', 'auto_close_items', t( 'cfg_auto_close_items' ), array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'checkbox', 'dflt_is_draft', t( 'is_draft' ), array( 'style' =&gt; 'border: none;' ) );
+ 
++            $form-&gt;addElement( 'textarea', 'blocked_ips', t( 'cfg_blocked_ips' ), array( 'class' =&gt; 'tfMNoMCE' ) );
++
+             $form-&gt;addElement( 'submit', '_cmdSubmit', t('OK'), array( 'class' =&gt; 'button' ) );
+ 
+             // Set the defaults
+@@ -126,6 +128,9 @@
+                 // Get the form values
+                 $values = $form-&gt;getValues();
+ 
++                // Format the list of blocked IP numbers
++                $values['blocked_ips'] = YDFormatStringWithListValues( $values['blocked_ips'] );
++
+                 // Save the config
+                 YDWeblogSaveConfig( $values );
+ 
+@@ -171,6 +176,7 @@
+             $config['auto_close_items']     = YDConfig::get( 'auto_close_items',     '' );
+             $config['dflt_allow_comments']  = YDConfig::get( 'dflt_allow_comments',  true );
+             $config['dflt_is_draft']        = YDConfig::get( 'dflt_is_draft',        false );
++            $config['blocked_ips']          = YDConfig::get( 'blocked_ips',          YDFormatStringWithListValues( '' ) );
+ 
+             // Return the configuration
+             return $config;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -141,6 +141,16 @@
+             &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$config.max_syndicated_items}&lt;/td&gt;
+         &lt;/tr&gt;
+     &lt;/table&gt;
++    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;cfg_spam_protection&quot;}&lt;/th&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;cfg_blocked_ips&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$config.blocked_ips|default:'-'|replace:', ':'&lt;br/&gt;'}&lt;/td&gt;
++        &lt;/tr&gt;
++    &lt;/table&gt;
+     &lt;p&gt;&lt;input type=&quot;button&quot; class=&quot;button&quot; onClick=&quot;window.location='{$YD_SELF_SCRIPT}?do=edit';&quot; value=&quot;{t w=&quot;change_config&quot;}&quot; /&gt;
+ {/if}
+ 
+@@ -271,6 +281,16 @@
+                 &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$form.max_syndicated_items.html}&lt;/td&gt;
+             &lt;/tr&gt;
+         &lt;/table&gt;
++        &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++            &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;cfg_spam_protection&quot;}&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{$form.blocked_ips.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$form.blocked_ips.html}&lt;/td&gt;
++            &lt;/tr&gt;
++        &lt;/table&gt;
+         &lt;p&gt;{$form._cmdSubmit.html}&lt;/p&gt;
+     {$form.endtag}
+ {/if}
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/manage.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-08-30 13:20:45 UTC (rev 2051)
++++ YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-08-30 14:39:46 UTC (rev 2052)
+@@ -90,6 +90,11 @@
+     line-height: 14pt;
+ }
+ 
++textarea.tfMNoMce {
++    width: 400px;
++    height: 100px;
++}
++
+ td.bbtoolbar {
+ 	background: url(images/nav-bg-editor.gif);
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000562.html">[ydf-devel] r2051 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000564.html">[ydf-devel] r2053 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#563">[ date ]</a>
+              <a href="thread.html#563">[ thread ]</a>
+              <a href="subject.html#563">[ subject ]</a>
+              <a href="author.html#563">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1999 - in	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent: .	languages/YDCMUsers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1999%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent%3A%20.%0A%09languages/YDCMUsers&In-Reply-To=%3C200608111341.k7BDfLwU004364%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000505.html">
+   <LINK REL="Next"  HREF="000507.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1999 - in	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent: .	languages/YDCMUsers</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1999%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent%3A%20.%0A%09languages/YDCMUsers&In-Reply-To=%3C200608111341.k7BDfLwU004364%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1999 - in	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent: .	languages/YDCMUsers">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Aug 11 15:41:21 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000505.html">[ydf-devel] r1998 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000507.html">[ydf-devel] r2000 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#506">[ date ]</a>
+              <a href="thread.html#506">[ thread ]</a>
+              <a href="subject.html#506">[ subject ]</a>
+              <a href="author.html#506">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-11 15:40:56 +0200 (Fri, 11 Aug 2006)
+New Revision: 1999
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php
+Log:
+on YDCM user management it's possible to delete a user and all permissions associated with
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-11 13:38:51 UTC (rev 1998)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-11 13:40:56 UTC (rev 1999)
+@@ -78,6 +78,22 @@
+ 
+ 
+         /**
++         *  This function return an array of permissions
++         *
++         *  @param     $user_id   User id (or Array of ids ) to delete
++         */
++		function deletePermissions( $user_id ){
++
++			if ( !is_array( $user_id ) ) $user_id = array( $user_id );
++
++			$this-&gt;resetValues();
++			$this-&gt;where( 'user_id IN (&quot;' . implode( '&quot;,&quot;', $user_id ) . '&quot;)' );
++
++			return $this-&gt;delete();
++		}
++
++
++        /**
+          *  This function assigns an array of permissions to a user
+          *
+          *  @param     $user_id     User id to get permissions
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-11 13:38:51 UTC (rev 1998)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-11 13:40:56 UTC (rev 1999)
+@@ -308,8 +308,28 @@
+ 			return false;
+ 		}
+ 
++
++        /**
++         *  This function deletes a user (and all children) or just the children
++         *
++         *  @param $user_id        User id
++         *  @param $includeParent  (Optional) Delete user id and children (false means delete children only)
++         *
++         *  @returns    true if updated, array with form errors otherwise
++         */
++		function deleteUser( $user_id, $includeParent = true ){
+ 		
++			// get ids to delete
++			$ids = $this-&gt;tree-&gt;getDescendants( intval( $user_id ), $includeParent, false, null, null, 'user_id' );
+ 
++			// delete all permissions of this users
++			$this-&gt;perm-&gt;deletePermissions( $ids );
++
++			// delete node from users table
++			$this-&gt;tree-&gt;deleteNode( $user_id, $includeParent );
++		}
++
++
+         /**
+          *  This function adds form elements for user detail management
+ 		 *
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php	2006-08-11 13:38:51 UTC (rev 1998)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php	2006-08-11 13:40:56 UTC (rev 1999)
+@@ -46,5 +46,7 @@
+ $GLOBALS['t']['user details updated'] = 'User details updated';
+ $GLOBALS['t']['password not updated'] = 'Password was not updated';
+ $GLOBALS['t']['user not updated'] = 'User was not updated';
++$GLOBALS['t']['administrator and children'] = 'Administrator and children';
++$GLOBALS['t']['children only'] = 'Children only';
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php	2006-08-11 13:38:51 UTC (rev 1998)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php	2006-08-11 13:40:56 UTC (rev 1999)
+@@ -46,5 +46,8 @@
+ $GLOBALS['t']['user details updated'] = 'Informa&ccedil;&otilde;es do utilizador actualizadas';
+ $GLOBALS['t']['password not updated'] = 'A password n&atilde;o foi actualizada';
+ $GLOBALS['t']['user not updated'] = 'O utilizador n&atilde;o foi actualizado';
++$GLOBALS['t']['administrator and children'] = 'Administrador e sub-administratores';
++$GLOBALS['t']['children only'] = 'Apenas sub-administratores';
+ 
++
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000505.html">[ydf-devel] r1998 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000507.html">[ydf-devel] r2000 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#506">[ date ]</a>
+              <a href="thread.html#506">[ thread ]</a>
+              <a href="subject.html#506">[ subject ]</a>
+              <a href="author.html#506">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

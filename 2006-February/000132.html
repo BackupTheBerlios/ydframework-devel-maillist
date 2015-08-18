@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1719 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1719%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602221345.k1MDjVDA003799%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000131.html">
+   <LINK REL="Next"  HREF="000133.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1719 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1719%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602221345.k1MDjVDA003799%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1719 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Feb 22 14:45:31 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000131.html">[ydf-devel] r1718 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDFeedCreator
+</A></li>
+        <LI>Next message: <A HREF="000133.html">[ydf-devel] r1720 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#132">[ date ]</a>
+              <a href="thread.html#132">[ thread ]</a>
+              <a href="subject.html#132">[ subject ]</a>
+              <a href="author.html#132">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-22 14:45:04 +0100 (Wed, 22 Feb 2006)
+New Revision: 1719
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+Added the YDLdapUtil class.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-22 13:30:16 UTC (rev 1718)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-22 13:45:04 UTC (rev 1719)
+@@ -987,7 +987,54 @@
+             );
+          }
+ 
++    }
+ 
++    /**
++     *  This class allows you to perform LDAP releated tasks.
++     */
++    class YDLdapUtil extends YDBase {
++
++        /**
++         *  Authenticate against a domain.
++         *
++         *  @param  $server     The name of the domain controller.
++         *  @param  $domain     The name of the domain.
++         *  @param  $user       The username.
++         *  @param  $password   The password.
++         *
++         *  @returns    A boolean indicating if the user was authenticated or not.
++         */
++        function authenticate( $server, $domain, $user, $password ) {
++
++            // Connect to the LDAP server
++            $conn = ldap_connect( $server );
++
++            // Setup the options
++            ldap_set_option( $conn, LDAP_OPT_PROTOCOL_VERSION, 3 );
++            ldap_set_option( $conn, LDAP_OPT_REFERRALS, 0 );
++
++            // Require a username
++            if ( empty( $user ) || empty( $pass ) ) {
++                return false;
++            }
++
++            // Fix the username
++            $user = strtolower( trim( $user ) );
++            if ( strpos( $user, '\\' ) ) {
++                $user = substr( $user, strpos( $user, '\\' ) + 1 );
++            }
++
++            // Authenticate
++            $result = @ldap_bind( $conn, $user . '@' . $server, $password );
++
++            // Close the connection
++            ldap_close( $conn );
++
++            // Return the result
++            return ( $result ) ? true : false;
++
++        }
++
+     }
+ 
+ ?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000131.html">[ydf-devel] r1718 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDFeedCreator
+</A></li>
+	<LI>Next message: <A HREF="000133.html">[ydf-devel] r1720 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#132">[ date ]</a>
+              <a href="thread.html#132">[ thread ]</a>
+              <a href="subject.html#132">[ subject ]</a>
+              <a href="author.html#132">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

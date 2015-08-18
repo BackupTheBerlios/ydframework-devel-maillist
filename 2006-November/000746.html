@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Adding ajax grid support to YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Adding%20ajax%20grid%20support%20to%20YDDatabaseObject&In-Reply-To=%3C20061109142416.27647.qmail%40web54004.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000743.html">
+   <LINK REL="Next"  HREF="000747.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Adding ajax grid support to YDDatabaseObject</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Adding%20ajax%20grid%20support%20to%20YDDatabaseObject&In-Reply-To=%3C20061109142416.27647.qmail%40web54004.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Adding ajax grid support to YDDatabaseObject">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Thu Nov  9 15:24:16 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000743.html">[ydf-devel] YDDatabaseTree2 :)
+</A></li>
+        <LI>Next message: <A HREF="000747.html">[ydf-devel] r2197 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#746">[ date ]</a>
+              <a href="thread.html#746">[ thread ]</a>
+              <a href="subject.html#746">[ subject ]</a>
+              <a href="author.html#746">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Hi all,
+
+I am proposing to add basic ajax grids support. The rationale is to useYDDatabaseObject to provide direct access to the database data beneaththe grid in a convenient form rather than working with intermediatearrays.
+
+This is the approach that I am working on:
+  
+   new methods are being added to YDDatabaseObject, since thiswill allow existing code to more readily use grids
+      
+   rendering of the grid is derived from YDDatabaseObject limit,offset and other criteria  
+   database columns to be included in the grid are registered.This is achieved by calling a method with similar parameters toYDForm::addElement that defined the characteristics of the underlyingform elements that will edit individual cells. This is how this looks:
+    
+              // define defaults for the grid cells 
+            $this-&gt;setGridCellTemplate( 'id', 'hidden' );
+            $this-&gt;setGridCellTemplate( 'name', 'text', 'Name' );
+            $this-&gt;setGridCellTemplate( 'email', 'text', 'E-mail' );
+            $this-&gt;setGridCellTemplate( 'country', 'select','Country', array(), array( 1 =&gt; 'Brazil', 2=&gt;'Columbia',3=&gt;'Australia' ) );
+            $this-&gt;setGridCellTemplate( 'birthday', 'dateselect','Birthday' );
+      
+   the user will interact with the grid by clicking on a cell toactivate editing of the cell. When the focus of the cell is lost, thechanged cell will be saved. I will need to see how well this will workin practice. &quot;span&quot; form elements are used for non-interactive formelements
+      
+   it should provide automatic support for paging through thedata by setting up the events and methods to handle it.
+      
+   it should allow display modifier callbacks to be defined tothat control the rendering of cell contents where the default databaseformat is not suitable, e.g.
+      // defines modifiers that control the display ofspecified fields in the grid
+$this-&gt;registerGridCellDisplayModifier( 'birthday','modifierFormatDate' );
+          
+   default event processing will be automatically setup for thegrid  
+   grid should support YDForm rules  
+   grid should support filtering (this will use YDDatabaseObjectcriteria)  
+   grid should support sorting by one or more fields
+      
+   the grid is rendered by specifying the set of pre-definedgrid cells that should be included in the rendering, e.g.
+      $this-&gt;template-&gt;assign( 'grid',$user-&gt;getGrid( array( 'id', 'name', 'email', 'country', 'birthday') ) );
+          
+   the grid should provide a mechanism for inserting new rows(popup a modal form or edit in row) and deleting rows
+  
+So far I have setup and basic rendering of the grid implemented. Mynext step is to work on the ajax event setup and processing for cellediting.
+
+Does this seem a sensible way to go about it? Any suggestions?
+
+Thanks,
+
+Graeme
+
+ 
+---------------------------------
+Everyone is raving about the all-new Yahoo! Mail beta.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061109/b4c3e1ee/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061109/b4c3e1ee/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000743.html">[ydf-devel] YDDatabaseTree2 :)
+</A></li>
+	<LI>Next message: <A HREF="000747.html">[ydf-devel] r2197 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#746">[ date ]</a>
+              <a href="thread.html#746">[ thread ]</a>
+              <a href="subject.html#746">[ subject ]</a>
+              <a href="author.html#746">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

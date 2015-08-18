@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1929 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1929%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk&In-Reply-To=%3C200605151501.k4FF17Wv027408%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000398.html">
+   <LINK REL="Next"  HREF="000400.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1929 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1929%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk&In-Reply-To=%3C200605151501.k4FF17Wv027408%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1929 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk">ximian at berlios.de
+       </A><BR>
+    <I>Mon May 15 17:01:07 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000398.html">[ydf-devel] r1928 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000400.html">[ydf-devel] r1930 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#399">[ date ]</a>
+              <a href="thread.html#399">[ thread ]</a>
+              <a href="subject.html#399">[ subject ]</a>
+              <a href="author.html#399">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-15 17:00:40 +0200 (Mon, 15 May 2006)
+New Revision: 1929
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php
+Log:
+updated helpdesk component and added new method to get a recordset of posts
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php	2006-05-15 14:58:43 UTC (rev 1928)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php	2006-05-15 15:00:40 UTC (rev 1929)
+@@ -28,7 +28,11 @@
+ 
+ 
+ 	YDInclude( 'YDForm.php' );
++	YDInclude( 'YDCMComponent.php' );
+ 
++	// load master component modules
++	YDCMComponent::module( 'YDCMUsers' );
++
+ 	// add local translation directory
+ 	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
+ 
+@@ -101,30 +105,23 @@
+ 			return $this-&gt;insert();
+ 		}
+ 
+-/*
+-		function deleteHelpdesk( $id ){
+-		
+-			$this-&gt;resetValues();
+-			
+-			$this-&gt;content_id = intval( $id );
+-			
+-			// delete all post that have this parent
+-			$posts = new YDCMHelpdesk_posts();
+-			$posts-&gt;deleteParent( $id );
+-		
+-		}
+-		*/
+     }
+ 
+ 
+ 
+-    class YDCMHelpdesk_posts extends YDCMComponent {
++    class YDCMHelpdesk_posts extends YDDatabaseObject {
+     
+         function YDCMHelpdesk_posts() {
+         
+ 			// init component
+-            $this-&gt;YDCMComponent( 'YDCMHelpdesk_posts', false );
++            $this-&gt;YDDatabaseObject();
+ 
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMHelpdesk_posts' );
++
+ 			// register Key
+ 			$this-&gt;registerKey( 'post_id', true );
+ 
+@@ -132,23 +129,26 @@
+ 			$this-&gt;registerField( 'component_id' );
+ 			$this-&gt;registerField( 'user_id' );
+ 			$this-&gt;registerField( 'subject' );
+-			$this-&gt;registerField( 'localization' );
+ 			$this-&gt;registerField( 'urgency_id' );
+ 			$this-&gt;registerField( 'state_id' );
+ 			$this-&gt;registerField( 'text' );
+-			$this-&gt;registerField( 'created_in' );
+-			$this-&gt;registerField( 'reported_in' );
+-			$this-&gt;registerField( 'reported_by' );
+-			$this-&gt;registerField( 'reported_to_in' );
+-			$this-&gt;registerField( 'reported_to' );
+-			$this-&gt;registerField( 'reported_to_local' );
++			$this-&gt;registerField( 'creation_user' );
++			$this-&gt;registerField( 'creation_date' );
++			$this-&gt;registerField( 'reported_by_user' );
++			$this-&gt;registerField( 'reported_by_type' );
++			$this-&gt;registerField( 'reported_by_local' );
++			$this-&gt;registerField( 'reported_by_date' );
++			$this-&gt;registerField( 'assignedto_user' );
++			$this-&gt;registerField( 'assignedto_type' );
++			$this-&gt;registerField( 'assignedto_local' );
++			$this-&gt;registerField( 'assignedto_date' );
+ 
+ 			// custom relation
+             $rel = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk', false, 'YDCMHelpdesk' );
+ 			$rel-&gt;setLocalKey( 'component_id' );
+             $rel-&gt;setForeignKey( 'component_id' );
+ 
+-            $relUsers = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
++            $relUsers = &amp; $this-&gt;registerRelation( 'users', false, 'YDCMUsers' );
+ 			$relUsers-&gt;setLocalKey( 'user_id' );
+             $relUsers-&gt;setForeignKey( 'user_id' );
+ 
+@@ -164,9 +164,16 @@
+             $relState = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_state', false, 'YDCMHelpdesk_state' );
+ 			$relState-&gt;setLocalKey( 'state_id' );
+             $relState-&gt;setForeignKey( 'state_id' );
++
++            $relAss = &amp; $this-&gt;registerRelation( 'YDCMHelpdesk_type', false, 'YDCMHelpdesk_type' );
++			$relAss-&gt;setLocalKey( 'reported_by_type' );
++            $relAss-&gt;setForeignKey( 'type_id' );
+ 		}
+ 
+ 
++        /**
++         *  This function returns a form for posts
++         */
+ 		function getFormPost(){
+ 		
+ 			// create a form for new posts
+@@ -207,6 +214,13 @@
+ 		}
+ 
+ 
++        /**
++         *  This function adds a new post
++         *
++         *  @param $helpdesk_id  helpdesk id of this post
++         *  @param $user_id  User id
++         *  @param $values  Array of values
++         */
+ 		function addPost( $helpdesk_id, $user_id, $values ){
+ 		
+ 			$this-&gt;resetValues();
+@@ -233,7 +247,12 @@
+ 			return $this-&gt;insert();
+ 		}
+ 		
+-		
++
++        /**
++         *  This function just deletes a post given its id
++         *
++         *  @param $post_id  Post id to delete
++         */
+ 		function deletePost( $post_id ){
+ 		
+ 			$this-&gt;resetValues();
+@@ -244,6 +263,11 @@
+ 		}
+ 
+ 
++        /**
++         *  This function deletes all posts of a helpdesk
++         *
++         *  @param $helpdesk_id  Helpdesk id
++         */
+ 		function deleteAll( $helpdesk_id ){
+ 		
+ 			$this-&gt;resetValues();
+@@ -254,6 +278,11 @@
+ 		}
+ 
+ 
++        /**
++         *  This function deletes all posts using a parent id
++         *
++         *  @param $parent_id  parent id
++         */
+ 		function deleteParent( $parent_id ){
+ 		
+ 			$this-&gt;resetValues();
+@@ -263,18 +292,56 @@
+ 			return $this-&gt;delete();
+ 		}
+ 
+-		
++
++        /**
++         *  This function returns a special recordset with posts
++         *
++         *  @param $field_order  Field to sort
++         *  @param $field_order_direction  Sort direction
++         *  @param $field_page  Page to retrieve
++         */
++		function getRS( $field_order = 'creation_date', $field_order_direction = 'DESC', $field_page = 1 ){
++
++			// delete previous values
++			$this-&gt;resetValues();
++
++			// set current order
++			$this-&gt;order( $this-&gt;getTable() . '.' . $field_order . ' ' . $field_order_direction . ', creation_date DESC' );
++
++			// get only posts with state 1
++			$this-&gt;state_id = 1;
++
++			// get information of users too
++			$this-&gt;find( 'users' );
++
++			// define columns we want
++			$fields = array( 'post_id', 'subject', 'name', 'creation_date' );
++
++			// create a recordset
++			$recordset = new YDRecordSet( $this-&gt;getResultsAsAssocArray( 'post_id', $fields, false, false, false, false ), $field_page, 9 );
++			$recordset-&gt;setFields( $fields );
++			$recordset-&gt;setCurrentField( $field_order );
++
++			return $recordset;
++		}
++
+ 	}
+ 
+ 
+ 
+-    class YDCMHelpdesk_response extends YDCMComponent {
++    class YDCMHelpdesk_response extends YDDatabaseObject {
+     
+         function YDCMHelpdesk_response() {
+         
+ 			// init component
+-            $this-&gt;YDCMComponent( 'YDCMHelpdesk_response', false );
++            $this-&gt;YDDatabaseObject();
+ 
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMHelpdesk_response' );
++
+ 			// register Key
+ 			$this-&gt;registerKey( 'response_id', true );
+ 
+@@ -295,6 +362,7 @@
+ 		}
+ 
+ 
++
+ 		function addResponse( $post_id, $user_id, $message ){
+ 		
+ 			YDInclude( 'YDUtil.php' );
+@@ -316,13 +384,19 @@
+ 
+ 
+ 
+-    class YDCMHelpdesk_urgency extends YDCMComponent {
++    class YDCMHelpdesk_urgency extends YDDatabaseObject {
+     
+         function YDCMHelpdesk_urgency() {
+         
+ 			// init component
+-            $this-&gt;YDCMComponent( 'YDCMHelpdesk_urgency', false );
++            $this-&gt;YDDatabaseObject();
+ 
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMHelpdesk_urgency' );
++
+ 			// register Key
+ 			$this-&gt;registerKey( 'urgency_id', true );
+ 
+@@ -373,13 +447,19 @@
+ 
+ 
+ 
+-    class YDCMHelpdesk_state extends YDCMComponent {
++    class YDCMHelpdesk_state extends YDDatabaseObject {
+     
+         function YDCMHelpdesk_state() {
+         
+ 			// init component
+-            $this-&gt;YDCMComponent( 'YDCMHelpdesk_state', false );
++            $this-&gt;YDDatabaseObject();
+ 
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMHelpdesk_state' );
++
+ 			// register Key
+ 			$this-&gt;registerKey( 'state_id', true );
+ 
+@@ -430,5 +510,29 @@
+ 
+ 
+ 
++    class YDCMHelpdesk_type extends YDDatabaseObject {
++    
++        function YDCMHelpdesk_type() {
++        
++			// init component
++            $this-&gt;YDDatabaseObject();
+ 
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMHelpdesk_type' );
++
++			// register Key
++			$this-&gt;registerKey( 'type_id', true );
++
++			// register custom fields
++			$this-&gt;registerField( 'description' );
++						
++			// custom relations
++		}
++
++	}	
++
++
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000398.html">[ydf-devel] r1928 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000400.html">[ydf-devel] r1930 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#399">[ date ]</a>
+              <a href="thread.html#399">[ thread ]</a>
+              <a href="subject.html#399">[ subject ]</a>
+              <a href="author.html#399">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

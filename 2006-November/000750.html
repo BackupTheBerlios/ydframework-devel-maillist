@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2200 - in	YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . editors
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2200%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDAjax%3A%20.%20editors&In-Reply-To=%3C200611152047.kAFKlaPH011807%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000749.html">
+   <LINK REL="Next"  HREF="000751.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2200 - in	YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . editors</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2200%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDAjax%3A%20.%20editors&In-Reply-To=%3C200611152047.kAFKlaPH011807%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2200 - in	YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . editors">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Nov 15 21:47:36 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000749.html">[ydf-devel] r2199 - YDFramework2.0/trunk/examples/cm
+</A></li>
+        <LI>Next message: <A HREF="000751.html">[ydf-devel] r2201 - in YDFramework2.0/trunk/YDFramework2/addons:	YDAjax YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#750">[ date ]</a>
+              <a href="thread.html#750">[ thread ]</a>
+              <a href="subject.html#750">[ subject ]</a>
+              <a href="author.html#750">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-15 21:47:10 +0100 (Wed, 15 Nov 2006)
+New Revision: 2200
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+on YDAjax:
+  * new feature: support for wysiwyg editors on responses (fckeditor only now)
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-11-14 21:35:42 UTC (rev 2199)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-11-15 20:47:10 UTC (rev 2200)
+@@ -68,7 +68,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '2.84';
++            $this-&gt;_version = '2.9';
+             $this-&gt;_copyright = '(c) Copyright 2002-2006 Francisco Azevedo';
+             $this-&gt;_description = 'This class makes ajax easy for YDF developers';
+ 
+@@ -108,6 +108,10 @@
+ 
+ 			// we are not on response
+ 			$this-&gt;onResponse = false;
++			
++			// init wysiwyg editors
++			$this-&gt;wysiwyg_forms = array();
++			$this-&gt;wysiwyg_ids   = array();
+ 		}
+ 
+ 	
+@@ -404,7 +408,15 @@
+ 		}
+ 
+ 
+-
++        /**
++         *	This method will compute the JS needed to execute the ajax call
++         *
++         *	@param $formElementName		Form element name
++         *	@param $serverFunction		Server function call
++         *	@param $arguments			Arguments that the call will sent
++         *	@param $options				Custom options
++         *	@param $effects				Custom effects
++         */	
+ 		function computeFunction( $formElementName, $serverFunction, $arguments = null, $options = null, $effects = null ){ 
+ 
+ 			// register function in xajax if not on reponse
+@@ -491,8 +503,9 @@
+ 
+ 			return $functionName;
+ 		}
++
+ 		
+-
++		
+         /**
+          *	This method adds an effect to a response
+          *
+@@ -532,7 +545,13 @@
+ 		}
+ 
+ 
+-		// internal method. compute js arguments string 
++        /**
++         *	This method will get function arguments and parse them
++         *  Function arguments can be simple integers, strings, variables, form elements and complete forms
++         *
++         *	@param $arguments		Arguments
++         *	@param $options			Custom options
++         */	
+ 		function _computeFunctionArguments( $arguments, $options ){
+ 			
+ 			// if there are not arguments return empty string
+@@ -548,50 +567,107 @@
+ 			// cycle arguments to create js function to get values
+ 			foreach ( $arguments as $arg ){
+ 
+-				// if is a string and it's a harcoded form name (eg: 'form xpto', where 'xpto' is a form name)
+-				if ( is_string( $arg ) &amp;&amp; ereg ( &quot;^form (.*)$&quot;, $arg, $res ) ) { $args[] = &quot;xajax.getFormValues('&quot; . $res[1] . &quot;')&quot;; continue; }
+-
+-				// if is a string and it's a form name, we want the form values
+-				if ( is_string( $arg ) &amp;&amp; $this-&gt;__isForm( $arg ) ) { $args[] = &quot;xajax.getFormValues('&quot; . $arg . &quot;')&quot;; continue; }
+-
+ 				// if argument is numeric just add it and continue
+ 				if ( is_numeric( $arg ) ) { $args[] = $arg; continue; }
+-					
+-				// get the form of this argument
+-				$form = $this-&gt;__getForm( $arg );
+ 
+-				// if there's a form defined it's because the argument is a form element
+-				if ( !is_null( $form ) ){
+-						
++				// if is a javascript variable, just add it
++				if ( ereg ( &quot;^var (.*)$&quot;, $arg, $res ) ){ $args[] = $res[1]; continue; }
++				
++				// check if is a hardcoded form name
++				if ( ereg ( &quot;^form (.*)$&quot;, $arg, $res ) ) { $args[] = $this-&gt;__getJSFormElements( $res[1] ); continue; }
++
++				// check if is a form name
++				if ( $this-&gt;__isForm( $arg ) ){ $args[] = $this-&gt;__getJSFormElements( $arg ); continue; }
++				
++				// check if is a form element name
++				if ( !is_null( $form = $this-&gt;__getForm( $arg ) ) ){
++				
+ 					// get element object
+ 					$elem = &amp; $form-&gt;getElement( $arg );
+ 					
+-					// invoke the custom js to get the value
+-					$js = $elem-&gt;getJS( $options );					
+-
+-					// compute javascript function name
+-					$jsfunction = $this-&gt;prefix . 'get' . $elem-&gt;getName();
+-
+-					// add javascript function code to custom js (to be included in template head)
+-					if ( !$this-&gt;onResponse ) $this-&gt;customjs[$jsfunction . '()' ] = $js;
+-					else                      $this-&gt;response-&gt;addScript( $jsfunction . '=function(){' . $js . '}' );
++					// get js function name to execute
++					$args[] = $this-&gt;__getJSFormElement( $elem, $options );
+ 					
+-					// add function name to arguments list
+-					$args[] = $jsfunction . '()';
+-					
+ 					continue;
+-				}
++				 }
+ 
+-				// if it's not a form element just parse the argument string
+-				// if argument is in format 'var ?' where ? is a string, it's a js variable. otherwise is a simple string
+-				if ( ereg ( &quot;^var (.*)$&quot;, $arg, $res ) ) $args[] = $res[1];
+-				else                                     $args[] = &quot;'&quot; . htmlentities( $arg ) . &quot;'&quot;;
++				// otherwise is a js static string
++				$args[] = &quot;'&quot; . htmlentities( $arg ) . &quot;'&quot;;
+ 			}
+ 
+ 			// convert arguments (we don't want &quot; and ' on code)
+ 			return implode( &quot;,&quot;, $args );
+ 		}
+ 
++
++       /**
++         *	This is a helper method to compute all JS that is needed to get all elements of a form
++         *
++         *	@param $formName			Form name
++         */		
++		function __getJSFormElements( $formName ){
++
++			$js = '';
++
++			// check if form has wysiwyg editors
++			if ( isset( $this-&gt;wysiwyg_forms[ $formName ] ) ){
++
++				// include editor lib
++				require_once( dirname( __FILE__ ) . '/editors/YDAjaxEditor.php' );
++
++				// wysiwyg editors require to copy their html to a textarea before submit
++				foreach( $this-&gt;wysiwyg_forms[ $formName ] as $formElementID )
++					$js .= YDAjaxEditor::JScopy( $formElementID );
++			}
++	
++			// now return form values
++			$js .= &quot;return xajax.getFormValues('&quot; . $formName . &quot;');&quot;;
++
++			// compute js function name
++			$jsfunction = $this-&gt;prefix . 'getForm' . $formName;
++
++			// add javascript function code to custom js (to be included in template head)
++			if ( !$this-&gt;onResponse ) $this-&gt;customjs[$jsfunction . '()' ] = $js;
++			else                      $this-&gt;response-&gt;addScript( $jsfunction . '=function(){' . $js . '}' );
++					
++			// add function name to arguments list
++			return $jsfunction . '()';
++		}
++
++
++       /**
++         *	This is a helper method to compute all JS that is needed to get a form element
++         *
++         *	@param $formElement			Form element object
++         */		
++		function __getJSFormElement( $formElement, $options ){
++
++			$js = '';
++
++			// check if this element is a wysiwyg editor
++			if ( in_array( $formElement-&gt;getAttribute( 'id' ), $this-&gt;wysiwyg_ids ) ){
++
++				// include editor lib
++				require_once( dirname( __FILE__ ) . '/editors/YDAjaxEditor.php' );
++
++				// wysiwyg editor require to copy their html to a textarea before submit
++				$js .= YDAjaxEditor::JScopy( $formElement-&gt;getAttribute( 'id' ) );
++			}
++
++			// add JS return value
++			$js .= $formElement-&gt;getJS( $options );					
++
++			// compute javascript function name
++			$jsfunction = $this-&gt;prefix . 'get' . $formElement-&gt;getName();
++
++			// add javascript function code to custom js (to be included in template head)
++			if ( !$this-&gt;onResponse ) $this-&gt;customjs[$jsfunction . '()' ] = $js;
++			else                      $this-&gt;response-&gt;addScript( $jsfunction . '=function(){' . $js . '}' );
++					
++			// add function name to arguments list
++			return $jsfunction . '()';
++		}
++
+ 		
+         /**
+          *	This method adds confirmation to a element event
+@@ -820,11 +896,52 @@
+ 		}
+ 
+ 
++
+         /**
++         *	This method adds wysiwyg support to an form element
++         *
++         *	@param $formElementName		Form element name or a simple html id
++         */	
++		function addEditorSupport( $formElementName ){
++		
++			// get form from element name
++			$form = $this-&gt;__getForm( $formElementName );
++
++			// if element is NOT a form element just add it
++			if ( is_null( $form ) ){
++				$this-&gt;wysiwyg_ids[] = $formElementName;
++				return;
++			}
++
++			// if is a form element, get element
++			$elem = &amp; $form-&gt;getElement( $formElementName );
++
++			// add editor as editor
++			$this-&gt;wysiwyg_forms[ $form-&gt;getName() ][] = $elem-&gt;getAttribute( 'id' );
++		}
++
++
++        /**
+          *	This method will process all results added in a response
+          */	
+ 		function processResults(){
+ 
++			// include support for wysiwyg editors
++			if ( ! empty( $this-&gt;wysiwyg_ids ) || ! empty( $this-&gt;wysiwyg_forms ) ){
++
++				require_once( dirname( __FILE__ ) . '/editors/YDAjaxEditor.php' );
++
++				// add suport for wysiwyg editors applyed to IDs
++				foreach( $this-&gt;wysiwyg_ids as $htmlID )
++					$this-&gt;response-&gt;addScript( YDAjaxEditor::JSinit( $htmlID ) );
++
++				// add support for wysiwyg editors applyed to form elements
++				// foreach form, cycle all wysiwyg elements to compute their initialization
++				foreach( $this-&gt;wysiwyg_forms as $formName =&gt; $formElements )
++					foreach( $formElements as $formElementID )
++						$this-&gt;response-&gt;addScript( YDAjaxEditor::JSinit( $formElementID ) );
++			}
++
+ 			// return XML to client browser
+ 			return $this-&gt;response-&gt;getXML();
+ 		}
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php	2006-11-14 21:35:42 UTC (rev 2199)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php	2006-11-15 20:47:10 UTC (rev 2200)
+@@ -0,0 +1,93 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++
++    /**
++     *  This config defines the url path to fckeditor.js (excluding filename). Eg: &quot;/web/fckeditor/&quot;
++     *  Default: &quot;/fckeditor/&quot;
++     */
++    YDConfig::set( 'YD_AJAXEDITOR_FCKEDITOR_Url', &quot;/fckeditor/&quot;, false );
++
++
++    /**
++     *  This config defines the editor skin name
++     *  Default: &quot;office2003&quot;
++     */
++    YDConfig::set( 'YD_AJAXEDITOR_FCKEDITOR_Skin', &quot;silver&quot;, false );
++
++
++    /**
++     *  This config defines if the toolbar should start expanded
++     *  Default: true
++     */
++    YDConfig::set( 'YD_AJAXEDITOR_FCKEDITOR_ToolbarStartExpanded', true, false );
++
++
++
++    /**
++     *  Class definition for the YDAjaxEditor.
++     */
++    class YDAjaxEditor{
++
++        /**
++         *	This is the method returns the JS initialization of the editor
++         *
++         */
++        function JSinit( $htmlID ){
++		
++			// start by creating an FCKeditor object
++			$js  = &quot;oFCKeditor = new FCKeditor( '&quot; . $htmlID .&quot;' );&quot;;
++			
++			// set the editor path
++			$js .= &quot;oFCKeditor.BasePath = '&quot; . YDConfig::get( 'YD_AJAXEDITOR_FCKEDITOR_Url' ) . &quot;';&quot;;
++			
++			// set editor skin path
++			$js .= &quot;oFCKeditor.Config['SkinPath'] = oFCKeditor.BasePath + 'editor/skins/&quot; . YDConfig::get( 'YD_AJAXEDITOR_FCKEDITOR_Skin' ) . &quot;/';&quot;;
++
++			// set toobar expanded on start
++			$js .= YDConfig::get( 'YD_AJAXEDITOR_FCKEDITOR_ToolbarStartExpanded' ) ? &quot;oFCKeditor.Config['ToolbarStartExpanded'] = true;&quot; : &quot;oFCKeditor.Config['ToolbarStartExpanded'] = false;&quot;;
++
++			// on fckeditor we add a replace method (that will replace the textarea)
++			$js .= &quot;oFCKeditor.ReplaceTextarea();&quot;;
++
++			return $js;
++		}
++
++	
++
++        /**
++         *	This is the method returns the JS mechanism of content copy from editor to textarea
++         */
++		function JScopy( $htmlID ){
++
++			return &quot;document.getElementById('&quot; . $htmlID . &quot;').value = FCKeditorAPI.GetInstance('&quot; . $htmlID . &quot;').GetXHTML(true);&quot;;
++		}
++
++	}
++
++?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000749.html">[ydf-devel] r2199 - YDFramework2.0/trunk/examples/cm
+</A></li>
+	<LI>Next message: <A HREF="000751.html">[ydf-devel] r2201 - in YDFramework2.0/trunk/YDFramework2/addons:	YDAjax YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#750">[ date ]</a>
+              <a href="thread.html#750">[ thread ]</a>
+              <a href="subject.html#750">[ subject ]</a>
+              <a href="author.html#750">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

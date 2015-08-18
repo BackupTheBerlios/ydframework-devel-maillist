@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1678 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1678%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602141943.k1EJhGTG015374%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000075.html">
+   <LINK REL="Next"  HREF="000078.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1678 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1678%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602141943.k1EJhGTG015374%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1678 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 20:43:16 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000075.html">[ydf-devel] r1677 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+        <LI>Next message: <A HREF="000078.html">[ydf-devel] r1679 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#77">[ date ]</a>
+              <a href="thread.html#77">[ thread ]</a>
+              <a href="subject.html#77">[ subject ]</a>
+              <a href="author.html#77">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-14 20:43:04 +0100 (Tue, 14 Feb 2006)
+New Revision: 1678
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+Log:
+Fixed a bug in the installer script of the weblog application where it would fail to update the items table because the database prefix was not set correctly.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 19:33:44 UTC (rev 1677)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 19:43:04 UTC (rev 1678)
+@@ -21,6 +21,9 @@
+         if ( ! isset( $values['max_syndicated_items'] ) ) {
+             $values['max_syndicated_items'] = 20;
+         }
++        if ( ! isset( $values['auto_close_items'] ) ) {
++            $values['auto_close_items'] = 45;
++        }
+ 
+         // Construct the new config text
+         $cfg = '&lt;?php' . &quot;\n\n&quot;;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000075.html">[ydf-devel] r1677 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+	<LI>Next message: <A HREF="000078.html">[ydf-devel] r1679 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#77">[ date ]</a>
+              <a href="thread.html#77">[ thread ]</a>
+              <a href="subject.html#77">[ subject ]</a>
+              <a href="author.html#77">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2118 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2118%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200609120824.k8C8OYqq003462%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000636.html">
+   <LINK REL="Next"  HREF="000638.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2118 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2118%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200609120824.k8C8OYqq003462%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2118 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Sep 12 10:24:34 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000636.html">[ydf-devel] r2117 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000638.html">[ydf-devel] r2119 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#637">[ date ]</a>
+              <a href="thread.html#637">[ thread ]</a>
+              <a href="subject.html#637">[ subject ]</a>
+              <a href="author.html#637">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-12 10:24:24 +0200 (Tue, 12 Sep 2006)
+New Revision: 2118
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+Log:
+on YDFormElement_SelectImage:
+ - added: support for 'border' image attribute
+ - fixed: default image value when default value is set but not a valid option
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2006-09-09 18:36:36 UTC (rev 2117)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2006-09-12 08:24:24 UTC (rev 2118)
+@@ -75,6 +75,12 @@
+ 				unset( $attributes['height'] );
+ 			}
+ 
++			// check if border exist
++			if ( isset( $attributes['border'] ) ){
++				$this-&gt;_image_parameters['border'] = $attributes['border'];
++				unset( $attributes['border'] );
++			}
++
+             // Initialize the parent
+             $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
+ 
+@@ -119,8 +125,8 @@
+ 			// compute image source
+ 			$source = $this-&gt;_img_src;
+ 
+-			// compute selected option. If default value was set, use it. Otherwise use 1st option
+-			if ( ! empty( $this-&gt;_value ) ){
++			// compute selected option. If default value was set and that value is valid, use it. Otherwise use 1st option
++			if ( ! empty( $this-&gt;_value ) &amp;&amp; isset( $this-&gt;_options[ $this-&gt;_value ] ) ){
+ 				$source .= $this-&gt;_value;
+ 			}else{
+ 				$values  = array_keys( $this-&gt;_options );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000636.html">[ydf-devel] r2117 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000638.html">[ydf-devel] r2119 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#637">[ date ]</a>
+              <a href="thread.html#637">[ thread ]</a>
+              <a href="subject.html#637">[ subject ]</a>
+              <a href="author.html#637">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1747 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1747%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602271617.k1RGHpsN001777%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000162.html">
+   <LINK REL="Next"  HREF="000164.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1747 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1747%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602271617.k1RGHpsN001777%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1747 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 27 17:17:51 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000162.html">[ydf-devel] r1746 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+</A></li>
+        <LI>Next message: <A HREF="000164.html">[ydf-devel] r1748 - in YDFramework2.0/trunk: YDFramework2 examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-27 17:17:48 +0100 (Mon, 27 Feb 2006)
+New Revision: 1747
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+Log:
+Added support for named database instances to YDDatabaseMetaData and YDDatabaseTree.
+
+Feature Request #1797
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2006-02-27 16:14:25 UTC (rev 1746)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2006-02-27 16:17:48 UTC (rev 1747)
+@@ -40,8 +40,12 @@
+          *
+          *  @param $db             The YDDatabase object pointing to the database
+          */
+-        function YDDatabaseMetaData( $db ) {
+-            $this-&gt;db    = $db;
++        function YDDatabaseMetaData( $db=null ) {
++            if ( is_null( $db ) ) {
++                $this-&gt;db = YDDatabase::getNamedInstance();
++            } else {
++                $this-&gt;db = $db;
++            }
+         }
+ 
+         /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-02-27 16:14:25 UTC (rev 1746)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-02-27 16:17:48 UTC (rev 1747)
+@@ -44,8 +44,12 @@
+          *  @param $parentField    (optional) Name of the parent ID field. Default is parent_id.
+          *  @param $sortField      (optional) Name of the field to sort data. Default is title.
+          */
+-        function YDDatabaseTree( $db, $table, $idField='id', $parentField='parent_id', $sortField='title' ) {
+-            $this-&gt;db    = $db;
++        function YDDatabaseTree( $db=null, $table, $idField='id', $parentField='parent_id', $sortField='title' ) {
++            if ( is_null( $db ) ) {
++                $this-&gt;db = YDDatabase::getNamedInstance();
++            } else {
++                $this-&gt;db = $db;
++            }
+             $this-&gt;table = $table;
+             $this-&gt;fields = array(
+                 'id' =&gt; $idField, 'parent' =&gt; $parentField, 'sort' =&gt; $sortField,
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000162.html">[ydf-devel] r1746 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+</A></li>
+	<LI>Next message: <A HREF="000164.html">[ydf-devel] r1748 - in YDFramework2.0/trunk: YDFramework2 examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

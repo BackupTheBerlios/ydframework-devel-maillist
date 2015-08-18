@@ -1,0 +1,2698 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2358 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2358%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200701241436.l0OEaVU4027774%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000950.html">
+   <LINK REL="Next"  HREF="000952.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2358 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2358%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200701241436.l0OEaVU4027774%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2358 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Jan 24 15:36:31 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000950.html">[ydf-devel] r2357 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+        <LI>Next message: <A HREF="000952.html">[ydf-devel] r2359 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#951">[ date ]</a>
+              <a href="thread.html#951">[ thread ]</a>
+              <a href="subject.html#951">[ subject ]</a>
+              <a href="author.html#951">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-24 15:36:02 +0100 (Wed, 24 Jan 2007)
+New Revision: 2358
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGuestbook.php
+Removed:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+Log:
+- start rewritten process of YDCMComponent.. much better now.
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -1,121 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /**
+-     *  @addtogroup YDCMComponent Addons - CMComponent
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    /**
+-     *  @ingroup YDCMComponent
+-     */
+-    class YDCMAudit extends YDDatabaseObject {
+-    
+-        function YDCMAudit() {
+-        
+-			// init database object
+-            $this-&gt;YDDatabaseObject();
+-			
+-			// register database as default
+-            $this-&gt;registerDatabase();
+-
+-			// register table for this component
+-            $this-&gt;registerTable( 'YDCMAudit' );
+-
+-            // register custom key
+-            $this-&gt;registerKey( 'audit_id', true );
+-
+-            // register custom fields
+-			$this-&gt;registerField( 'user_id' );
+-			$this-&gt;registerField( 'date' );
+-			$this-&gt;registerField( 'object' );
+-			$this-&gt;registerField( 'object_action' );
+-			$this-&gt;registerField( 'object_id' );
+-			$this-&gt;registerField( 'browser' );
+-			$this-&gt;registerField( 'platform' );
+-			$this-&gt;registerField( 'url' );
+-
+-			// register custom relation
+-            $rel = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
+-			$rel-&gt;setLocalKey( 'user_id' );
+-            $rel-&gt;setForeignKey( 'user_id' );
+-			$rel-&gt;setForeignJoin( 'LEFT' );
+-		}
+-
+-
+-        /**
+-         *  This function counts visits of a object
+-         *
+-         *  @param $id       Object id (content_id)
+-         *  @param $user_id  (Optional) User id (0 means visitors)
+-         *  @param $period   (Optional) Period for count. Valid values: 'week', 'month', year'
+-         *
+-         *  @returns    an array of labels =&gt; values
+-         */
+-		function getObjectVisits( $id, $user_id = 0, $period = 'week' ){
+-		
+-			YDInclude( 'YDDate.php' );
+-		
+-			// compute start date
+-			$date = new YDDate();
+-
+-			$labels = array();
+-			
+-			if ( $period == 'week' )
+-				for( $i = 0; $i &lt; 7; $i++ ){
+-					$labels[] = $date-&gt;getDayName();
+-					$date-&gt;addDay( -1 );
+-				}
+-
+-			if ( $period == 'month' )
+-				for( $i = 0; $i &lt; 4; $i++ ){
+-					$labels[] = $date-&gt;getMonthName();
+-					$date-&gt;addMonth( -1 );
+-				}
+-
+-			if ( $period == 'year' )
+-				for( $i = 0; $i &lt; 3; $i++ ){
+-					$labels[] = $date-&gt;getYear();
+-					$date-&gt;addYear( -1 );
+-				}
+-
+-			
+-			$labels = array_reverse( $labels );
+-
+-		
+-			$this-&gt;resetAll();
+-			
+-			$this-&gt;user_id = intval( $user_id );
+-			
+-		
+-		}
+-		
+-		
+-		
+-
+-    }
+-?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -1,283 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /*
+-     *  @addtogroup YDCMComponent Addons - CMComponent
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-	require_once( dirname( __FILE__ ) . '/YDCMTree.php' );
+-	require_once( dirname( __FILE__ ) . '/YDCMLanguages.php' );
+-
+-    /**
+-     *  @ingroup YDCMComponent
+-     */
+-    class YDCMComp extends YDDatabaseObject {
+-    
+-        function YDCMComp( $type, $id ) {
+-        
+-			// init component as non default
+-            $this-&gt;YDDatabaseObject();
+-			
+-			// register database as default
+-            $this-&gt;registerDatabase();
+-
+-			// register table for this component
+-            $this-&gt;registerTable( 'YDCMComp' );
+-
+-            // register custom key
+-            $this-&gt;registerKey( 'component_id', true );
+-
+-			// register fields	
+-			$this-&gt;registerField( 'title' );
+-			$this-&gt;registerField( 'version_default' );
+-			$this-&gt;registerField( 'version_date' );
+-
+-			// add static relations to tree and language
+-			$this-&gt;registerField( 'content_id' );
+-       		$rel = &amp; $this-&gt;registerRelation( 'YDCMTree', false, 'YDCMTree' );
+-			$rel-&gt;setLocalKey( 'content_id' );
+-			$rel-&gt;setForeignKey( 'content_id' );
+-
+-			$this-&gt;registerField( 'language_id' );
+-       		$rel = &amp; $this-&gt;registerRelation( 'YDCMLanguages', false, 'YDCMLanguages' );
+-			$rel-&gt;setLocalKey( 'language_id' );
+-			$rel-&gt;setForeignKey( 'language_id' );
+-
+-			$this-&gt;registerField( 'user_id' );
+-       		$rel = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
+-			$rel-&gt;setLocalKey( 'user_id' );
+-			$rel-&gt;setForeignKey( 'user_id' );
+-
+-			// add dynamic relation
+-       		$rel = &amp; $this-&gt;registerRelation( $type, false, $type );
+-			$rel-&gt;setLocalKey( 'component_id' );
+-			$rel-&gt;setForeignKey( 'component_id' );
+-			$rel-&gt;setForeignJoin( 'LEFT' );
+-
+-			// store component id
+-			$this-&gt;_id = intval( $id );
+-			
+-			// store type for future use
+-			$this-&gt;_type = $type;
+-		}
+-
+-
+-        /**
+-         *  This function return an array of parent nodes giving an node id
+-         *
+-         *  @returns    An array with all parent nodes
+-         */
+-		function getPath(){
+-		
+-			// 1st step: GET nleft and nright of this node. yes, it's ugly.. 
+-			// TODO: change it with a better tree implementation
+-			$this-&gt;resetAll();
+-			$this-&gt;content_id  = $this-&gt;_id;
+-			$this-&gt;language_id = YDLocale::get();
+-
+-			if ( $this-&gt;find( 'ydcmtree' ) != 1 ) return array();
+-
+-			$node = $this-&gt;getValues( false, false, false, false );
+-		
+-			// 2nd step: GET parents (based on previous nleft and nright)
+-			$this-&gt;resetAll();
+-
+-			$this-&gt;language_id = YDLocale::get();
+-			$this-&gt;where( 'YDCMTree.nleft  &lt;= ' . intval( $node[ 'nleft' ] ) );
+-			$this-&gt;where( 'YDCMTree.nright &gt;= ' . intval( $node[ 'nright' ] ) );
+-			$this-&gt;orderBy( 'YDCMTree.nlevel' );
+-			$this-&gt;find( 'ydcmtree' );
+-
+-			return $this-&gt;getResults( false, false, false,false );
+-		}
+-
+-
+-        /**
+-         *  This function returns the path string to a node
+-         *
+-         *  @param $separator    Html separator string
+-         *  @param $classParents Html class for html links of parents
+-         *  @param $classCurrent Html class for span ( current element )
+-         *
+-         *  @returns    An html string
+-         */
+-		function getBreadcrum( $separator, $classParents, $classCurrent ){
+-
+-			// init array for results
+-			$res = array();
+-
+-			// init url object
+-			$url = new YDUrl( YD_SELF_SCRIPT );
+-
+-			// cycle elements to get titles
+-			foreach( $this-&gt;getPath() as $elements ){
+-			
+-				// set url var ID to this element
+-				$url-&gt;setQueryVar( 'id',        $elements[ 'component_id' ] );
+-				$url-&gt;setQueryVar( 'component', $elements[ 'type' ] );
+-
+-				// compute class name
+-				if ( $this-&gt;_id != $elements[ 'content_id' ] ) $res[] = '&lt;a class=&quot;' . $classParents . '&quot; href=&quot;' . $url-&gt;getUrl() . '&quot;&gt;' . $elements[ 'title' ] . '&lt;/a&gt;';
+-				else                                           $res[] = '&lt;span class=&quot;' . $classCurrent . '&quot;&gt;' . $elements[ 'title' ] . '&lt;/span&gt;';
+-			}
+-
+-			// return html string
+-			return implode( $separator, $res );
+-		}
+-		
+-		
+-        /**
+-         *  This function returns an array with all direct children
+-         *
+-         *  @returns    An array with all direct children
+-         */
+-		function getMenu(){
+-		
+-			$this-&gt;resetAll();
+-
+-			$this-&gt;language_id = YDLocale::get();
+-			$this-&gt;where( 'YDCMTree.parent_id  = ' . $this-&gt;_id );
+-			$this-&gt;find( 'ydcmtree' );
+-			
+-			return $this-&gt;getResults( false, false, false, false );
+-		}
+-
+-
+-        /**
+-         *  This function will render all menu elements
+-         *
+-         *  @returns    An array with all direct children
+-         */
+-		function renderMenu(){
+-
+-			$menu = array();
+-
+-			$url = new YDUrl( YD_SELF_SCRIPT );
+-
+-			// render each element
+-			foreach( $this-&gt;getMenu() as $element ){
+-
+-				$el = new $element[ 'type' ];
+-				$menu[] = $el-&gt;render( $element, $url );
+-			}
+-
+-			return $menu;
+-		}
+-
+-
+-        /**
+-         *  This function return node attributes
+-         *
+-         *  @returns    An array with all attributes
+-         */
+-		function getNode(){
+-		
+-			// delete previous stored values
+-			$this-&gt;resetAll();
+-
+-			// define our id to find		
+-			$this-&gt;content_id  = $this-&gt;_id;
+-			$this-&gt;language_id = YDLocale::get();
+-			
+-			$this-&gt;limit( 1 );
+-			
+-			// find node
+-			$this-&gt;findAll();
+-			
+-			// parse html
+-			if ( isset( $this-&gt;html ) )  $this-&gt;html  = htmlentities( $this-&gt;html );
+-			if ( isset( $this-&gt;xhtml ) ) $this-&gt;xhtml = htmlentities( $this-&gt;xhtml );
+-
+-			// return node attributes without relation prefixs
+-			return $this-&gt;getValues( false, false, false, false );
+-		}
+-
+-
+-        /**
+-         *  This function return node infomation
+-         *
+-         *  @returns    An array with all information: array( 'description' =&gt; .., 'versions' =&gt; .., 'versions_total' =&gt; .. )
+-         */
+-		function getInfo(){
+-		
+-			// delete previous stored values
+-			$this-&gt;resetAll();
+-
+-			// define our id to find		
+-			$this-&gt;content_id  = $this-&gt;_id;
+-
+-			// order versions by version date
+-			$this-&gt;orderBy( 'version_date', 'desc' );
+-			
+-			// find node
+-			$this-&gt;find( 'ydcmtree', 'ydcmusers', strtolower( $this-&gt;_type ) );
+-
+-			$versions = $this-&gt;getResultsAsAssocArray( array( 'language_id', 'version_date' ) );
+-			
+-			// init description and total of versions
+-			$description    = array();
+-			$versions_total = 0;
+-
+-			// cycle versions, count and get first description (they must be all the same)
+-			foreach( $versions as $v =&gt; $arr ){
+-			
+-				$versions_total += count( $arr );
+-			
+-				if ( empty( $description ) ) $description = array_values( $arr );
+-			}
+-
+-			// parse publish dates
+-			if ( $description[0][ 'YDCMTree_state' ] != 2 ){
+-				$description[0][ 'YDCMTree_published_date_start_trans' ] = t('not applicable');
+-				$description[0][ 'YDCMTree_published_date_end_trans' ]   = t('not applicable');
+-			}
+-
+-			// parse access
+-			if ( $description[0][ 'YDCMTree_access' ] == 1 ) $description[0][ 'YDCMTree_access_trans' ] = t('public');
+-			else                                             $description[0][ 'YDCMTree_access_trans' ] = t('private');
+-
+-			// parse state
+-			switch ($description[0][ 'YDCMTree_state' ]){
+-				case 0 : $description[0][ 'YDCMTree_state_trans' ] = t('not published'); break;
+-				case 1 : $description[0][ 'YDCMTree_state_trans' ] = t('published');     break;
+-				case 2 : $description[0][ 'YDCMTree_state_trans' ] = t('schedule');      break;
+-			}
+-
+-			// parse searcheable
+-			if ( $description[0][ 'YDCMTree_searcheable' ] == 1 ) $description[0][ 'YDCMTree_searcheable_trans' ] = t('yes');
+-			else                                                  $description[0][ 'YDCMTree_searcheable_trans' ] = t('no');
+-
+-			// return the information array
+-			return array(	'description'    =&gt; $description[0],
+-							'versions'       =&gt; $versions,
+-							'versions_total' =&gt; $versions_total );
+-		}
+-
+-}
+-
+-?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -31,359 +31,190 @@
+     }
+ 
+     // include YDF libs
+-    YDInclude( 'YDDatabaseObject.php' );
+-    YDInclude( 'YDDatabaseTree.php' );
+-    YDInclude( 'YDUrl.php' );
+-    YDInclude( 'YDResult.php' );
++    require_once( YD_DIR_HOME_ADD . '/YDDatabaseObject/YDDatabaseObject.php' );
+ 
+-    // include YDCM libs
+-    YDInclude( 'YDCMComp.php' );
+ 
+-    // add generic translation directory
+-    YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
++    class YDCMComponent extends YDDatabaseObject{
+ 
+     /**
+      *  @ingroup YDCMComponent
+      */
+-    class YDCMComponent extends YDDatabaseObject {
++        function YDCMComponent( $table ) {
+ 
+-        function YDCMComponent( $type, $id ) {
+-
+             // init DB object
+             $this-&gt;YDDatabaseObject();
+ 
+-            $this-&gt;_author = 'unknown author';
+-            $this-&gt;_version = 'unknown version';
+-            $this-&gt;_copyright = 'no copyright';
+-            $this-&gt;_description = 'no description';
+-
+ 			// register database as default
+             $this-&gt;registerDatabase();
+ 
+ 			// register table for this component
+-            $this-&gt;registerTable( $type );
++            $this-&gt;registerTable( $table );
+ 
+-			// add standard relation
+-			$this-&gt;registerField( 'component_id' );
+-       		$rel = &amp; $this-&gt;registerRelation( 'YDCMComp', false, 'YDCMComp' );
+-			$rel-&gt;setLocalKey( 'component_id' );
+-			$rel-&gt;setForeignKey( 'component_id' );
++            $this-&gt;_author = 'unknown author';
++            $this-&gt;_version = 'unknown version';
++            $this-&gt;_copyright = 'no copyright';
++            $this-&gt;_description = 'no description';
+ 
+-			// add comp object
+-			$this-&gt;comp = new YDCMComp( $type, $id );
+-			
+-			$this-&gt;_id = intval( $id );
+-		}
++			// init language code to be the current locale code	
++			$this-&gt;setLanguage( null );
+ 
++			// virtual relation with tree titles
++       		$rel = &amp; $this-&gt;registerRelation( 'ydcmtree_titles', false, 'ydcmtree_titles' );
++			$rel-&gt;setLocalKey( $table . '.tree_id' );
++			$rel-&gt;setForeignKey( 'ydcmtree_titles.tree_id' );
++			$rel-&gt;setForeignConditions( 'ydcmtree_titles.language_id = ' . $this-&gt;escapeSQL( $this-&gt;_language_id ) . ' AND ydcmtree_titles.language_id = ' . $table . '.language_id' );
+ 
+-        /**
+-         *  This function sets a new id for this component
+-         *
+-         *  @param $id           Component id
+-         */
+-		function setId( $id ){
++			// virtual relation with ydcmtree
++       		$rel = &amp; $this-&gt;registerRelation( 'ydcmtree', false, 'ydcmtree' );
++			$rel-&gt;setLocalKey( $table . '.tree_id' );
++			$rel-&gt;setForeignKey( 'ydcmtree.tree_id' );
++			$rel-&gt;setForeignConditions( 'ydcmtree.tree_state = 1' );
+ 
+-			// set id for all operations in this class
+-			$this-&gt;_id       = intval( $id );
++			// register key
++			$this-&gt;registerKey( 'tree_id', false );
+ 
+-			// set id for internal YDComp object
+-			$this-&gt;comp-&gt;_id = intval( $id );
+-		}
++			// init form elements
++            $this-&gt;_form_elements = array();
+ 
+-
+-        /**
+-         *  This function renders this element for menu
+-         *
+-         *  @returns    The YDDatabaseTree object for YDComponent static methods
+-         */
+-		function __getYDDatabaseTree(){
+-		
+-			// TODO: position is required and we must change order from 'parent_id' to 'parent_id ASC, position ASC'
+-			$tree = new YDDatabaseTree( 'default', 'YDCMTree', 'content_id', 'parent_id', 'parent_id' );
+-
+-			// TODO: set sort by parent &amp; position
+-			// $tree-&gt;setSortField( 'parent_id ASC, position ASC' );
+-
+-			// add tree fields
+-			$tree-&gt;addField( 'type' );
+-			$tree-&gt;addField( 'state' );
+-			$tree-&gt;addField( 'reference' );
+-			$tree-&gt;addField( 'access' );
+-			$tree-&gt;addField( 'searcheable' );
+-			$tree-&gt;addField( 'published_date_start' );
+-			$tree-&gt;addField( 'published_date_end' );
+-			$tree-&gt;addField( 'candrag' );
+-			$tree-&gt;addField( 'candrop' );
+-			
+-			return $tree;		
++			// init form
++            $this-&gt;_form = null;
+ 		}
+ 
+ 
+         /**
+-         *  This function renders this element for menu
++         *  This function registers a field.
+          *
+-         *  @param $id        Component id
+-         *  @param $url       Url object
++         *  @param $name  The field name.
++         *  @param $null  (optional) The field can be null? Default: false.
+          *
+-         *  @returns    An html string
++         *  @returns      A reference to the field object.
+          */
+-		function render( $id, &amp; $url ){
+-		
+-			return '';
+-		}
++        function &amp; registerField( $name, $null = false, $formelement_type = null, $formelement_caption = '', $formelement_attribs = array(), $formelement_options = array() ) {
+ 
++			// add form element
++			if ( ! is_null( $formelement_type ) )
++				$this-&gt;_form_elements[ $name ] = array( $formelement_type, $formelement_caption, $formelement_attribs, $formelement_options );
+ 
+-        /**
+-         *  This function will render a menu
+-         *
+-         *  @returns    An array with all direct children
+-         */
+-		function renderMenu(){
+-		
+-			return $this-&gt;comp-&gt;renderMenu();
+-		}
++			return parent::registerField( $name, $null );
++        }
+ 
+-
++        
+         /**
+-         *  This function returns all node attributes
++         *  This function registers a key.
+          *
+-         *  @returns    An array with node attributes
+-         */
+-		function getNode(){
+-
+-			// check if we have already node attributes (some sort of caching)
+-			if ( !isset( $this-&gt;__nodeProperties ) ) 
+-				$this-&gt;__nodeProperties = $this-&gt;comp-&gt;getNode();
+-		
+-			return $this-&gt;__nodeProperties;
+-		}
+-
+-
+-		function getInfo(){
+-		
+-			return $this-&gt;comp-&gt;getInfo();
+-		}
+-
+-        /**
+-         *  This function returns a node attribute
++         *  @param $name  The field name.
++         *  @param $auto  (optional) The key is a auto-increment field? Default: false.
+          *
+-         *  @param $attribute           Attribute name
+-         *
+-         *  @returns    The node attribute
++         *  @returns      A reference to the field object.
+          */
+-		function get( $attribute ){
++        function &amp; registerKey( $name, $auto = false, $formelement_type = null, $formelement_caption = '', $formelement_attribs = array(), $formelement_options = array() ) {
+ 
+-			$node = $this-&gt;getNode();
++			if ( ! is_null( $formelement_type ) )
++				$this-&gt;_form_elements[ $name ] = array( $formelement_type, $formelement_caption, $formelement_attribs, $formelement_options );
+ 
+-			// return attribute if exists 
+-			if ( isset( $node[ $attribute ] ) ) return $node[ $attribute ];
++			return parent::registerKey( $name, $auto );
++        }
+ 
+-			return false;
+-		}
+ 
+-
+         /**
+-         *  This function returns all elements (except root)
++         *  This method returns the current form. If your form must have custom login, overwride this method with your getForm
+          *
+-         *  @returns    all tree elements 
+-         *  @static
++         *  @returns 	A YDForm object
+          */
+-		function getTreeElements( $id = null ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// check if we have a custom id
+-			if( is_null( $id ) ) $id = $this-&gt;_id;
+-
+-			// TODO: check if return element is a array
+-			return $tree-&gt;getDescendants( $id );
+-		}
+-
+-
+-        /**
+-         *  This function checks if elements are valid drag&amp;dropable
+-         *
+-         *  @param $x  Id of dragable node
+-         *  @param $y  Id of dropable node
+-         *
+-         *  @returns    false if elements are invalid, an associative array with node types (eg: array( $x =&gt; 'PHCMPage', $y =&gt; 'PHCMRootmenu ))'
+-         *  @static
+-         */
+-		function getDragDropElements( $x = null, $y = null ){
++		function &amp; getForm( $add_tree_elements = true, $add_title_elements = true ){
+ 		
+-			// get tree module
+-			$treeObj = YDCMComponent::module( 'YDCMTree' );
++			// return form if already computed
++			if ( ! is_null( $this-&gt;_form ) ) return $this-&gt;_form;		
+ 
+-			// check drop validation
+-			return $treeObj-&gt;getDragDropElements( $x, $y );
+-		}
++			// compute form object
++			$this-&gt;_form = new YDForm( $this-&gt;getTable() );
+ 
++			// add title form elements
++			if ( $add_title_elements ){
++		        $this-&gt;_form-&gt;addElement( 'text',           'title',                t('ydcmuser label title'),     array('size' =&gt; 70, 'maxlength' =&gt; 70) );
++			}
+ 
+-        /**
+-         *  This function returns the path to current node
+-         *
+-         *  @returns    An array with all parents
+-         */
+-		function getPath(){
++			// add node form elements
++			if ( $add_tree_elements ){
++		        $this-&gt;_form-&gt;addElement( 'text',           'reference',            t('ydcmuser label reference'), array('size' =&gt; 25, 'maxlength' =&gt; 35) );
++	    	    $this-&gt;_form-&gt;addElement( 'select',         'language',             t('ydcmuser label language') );
++		        $this-&gt;_form-&gt;addElement( 'select',         'access',               t('ydcmuser label access'),         array(), array( 0 =&gt; _('private'), 1 =&gt; _('public') ) );
++		        $this-&gt;_form-&gt;addElement( 'select',         'state',                t('ydcmuser label state'),          array(), array( 1 =&gt; _('yes'), 0 =&gt; _('no'), 2 =&gt; _('schedule') ) );
++		        $this-&gt;_form-&gt;addElement( 'datetimeselect', 'published_date_start', t('ydcmuser label published_date_start' ) );
++		        $this-&gt;_form-&gt;addElement( 'datetimeselect', 'published_date_end',   t('ydcmuser label published_date_end' ) );
++			}
+ 
+-			return $this-&gt;comp-&gt;getPath();
+-		}
++			// add custom form elements
++			foreach( $this-&gt;_form_elements as $name =&gt; $info )
++				$this-&gt;_form-&gt;addElement( $info[0], $name, $info[1], $info[2], $info[3] );
+ 
+-
+-        /**
+-         *  This function returns all direct elements of a menu
+-         *
+-         *  @returns    An array with all direct children
+-         */
+-		function getMenu(){
+-
+-			return $this-&gt;comp-&gt;getMenu();
++			// return object
++			return $this-&gt;_form;
+ 		}
+ 
+ 
+         /**
+-         *  This function returns the path string to current node
++         *  This method defines the language code to use in all sql queries
+          *
+-         *  @param $separator    (Optional) Html separator string
+-         *  @param $classParents (Optional) Html class for html links of parents
+-         *  @param $classCurrent (Optional) Url object for element links
+-         *
+-         *  @returns    An html string
++         *  @param $language_id  (Optional) Language id code, eg 'en'. By default current locale is used
+          */
+-		function getBreadcrum( $separator = ' &gt; ', $classParents = 'breadParents', $classCurrent = 'breadCurrent' ){
+-
+-			// get breadcrum from component
+-			return $this-&gt;comp-&gt;getBreadcrum( $separator, $classParents, $classCurrent );
++		function setLanguage( $language_id = null ){
++		
++			if ( ! is_string( $language_id ) ) $this-&gt;_language_id = YDLocale::get();
++			else                               $this-&gt;_language_id = $language_id;
+ 		}
+ 
+ 
+         /**
+-         *  This function returns the component author
++         *  This method returns an element searching by its reference
+          *
+-         *  @returns    component author
++         *  @param $reference  Reference string
+          */
+-		function getAuthor(){
++		function getElementByReference( $reference ){
+ 
+-			return $this-&gt;_author;
+-		}
++			$this-&gt;resetAll();
++			$this-&gt;load( 'ydcmtree_titles' );
++			$this-&gt;ydcmtree_titles-&gt;set( 'title_reference', $reference );
++			$this-&gt;findAll();
+ 
+-
+-        /**
+-         *  This function returns the component version
+-         *
+-         *  @returns    component version
+-         */
+-		function getVersion(){
+-
+-			return $this-&gt;_version;
++			return $this-&gt;getValues( false, false, false, false );
+ 		}
+ 
+ 
+-        /**
+-         *  This function returns the component copyright
+-         *
+-         *  @returns    component copyright
+-         */
+-		function getCopyright(){
++		function getElementById( $id ){
+ 
+-			return $this-&gt;_copyright;
+-		}
++			$this-&gt;resetAll();
++			$this-&gt;set( 'tree_id', $id );
++			$this-&gt;findAll();
+ 
+-
+-        /**
+-         *  This function returns the component description
+-         *
+-         *  @returns    component description
+-         */
+-		function getDescription(){
+-
+-			return $this-&gt;_description;
++			return $this-&gt;getValues( false, false, false, false );
+ 		}
+ 
++		
+ 
+         /**
+-         *  This function sets a node state
++         *  This method returns all elements of this table
+          *
+-         *  @param $state      The state code
+-         *  @param $id         (optional) The ID of the node. Defaults to null.
+-         *
+-         *  @returns    1 if state changed, 0 otherwise
++         *  @returns 	An array with all table elements
+          */
+-		function setState( $state, $id = null ){
++		function getElements( $content_id = null, $prefix = false ){
+ 
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
++			$this-&gt;resetAll();
++	
++			if ( is_numeric( $content_id ) ){
++				$this-&gt;set( 'tree_id', intval( $content_id ) );
++			}
+ 
+-			// check if static
+-			if( is_null( $id ) ) $id = $this-&gt;_id;
++			$this-&gt;findAll();
+ 
+-			return $tree-&gt;updateNode( array( 'state' =&gt; $state ), $id );
++			return $this-&gt;getResults( false, false, false, $prefix );
+ 		}
+ 
+ 
+-        /**
+-         *  This function deletes the tree part of a component only
+-         *
+-         */
+-		function deleteNode(){
+ 
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+ 
+-			return $tree-&gt;deleteNode( $this-&gt;_id );
+-		}
+ 
+-
+-        /**
+-         *  This function adds a standard node in the tree. Experimental
+-         *
+-         *  @param $values      Node values
+-         *  @param $parent_id   (optional) The parent id for the node. Defaults to null.
+-         */
+-		function addNode( $values, $parent_id = null ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// use YDDatabasetree method
+-			return $tree-&gt;addNode( $values, $parent_id );
+-		}
+-
+-
+-        /**
+-         *  This function updates a node
+-         *
+-         *  @param $values      Node values
+-         *  @param $node_id     (optional) The ID of the node. Defaults to null.
+-         */
+-		function updateNode( $values, $node_id = null ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// use YDDatabasetree method
+-			return $tree-&gt;updateNode( $values, $node_id );
+-		}
+-
+-
+-        /**
+-         *  This function moves a node
+-         *
+-         *  @param $x  X value
+-         *  @param $y  Y value
+-         */
+-		function moveNode( $x, $y ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// use YDDatabasetree method
+-			return $tree-&gt;moveNode( $x, $y );
+-		}
+-
+-
+     }
+ 
+ 
+-?&gt;
+\ No newline at end of file
++?&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -338,7 +338,7 @@
+ 
+ 
+ 	// last user login date.
+-	YDConfig::set( 'YD_FORUM_LASTLOGINDATE', YDStringUtil::formatDate( time(), 'datetimesql' ), false );
++	YDConfig::set( 'YD_FORUM_LASTLOGINDATE', '1900-01-01 01:01:01', false );
+ 
+ 
+     class YDCMForum_topics extends YDDatabaseObject {
+@@ -445,7 +445,7 @@
+          */
+ 		function getElementsAsRecordSet( $forum_id, $page = 1 ){
+ 		
+-			return new YDRecordSet( $this-&gt;getElements( $forum_id ), $page, 20 );
++			return new YDRecordSet( $this-&gt;getElements( $forum_id ), $page, 1 );
+ 		}
+ 
+ 
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGuestbook.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGuestbook.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGuestbook.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -0,0 +1,173 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// include YDF libs
++    YDInclude( 'YDCMComponent.php' );
++
++
++    class YDCMGuestbook extends YDCMComponent{
++    
++        function YDCMGuestbook() {
++
++			// init parent
++            $this-&gt;YDCMComponent( 'YDCMGuestbook' );
++
++            // define fields
++			$this-&gt;registerField( 'guestbook_datecreation',  false );
++			$this-&gt;registerField( 'guestbook_description',   false, 'text',     _('Description') );
++			$this-&gt;registerField( 'guestbook_email_notify',  false, 'checkbox', _('Notify by email on new posts') );
++			$this-&gt;registerField( 'guestbook_email_from',    false, 'text',     _('Email from') );
++			$this-&gt;registerField( 'guestbook_email_subject', false, 'text',     _('Email subject') );
++			$this-&gt;registerField( 'guestbook_max_words',     false, 'text',     _('Maximum words') );
++			$this-&gt;registerField( 'guestbook_max_lines',     false, 'text',     _('Maximum lines') );
++			$this-&gt;registerField( 'guestbook_max_chars',     false, 'text',     _('Maximum caracters') );
++
++			$this-&gt;registerField( 'guestbook_use_name',          false, 'checkbox', _('Show name') );
++			$this-&gt;registerField( 'guestbook_use_email',         false, 'checkbox', _('Show email') );
++			$this-&gt;registerField( 'guestbook_use_website',       false, 'checkbox', _('Show website') );
++			$this-&gt;registerField( 'guestbook_use_country',       false, 'checkbox', _('Show country') );
++			$this-&gt;registerField( 'guestbook_use_websiterating', false, 'checkbox', _('Show website ranking') );
++
++			$this-&gt;registerField( 'guestbook_akismet',   false, 'checkbox', _('Use akismet engine') );
++			$this-&gt;registerField( 'guestbook_moderated', false, 'checkbox', _('Posts are moderated') );
++		}
++
++/*		
++		function getLatest(){
++		
++			$this-&gt;resetAll();
++	
++			$this-&gt;limit( 5 );
++			$this-&gt;findAll();
++
++			return $this-&gt;getResults( false, false, false, false );
++
++		}
++
++
++		function getElementsAsRecordSet( $id, $rows = 5 ){
++
++			$page = isset( $_GET['page'] ) ? intval( $_GET['page'] ) : 1;
++
++			return new YDRecordSet( $this-&gt;getElements( $id ), $page, $rows );
++		}
++*/
++
++		function getPostsAsRecordSet( $tree_id, $rows = 1 ){
++		
++			$posts = new YDCMGuestbook_posts();
++
++			return $posts-&gt;getElementsAsRecordSet( $tree_id, $rows );
++		}
++
++
++		function getPostForm( $tree_id ){
++		
++			// init posts object
++			$posts = new YDCMGuestbook_posts();
++			
++			// get the standard form without title and node elements
++			$form = &amp; $posts-&gt;getForm( false, false );
++		
++			// get guestbook configuration
++			$gbook = $this-&gt;getElementById( $tree_id );
++
++			// remove fields
++			if ( $gbook[ 'guestbook_use_name' ] == 0 )          $form-&gt;removeElement( 'post_name' );
++			if ( $gbook[ 'guestbook_use_email' ] == 0 )         $form-&gt;removeElement( 'post_email' );
++			if ( $gbook[ 'guestbook_use_website' ] == 0 )       $form-&gt;removeElement( 'post_website' );
++			if ( $gbook[ 'guestbook_use_country' ] == 0 )       $form-&gt;removeElement( 'post_country' );
++			if ( $gbook[ 'guestbook_use_websiterating' ] == 0 ) $form-&gt;removeElement( 'post_websiterating' );
++
++			// delete 'active' element. this is for administration only
++			$form-&gt;removeElement( 'post_active' );
++
++			// add captcha element
++			$form-&gt;addElement( 'captcha', 'secur', _('Security code') );
++
++			// add send button
++			$form-&gt;addElement( 'button', 'send', _('Send') );
++
++			// set default
++			$form-&gt;setDefault( 'post_website', '<A HREF="http://">http://</A>' );
++
++			return $form;
++		}
++    }
++
++
++
++
++    class YDCMGuestbook_posts extends YDCMComponent{
++    
++        function YDCMGuestbook_posts() {
++
++			// init parent
++            $this-&gt;YDCMComponent( 'YDCMGuestbook_posts' );
++
++            // define custom key
++			$this-&gt;registerKey( 'post_id', false );
++
++            // define fields
++			$this-&gt;registerField( 'post_name',          false, 'text',     _('Name') );
++			$this-&gt;registerField( 'post_email',         false, 'text',     _('Email') );
++			$this-&gt;registerField( 'post_message',       false, 'bbtextarea', _('Message') );
++			$this-&gt;registerField( 'post_active',        false, 'checkbox', _('Active') );
++			$this-&gt;registerField( 'post_website',       false, 'text',     _('Website') );
++			$this-&gt;registerField( 'post_ip',            false );
++			$this-&gt;registerField( 'post_country',       false, 'select',   _('Country') );
++			$this-&gt;registerField( 'post_websiterating', false, 'select',   _('Website rating') );
++		}
++
++		
++		function getLatest(){
++		
++			$this-&gt;resetAll();
++	
++			$this-&gt;limit( 5 );
++			$this-&gt;findAll();
++
++			return $this-&gt;getResults( false, false, false, false );
++
++		}
++
++
++		function getElementsAsRecordSet( $id, $rows ){
++
++			$page = isset( $_GET['page'] ) ? intval( $_GET['page'] ) : 1;
++
++			return new YDRecordSet( $this-&gt;getElements( $id ), $page, $rows );
++		}
++
++    }
++
++
++
++
++
++?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -1,76 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /*
+-     *  @addtogroup YDCMComponent Addons - CMComponent
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-	YDInclude( 'YDCMComponent.php' );
+-
+-    /**
+-     *  @ingroup YDCMComponent
+-     */
+-    class YDCMLink extends YDCMComponent {
+-    
+-        function YDCMLink() {
+-        
+-			// init component
+-            $this-&gt;YDCMComponent( 'YDCMLink' );
+-
+-            $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '0.1';
+-            $this-&gt;_copyright = '(c) Copyright 2006 Francisco Azevedo';
+-            $this-&gt;_description = 'This is a link component';
+-
+-			// register custom fields
+-			$this-&gt;registerField( 'url' );
+-			$this-&gt;registerField( 'num_visits' );
+-
+-			// we don't have custom relations
+-		}
+-
+-
+-        /**
+-         *  This function will render this element (to be used in a menu)
+-         *
+-         *  @returns    Html link
+-         */
+-		function render( $component, &amp; $url ){
+-
+-			$url-&gt;setQueryVar( 'component', $component[ 'type' ] );
+-			$url-&gt;setQueryVar( 'id',        $component[ 'content_id' ] );
+-
+-			// get url properties from DB
+-			$this-&gt;getNode( $component[ 'content_id' ] );
+-
+-			return '&lt;a href=&quot;' . $this-&gt;url . '&quot;&gt;' . $component[ 'title' ] . '&lt;/a&gt;';
+-		}
+-
+-
+-    }
+-?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -30,49 +30,103 @@
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
+-	YDInclude( 'YDCMComponent.php' );
++//	YDInclude( 'YDCMComponent.php' );
+ 
++	// include YDF libs
++    YDInclude( 'YDCMComponent.php' );
++//    YDInclude( 'YDCMTree.php' );
++
+ 	// add local translation directory
+-	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
++//	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMPage/' );
+ 
+ 	// set page form name
+-	YDConfig::set( 'YDCMPAGE_FORMPAGE', 'YDCMPageForm', false );
++//	YDConfig::set( 'YDCMPAGE_FORMPAGE', 'YDCMPageForm', false );
+ 
+     /**
+      *  @ingroup YDCMComponent
+      */
+-    class YDCMPage extends YDCMComponent {
++    class YDCMPage extends YDCMComponent{
+     
+-        function YDCMPage( $id = null ) {
++        function YDCMPage() {
+ 
+-			// init component
+-            $this-&gt;YDCMComponent( 'YDCMPage', $id );
++			// init DB object
++            $this-&gt;YDCMComponent( 'YDCMPage' );
+ 
++/*            $this-&gt;_author = 'unknown author';
++            $this-&gt;_version = 'unknown version';
++            $this-&gt;_copyright = 'no copyright';
++            $this-&gt;_description = 'no description';
++
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMPage' );
++
+             $this-&gt;_author = 'Francisco Azevedo';
+             $this-&gt;_version = '0.1';
+             $this-&gt;_copyright = '(c) Copyright 2006 Francisco Azevedo';
+             $this-&gt;_description = 'This is a page component';
+-
++*/
+             // define custom fields
+-			$this-&gt;registerField( 'current_version' );
+-			$this-&gt;registerField( 'html' );
+-			$this-&gt;registerField( 'xhtml' );
+-			$this-&gt;registerField( 'template_pack' );
+-			$this-&gt;registerField( 'template' );
+-			$this-&gt;registerField( 'metatags' );			
+-			$this-&gt;registerField( 'description' );
+-			$this-&gt;registerField( 'keywords' );			
++//			$this-&gt;registerKey( 'component_id', false );
++//			$this-&gt;registerField( 'current_version' );
++			$this-&gt;registerField( 'page_html',        false, 'textarea', _('ydcmuser label html'),        array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++//			$this-&gt;registerField( 'xhtml' );
++//			$this-&gt;registerField( 'template_pack' );
++			$this-&gt;registerField( 'page_template',    false, 'select',   _('ydcmuser label template') );
++			$this-&gt;registerField( 'page_metatags',    false, 'select',   _('ydcmuser label metatags'),    array(), array( 0 =&gt; _('no'), 1 =&gt; _('yes') ) );
++			$this-&gt;registerField( 'page_description', false, 'textarea', _('ydcmuser label description'), array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++			$this-&gt;registerField( 'page_keywords',    false, 'textarea', _('ydcmuser label keywords'),    array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
+ 
+-			// we don't have custom relations
++/*
++
++	        $form-&gt;addElement( 'text',           'reference',            t('ydcmuser label reference'),      array('size' =&gt; 25, 'maxlength' =&gt; 35) );
++	        $form-&gt;addElement( 'text',           'title',                t('ydcmuser label title'),          array('size' =&gt; 70, 'maxlength' =&gt; 70) );
++	        $form-&gt;addElement( 'textarea',       'content',              t('ydcmuser label content') );
++	        $form-&gt;addElement( 'select',         'access',               t('ydcmuser label access'),         array(), $access);
++	        $form-&gt;addElement( 'select',         'state',                t('ydcmuser label state'),          array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
++	        $form-&gt;addElement( 'datetimeselect', 'published_date_start', t('ydcmuser label published_date_start') );
++	        $form-&gt;addElement( 'datetimeselect', 'published_date_end',   t('ydcmuser label published_date_end'));
++	        $form-&gt;addElement( 'select',         'template',             t('ydcmuser label template'),       array(), $templates-&gt;visitors_templates());
++	        $form-&gt;addElement( 'select',         'metatags',             t('ydcmuser label metatags'),       array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
++	        $form-&gt;addElement( 'textarea',       'description',          t('ydcmuser label description'),    array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++	        $form-&gt;addElement( 'textarea',       'keywords',             t('ydcmuser label keywords'),       array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++	        $form-&gt;addElement( 'select',         'searcheable',          t('ydcmuser label searcheable'),         array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
++*/
++
++
++			// virtual relation with ydcmcomp
++/*       		$rel = &amp; $this-&gt;registerRelation( 'ydcmcomp', false, 'ydcmcomp' );
++			$rel-&gt;setLocalKey( 'ydcmpage.component_id' );
++			$rel-&gt;setForeignKey( 'ydcmcomp.component_id' );
++
++			// virtual relation with ydcmtree
++       		$rel = &amp; $this-&gt;registerRelation( 'ydcmtree', false, 'ydcmtree' );
++			$rel-&gt;setLocalKey( 'ydcmpage.component_id' );
++			$rel-&gt;setForeignKey( 'ydcmtree.content_id' );
++*/
+ 		}
+ 
+ 		
++/*
++		function getElement( $id ){
++
++			$this-&gt;reset();
++			$this-&gt;load( 'ydcmcomp' );
++			$this-&gt;ydcmcomp-&gt;set( 'reference', $id );
++//			$this-&gt;set( 'component_id', intval( $id ) );
++			$this-&gt;findAll();
++			return $this-&gt;getValues( false, false, false, false );
++		}
++*/
++
+         /**
+          *  This function will render this element (to be used in a menu)
+          *
+          *  @returns    Html link
+          */
+-		function render( $component, &amp; $url ){
++/*		function render( $component, &amp; $url ){
+ 
+ 			$url-&gt;setQueryVar( 'component', $component[ 'type' ] );
+ 			$url-&gt;setQueryVar( 'id',        $component[ 'content_id' ] );
+@@ -80,19 +134,26 @@
+ 			return '&lt;a href=&quot;' . $url-&gt;getUrl() . '&quot;&gt;' . $component[ 'title' ] . '&lt;/a&gt;';
+ 		}
+ 
++		function renderContent( $id ){
++		
++			$element = $this-&gt;getElement( $id );
++		
++			return $element[ 'html' ];
++		}
++*/
+ 
+         /**
+          *  This function returns the page form (form admin edition)
+          *
+          *  @returns    YDForm object
+          */
+-		function getFormPage(){
++		function _getForm(){
+ 
+ 			YDInclude( 'YDForm.php' );
+ 
+ 			// get template and language object
+-			$templates = YDCMComponent::module( 'YDCMTemplates' );
+-			$languages = YDCMComponent::module( 'YDCMLanguages' );
++			$templates = new YDCMTemplates();
++			$languages = new YDCMLanguages();
+ 
+ 			// create access options
+ 			$access = array( 0 =&gt; t('public'), 1 =&gt; t('private') );
+@@ -102,29 +163,22 @@
+ 									0	=&gt; t('use custom template') );
+ 	
+ 			// create form object
+-			$form = new YDForm( YDConfig::get( 'YDCMPAGE_FORMPAGE' ) );
++			$form = new YDForm( 'page' );
+ 
+-	        $form-&gt;addElement( 'text',           'reference',            t('page_reference'),      array('size' =&gt; 25, 'maxlength' =&gt; 35) );
+-	        $form-&gt;addElement( 'text',           'title',                t('page_title'),          array('size' =&gt; 70, 'maxlength' =&gt; 70) );
+-	        $form-&gt;addElement( 'textarea',       'html',                 t('page_html') );
+-	        $form-&gt;addElement( 'textarea',       'xhtml',                t('page_xhtml') );
+-	        $form-&gt;addElement( 'select',         'access',               t('page_access'),         array(), $access);
+-	        $form-&gt;addElement( 'select',         'state',                t('page_state'),          array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+-	        $form-&gt;addElement( 'datetimeselect', 'published_date_start', t('page_startdate') );
+-	        $form-&gt;addElement( 'datetimeselect', 'published_date_end',   t('page_enddate'));
+-	        $form-&gt;addElement( 'select',         'template_pack',        '',                       array(), $template_pack );
+-	        $form-&gt;addElement( 'select',         'template',             t('page_template'),       array(), $templates-&gt;visitors_templates());
+-	        $form-&gt;addElement( 'select',         'metatags',             t('page_metatags'),       array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
+-	        $form-&gt;addElement( 'textarea',       'description',          t('page_description'),    array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
+-	        $form-&gt;addElement( 'textarea',       'keywords',             t('page_keywords'),       array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
+-	        $form-&gt;addElement( 'select',         'searcheable',          t('page_search'),         array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
+-	        $form-&gt;addElement( 'hidden',         'content_id' );
+-	        $form-&gt;addElement( 'hidden',         'parent_id' );
+-	        $form-&gt;addElement( 'hidden',         'language_id' );
++	        $form-&gt;addElement( 'text',           'reference',            t('ydcmuser label reference'),      array('size' =&gt; 25, 'maxlength' =&gt; 35) );
++	        $form-&gt;addElement( 'text',           'title',                t('ydcmuser label title'),          array('size' =&gt; 70, 'maxlength' =&gt; 70) );
++	        $form-&gt;addElement( 'textarea',       'content',              t('ydcmuser label content') );
++	        $form-&gt;addElement( 'select',         'access',               t('ydcmuser label access'),         array(), $access);
++	        $form-&gt;addElement( 'select',         'state',                t('ydcmuser label state'),          array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
++	        $form-&gt;addElement( 'datetimeselect', 'published_date_start', t('ydcmuser label published_date_start') );
++	        $form-&gt;addElement( 'datetimeselect', 'published_date_end',   t('ydcmuser label published_date_end'));
++	        $form-&gt;addElement( 'select',         'template',             t('ydcmuser label template'),       array(), $templates-&gt;visitors_templates());
++	        $form-&gt;addElement( 'select',         'metatags',             t('ydcmuser label metatags'),       array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
++	        $form-&gt;addElement( 'textarea',       'description',          t('ydcmuser label description'),    array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++	        $form-&gt;addElement( 'textarea',       'keywords',             t('ydcmuser label keywords'),       array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++	        $form-&gt;addElement( 'select',         'searcheable',          t('ydcmuser label searcheable'),         array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
+ 
+ 			// parent of new page is 0 by default
+-			$form-&gt;setDefault( 'content_id',  0 );
+-			$form-&gt;setDefault( 'parent_id',   0 );
+ 			$form-&gt;setDefault( 'language_id', $languages-&gt;adminDefault() );
+ 
+ 			// add form rules
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -1,57 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /*
+-     *  @addtogroup YDCMComponent Addons - CMComponent
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-	YDInclude( 'YDCMComponent.php' );
+-
+-    /**
+-     *  @ingroup YDCMComponent
+-     */
+-    class YDCMRootmenu extends YDCMComponent {
+-    
+-        function YDCMRootmenu( $id = null ) {
+-        
+-			// init component
+-            $this-&gt;YDCMComponent( 'YDCMRootmenu', $id );
+-
+-            $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '0.1';
+-            $this-&gt;_copyright = '(c) Copyright 2006 Francisco Azevedo';
+-            $this-&gt;_description = 'This is a menu component';
+-
+-			// register custom fields
+-			$this-&gt;registerField( 'title' );
+-
+-			// we don't have custom relations
+-		}
+-
+-    }
+-?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -1,117 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /*
+-     *  @addtogroup YDCMComponent Addons - CMComponent
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    /**
+-     *  @ingroup YDCMComponent
+-     */
+-    class YDCMStatistics {
+-
+-        function YDCMStatistics() {
+-		}
+-		
+-
+-        /**
+-         *  This static function returns php informations
+-         *
+-         *  @returns    an array with php info
+-         */
+-		function php(){
+-		
+-            // Get the general PHP info
+-            ob_start();
+-            phpinfo( INFO_GENERAL );
+-            $phpInfo .= ob_get_contents();
+-            ob_end_clean();
+-
+-            // Get the right part
+-            $phpInfo = substr( $phpInfo, strpos( $phpInfo, '&lt;tr&gt;' ) );
+-            $phpInfo = substr( $phpInfo, 0, strpos( $phpInfo, '&lt;/table&gt;' ) );
+-
+-            // Strip unneeded things
+-            $phpInfo = str_replace( '&lt;tr&gt;&lt;td class=&quot;e&quot;&gt;', '', $phpInfo );
+-            $phpInfo = str_replace( ' &lt;/td&gt;&lt;/tr&gt;', '', $phpInfo );
+-            $phpInfo = trim( $phpInfo );
+-
+-            // Get the settings
+-            $settings = array();
+-            foreach ( explode( &quot;\n&quot;, $phpInfo ) as $line ) {
+-                $line = explode( ' &lt;/td&gt;&lt;td class=&quot;v&quot;&gt;', $line );
+-                if ( isset( $line[1] ) ) $settings[ strtolower( str_replace( ' ', '_', $line[0] ) ) ] = $line[1];
+-                else                     $settings[ strtolower( str_replace( ' ', '_', $line[0] ) ) ] = '';
+-            }
+-
+-			// export other values
+-			$settings[ 'version' ]     = phpversion();
+-			$settings[ 'modules' ]     = implode( get_loaded_extensions(), ', ' );
+-			$settings[ 'os' ]          = PHP_OS;
+-			$settings[ 'includePath' ] = $GLOBALS['YD_INCLUDE_PATH'];
+-
+-			return $settings;
+-		}
+-
+-
+-        /**
+-         *  This static function returns the mail info
+-         *
+-         *  @returns    an array with mail info
+-         */
+-		function mailer(){
+-
+-		    // Includes
+-		    require_once( dirname( __FILE__ ) . '/../3rdparty/phpmailer/class.phpmailer.php' );
+-
+-            // Get the version of phpMailer
+-            $PHPMailer = new PHPMailer();
+-
+-			return array( 'version' =&gt; $PHPMailer-&gt;Version, 'complete' =&gt; 'PHPMailer [version ' . $PHPMailer-&gt;Version . ']' );
+-		}
+-
+-
+-        /**
+-         *  This static function returns an YDCMStatistics module
+-         *
+-         *  @returns    an module object
+-         */
+-		function module( $name ){
+-
+-			// include lib
+-			// TODO: check if name is a valid lib name
+-			require_once( YDConfig::get( 'YD_DBOBJECT_PATH' ) . '/' . $name . '.php' );
+-
+-			// return class
+-			return new $name();
+-		}
+-
+-
+-    }
+-
+-?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -1,94 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /*
+-     *  @addtogroup YDCMComponent Addons - CMComponent
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    /**
+-     *  @ingroup YDCMComponent
+-     */
+-    class YDCMStatistics_system {
+-    
+-        function YDCMStatistics_system() {
+-		}
+-
+-
+-		function getPHPInfo(){
+-
+-            // Get the general PHP info
+-            ob_start();
+-            phpinfo( INFO_GENERAL );
+-            $phpInfo .= ob_get_contents();
+-            ob_end_clean();
+-
+-            // Get the right part
+-            $phpInfo = substr( $phpInfo, strpos( $phpInfo, '&lt;tr&gt;' ) );
+-            $phpInfo = substr( $phpInfo, 0, strpos( $phpInfo, '&lt;/table&gt;' ) );
+-
+-            // Strip unneeded things
+-            $phpInfo = str_replace( '&lt;tr&gt;&lt;td class=&quot;e&quot;&gt;', '', $phpInfo );
+-            $phpInfo = str_replace( ' &lt;/td&gt;&lt;/tr&gt;', '', $phpInfo );
+-            $phpInfo = trim( $phpInfo );
+-
+-            // Get the settings
+-            $settings = array();
+-            foreach ( explode( &quot;\n&quot;, $phpInfo ) as $line ) {
+-                $line = explode( ' &lt;/td&gt;&lt;td class=&quot;v&quot;&gt;', $line );
+-
+-                if ( isset( $line[1] ) ) $settings[ strtolower( str_replace( ' ', '_', $line[0] ) ) ] = $line[1];
+-                else                     $settings[ strtolower( str_replace( ' ', '_', $line[0] ) ) ] = '';
+-			}
+-			
+-			$settings[ 'version']  = phpversion();
+-			$settings[ 'modules' ] = implode( get_loaded_extensions(), ', ' );
+-			
+-			ksort( $settings );
+-			
+-			return $settings;
+-		}
+-
+-
+-
+-		function getMailInfo(){
+-
+-			// Includes
+-			YDInclude( 'phpmailer/class.phpmailer.php' );
+-		
+-			$p = new PHPMailer();
+-			
+-			$settings = array( 'system' =&gt; 'PHPMailer',
+-							   'version' =&gt; $p-&gt;Version );
+-
+-			ksort( $settings );
+-			
+-			return $settings;
+-		}
+-
+-    }
+-?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -1,62 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /*
+-     *  @addtogroup YDCMComponent Addons - CMComponent
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    /**
+-     *  @ingroup YDCMComponent
+-     */
+-    class YDCMStatistics_visits extends YDDatabaseObject {
+-    
+-        function YDCMStatistics_visits() {
+-        
+-			// init database object
+-            $this-&gt;YDDatabaseObject();
+-			
+-			// register database as default
+-            $this-&gt;registerDatabase();
+-
+-			// register table for this component
+-            $this-&gt;registerTable( 'YDCMStatistics_visits' );
+-
+-            // register custom key
+-            $this-&gt;registerKey( 'visit_id', true );
+-
+-            // register custom fields
+-			$this-&gt;registerField( 'date' );
+-			$this-&gt;registerField( 'browser' );
+-			$this-&gt;registerField( 'platform' );
+-			$this-&gt;registerField( 'url' );
+-			$this-&gt;registerField( 'hits' );
+-		}
+-
+-
+-    }
+-?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -32,41 +32,84 @@
+ 
+ 
+ 	// add YD libs
+-	YDInclude( 'YDDatabaseTree3.php' );
++	YDInclude( 'YDDatabaseObjectTree.php' );
+ 
+     /**
+      *  @ingroup YDCMComponent
+      */
+-    class YDCMTree extends YDDatabaseTree3 {
++    class YDCMTree extends YDDatabaseObjectTree {
+     
+         function YDCMTree() {
+ 
+ 			// init parent object
+-			$this-&gt;YDDatabaseTree3( 'YDCMTree', 'default', 'content_id', 'parent_id', 'lineage', 'level', 'position' );
++			$this-&gt;YDDatabaseObjectTree( 'YDCMTree', 'default', 'tree_id', 'tree_parent_id', 'tree_lineage', 'tree_level', 'tree_position' );
+ 
+-			// add custom tree fields
+-			$this-&gt;registerField( 'type' );
+-			$this-&gt;registerField( 'state' );
+-			$this-&gt;registerField( 'reference' );
+-			$this-&gt;registerField( 'access' );			
+-			$this-&gt;registerField( 'searcheable' );			
+-			$this-&gt;registerField( 'published_date_start' );
+-			$this-&gt;registerField( 'published_date_end' );			
+-			$this-&gt;registerField( 'candrag' );
+-			$this-&gt;registerField( 'candrop' );
++			// add tree fields
++			$this-&gt;registerField( 'tree_type' );
++			$this-&gt;registerField( 'tree_access' );			
++			$this-&gt;registerField( 'tree_state' );
++			$this-&gt;registerField( 'tree_searcheable' );			
++			$this-&gt;registerField( 'tree_published_datestart' );
++			$this-&gt;registerField( 'tree_published_dateend' );			
++			$this-&gt;registerField( 'tree_candrag' );
++			$this-&gt;registerField( 'tree_candrop' );
++			$this-&gt;registerField( 'tree_inline' );
++			$this-&gt;registerField( 'tree_url' );
++			$this-&gt;registerField( 'tree_urltarget' );
+ 
+-			// define tree order
+-			$this-&gt;order( 'parent_id ASC, position ASC' );
++			// set relation with names table
++       		$rel = &amp; $this-&gt;registerRelation( 'ydcmtree_titles', false, 'ydcmtree_titles' );
++			$rel-&gt;setLocalKey( 'ydcmtree.tree_id' );
++			$rel-&gt;setForeignKey( 'ydcmtree_titles.tree_id' );
++
++			// init language code to be the current locale code	
++			$this-&gt;setLanguage( null );
+ 		}
+ 
+ 
+         /**
++         *  This reset overides the parent resetAll() because we must redefine the language code deleted by parent reset()
++         */
++		function resetAll(){
++		
++			// resets object stuff
++			parent::resetAll();
++
++			// apply the language code deleted in previous parent reset
++			$this-&gt;where( 'ydcmtree_titles.language_id = ' . $this-&gt;escapeSQL( $this-&gt;_language_id ) );
++		}
++		
++
++        /**
++         *  This method defines the language code to use in all sql queries
++         *
++         *  @param $language_id  (Optional) Language id code, eg 'en'. By default current locale is used
++         */
++		function setLanguage( $language_id = null ){
++		
++			if ( ! is_string( $language_id ) ) $this-&gt;_language_id = YDLocale::get();
++			else                               $this-&gt;_language_id = $language_id;
++		}
++
++
++		function getSubElements( $id, $inline = false ){
++
++			$this-&gt;resetAll();
++
++			if ( $inline ) $this-&gt;where( $this-&gt;getTable() . '.tree_inline = 1' );
++			else           $this-&gt;where( $this-&gt;getTable() . '.tree_inline = 0' );
++
++			return $this-&gt;_getChildren( $id, false, false );
++		}
++
++
++        /**
+          *  This function checks if elements are valid drag&amp;dropable
+          *
+          *  @param $x  Id of dragable node
+          *
+          *  @param $y  Id of dropable node
+-
++         *
+          *  @returns    false if elements are invalid, an associative array with node information
+          */
+ 		function getDragDropElements( $x = null, $y = null){
+@@ -91,4 +134,28 @@
+ 
+ 	}
+ 
++
++    class YDCMTree_titles extends YDDatabaseObject {
++    
++        function YDCMTree_titles() {
++        
++			// init component as non default
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMTree_titles' );
++
++            // register key
++            $this-&gt;registerKey( 'tree_id', true );
++			$this-&gt;registerKey( 'language_id', false );
++
++			// register fields	
++			$this-&gt;registerField( 'title_html' );
++			$this-&gt;registerField( 'title_reference' );
++		}
++	}
++
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -39,6 +39,9 @@
+ 
+ 	YDConfig::set( 'YDCMTEMPLATES_ADMIN_EXT', '/shot.png', false );
+ 
++	// set user logged and user details
++	YDConfig::set( 'YD_USER_LOGGED',  false,   false );
++
+ 	// add YDF libs needed by this class
+ 	YDInclude( 'YDDatabaseObject.php' );
+ 	YDInclude( 'YDValidateRules.php' );
+@@ -50,6 +53,13 @@
+ 	YDInclude( 'YDCMTemplates.php' );
+ 	YDInclude( 'YDCMUserobject.php' );
+ 
++	// define forum levels
++	define( 'YD_FORUM_PERMISSION_1', 'Registered' );
++	define( 'YD_FORUM_PERMISSION_2', 'Moderator' );
++	define( 'YD_FORUM_PERMISSION_3', 'Administrator' );
++
++
++	// user class
+     /**
+      *  @ingroup YDCMComponent
+      */
+@@ -67,29 +77,52 @@
+             $this-&gt;registerTable( 'YDCMUser' );
+ 
+ 			// register fields
+-			$this-&gt;registerField( 'user_id' );
+-			$this-&gt;registerField( 'username' );
+-			$this-&gt;registerField( 'password' );
+-			$this-&gt;registerField( 'name' );
+-			$this-&gt;registerField( 'email' );			
+-			$this-&gt;registerField( 'other' );	
+-			$this-&gt;registerField( 'lang_id' );
+-			$this-&gt;registerField( 'login_start' );
+-			$this-&gt;registerField( 'login_end' );
+-			$this-&gt;registerField( 'login_counter' );			
+-			$this-&gt;registerField( 'login_last' );
+-			$this-&gt;registerField( 'login_current' );
+-			$this-&gt;registerField( 'template' );
++			$this-&gt;registerKey( 'userobject_id' );
++			$this-&gt;registerKey( 'language_id', false );
+ 
++			$this-&gt;registerField( 'user_username' );
++			$this-&gt;registerField( 'user_password' );
++			$this-&gt;registerField( 'user_name' );
++			$this-&gt;registerField( 'user_email' );			
++			$this-&gt;registerField( 'user_other' );	
++			$this-&gt;registerField( 'user_loginstart' );
++			$this-&gt;registerField( 'user_loginend' );
++			$this-&gt;registerField( 'user_logincounter' );			
++			$this-&gt;registerField( 'user_loginlast' );
++			$this-&gt;registerField( 'user_logincurrent' );
++			$this-&gt;registerField( 'user_template' );
++			$this-&gt;registerField( 'user_creationdate' );
++			$this-&gt;registerField( 'user_refreshdate' );
++			$this-&gt;registerField( 'user_country' );
++			$this-&gt;registerField( 'user_interests' );
++			$this-&gt;registerField( 'user_bio' );
++			$this-&gt;registerField( 'user_photo' );
++			$this-&gt;registerField( 'user_birthdate' );
++			$this-&gt;registerField( 'user_website' );
++			$this-&gt;registerField( 'user_im_icq' );
++			$this-&gt;registerField( 'user_im_msn' );
++			$this-&gt;registerField( 'user_im_yahoo' );
++			$this-&gt;registerField( 'user_im_aol' );
++
++			// forum extra fields
++			$this-&gt;registerField( 'user_forum_permission' );
++			$this-&gt;registerField( 'user_forum_signature' );
++			$this-&gt;registerField( 'user_forum_totalposts' );
++			$this-&gt;registerField( 'user_forum_totaltopics' );
++			$this-&gt;registerField( 'user_forum_avatar' );
++
+ 			// init relation with userobject
+             $rel = &amp; $this-&gt;registerRelation( 'ydcmuserobject', false, 'ydcmuserobject' );
+-			$rel-&gt;setLocalKey( 'user_id' );
+-            $rel-&gt;setForeignKey( 'userobject_id' );
++			$rel-&gt;setLocalKey( 'ydcmuser.userobject_id' );
++            $rel-&gt;setForeignKey( 'ydcmuserobject.userobject_id' );
+ 
+ 			// init relation with languages table
+             $rel = &amp; $this-&gt;registerRelation( 'ydcmlanguages', false, 'ydcmlanguages' );
+-			$rel-&gt;setLocalKey( 'lang_id' );
+-            $rel-&gt;setForeignKey( 'language_id' );
++			$rel-&gt;setLocalKey( 'ydcmuser.language_id' );
++            $rel-&gt;setForeignKey( 'ydcmlanguages.language_id' );
++
++			// init results cache
++			$this-&gt;_cache_activeusers = null;
+ 		}
+ 
+ 
+@@ -101,7 +134,7 @@
+          *
+          *  @returns    ARRAY with user attributes, FALSE otherwise
+          */
+-		function valid( $username = '', $password = '' ){
++		function valid( $username = '', $password = '', $force_md5 = false ){
+ 
+ 			// test username and password
+ 			if ( !YDValidateRules::alphanumeric( $username ) )   return false;
+@@ -113,20 +146,20 @@
+ 			$this-&gt;resetAll();
+ 
+ 			// set username
+-			$this-&gt;set( 'username', $username );
++			$this-&gt;set( 'user_username', $username );
+ 
+ 			// if password is not in md5 format we must set it
+-			if ( strlen( $password ) != 32 ) $password = md5( $password );
++			if ( $force_md5 ) $password = md5( $password );
+ 
+ 			// set password
+-			$this-&gt;set( 'password', $password );
+-			
++			$this-&gt;set( 'user_password', $password );
++
+ 			// check user state based on state and/or user login schedule
+ 			$now = YDStringUtil::formatDate( time(), 'datetimesql' );
+ 
+ 			// relation with userobject
+ 			$this-&gt;load( 'ydcmuserobject' );
+-			$this-&gt;where( '(state = 1 OR (state = 2 AND login_start &lt; &quot;' . $now . '&quot; AND login_end &gt; &quot;' . $now . '&quot;))' );
++			$this-&gt;where( '(ydcmuserobject.userobject_state = 1 OR (ydcmuserobject.userobject_state = 2 AND ydcmuser.user_loginstart &lt; &quot;' . $now . '&quot; AND ydcmuser.user_loginend &gt; &quot;' . $now . '&quot;))' );
+ 
+ 			// test if we get just one user
+ 			if ( $this-&gt;find( 'ydcmuserobject' ) != 1 ) return false;
+@@ -138,19 +171,19 @@
+         /**
+          *  This method checks if a user ID is valid ( will check if user_id is on its 3 tables )
+          *
+-         *  @param $user_id        User id
++         *  @param $userobject_id        User id
+          *
+          *  @returns    TRUE if valid, FALSE otherwise
+          */
+-		function validID( $user_id ){
++		function validID( $userobject_id ){
+ 		
+ 			// reset values
+ 			$this-&gt;resetAll();
+ 
+ 			// find all rows this user id
+-			$this-&gt;where( 'user_id = ' . intval( $user_id ) );
++			$this-&gt;where( 'userobject_id = ' . intval( $userobject_id ) );
+ 
+-			// join all tables when finding (to check if user_id really belongs to all 3 tables)
++			// join all tables when finding (to check if userobject_id really belongs to all 3 tables)
+ 			return ( $this-&gt;findAll() == 1 );
+ 		}
+ 
+@@ -158,18 +191,18 @@
+         /**
+          *  This method deletes a user (and all children) or just the children
+          *
+-         *  @param $user_id       Userobject id
++         *  @param $userobject_id       Userobject id
+          *  @param $deleteAll     (Optional) Delete id and all children (true by default. if false, deletes children only)
+          *
+          *  @returns    YDResult object. OK      - user deleted
+ 		 *                               WARNING - no deletes where made
+          */
+-		function deleteUser( $user_id, $deleteAll ){
++		function deleteUser( $userobject_id, $deleteAll ){
+ 		
+ 			$obj = new YDCMUserobject();
+ 			
+ 			// delete user and get result
+-			if ( $obj-&gt;deleteNode( $user_id, $deleteAll ) ) return YDResult::ok( t('ydcmuser mess delete ok') );
++			if ( $obj-&gt;deleteNode( $userobject_id, $deleteAll ) ) return YDResult::ok( t('ydcmuser mess delete ok') );
+ 			else                                            return YDResult::fatal( t('ydcmuser mess delete empty') );
+ 		}
+ 
+@@ -226,65 +259,65 @@
+ 			if ( !is_array( $noneditable ) ) $noneditable = array( $noneditable );
+ 
+ 			// add username
+-			if ( in_array( 'username', $noneditable ) ){
+-				$this-&gt;_form-&gt;addElement( 'span', 'username', t( 'ydcmuser label username' ) );
++			if ( in_array( 'user_username', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span', 'user_username', t( 'ydcmuser label username' ) );
+ 			}else{
+-				$this-&gt;_form-&gt;addElement( 'text', 'username', t( 'ydcmuser label username' ) );
++				$this-&gt;_form-&gt;addElement( 'text', 'user_username', t( 'ydcmuser label username' ) );
+ 				$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkuser' ), array( $edit, $id ) );
+ 			}
+ 
+ 			// add password box for new users
+ 			if ( $edit == false ){
+-				$this-&gt;_form-&gt;addElement( 'password', 'password', t( 'ydcmuser label password' ) );
+-				$this-&gt;_form-&gt;addElement( 'password', 'password2', t( 'ydcmuser label password2' ) );
++				$this-&gt;_form-&gt;addElement( 'password', 'user_password', t( 'ydcmuser label password' ) );
++				$this-&gt;_form-&gt;addElement( 'password', 'user_password2', t( 'ydcmuser label password2' ) );
+ 			}
+ 
+ 			// add state
+ 			if ( in_array( 'state', $noneditable ) ){
+ 				$this-&gt;_form-&gt;addElement( 'span',           'state',       t( 'ydcmuser label state' ) );
+-				$this-&gt;_form-&gt;addElement( 'span',           'login_start', t( 'ydcmuser label login_start' ) );
+-				$this-&gt;_form-&gt;addElement( 'span',           'login_end',   t( 'ydcmuser label login_end' ) );
++				$this-&gt;_form-&gt;addElement( 'span',           'user_loginstart', t( 'ydcmuser label login_start' ) );
++				$this-&gt;_form-&gt;addElement( 'span',           'user_loginend',   t( 'ydcmuser label login_end' ) );
+ 			}else{
+ 				$this-&gt;_form-&gt;addElement( 'select',         'state',       t( 'ydcmuser label state' ), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+-				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_start', t( 'ydcmuser label login_start' ) );
+-				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_end',   t( 'ydcmuser label login_end' ) );
++				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'user_loginstart', t( 'ydcmuser label login_start' ) );
++				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'user_loginend',   t( 'ydcmuser label login_end' ) );
+ 			}
+ 
+ 			// add common user details
+ 			if ( in_array( 'details', $noneditable ) ){
+-				$this-&gt;_form-&gt;addElement( 'span',      'name',          t( 'ydcmuser label name' ) );
+-				$this-&gt;_form-&gt;addElement( 'span',      'email',         t( 'ydcmuser label email' ) );
+-				$this-&gt;_form-&gt;addElement( 'span',      'other',         t( 'ydcmuser label other' ) );
+-				$this-&gt;_form-&gt;addElement( 'span',      'lang_id',       t( 'ydcmuser label language' ) );
+-				$this-&gt;_form-&gt;addElement( 'span',      'template',      t( 'ydcmuser label template' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'user_name',          t( 'ydcmuser label name' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'user_email',         t( 'ydcmuser label email' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'user_other',         t( 'ydcmuser label other' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'user_language_id',       t( 'ydcmuser label language' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'user_template',      t( 'ydcmuser label template' ) );
+ 			}else{
+-				$this-&gt;_form-&gt;addElement( 'text',      'name',          t( 'ydcmuser label name' ),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
+-				$this-&gt;_form-&gt;addElement( 'text',      'email',         t( 'ydcmuser label email' ) );
+-				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t( 'ydcmuser label other' ),    array('rows' =&gt; 15, 'cols' =&gt; 40) );
++				$this-&gt;_form-&gt;addElement( 'text',      'user_name',          t( 'ydcmuser label name' ),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
++				$this-&gt;_form-&gt;addElement( 'text',      'user_email',         t( 'ydcmuser label email' ) );
++				$this-&gt;_form-&gt;addElement( 'textarea',  'user_other',         t( 'ydcmuser label other' ),    array('rows' =&gt; 15, 'cols' =&gt; 40) );
+ 
+ 				$languages = new YDCMLanguages();
+ 				$languages = $languages-&gt;active();
+-				$this-&gt;_form-&gt;addElement( 'select',    'lang_id',       t( 'ydcmuser label language' ), array(), $languages );
++				$this-&gt;_form-&gt;addElement( 'select',    'user_language_id',       t( 'ydcmuser label language' ), array(), $languages );
+ 
+ 				$templates = YDCMTemplates::getNames();
+ 
+ 				// get url to templates and set shot.png as filename
+ 				$attributes = array( 'border' =&gt; 1, 'src' =&gt; YDConfig::get( 'YDCMTEMPLATES_ADMIN_URL' ), 'ext' =&gt; 	YDConfig::get( 'YDCMTEMPLATES_ADMIN_EXT' ) );
+ 
+-    	        $this-&gt;_form-&gt;addElement( 'selectimage',    'template', t( 'ydcmuser label template' ), $attributes, $templates );
++    	        $this-&gt;_form-&gt;addElement( 'selectimage',    'user_template', t( 'ydcmuser label template' ), $attributes, $templates );
+ 
+-				$this-&gt;_form-&gt;addRule( 'name',        'maxlength',      t( 'ydcmuser mess name too big' ),  255 );
+-				$this-&gt;_form-&gt;addRule( 'email',       'email',          t( 'ydcmuser mess email not valid' ) );
+-				$this-&gt;_form-&gt;addRule( 'other',       'maxlength',      t( 'ydcmuser mess other too big' ), 5000 );
+-				$this-&gt;_form-&gt;addRule( 'language_id', 'in_array',       t( 'ydcmuser mess language not valid' ), array_keys( $languages ) );
+-				$this-&gt;_form-&gt;addRule( 'template',    'in_array',       t( 'ydcmuser mess template not valid' ), array_keys( $templates ) );
++				$this-&gt;_form-&gt;addRule( 'user_name',        'maxlength',      t( 'ydcmuser mess name too big' ),  255 );
++				$this-&gt;_form-&gt;addRule( 'user_email',       'email',          t( 'ydcmuser mess email not valid' ) );
++				$this-&gt;_form-&gt;addRule( 'user_other',       'maxlength',      t( 'ydcmuser mess other too big' ), 5000 );
++				$this-&gt;_form-&gt;addRule( 'user_language_id', 'in_array',       t( 'ydcmuser mess language not valid' ), array_keys( $languages ) );
++				$this-&gt;_form-&gt;addRule( 'user_template',    'in_array',       t( 'ydcmuser mess template not valid' ), array_keys( $templates ) );
+ 			}
+ 
+ 			// add access information when editing
+ 			if ( $edit ) {
+-				$this-&gt;_form-&gt;addElement( 'span', 'login_counter', t( 'ydcmuser label login_counter' ) );
+-   	        	$this-&gt;_form-&gt;addElement( 'span', 'login_last',    t( 'ydcmuser label login_last' ) );
+-   	        	$this-&gt;_form-&gt;addElement( 'span', 'login_current', t( 'ydcmuser label login_current' ) );
++				$this-&gt;_form-&gt;addElement( 'span', 'user_logincounter', t( 'ydcmuser label login_counter' ) );
++   	        	$this-&gt;_form-&gt;addElement( 'span', 'user_loginlast',    t( 'ydcmuser label login_last' ) );
++   	        	$this-&gt;_form-&gt;addElement( 'span', 'user_logincurrent', t( 'ydcmuser label login_current' ) );
+ 			}
+ 
+ 			// if we are editing a user it's a good idea to set form defaults with user node attributes
+@@ -310,8 +343,8 @@
+ 				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmuser label new' ) );
+ 
+ 				// when adding a user, if login_end date exists we setup 7 days interval
+-				if ( $this-&gt;_form-&gt;isElement( 'login_end' ) )
+-					$this-&gt;_form-&gt;setDefault( 'login_end', time() + 7 * 24 * 3600 );
++				if ( $this-&gt;_form-&gt;isElement( 'user_loginend' ) )
++					$this-&gt;_form-&gt;setDefault( 'user_loginend', time() + 7 * 24 * 3600 );
+ 			}
+ 
+ 
+@@ -325,11 +358,11 @@
+ 
+ 			$this-&gt;resetAll();
+ 			
+-			$this-&gt;set( 'username', $values[ 'username' ] );
++			$this-&gt;set( 'user_username', $values[ 'username' ] );
+ 
+ 			// check if we are editing. if yes, we should check if the username is already used only by another user than current
+ 			if ( $options[0] == true )
+-				$this-&gt;where( 'user_id != ' . intval( $options[1] ) );
++				$this-&gt;where( 'userobject_id != ' . intval( $options[1] ) );
+ 			
+ 			if ( $this-&gt;find() == 0 ) return true;
+ 			
+@@ -391,7 +424,7 @@
+ 				// create userobject node
+ 				$userobject = array();
+ 				$userobject['type']  = 'YDCMUser';
+-				if ( isset( $values[ 'name' ] ) )  $userobject['reference'] = $values[ 'name' ];
++				if ( isset( $values[ 'user_name' ] ) )  $userobject['reference'] = $values[ 'user_name' ];
+ 				if ( isset( $values[ 'state' ] ) ) $userobject['state']     = $values[ 'state' ];
+ 
+ 				// update userobject
+@@ -400,22 +433,22 @@
+ 
+ 				// create user row
+ 				$user = array();
+-				if ( isset( $values[ 'password' ] ) ) $user['password'] = md5( $values[ 'password' ] );
+-				if ( isset( $values[ 'username' ] ) ) $user['username'] = $values[ 'username' ];
+-				if ( isset( $values[ 'name' ] ) )     $user['name']     = $values[ 'name' ];
+-				if ( isset( $values[ 'email' ] ) )    $user['email']    = $values[ 'email' ];
+-				if ( isset( $values[ 'other' ] ) )    $user['other']    = $values[ 'other' ];
+-				if ( isset( $values[ 'lang_id' ] ) )  $user['lang_id']  = $values[ 'lang_id' ];
+-				if ( isset( $values[ 'template' ] ) ) $user['template'] = $values[ 'template' ];
++				if ( isset( $values[ 'user_password' ] ) ) $user['user_password'] = md5( $values[ 'user_password' ] );
++				if ( isset( $values[ 'user_username' ] ) ) $user['user_username'] = $values[ 'user_username' ];
++				if ( isset( $values[ 'user_name' ] ) )     $user['user_name']     = $values[ 'user_name' ];
++				if ( isset( $values[ 'user_email' ] ) )    $user['user_email']    = $values[ 'user_email' ];
++				if ( isset( $values[ 'user_other' ] ) )    $user['user_other']    = $values[ 'user_other' ];
++				if ( isset( $values[ 'user_language_id' ] ) )  $user['user_language_id']  = $values[ 'user_language_id' ];
++				if ( isset( $values[ 'user_template' ] ) ) $user['user_template'] = $values[ 'user_template' ];
+ 
+ 				// check login schedule dates
+-				if ( isset( $user['login_start'] ) ) $user[ 'login_start' ] = YDStringUtil::formatDate( $values[ 'login_start' ], 'datetimesql' );
+-				if ( isset( $user['login_end'] ) )   $user[ 'login_end' ]   = YDStringUtil::formatDate( $values[ 'login_end' ], 'datetimesql' );
++				if ( isset( $user['user_loginstart'] ) ) $user[ 'user_loginstart' ] = YDStringUtil::formatDate( $values[ 'user_loginstart' ], 'datetimesql' );
++				if ( isset( $user['user_loginend'] ) )   $user[ 'user_loginend' ]   = YDStringUtil::formatDate( $values[ 'user_loginend' ], 'datetimesql' );
+ 
+ 				// update user
+ 				$this-&gt;resetValues();
+ 				$this-&gt;setValues( $user );
+-				$this-&gt;where( 'user_id = '. $id ); 
++				$this-&gt;where( 'userobject_id = '. $id ); 
+ 
+ 				$res = $this-&gt;update();
+ 				
+@@ -442,20 +475,20 @@
+ 				$user = array();
+ 
+ 				// add REQUIRED values
+-				$user[ 'user_id' ]       = $res;
+-				$user[ 'password' ]      = md5( $values[ 'password' ] );
+-				$user[ 'username' ]      = $values[ 'username' ];
+-				$user[ 'lang_id' ]       = $values[ 'lang_id' ];
+-				$user[ 'template' ]      = $values[ 'template' ];
++				$user[ 'userobject_id' ]       = $res;
++				$user[ 'user_password' ]      = md5( $values[ 'user_password' ] );
++				$user[ 'user_username' ]      = $values[ 'user_username' ];
++				$user[ 'user_language_id' ]       = $values[ 'user_language_id' ];
++				$user[ 'user_template' ]      = $values[ 'user_template' ];
+ 
+-				$user[ 'name' ]          = isset( $values[ 'name' ] )  ? $values[ 'name' ]  : '';
+-				$user[ 'email' ]         = isset( $values[ 'email' ] ) ? $values[ 'email' ] : '';
+-				$user[ 'other' ]         = isset( $values[ 'other' ] ) ? $values[ 'other' ] : '';
+-				$user[ 'login_counter' ] = 0;
+-				$user[ 'login_start' ]   = YDStringUtil::formatDate( 0, 'datetimesql' );
+-				$user[ 'login_end' ]     = YDStringUtil::formatDate( 0, 'datetimesql' );
+-				$user[ 'login_last' ]    = YDStringUtil::formatDate( 0, 'datetimesql' );
+-				$user[ 'login_current' ] = YDStringUtil::formatDate( 0, 'datetimesql' );
++				$user[ 'user_name' ]          = isset( $values[ 'user_name' ] )  ? $values[ 'user_name' ]  : '';
++				$user[ 'user_email' ]         = isset( $values[ 'user_email' ] ) ? $values[ 'user_email' ] : '';
++				$user[ 'user_other' ]         = isset( $values[ 'user_other' ] ) ? $values[ 'user_other' ] : '';
++				$user[ 'user_logincounter' ] = 0;
++				$user[ 'user_loginstart' ]   = YDStringUtil::formatDate( 0, 'datetimesql' );
++				$user[ 'user_loginend' ]     = YDStringUtil::formatDate( 0, 'datetimesql' );
++				$user[ 'user_loginlast' ]    = YDStringUtil::formatDate( 0, 'datetimesql' );
++				$user[ 'user_logincurrent' ] = YDStringUtil::formatDate( 0, 'datetimesql' );
+ 
+ 				// reset object
+ 				$this-&gt;resetValues();
+@@ -508,14 +541,14 @@
+         /**
+          *  This function updates a user password
+          *
+-         *  @param $user_id     User id to update password
++         *  @param $userobject_id     User id to update password
+          *  @param $formvalues  (Otional) Custom array with 2 passwords (new and new_confirm)
+          *
+          *  @returns    YDResult object. OK      - password updated
+ 		 *                               WARNING - there are form errors
+          *                               FATAL   - was not possible to update
+          */
+-		function saveFormPassword( $user_id, $formvalues = null ){
++		function saveFormPassword( $userobject_id, $formvalues = null ){
+ 
+ 			// check form validation
+ 			if ( !$this-&gt;_form-&gt;validate( $formvalues ) )
+@@ -525,9 +558,9 @@
+ 			$this-&gt;resetAll();
+ 
+ 			// set new password
+-			$this-&gt;set( 'password', md5( $this-&gt;_form-&gt;getValue( 'new' ) ) );
++			$this-&gt;set( 'user_password', md5( $this-&gt;_form-&gt;getValue( 'new' ) ) );
+ 
+-			$this-&gt;where( 'user_id = ' . intval( $user_id ) );
++			$this-&gt;where( 'userobject_id = ' . intval( $userobject_id ) );
+ 
+ 			// update user and get result
+ 			if ( $this-&gt;update() == 1 ) return YDResult::ok( t('ydcmuser mess password updated') );
+@@ -552,26 +585,43 @@
+ 
+ 
+         /**
++         *  This method returns all user information
++         *  @returns    Array with users
++         */
++		function getUsers(){
++
++			$this-&gt;reset();
++			$this-&gt;findAll();
++			return $this-&gt;getResults();
++		}
++
++
++		function getUsersAsRecordSet( $page = 1 ){
++			return new YDRecordSet( $this-&gt;getUsers(), $page, 2 );
++		}
++
++
++        /**
+          *  This method returns user attributes
+          *
+-         *  @param      $user_id     User id or username
++         *  @param      $userobject_id     User id or username
+          *  @param      $translate   (Optional) Boolean that defines if result must be translated
+          *
+          *  @returns    FALSE if user not found, user details array otherwise
+          */
+-		function getUser( $user_id, $translate = false ){
++		function getUser( $userobject_id, $translate = false ){
+ 
+ 			$this-&gt;resetAll();
+ 
+ 			// set user id to search for
+-			if ( is_numeric( $user_id ) ) $this-&gt;set( 'user_id',  intval( $user_id ) );
+-			else                          $this-&gt;set( 'username', strval( $user_id ) );
++			if ( is_numeric( $userobject_id ) ) $this-&gt;set( 'userobject_id',  intval( $userobject_id ) );
++			else                          $this-&gt;set( 'user_username', strval( $userobject_id ) );
+ 
+ 			// get all attributes
+ 			if ( $this-&gt;findAll() != 1 ) return false;
+ 
+ 			// password should be NOT visible
+-			$this-&gt;set( 'password', '' );
++			$this-&gt;set( 'user_password', '' );
+ 
+ 			// check if we want human readable elements
+ 			if ( $translate ){
+@@ -579,12 +629,12 @@
+ 				// translate states
+ 				switch( intval( $this-&gt;get( 'ydcmuserobject_state' ) ) ){
+ 					case 0 : $this-&gt;set( 'ydcmuserobject_state', t('blocked') );
+-							 $this-&gt;set( 'login_start',          t('not applicable') );
+-							 $this-&gt;set( 'login_end',            t('not applicable') );
++							 $this-&gt;set( 'user_loginstart',          t('not applicable') );
++							 $this-&gt;set( 'user_loginend',            t('not applicable') );
+ 							 break;
+ 					case 1 : $this-&gt;set( 'ydcmuserobject_state', t('active') );
+-							 $this-&gt;set( 'login_start',          t('not applicable') );
+-							 $this-&gt;set( 'login_end',            t('not applicable') );
++							 $this-&gt;set( 'user_loginstart',          t('not applicable') );
++							 $this-&gt;set( 'user_loginend',            t('not applicable') );
+ 							 break;
+ 					case 2 : $this-&gt;set( 'ydcmuserobject_state', t('schedule') );
+ 							 break;
+@@ -599,17 +649,17 @@
+         /**
+          *  This method returns a specific user attribute
+          *
+-         *  @param      $user_id     User id to use (instead of internal)
++         *  @param      $userobject_id     User id to use (instead of internal)
+          *  @param      $attribute   Attribute name string
+          *
+          *  @returns    FALSE if attribute not found, attribute string otherwise
+          */
+-		function getUserAttribute( $user_id, $attribute ){
++		function getUserAttribute( $userobject_id, $attribute ){
+ 
+ 			$this-&gt;resetValues();
+ 
+ 			// set user id
+-			$this-&gt;set( 'user_id', intval( $user_id ) );
++			$this-&gt;set( 'userobject_id', intval( $userobject_id ) );
+ 
+ 			// get all attributes
+ 			if ( $this-&gt;find() != 1 ) return false;
+@@ -618,32 +668,101 @@
+ 		}
+ 
+ 
++
+         /**
++         *  This method returns the newest users created
++         *
++         *  @returns    Array with latest users
++         */
++		function getNewestUsers(){
++
++			$this-&gt;reset();
++			
++			$this-&gt;limit( 5 );
++			$this-&gt;orderby( 'userobject_id DESC' );
++			$this-&gt;find();
++			
++			return $this-&gt;getResults();
++		}
++
++
++        /**
++         *  This method returns the latest active users
++         *
++         *  @returns    Array with latest users
++         */
++		function getActiveUsers( $minutes = 15, $use_cache = true ){
++
++			if ( $use_cache ){
++
++				if ( is_null( $this-&gt;_cache_activeusers ) ) $this-&gt;_cache_activeusers = $this-&gt;getActiveUsers( $minutes, false );
++
++				return $this-&gt;_cache_activeusers;
++			}
++
++			$this-&gt;reset();
++			
++			$this-&gt;limit( 100 );
++			$this-&gt;where( 'user_logincurrent &gt; &quot;' . YDStringUtil::formatDate( time() - 60 * intval( $minutes ), 'datetimesql' ) . '&quot;' );
++			$this-&gt;orderby( 'user_logincurrent DESC' );
++			$this-&gt;find();
++			
++			return $this-&gt;getResults();
++		}
++
++
++        /**
++         *  This method returns the total of latest active users
++         *
++         *  @returns    Total of active users
++         */
++		function getTotalActiveUsers(){
++
++			if ( is_null( $this-&gt;_cache_activeusers ) ) $this-&gt;_cache_activeusers = $this-&gt;getActiveUsers( $minutes, false );
++
++			return count( $this-&gt;_cache_activeusers );
++		}
++
++
++        /**
++         *  This method returns the total of users
++         *
++         *  @returns    Total of users
++         */
++		function getTotals(){
++		
++			$this-&gt;reset();
++			return $this-&gt;_db-&gt;getValue( 'SELECT COUNT(*) as total FROM ' . $this-&gt;getTable() );
++		}
++
++
++        /**
+          *  This function updates current user login details
+          *
+          *  @returns    true if user login details updated, false if user is not valid or details not updated
+          */
+-		function updateLogin(){
++		function updateLogin( $userobject_id = null ){
+ 
+ 			$this-&gt;resetAll();
+ 			
+-			// set our user_id for search
+-			$this-&gt;set( 'user_id', $this-&gt;currentID() );
++			// set our userobject_id for search
++			if ( is_numeric( $userobject_id ) ) $this-&gt;set( 'userobject_id', intval( $userobject_id ) );
++			else                          $this-&gt;set( 'userobject_id', $this-&gt;currentID() );
+ 
+ 			// get all attributes
+ 			$this-&gt;find();
+ 
+ 			// increase login counter value
+-			$this-&gt;set( 'login_counter', 1 + $this-&gt;get( 'login_counter' ) );
++			$this-&gt;set( 'user_logincounter', 1 + $this-&gt;get( 'user_logincounter' ) );
+ 
+ 			// set last login date
+-			$this-&gt;set( 'login_last', $this-&gt;get( 'login_current' ) );
++			$this-&gt;set( 'user_loginlast', $this-&gt;get( 'user_logincurrent' ) );
+ 
+ 			// set current login
+-			$this-&gt;set( 'login_current', YDStringUtil::formatDate( time(), 'datetimesql' ) );
++			$this-&gt;set( 'user_logincurrent', YDStringUtil::formatDate( time(), 'datetimesql' ) );
+ 
+ 			// because we don't have a primary key we must do this
+-			$this-&gt;where( 'user_id = ' . $this-&gt;get( 'user_id' ) );
++			$this-&gt;where( 'userobject_id = ' . $this-&gt;get( 'userobject_id' ) );
+ 			
+ 			// return update result
+ 			if ( $this-&gt;update() == 1 ) return true;
+@@ -663,4 +782,79 @@
+ 
+ 
+     }
+-?&gt;
+\ No newline at end of file
++
++
++/*
++
++CREATE TABLE YDCMUser_guests (
++   guest_id mediumint(8) UNSIGNED NOT NULL auto_increment,
++   guest_ip varchar(15),
++   guest_date datetime NOT NULL,
++   PRIMARY KEY (guest_id)
++);
++
++INSERT INTO YDCMUser_guests VALUES ( 1, '127.0.0.1', '2006-12-14 22:20' );
++INSERT INTO YDCMUser_guests VALUES ( 2, '127.0.0.2', '2006-12-14 22:20' );
++INSERT INTO YDCMUser_guests VALUES ( 3, '127.0.0.3', '2006-12-14 22:20' );
++
++
++
++*/
++
++
++	// user class
++    class YDCMUser_guests extends YDDatabaseObject {
++    
++        function YDCMUser_guests() {
++        
++			// init DB object
++            $this-&gt;YDDatabaseObject();
++
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMUser_guests' );
++
++			// register fields
++			$this-&gt;registerKey( 'guest_id' );
++			$this-&gt;registerField( 'guest_ip' );
++			$this-&gt;registerField( 'guest_date' );
++		}
++
++
++        /**
++         *  This method adds a new guest entry
++         */
++		function addEntry(){
++		
++			// delete old and possible duplicated entries
++			$this-&gt;reset();
++			$this-&gt;where( $this-&gt;getTable() . '.guest_date &lt; &quot;' . YDStringUtil::formatDate( time() - 15 * 60, 'datetimesql' ) . '&quot; OR ' . $this-&gt;getTable() . '.guest_ip = &quot;' . $_SERVER['SERVER_ADDR'] . '&quot;' );
++			$this-&gt;delete();
++
++			// add entry and get id added
++			$this-&gt;reset();
++			$this-&gt;set( 'guest_ip', $_SERVER['SERVER_ADDR'] );
++			$this-&gt;set( 'guest_date', YDStringUtil::formatDate( time(), 'datetimesql' ) );
++			return $this-&gt;insert();
++		}
++
++
++        /**
++         *  This method return total guests
++         *
++         *  @returns    Numeric value
++         */
++		function getTotal(){
++
++			$this-&gt;reset();
++			$this-&gt;where( $this-&gt;getTable() . '.guest_date &gt; &quot;' . YDStringUtil::formatDate( time() - 15 * 60, 'datetimesql' ) . '&quot;' );
++			return $this-&gt;find();
++		}
++
++
++}
++
++
++?&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-24 14:13:33 UTC (rev 2357)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-24 14:36:02 UTC (rev 2358)
+@@ -32,25 +32,26 @@
+ 
+ 
+ 	// add YD libs
+-	YDInclude( 'YDDatabaseTree3.php' );
++	require_once( YD_DIR_HOME_ADD . '/YDDatabaseObjectTree/YDDatabaseObjectTree.php' );
+ 
++
+     /**
+      *  @ingroup YDCMComponent
+      */
+-    class YDCMUserobject extends YDDatabaseTree3 {
++    class YDCMUserobject extends YDDatabaseObjectTree {
+     
+         function YDCMUserobject() {
+ 
+ 			// init parent object
+-			$this-&gt;YDDatabaseTree3( 'YDCMUserobject', 'default', 'userobject_id', 'parent_id', 'lineage', 'level', 'position' );
++			$this-&gt;YDDatabaseObjectTree( 'YDCMUserobject', 'default', 'userobject_id', 'userobject_parent_id', 'userobject_lineage', 'userobject_level', 'userobject_position' );
+ 
+ 			// add custom tree fields
+-			$this-&gt;registerField( 'type' );
+-			$this-&gt;registerField( 'reference' );			
+-			$this-&gt;registerField( 'state' );
++			$this-&gt;registerField( 'userobject_type' );
++			$this-&gt;registerField( 'userobject_reference' );			
++			$this-&gt;registerField( 'userobject_state' );
+ 
+ 			// define tree order
+-			$this-&gt;order( 'parent_id ASC, position ASC' );
++			$this-&gt;order( 'userobject_parent_id ASC, userobject_position ASC' );
+ 		}
+ 
+ 
+@@ -73,14 +74,14 @@
+ 			if ( $this-&gt;find() != 1 ) return false;
+ 
+ 			// save parent_id for future use
+-			$parent_id = $this-&gt;get( 'parent_id ' );
++			$parent_id = $this-&gt;get( 'userobject_parent_id ' );
+ 
+ 			// reset all previous class values
+ 			$this-&gt;resetValues();
+ 
+ 			// update all children to new parent_id
+-			$this-&gt;set( 'parent_id', intval( $parent_id ) );
+-			$this-&gt;where( 'parent_id', $userobject_id );
++			$this-&gt;set( 'userobject_parent_id', intval( $parent_id ) );
++			$this-&gt;where( 'userobject_parent_id', $userobject_id );
+ 
+ 			// update node
+ 			return $this-&gt;update();
+@@ -101,7 +102,7 @@
+ 			$this-&gt;resetValues();
+ 
+ 			// set user id
+-			$this-&gt;where( 'type IN (' . $this-&gt;_db-&gt;escapeSqlArray( $type ) . ')' );
++			$this-&gt;where( 'userobject_type IN (' . $this-&gt;_db-&gt;escapeSqlArray( $type ) . ')' );
+ 
+ 			// get all attributes
+ 			$this-&gt;find();
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000950.html">[ydf-devel] r2357 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+	<LI>Next message: <A HREF="000952.html">[ydf-devel] r2359 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#951">[ date ]</a>
+              <a href="thread.html#951">[ thread ]</a>
+              <a href="subject.html#951">[ subject ]</a>
+              <a href="author.html#951">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

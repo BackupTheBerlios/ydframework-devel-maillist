@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2386 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2386%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200702032139.l13LdtbL022268%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000978.html">
+   <LINK REL="Next"  HREF="000980.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2386 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2386%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200702032139.l13LdtbL022268%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2386 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Feb  3 22:39:55 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000978.html">[ydf-devel] r2385 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000980.html">[ydf-devel] r2387 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#979">[ date ]</a>
+              <a href="thread.html#979">[ thread ]</a>
+              <a href="subject.html#979">[ subject ]</a>
+              <a href="author.html#979">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-02-03 22:39:27 +0100 (Sat, 03 Feb 2007)
+New Revision: 2386
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+Log:
+FIX: on a date element, if we defined a default year like '1980' it was not displayed 
+     (because the interval is always between currentYear-5 and currentYear+5).
+     Now, if year is smaller or bigger than the options interval, will be added to the options.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-02-03 21:35:34 UTC (rev 2385)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-02-03 21:39:27 UTC (rev 2386)
+@@ -472,9 +472,26 @@
+             foreach ( $elements as $element ) {
+                 $this-&gt;$element-&gt;_value = isset( $this-&gt;_value[ $element ] ) ? $this-&gt;_value[ $element ] : '';
+             }
+-            
++
++            // Check year value if belongs to options. If not, prepend or append that value to options
++            if( ! in_array( $this-&gt;year-&gt;_value, $this-&gt;year-&gt;_options ) ){
++                $years = array_keys( $this-&gt;year-&gt;_options );
++
++                if ( $this-&gt;year-&gt;_value &lt; $years[0] ){
++                    array_unshift( $years, $this-&gt;year-&gt;_value );
++                }
++                elseif ( $this-&gt;year-&gt;_value &gt; $years[ count ( $years ) - 1 ] ){
++                    array_push( $years, $this-&gt;year-&gt;_value );
++                }
++
++                $this-&gt;year-&gt;_options = array();
++
++                foreach( $years as $year ){
++                    $this-&gt;year-&gt;_options[ $year ] = $year;
++                }
++            }
++
+             // Convert to HTML
+-            
+             $dates = array( 'day', 'month', 'year' );
+             $times = array( 'hours', 'minutes', 'seconds' );
+             
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000978.html">[ydf-devel] r2385 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000980.html">[ydf-devel] r2387 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#979">[ date ]</a>
+              <a href="thread.html#979">[ thread ]</a>
+              <a href="subject.html#979">[ subject ]</a>
+              <a href="author.html#979">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

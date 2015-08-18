@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1850 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1850%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604151620.k3FGK44K002798%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000281.html">
+   <LINK REL="Next"  HREF="000283.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1850 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1850%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604151620.k3FGK44K002798%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1850 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Sat Apr 15 18:20:04 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000281.html">[ydf-devel] r1849 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000283.html">[ydf-devel] r1851 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#282">[ date ]</a>
+              <a href="thread.html#282">[ thread ]</a>
+              <a href="subject.html#282">[ subject ]</a>
+              <a href="author.html#282">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-15 18:19:45 +0200 (Sat, 15 Apr 2006)
+New Revision: 1850
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+Log:
+fixed deleteNode to support custom id field name
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-04-13 19:53:58 UTC (rev 1849)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-04-15 16:19:45 UTC (rev 1850)
+@@ -748,7 +748,7 @@
+             // Get the list of IDs to delete
+             $nodes_to_delete = array();
+             foreach ( $children as $child ) {
+-                array_push( $nodes_to_delete, $child['id'] );
++                array_push( $nodes_to_delete, $child[ $this-&gt;fields['id'] ] );
+             }
+ 
+             // Add the current node
+@@ -758,7 +758,7 @@
+             if ( sizeof( $nodes_to_delete ) &gt; 0 ) {
+ 
+                 // The query to execute
+-                $query = 'delete from ' . $this-&gt;table . ' where id in ( ' . join( ', ', $nodes_to_delete ) . ' )';
++                $query = 'delete from ' . $this-&gt;table . ' where ' . $this-&gt;fields['id'] . ' in ( ' . join( ', ', $nodes_to_delete ) . ' )';
+ 
+                 // Delete the nodes
+                 $this-&gt;db-&gt;executeSql( $query );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000281.html">[ydf-devel] r1849 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000283.html">[ydf-devel] r1851 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#282">[ date ]</a>
+              <a href="thread.html#282">[ thread ]</a>
+              <a href="subject.html#282">[ subject ]</a>
+              <a href="author.html#282">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

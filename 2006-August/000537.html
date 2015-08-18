@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2030 - YDFramework2.0/trunk/examples/ajax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2030%20-%20YDFramework2.0/trunk/examples/ajax&In-Reply-To=%3C200608220034.k7M0YX4n032666%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000536.html">
+   <LINK REL="Next"  HREF="000538.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2030 - YDFramework2.0/trunk/examples/ajax</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2030%20-%20YDFramework2.0/trunk/examples/ajax&In-Reply-To=%3C200608220034.k7M0YX4n032666%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2030 - YDFramework2.0/trunk/examples/ajax">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug 22 02:34:33 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000536.html">[ydf-devel] r2029 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+        <LI>Next message: <A HREF="000538.html">[ydf-devel] r2031 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#537">[ date ]</a>
+              <a href="thread.html#537">[ thread ]</a>
+              <a href="subject.html#537">[ subject ]</a>
+              <a href="author.html#537">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-22 02:32:54 +0200 (Tue, 22 Aug 2006)
+New Revision: 2030
+
+Added:
+   YDFramework2.0/trunk/examples/ajax/two_forms.php
+Log:
+added a YDAjax example that demonstrates how to use more than one YDForm (with ajax calls) in same template
+
+Added: YDFramework2.0/trunk/examples/ajax/two_forms.php
+===================================================================
+--- YDFramework2.0/trunk/examples/ajax/two_forms.php	2006-08-21 15:43:38 UTC (rev 2029)
++++ YDFramework2.0/trunk/examples/ajax/two_forms.php	2006-08-22 00:32:54 UTC (rev 2030)
+@@ -0,0 +1,84 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDTemplate.php' );
++    YDInclude( 'YDForm.php' );
++    YDInclude( 'YDAjax.php' );
++	
++
++    // Class definition
++    class two_forms extends YDRequest {
++
++        function two_forms() {
++
++			$this-&gt;YDRequest();
++			$this-&gt;tpl = new YDTemplate();
++
++			$this-&gt;form1 = new YDForm( 'myform1' );
++			$this-&gt;form2 = new YDForm( 'myform2' );
++        }
++
++
++        // Default action
++        function actionDefault() {
++
++			// create elements of form1
++			$this-&gt;form1-&gt;addElement( 'text',   'myname_1',       'Name' );
++			$this-&gt;form1-&gt;addElement( 'text',   'myemail_1',      'Email' );
++			$this-&gt;form1-&gt;addElement( 'button', 'mybutton_1',     'Send form with YDAjax' );
++
++			// create elements of form2
++			$this-&gt;form2-&gt;addElement( 'text',   'myname_2',       'Name (2nd)' );
++			$this-&gt;form2-&gt;addElement( 'text',   'myemail_2',      'Email (2nd)' );
++			$this-&gt;form2-&gt;addElement( 'button', 'mybutton_2',     'Send it !' );
++
++			// create form 1 rules
++			$this-&gt;form1-&gt;addRule( 'myname_1',  'required', 'Name is required' );
++			$this-&gt;form1-&gt;addRule( 'myemail_1', 'required', 'Email is required' );
++			$this-&gt;form1-&gt;addRule( 'myemail_1', 'email',    'Email is not valid' );
++
++			// create ajax object and add forms to the ajax object
++			$this-&gt;ajax = new YDAjax( $this-&gt;tpl );
++			$this-&gt;ajax-&gt;addForm( $this-&gt;form1 );
++			$this-&gt;ajax-&gt;addForm( $this-&gt;form2 );
++
++			// assign element mybutton_1 (of form1) with method 'processform' and mybutton_2 with method 'msg'
++			$this-&gt;ajax-&gt;addEvent( 'mybutton_1', array( &amp; $this, 'processform' ), $this-&gt;form1-&gt;getName() );
++			$this-&gt;ajax-&gt;addEvent( 'mybutton_2', array( &amp; $this, 'msg' ), array( 'myname_2', 'myemail_2' ) );
++			$this-&gt;ajax-&gt;processEvents();
++
++			// assign title, form and display template
++			$this-&gt;tpl-&gt;assign( 'title', 'YDAjax form submition' );
++			$this-&gt;tpl-&gt;assign( 'form',  $this-&gt;form1-&gt;render('html') . $this-&gt;form2-&gt;render('html') );
++			$this-&gt;tpl-&gt;display( 'general' );
++        }
++
++
++		// process form call invoked by mybutton_1
++		function processform( $formvalues = null ){
++
++			// if form is not valid, send errors to client side using an alert
++			if ( !$this-&gt;form1-&gt;validate( $formvalues ) )
++				return YDAjax::message( $this-&gt;form1-&gt;getErrors( true, &quot;\n* &quot;, &quot;* &quot; ) );
++
++			// return a simple result
++			return YDAjax::message( $this-&gt;form1-&gt;getValues() );
++		}
++
++
++		// process form call invoked by mybutton_2
++		function msg( $name = '', $email = '' ){
++
++			return YDAjax::message( &quot;Values of 2nd form\n*Name: $name\n*Email: $email&quot; );
++		}
++
++   }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000536.html">[ydf-devel] r2029 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+	<LI>Next message: <A HREF="000538.html">[ydf-devel] r2031 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#537">[ date ]</a>
+              <a href="thread.html#537">[ thread ]</a>
+              <a href="subject.html#537">[ subject ]</a>
+              <a href="author.html#537">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

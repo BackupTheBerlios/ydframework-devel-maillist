@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1995 - YDFramework2.0/trunk/examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1995%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200608110833.k7B8XWTb024446%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000501.html">
+   <LINK REL="Next"  HREF="000503.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1995 - YDFramework2.0/trunk/examples</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1995%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200608110833.k7B8XWTb024446%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1995 - YDFramework2.0/trunk/examples">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Aug 11 10:33:32 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000501.html">[ydf-devel] r1994 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000503.html">[ydf-devel] r1996 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#502">[ date ]</a>
+              <a href="thread.html#502">[ thread ]</a>
+              <a href="subject.html#502">[ subject ]</a>
+              <a href="author.html#502">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-11 10:33:13 +0200 (Fri, 11 Aug 2006)
+New Revision: 1995
+
+Added:
+   YDFramework2.0/trunk/examples/form_filters.php
+Modified:
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+added form filters example
+
+Added: YDFramework2.0/trunk/examples/form_filters.php
+===================================================================
+--- YDFramework2.0/trunk/examples/form_filters.php	2006-08-11 08:30:47 UTC (rev 1994)
++++ YDFramework2.0/trunk/examples/form_filters.php	2006-08-11 08:33:13 UTC (rev 1995)
+@@ -0,0 +1,65 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDForm.php' );
++    YDInclude( 'YDRequest.php' );
++
++    // Class definition
++    class form_filters extends YDRequest {
++
++        // Class constructor
++        function form_filters() {
++            $this-&gt;YDRequest();
++        }
++
++        // Default action
++        function actionDefault() {
++
++            // Create the form
++            $form = new YDForm( 'form1' );
++            
++            // Add elements
++            $form-&gt;addElement( 'text',           'username', 'Fill a username that starts with spaces' );
++            $form-&gt;addElement( 'text',           'name',     'Fill a small caps name' );
++            $form-&gt;addElement( 'datetimeselect', 'date1',    'Date1' );
++            $form-&gt;addElement( 'date',           'date2',    'Date2' );
++            $form-&gt;addElement( 'datetimeselect', 'date3',    'Date3' );
++            $form-&gt;addElement( 'datetimeselect', 'date4',    'Date4' );
++            $form-&gt;addElement( 'submit', '_cmdSubmit', 'Submit' );
++
++            // Some defaults
++			$form-&gt;setDefault( 'username', '    myuser' );
++			$form-&gt;setDefault( 'name',     'igor' );
++			
++            // Add filters
++            $form-&gt;addFilter( 'username', 'trim' );                       // must return eg 'myuser'
++            $form-&gt;addFilter( 'name',     'upper' );                      // must return eg 'IGOR'
++
++            if ( $form-&gt;validate() ) {
++	
++	            // IMPORTANT NOTE: 'dateformat' filters must be always added AFTER form validation !
++	            // On form validation checking (by $form-&gt;validate()), 'dateformat' filter is applyed and
++	            // element is not populated again because date result array is lost.
++	            // This is why form is not displayed correctly after validation 
++				// (if some rule is broken you would not get the date element with correct values)
++            	$form-&gt;addFilter( 'date2', 'dateformat', 'day' );          // must return eg '20'
++	        	$form-&gt;addFilter( 'date3', 'dateformat', 'datetimesql' );  // must return eg '2005-02-01 10:00:00'
++	        	$form-&gt;addFilter( 'date4', 'dateformat', &quot;%b&quot; );           // must return eg 'Aug'
++
++		        YDDebugUtil::dump( $form-&gt;getValues(), '$form-&gt;getValues()' );
++
++			}else{
++  	            // Display form
++	            $form-&gt;display();
++			}
++		}
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-08-11 08:30:47 UTC (rev 1994)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-08-11 08:33:13 UTC (rev 1995)
+@@ -191,7 +191,7 @@
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-            &lt;td rowspan=&quot;11&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
++            &lt;td rowspan=&quot;12&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form.php&quot;&gt;Form handling and validation&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form.php&quot;&gt;form.php&lt;/a&gt;
+@@ -252,6 +252,10 @@
+             &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_filters.php&quot;&gt;Form filters&lt;/a&gt; &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_filters.php&quot;&gt;form_filters.php&lt;/a&gt; &lt;/td&gt;
++          &lt;/tr&gt;
++        &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_xml2.php&quot;&gt;Rendering and importing using XML&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_xml2.php&quot;&gt;form_xml2.php&lt;/a&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000501.html">[ydf-devel] r1994 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000503.html">[ydf-devel] r1996 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#502">[ date ]</a>
+              <a href="thread.html#502">[ thread ]</a>
+              <a href="subject.html#502">[ subject ]</a>
+              <a href="author.html#502">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

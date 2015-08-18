@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2352 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2352%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701231948.l0NJmm5U017578%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000944.html">
+   <LINK REL="Next"  HREF="000946.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2352 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2352%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701231948.l0NJmm5U017578%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2352 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 20:48:48 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000944.html">[ydf-devel] r2351 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+        <LI>Next message: <A HREF="000946.html">[ydf-devel] r2353 -	YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#945">[ date ]</a>
+              <a href="thread.html#945">[ thread ]</a>
+              <a href="subject.html#945">[ subject ]</a>
+              <a href="author.html#945">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-23 20:48:46 +0100 (Tue, 23 Jan 2007)
+New Revision: 2352
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+Log:
+Consolidated YDSimpleCMSAdminRequest and YDSimpleCMSPublicRequest into YDSimpleCMSRequest.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 19:31:39 UTC (rev 2351)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 19:48:46 UTC (rev 2352)
+@@ -23,20 +23,6 @@
+ 
+     /**
+      *  @addtogroup YDSimpleCMS Addons - Simple CMS
+-     *
+-     *  @todo
+-     *      Consolidate the two request classes into one. Based on the scope, it should know if you need to force
+-     *      authentication or not.
+-     *
+-     *  @todo
+-     *      Make a link from the module to the request instance
+-     *
+-     *  @todo
+-     *      Make a link from the template to the module instance and module manager (so that you can access these from
+-     *      the template)
+-     *
+-     *  @todo
+-     *      Make login module based?
+      */
+ 
+     // Check if the framework is loaded
+@@ -154,8 +140,7 @@
+          */
+         function run( $scope ) {
+             YDSimpleCMS::setVar( 'scope', $scope );
+-            $baseClass = ( strtolower( $scope ) == YD_SIMPLECMS_SCOPE_PUBLIC ) ? 'YDSimpleCMSPublicRequest' : 'YDSimpleCMSAdminRequest';
+-            $clsInst = new YDExecutor( $baseClass . '.php' );
++            $clsInst = new YDExecutor( 'YDSimpleCMSRequest.php' );
+             @session_start();
+             $clsInst-&gt;execute();
+         }
+@@ -404,50 +389,14 @@
+         }
+ 
+     }
+-
++    
+     /**
+-     *  Define the CMS public request class.
++     *  Define the SimpleCMS request class. This is the base classes for all requests in the framework.
+      *
+-     *  The public request class doesn't perform any user authentication.
++     *  Depending on the current scope, authetication will be enforced or not. It works as follows:
++     *      - YD_SIMPLECMS_SCOPE_PUBLIC: authetication is performed but not enforced
++     *      - YD_SIMPLECMS_SCOPE_ADMIN: authetication is performed and enforced
+      *
+-     *  @ingroup YDSimpleCMS
+-     */
+-    class YDSimpleCMSPublicRequest extends YDRequest {
+-
+-        /**
+-         *  The default module for the request class.
+-         *
+-         *  Currently defaults to 'page' for the public request class.
+-         */
+-        var $defaultModule = 'page';
+-
+-        /**
+-         *  The default action for the public request.
+-         *
+-         *  Currently, it does the following items:
+-         *      - Creates an instance of YDSimpleCMSModuleManager
+-         *      - Loads all the modules using the instance
+-         *      - Runs the module and action specified by the query string
+-         *
+-         *  @todo
+-         *      Needs to be implemented properly so that it can do all it's stuff based on the ID passed in the qeury
+-         *      string of the request.
+-         */
+-        function actionDefault() {
+-            $module = $this-&gt;getQueryStringParameter( 'module', $this-&gt;defaultModule );
+-            $action = $this-&gt;getQueryStringParameter( 'action', 'show' );
+-            $moduleManager = &amp; YDSimpleCMS::getModuleManager();
+-            $moduleManager-&gt;runModule( $module, $action );
+-        }
+-
+-    }
+-
+-    /**
+-     *  Define the CMS admin request class.
+-     *
+-     *  This class forces authentication against the database (the \#_users table). Only if the authentication succeeds,
+-     *  you will be able to access the request.
+-     *
+      *  It also supports modules and action via specific query string parameters:
+      *      - module: the module to load (defaults to 'admin' )
+      *      - action: the action to load from the module (defaults to 'show')
+@@ -458,24 +407,24 @@
+      *
+      *  @ingroup YDSimpleCMS
+      */
+-    class YDSimpleCMSAdminRequest extends YDSimpleCMSPublicRequest {
++    class YDSimpleCMSRequest extends YDRequest {
+ 
+         /**
+-         *  The default module for the request class.
+-         *
+-         *  Currently defaults to 'admin' for the admin request class.
+-         */
+-        var $defaultModule = 'admin';
+-
+-        /**
+          *  The constructor for the admin CMS request.
+          *
+          *  This one forces authentication and requires a configuration variable called 'YD_SIMPLECMS_SITEID' to be set.
+          */
+-        function YDSimpleCMSAdminRequest() {
++        function YDSimpleCMSRequest() {
+ 
+             // Initialize the parent
+-            $this-&gt;YDSimpleCMSPublicRequest();
++            $this-&gt;YDRequest();
++            
++            // Setup the default module based on the current scope
++            if ( YDSimpleCMS::getScope() == YD_SIMPLECMS_SCOPE_PUBLIC ) {
++                $this-&gt;defaultModule = 'page';
++            } else {
++                $this-&gt;defaultModule = 'admin';
++            }
+ 
+             // Indicate we require login
+             $this-&gt;setRequiresAuthentication( true );
+@@ -493,6 +442,25 @@
+         }
+ 
+         /**
++         *  The default action for the public request.
++         *
++         *  Currently, it does the following items:
++         *      - Creates an instance of YDSimpleCMSModuleManager
++         *      - Loads all the modules using the instance
++         *      - Runs the module and action specified by the query string
++         *
++         *  @todo
++         *      Needs to be implemented properly so that it can do all it's stuff based on the ID passed in the qeury
++         *      string of the request.
++         */
++        function actionDefault() {
++            $module = $this-&gt;getQueryStringParameter( 'module', $this-&gt;defaultModule );
++            $action = $this-&gt;getQueryStringParameter( 'action', 'show' );
++            $moduleManager = &amp; YDSimpleCMS::getModuleManager();
++            $moduleManager-&gt;runModule( $module, $action );
++        }
++
++        /**
+          *  This action takes care of handling the login form. It can show and validate a login form and redirects to
+          *  default action of the request class when the user is authenticated.
+          */
+@@ -572,7 +540,11 @@
+                     return true;
+                 }
+             }
+-            return false;
++            if ( YDSimpleCMS::getScope() == YD_SIMPLECMS_SCOPE_PUBLIC ) {
++                return true;
++            } else {
++                return false;
++            }
+         }
+ 
+         /**
+@@ -726,20 +698,36 @@
+          *
+          *  This function gets triggered by the module manager when this one wants to trigger an action.
+          *
+-         *  @param  $scope  The scope in which to run the action. Can be YD_SIMPLECMS_SCOPE_PUBLIC or
+-         *                  YD_SIMPLECMS_SCOPE_ADMIN
+          *  @param  $action The action to run.
+          */
+-        function runAction( $scope, $action ) {
++        function runAction( $action ) {
++            $scope = YDSimpleCMS::getScope();
+             $moduleFunctionName = YD_SIMPLECMS_ACTION_PREFIX . $scope . '_' . $action;
+             if ( ! $this-&gt;hasMethod( $moduleFunctionName ) ) {
+-                YDSimpleCMS::showError( 'Module %s function not found: %s', $this-&gt;getModuleName(), $moduleFunctionName );
++                YDSimpleCMS::showError(
++                    'Module &quot;%s&quot; does not have a function called &quot;%s&quot;',
++                    $this-&gt;getModuleName(), $moduleFunctionName
++                );
+             }
+             $this-&gt;currentScope  = $scope;
+             $this-&gt;currentAction = $action;
+             call_user_func( array( $this, $moduleFunctionName ) );
+         }
+ 
++        /**
++         *  This function forces the user to logout.
++         */
++        function action_admin_logout() {
++            YDRequest::redirect( YD_SELF_SCRIPT . '?do=logout' );
++        }
++
++        /**
++         *  This function forces the user to logout.
++         */
++        function action_public_logout() {
++            $this-&gt;action_admin_logout();
++        }
++
+     }
+ 
+     /**
+@@ -805,7 +793,7 @@
+             $moduleInstance-&gt;manager = &amp; $this;
+ 
+             // Run the action
+-            $moduleInstance-&gt;runAction( $scope, $action );
++            $moduleInstance-&gt;runAction( $action );
+ 
+         }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-23 19:31:39 UTC (rev 2351)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-23 19:48:46 UTC (rev 2352)
+@@ -72,11 +72,6 @@
+             $this-&gt;display();
+         }
+ 
+-        // Admin logout function
+-        function action_admin_logout() {
+-            YDRequest::redirect( YD_SELF_SCRIPT . '?do=logout' );
+-        }
+-
+         // List the plugins
+         function action_admin_modules() {
+             $moduleManager = &amp; YDSimpleCMS::getModuleManager();
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000944.html">[ydf-devel] r2351 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+	<LI>Next message: <A HREF="000946.html">[ydf-devel] r2353 -	YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#945">[ date ]</a>
+              <a href="thread.html#945">[ thread ]</a>
+              <a href="subject.html#945">[ subject ]</a>
+              <a href="author.html#945">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

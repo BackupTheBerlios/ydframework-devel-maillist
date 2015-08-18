@@ -1,0 +1,842 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2198 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMPage languages/YDCMUser
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2198%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent%3A%20.%0A%09languages%20languages/YDCMGroup%20languages/YDCMPage%20languages/YDCMUser&In-Reply-To=%3C200611142133.kAELXD3x004793%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000747.html">
+   <LINK REL="Next"  HREF="000749.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2198 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMPage languages/YDCMUser</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2198%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent%3A%20.%0A%09languages%20languages/YDCMGroup%20languages/YDCMPage%20languages/YDCMUser&In-Reply-To=%3C200611142133.kAELXD3x004793%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2198 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMPage languages/YDCMUser">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 14 22:33:13 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000747.html">[ydf-devel] r2197 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000749.html">[ydf-devel] r2199 - YDFramework2.0/trunk/examples/cm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#748">[ date ]</a>
+              <a href="thread.html#748">[ thread ]</a>
+              <a href="subject.html#748">[ subject ]</a>
+              <a href="author.html#748">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-14 22:33:11 +0100 (Tue, 14 Nov 2006)
+New Revision: 2198
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php
+Log:
+- on YDCM:
+   * ported to YDDatabaseTree2
+   * merged permission system in group management
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -89,20 +89,22 @@
+ 
+ 
+         /**
+-         *  This method deletes a group
++         *  This method deletes a user (and all children) or just the children
+          *
+-         *  @param $group_id       Group id
++         *  @param $group_id       Userobject id
++         *  @param $mode           (Optional) 0: delete group_id and ALL children
++         *                                    1: delete ALL children of group_id only
+          *
+-         *  @returns    delete()
++         *  @returns    YDResult object. OK      - user deleted
++		 *                               WARNING - no deletes where made
+          */
+-		function deleteUser( $group_id ){
++		function deleteGroup( $group_id, $mode = 0 ){
+ 		
+-			// reset stuff
+-			$this-&gt;resetAll();
++			$obj = new YDCMUserobject();
+ 			
+-			$this-&gt;set( 'group_id', intval( $group_id ) );
+-			
+-			return $this-&gt;delete();
++			// delete user and get result
++			if ( $obj-&gt;deleteNode( $group_id, $mode ) ) return YDResult::ok( t('ydcmgroup mess delete ok') );
++			else                                        return YDResult::fatal( t('ydcmgroup mess delete empty') );
+ 		}
+ 
+ 
+@@ -111,20 +113,26 @@
+ 		 *
+ 		 * @param $group_id     Group id to edit
+          */
+-		function addFormEdit( $group_id ){
++		function &amp; addFormEdit( $group_id, $permObj = null ){
+ 
+-		 	return $this-&gt;_addFormDetails( $group_id, true );
++			// get editing id to be used when saving
++			$this-&gt;editing_ID = $group_id;
++
++		 	return $this-&gt;_addFormDetails( $group_id, true, $permObj );
+ 		}
+ 
+ 
+         /**
+          *  This method adds form elements for addind a new group
+ 		 *
+-		 * @param $parent_group_id    (Optional) Parent id
++		 * @param $parent_group_id    Parent id (a user id)
+          */
+-		function addFormNew( $parent_group_id = null ){
++		function &amp; addFormNew( $user_id, $permObj = null ){
+ 
+-		 	return $this-&gt;_addFormDetails( $parent_group_id, false );
++			// get editing id to be used when saving
++			$this-&gt;editing_ID = $user_id;
++
++		 	return $this-&gt;_addFormDetails( $user_id, false, $permObj );
+ 		}
+ 		 
+ 		
+@@ -136,7 +144,7 @@
+          *
+ 		 * @param $edit         TRUE: We are editing a group, FALSE: we are creating a group
+          */
+-		function &amp; _addFormDetails( $id, $edit ){
++		function &amp; _addFormDetails( $id, $edit, $permObj ){
+ 
+ 			YDInclude( 'YDForm.php' );
+ 
+@@ -152,22 +160,48 @@
+ 			$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkgroup' ), array( $edit, $id ) );
+ 
+ 
+-			// if we are not editing a group, just add a submit button and return
+-			if ( ! $edit ){
++			// if we adding a group, just add a submit button
++			if ( $edit == false ){
+ 				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmgroup label new' ) );
+-				return $this-&gt;_form;
++
++			// otherwise, if we are editing a group, we must add defaults and a submit button too
++			}else{
++
++				$defaults = $this-&gt;getGroup( $id );
++				$this-&gt;_form-&gt;setDefaults( $defaults );
++
++				// state default is 'ydcmuserobject_state' because it's on userobject table
++				$this-&gt;_form-&gt;setDefault( 'state', $defaults[ 'ydcmuserobject_state' ] );
++
++				// add submit button
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmgroup label save' ) );
+ 			}
++			
++			// check if we are using the permission engine. if not, just return the form
++			if ( is_null( $permObj ) ) return $this-&gt;_form;
+ 
+-			// if we are editing, set defaults and add a submit button
+-			$defaults = $this-&gt;getGroup( $id );
+-			$this-&gt;_form-&gt;setDefaults( $defaults );
++			// include permission engine
++			YDInclude( 'YDCMPermission.php' );
+ 
+-			// state default is 'ydcmuserobject_state' because it's on userobject table
+-			$this-&gt;_form-&gt;setDefault( 'state', $defaults[ 'ydcmuserobject_state' ] );
++			// set YDPermission object form name the same name as group form
++			$permObj-&gt;setFormName( $this-&gt;_form-&gt;getName() );
+ 
+-			// add submit button
+-			$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmgroup label save' ) );
+-			
++			// get form with all checkboxgroups
++			if ( $edit ) $perms_form = &amp; $permObj-&gt;addFormEdit( $id );
++			else         $perms_form = &amp; $permObj-&gt;addFormNew( $id );
++
++			// get all checkboxgroups html code
++			$perms_code = '';
++			foreach( $perms_form-&gt;getElements() as $name =&gt; $obj )
++				if ( $obj-&gt;getType() == 'checkboxgroup' ) $perms_code .= $obj-&gt;toFullHTML( '&lt;br&gt;', '', '&lt;br&gt;&lt;br&gt;' );
++
++			// create a span and insert all checkboxgroups inside
++			$el = &amp;	$this-&gt;_form-&gt;addElement( 'span', 'permissions', t( 'permissions' ) );
++			$el-&gt;setValue( $perms_code );
++
++			// get editing YDPermission object to be used when saving
++			$this-&gt;editing_PERMOBJ = &amp; $permObj;
++
+ 			return $this-&gt;_form;
+ 		}
+ 
+@@ -194,32 +228,30 @@
+         /**
+          *  This method updates group attributes
+          *
+-         *  @param $id           Group id to save attributes
+          *  @param $formvalues   (Optional) Custom array with attributes
+          *
+          *  @returns    YDResult object. OK      - form updated
+ 		 *                               WARNING - there are form errors
+          *                               FATAL   - was not possible to update
+          */
+-		function saveFormEdit( $id, $formvalues = null ){
++		function saveFormEdit( $formvalues = null ){
+ 
+-			return $this-&gt;_saveFormDetails( $id, true, $formvalues );
++			return $this-&gt;_saveFormDetails( $this-&gt;editing_ID, true, $formvalues );
+ 		}
+ 
+ 
+         /**
+          *  This method adds a new group
+          *
+-         *  @param $parent_id    (Optional) Parent id of this new group
+          *  @param $formvalues   (Optional) Custom array with attributes
+          *
+          *  @returns    YDResult object. OK      - form added
+ 		 *                               WARNING - there are form errors
+          *                               FATAL   - was not possible to add
+          */
+-		function saveFormNew( $parent_id = null, $formvalues = null ){
++		function saveFormNew( $formvalues = null ){
+ 
+-			return $this-&gt;_saveFormDetails( $parent_id, false, $formvalues );
++			return $this-&gt;_saveFormDetails( $this-&gt;editing_ID, false, $formvalues );
+ 		}
+ 
+ 
+@@ -264,8 +296,11 @@
+ 				$this-&gt;setValues( $group );
+ 				$this-&gt;where( 'group_id = '. $id ); 
+ 
+-				// updated and sum lines afected to userobject lines afected
++				// update and sum lines afected to userobject
+ 				$res += $this-&gt;update();
++
++				// if we are using the permission system, update and sum lines afected in permission table
++				if ( isset( $this-&gt;editing_PERMOBJ ) ) $res += $this-&gt;editing_PERMOBJ-&gt;saveFormEdit( $id, $formvalues );
+ 				
+ 				// check update from node update and from group update
+ 				if ( $res &gt; 0 ) return YDResult::ok( t( 'ydcmgroup mess details updated' ), $res );
+@@ -288,6 +323,9 @@
+ 				$uobj = new YDCMUserobject();
+ 				$res  = $uobj-&gt;addNode( $userobject, intval( $id ) );
+ 
++				// if we are using the permission system, add permissions and sum lines afected in permission table
++				if ( isset( $this-&gt;editing_PERMOBJ ) ) $res += $this-&gt;editing_PERMOBJ-&gt;saveFormNew( $id, $formvalues );
++
+ 				// create user row
+ 				$group = array();
+ 				$group[ 'group_id' ]    = $res;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -439,44 +439,71 @@
+          *
+          *  @param     $name    Form name
+          */
+-		function setForm( $name ){
++		function setFormName( $name ){
+ 
+ 			$this-&gt;_form_name = $name;
+ 		}
+ 
+ 
++
+         /**
+-         *  This function returns an associative array with checkboxgroups
++         *  This method adds form elements for permission editing
++		 *
++		 * @param $id           Group id to edit
+          *
+-         *  @returns   Associative array:  array( CLASS =&gt; checkboxgroup )
++		 * @returns    YDForm object pointer         
+          */
+-		function &amp; addFormEdit( $group_id ){
++		function &amp; addFormEdit( $id ){
+ 
+ 			// store edition id (used later when saving details)
+-			$this-&gt;_editing_id = $group_id;
++			$this-&gt;editing_ID = $id;
+ 
+-			// get current permissions of this group
+-			$perms = $this-&gt;getPermissions( $group_id );
++		 	return $this-&gt;_addFormDetails( $id, true );
++		}
+ 
+-			// check if we need to create a new form, or use some
+-			if ( ! isset( $this-&gt;_form ) ){
+-	
+-				YDInclude( 'YDForm.php' );
+ 
+-				// init form
+-				$this-&gt;_form = new YDForm( $this-&gt;_form_name );
+-			}
++        /**
++         *  This method adds form elements for addind a new permission system
++		 *
++		 * @param $id    User id of this new group
++         *
++		 * @returns    YDForm object pointer         
++         */
++		function &amp; addFormNew( $id ){
+ 
++		 	return $this-&gt;_addFormDetails( $id, false );
++		}
++
++
++        /**
++         *  This function returns an associative array with checkboxgroups
++         *
++		 * @param $id    	User id (when adding new group), Group id (when editing group)
++		 * @param $edit   	We are adding or editing
++		 *
++		 * @returns    YDForm object pointer         
++         */
++		function &amp; _addFormDetails( $id, $edit ){
++
++			// init form
++			$this-&gt;_form = new YDForm( $this-&gt;_form_name );
++
+ 			// if this group is not a root group we must get the parent group permissions to check the ones we can use
+ 			$userobject = new YDCMUserobject();
+ 			$groups     = $userobject-&gt;getElements( array( 'ydcmgroup', 'ydcmuser' ) );
+-			$parent_id  = $groups[ $group_id ][ 'parent_id' ];
++			$parent_id  = $groups[ $id ][ 'parent_id' ];
+ 
++			// when adding a new group, parent of $id is the master group. when editing a group, parent is a user.. so the master group is the parent of the parent
++			if ( $edit == true ) $parent_id = $groups[ $parent_id ][ 'parent_id' ];
++
+ 			// if parent of this group is root, parentgroup permissions are ALL (read: null), otherwise we must get permissions of that parent
+ 			if ( $parent_id == 1 ) $parentgroup_perms = null;
+-			else                   $parentgroup_perms = $this-&gt;getPermissions( $groups[ $parent_id ][ 'parent_id' ] );
++			else                   $parentgroup_perms = $this-&gt;getPermissions( $parent_id );
+ 
+-			// init form default array
++			// if we are editing, we must get the current group permissions
++			if ( $edit == true ) $perms = $this-&gt;getPermissions( $id );
++
++			// init form defaults array
+ 			$form_defaults = array();
+ 
+ 			// get all possible actions to compute checkboxgroups for each class
+@@ -499,7 +526,8 @@
+ 					// if parentgroup is the root (id 1) or the parent group has the correspondent action, this action must be set based on current group db values
+ 					if ( is_null( $parentgroup_perms ) || isset( $parentgroup_perms[ $class ][ $action ] ) ){
+ 						
+-						if ( isset( $perms[ $class ][ $action ] ) ) $form_defaults[ 'pclass_' . $class ][ $action ] = 1;
++						// if we are editing and the current group has this permission we must check it. if we are adding just uncheck it
++						if ( $edit &amp;&amp; isset( $perms[ $class ][ $action ] ) ) $form_defaults[ 'pclass_' . $class ][ $action ] = 1;
+ 
+ 					// otherwise the action must be unset and disabled (because, if the parent group cannot do something, this group cannot do too)
+ 					}else{
+@@ -514,7 +542,7 @@
+ 				$checkboxgroup-&gt;setAttribute( 'class', 'ydcmpermission_checkbox' );
+ 				$checkboxgroup-&gt;setLabelAttribute( 'class', 'ydcmpermission_checkbox_label' );
+ 
+-				// disable some checkboxgroup elements
++				// disable checkboxgroup options that are not valid for this group
+ 				if ( ! empty( $chk_disable ) ) $this-&gt;_form-&gt;disable( 'pclass_' . $class, $chk_disable );
+ 			}
+ 
+@@ -528,29 +556,72 @@
+ 		}
+ 
+ 
+-		function saveFormEdit( $formvalues = null ){
++
++
++        /**
++         *  This method updates group permissions
++         *
++         *  @param $group_id     (Optional) Group id to update
++         *  @param $formvalues   (Optional) Custom array with user attributes
++         *
++         *  @returns    INT: total of rows affected
++         */
++		function saveFormEdit( $group_id = null, $formvalues = null ){
+ 		
+-			$group_id = $this-&gt;_editing_id;
+-		
+-			// check form validation
+-			if ( !$this-&gt;_form-&gt;validate( $formvalues ) )
+-				return YDResult::warning( t( 'form errors' ), $this-&gt;_form-&gt;getErrors() );
++			if ( is_null( $group_id ) ) $group_id = $this-&gt;editing_ID;
+ 
++			return $this-&gt;_saveFormDetails( $group_id, true, $formvalues );
++		}
++
++
++        /**
++         *  This method adds a new permission system
++         *
++         *  @param $user_id      (Optional) Parent of this permission system. Must be a user id
++         *  @param $formvalues   (Optional) Custom array with user attributes
++         *
++         *  @returns    INT: total of rows affected
++         */
++		function saveFormNew( $user_id = null, $formvalues = null ){
++
++			return $this-&gt;_saveFormDetails( $user_id, false, $formvalues );
++		}
++
++
++
++        /**
++         *  This method adds/saves a permission system
++         *
++         *  @param $id           If we are editing, $id is the group id. If we are adding, $id is the user id
++         *  @param $edit         Boolean flag that defines if we are editing $id or adding to $id
++         *  @param $formvalues   (Optional) Custom array with user attributes
++         *
++         *  @returns    INT: total of rows affected
++         */
++		function _saveFormDetails( $id, $edit, $formvalues = null ){
++
++			// validate with custom values
++			if ( ! is_null( $formvalues ) ) $this-&gt;_form-&gt;validate( $formvalues );
++
+ 			// get form values EXCLUDING spans
+ 			$values = $this-&gt;_form-&gt;getValues();
+ 
+-			// get current group permissions
+-			$perms = $this-&gt;getPermissions( $group_id );
+-
+ 			// if this group is not a root group we must get the parent group permissions to check the ones we can use
+ 			$userobject = new YDCMUserobject();
+ 			$groups     = $userobject-&gt;getElements( array( 'ydcmgroup', 'ydcmuser' ) );
+-			$parent_id  = $groups[ $group_id ][ 'parent_id' ];
++			$parent_id  = $groups[ $id ][ 'parent_id' ];
+ 
++			// when adding a new group, parent of $id is the master group. when editing a group, parent is a user.. so the master group is the parent of the parent
++			if ( $edit == true ) $parent_id = $groups[ $parent_id ][ 'parent_id' ];
++
+ 			// if parent of this group is root, parentgroup permissions are ALL (read: null), otherwise we must get permissions of that parent
+ 			if ( $parent_id == 1 ) $parentgroup_perms = null;
+-			else                   $parentgroup_perms = $this-&gt;getPermissions( $groups[ $parent_id ][ 'parent_id' ] );
++			else                   $parentgroup_perms = $this-&gt;getPermissions( $parent_id );
+ 
++			// if we are editing, we must get the current group permissions. if we are adding, current permissions are empty
++			if ( $edit == true ) $perms = $this-&gt;getPermissions( $id );
++			else                 $perms = array();
++
+ 			$actions_to_add = array();
+ 			$actions_to_del = array();
+ 
+@@ -561,12 +632,13 @@
+ 					// if action is selected by the user AND
+ 					// this is a root group OR the action belogs to the parent group
+ 					// we can add it
+-					if ( isset( $values[ 'pclass_' . $class ][ $action ] ) &amp;&amp; $values[ 'pclass_' . $class ][ $action ] == 1 ){
++					if ( isset( $values[ 'pclass_' . $class ][ $action ] ) &amp;&amp; ( $values[ 'pclass_' . $class ][ $action ] == 1 || $values[ 'pclass_' . $class ][ $action ] == 'on' ) ){
+ 
++
+ 						// check if action is valid:
+ 						// if parent group is a root a group OR the parent group has this action
+ 						if ( is_null( $parentgroup_perms ) || isset( $parentgroup_perms[ $class ][ $action ] ) ){
+-						
++
+ 							// if action is valid we must check if we must add it or the user already has it
+ 							if ( ! isset( $perms[ $class ][ $action ] ) ) $actions_to_add[] = array( $class, $action );
+ 							
+@@ -583,26 +655,31 @@
+ 			}
+ 
+ 
+-			// delete actions			
++			$rows_deleted = 0;
++
++			// delete actions and count rows affected
+ 			foreach( $actions_to_del as $ac ){
+ 				$this-&gt;resetValues();
+-				$this-&gt;set( 'permission_id', $group_id );
++				$this-&gt;set( 'permission_id', $id );
+ 				$this-&gt;set( 'class', $ac[0] );
+ 				$this-&gt;set( 'action', $ac[1] );
+-				$this-&gt;delete();
++				$rows_deleted += $this-&gt;delete();
+ 			}
+ 
+-			// add actions
++			$rows_added = 0;
++
++			// add actions and count total of action added
+ 			foreach( $actions_to_add as $ac ){
+ 				$this-&gt;resetValues();
+-				$this-&gt;set( 'permission_id', $group_id );
++				$this-&gt;set( 'permission_id', $id );
+ 				$this-&gt;set( 'class', $ac[0] );
+ 				$this-&gt;set( 'action', $ac[1] );
+ 				$this-&gt;insert();
++				$rows_added ++;
+ 			}
+ 
+ 			// TODO: currently YDDatabaseObject don't have a mechanism to control the above deletes and inserts
+-			return YDResult::ok( t('ydcmpermission mess permissions updated') );
++			return $rows_deleted + $rows_added;
+ 		}
+ 
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -153,21 +153,20 @@
+         /**
+          *  This method deletes a user (and all children) or just the children
+          *
+-         *  @param $user_id        User id
+-         *  @param $includeParent  (Optional) Boolean TRUE (default) deletes user id and children, FALSE deletes children only
++         *  @param $userobject_id  Userobject id
++         *  @param $mode           (Optional) 0: delete user_id and ALL children
++         *                                    1: delete ALL children of user_id only
+          *
+-         *  @returns    TRUE if deleted, ARRAY with form errors otherwise
++         *  @returns    YDResult object. OK      - user deleted
++		 *                               WARNING - no deletes where made
+          */
+-		function deleteUser( $user_id, $includeParent = true ){
++		function deleteUser( $user_id, $mode = 0 ){
+ 		
+-			// get ids to delete
+-			$ids = $this-&gt;tree-&gt;getDescendants( intval( $user_id ), $includeParent, false, null, null, 'user_id' );
+-
+-			// delete all permissions of this users
+-			$this-&gt;perm-&gt;deletePermissions( $ids );
+-
+-			// delete node from users table
+-			$this-&gt;tree-&gt;deleteNode( $user_id, $includeParent );
++			$obj = new YDCMUserobject();
++			
++			// delete user and get result
++			if ( $obj-&gt;deleteNode( $user_id, $mode ) ) return YDResult::ok( t('ydcmuser mess delete ok') );
++			else                                       return YDResult::fatal( t('ydcmuser mess delete empty') );
+ 		}
+ 
+ 
+@@ -196,6 +195,8 @@
+          */
+ 		function &amp; addFormNew( $id = null ){
+ 
++			$this-&gt;editing_ID = $id;
++
+ 		 	return $this-&gt;_addFormDetails( $id, false, array() );
+ 		}
+ 		 
+@@ -228,9 +229,11 @@
+ 				$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkuser' ), array( $edit, $id ) );
+ 			}
+ 
+-			// add password box for new users or editing users
+-			if ( ! $edit || ( $edit &amp;&amp; ! in_array( 'password', $noneditable ) ) )
+-				$this-&gt;_form-&gt;addElement( 'password', 'password', t( 'ydcmuser label password' ) );				
++			// add password box for new users
++			if ( $edit == false ){
++				$this-&gt;_form-&gt;addElement( 'password', 'password', t( 'ydcmuser label password' ) );
++				$this-&gt;_form-&gt;addElement( 'password', 'password2', t( 'ydcmuser label password2' ) );
++			}
+ 
+ 			// add state
+ 			if ( in_array( 'state', $noneditable ) ){
+@@ -253,7 +256,7 @@
+ 			}else{
+ 				$this-&gt;_form-&gt;addElement( 'text',      'name',          t( 'ydcmuser label name' ),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
+ 				$this-&gt;_form-&gt;addElement( 'text',      'email',         t( 'ydcmuser label email' ) );
+-				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t( 'ydcmuser label other' ),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
++				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t( 'ydcmuser label other' ),    array('rows' =&gt; 15, 'cols' =&gt; 90, 'style' =&gt; 'display:none') );
+ 
+ 				$languages = new YDCMLanguages();
+ 				$languages = $languages-&gt;active();
+@@ -333,34 +336,30 @@
+         /**
+          *  This method updates user attributes
+          *
+-         *  @param $id           (Optional) User id to force saving
+          *  @param $formvalues   (Optional) Custom array with user attributes
+          *
+          *  @returns    YDResult object. OK      - form updated
+ 		 *                               WARNING - there are form errors
+          *                               FATAL   - was not possible to update
+          */
+-		function saveFormEdit( $id = null, $formvalues = null ){
++		function saveFormEdit( $formvalues = null ){
+ 
+-			if ( is_null( $id ) ) $id = $this-&gt;editing_ID;
+-
+-			return $this-&gt;_saveFormDetails( $id, true, $formvalues );
++			return $this-&gt;_saveFormDetails( $this-&gt;editing_ID, true, $formvalues );
+ 		}
+ 
+ 
+         /**
+          *  This method adds a new user
+          *
+-         *  @param $parent_id    (Optional) Group id (parent_id) of this new user
+          *  @param $formvalues   (Optional) Custom array with user attributes
+          *
+          *  @returns    YDResult object. OK      - form added
+ 		 *                               WARNING - there are form errors
+          *                               FATAL   - was not possible to add
+          */
+-		function saveFormNew( $parent_id = null, $formvalues = null ){
++		function saveFormNew( $formvalues = null ){
+ 
+-			return $this-&gt;_saveFormDetails( $parent_id, false, $formvalues );
++			return $this-&gt;_saveFormDetails( $this-&gt;editing_ID, false, $formvalues );
+ 		}
+ 
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -29,7 +29,7 @@
+ 
+ 	// add YD libs
+ //	YDInclude( 'YDForm.php' );
+-	YDInclude( 'YDDatabaseTree.php' );
++	YDInclude( 'YDDatabaseTree2.php' );
+ //	YDInclude( 'YDDatabaseObject.php' );
+ 	// add YDCM libs
+ //	YDInclude( 'YDCMPermissions.php' );
+@@ -56,19 +56,20 @@
+ 
+ 			// register custom fields
+ 			$this-&gt;registerField( 'parent_id' );
+-			$this-&gt;registerField( 'nleft' );
+-			$this-&gt;registerField( 'nright' );
+-			$this-&gt;registerField( 'nlevel' );
++//			$this-&gt;registerField( 'nleft' );
++//			$this-&gt;registerField( 'nright' );
++//			$this-&gt;registerField( 'nlevel' );
++			$this-&gt;registerField( 'lineage' );
+ 			$this-&gt;registerField( 'position' );
+ 			$this-&gt;registerField( 'type' );			
+ 			$this-&gt;registerField( 'reference' );			
+ 			$this-&gt;registerField( 'state' );
+ 
+ 			// create tree object
+-			$this-&gt;tree = new YDDatabaseTree( 'default', 'YDCMUserobject', 'userobject_id', 'parent_id', 'parent_id' );
++			$this-&gt;tree = new YDDatabaseTree2( 'YDCMUserobject', 'default', 'userobject_id', 'parent_id' );
+ 
+ 			// add tree fields
+-			$this-&gt;tree-&gt;addField( 'parent_id' );
++//			$this-&gt;tree-&gt;addField( 'parent_id' );
+ 			$this-&gt;tree-&gt;addField( 'type' );
+ 			$this-&gt;tree-&gt;addField( 'reference' );			
+ 			$this-&gt;tree-&gt;addField( 'state' );			
+@@ -85,7 +86,8 @@
+          */
+ 		function getTreeElements( $parent_id, $includeNode = true ){
+ 
+-			return $this-&gt;tree-&gt;getDescendants( $parent_id, $includeNode );
++//			return $this-&gt;tree-&gt;getDescendants( $parent_id, $includeNode );
++			return $this-&gt;tree-&gt;getTreeElements();
+ 		}
+ 
+ 
+@@ -107,14 +109,18 @@
+          *  This method deletes a userobject (and all children) or just the children
+          *
+          *  @param $userobject_id  Userobject id
+-         *  @param $includeParent  (Optional) Boolean TRUE (default) deletes userobject id and children, FALSE deletes children only
++         *  @param $mode           (Optional) 0: delete userobject_id and ALL children
++         *                                    1: delete ALL children of userobject_id only
+          *
+-         *  @returns    TRUE if deleted, ARRAY with form errors otherwise
++         *  @returns    total of lines affected
+          */
+-		function deleteUser( $userobject_id, $includeParent = true ){
++		function deleteNode( $userobject_id, $mode = 0 ){
+ 		
+-			// delete node from users table
+-			$this-&gt;tree-&gt;deleteNode( $userobject_id, $includeParent );
++			// delete userobject_id an children
++			if ( $mode == 0 ) return $this-&gt;tree-&gt;deleteNode( $userobject_id, true );
++
++			// delete userobject_id children
++			return $this-&gt;tree-&gt;deleteNode( $userobject_id, false );
+ 		}
+ 
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -1,11 +1,17 @@
+ &lt;?php
+ 
++$GLOBALS['t']['ydcmgroup'] = 'Group management';
++
+ // PERMISSIONS
++$GLOBALS['t']['ydcmgroup perm'] = 'User groups management';
++$GLOBALS['t']['ydcmgroup perm add']        = 'Add new group';
+ $GLOBALS['t']['ydcmgroup perm properties'] = 'See properties';
+ $GLOBALS['t']['ydcmgroup perm create']     = 'Create';
+ $GLOBALS['t']['ydcmgroup perm delete']     = 'Delete';
+ $GLOBALS['t']['ydcmgroup perm edit']       = 'Edit';
+ 
++$GLOBALS['t']['ydcmgroup children only']       = 'Children only';
++$GLOBALS['t']['ydcmgroup group and children']  = 'Group and children';
+ 
+ // FORM LABELS
+ $GLOBALS['t']['ydcmgroup label name']        = 'Name';
+@@ -22,4 +28,8 @@
+ $GLOBALS['t']['ydcmgroup mess created']              = 'New group created';
+ $GLOBALS['t']['ydcmgroup mess impossible to create'] = 'Impossible to create group';
+ 
++// OTHER MESSAGES
++$GLOBALS['t']['ydcmgroup mess delete ok']    = 'Group deleted';
++$GLOBALS['t']['ydcmgroup mess delete empty'] = 'No deletes were made';
++
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage/en.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage/en.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -1,6 +1,7 @@
+ &lt;?php
+ // PERMISSIONS
+-$GLOBALS['t']['ydcmpage perm create'] = 'Create';
++$GLOBALS['t']['ydcmpage perm'] = 'Page management';
++$GLOBALS['t']['ydcmpage perm create'] = 'Create page';
+ $GLOBALS['t']['ydcmpage perm delete'] = 'Delete';
+ 
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -1,14 +1,18 @@
+ &lt;?php
+ 
++$GLOBALS['t']['ydcmuser'] = 'User management';
++
+ // PERMISSIONS
++$GLOBALS['t']['ydcmuser perm'] = 'User management';
+ $GLOBALS['t']['ydcmuser perm properties'] = 'See properties';
+-$GLOBALS['t']['ydcmuser perm create']     = 'Create';
++$GLOBALS['t']['ydcmuser perm create']     = 'Add user';
+ $GLOBALS['t']['ydcmuser perm delete']     = 'Delete';
+ $GLOBALS['t']['ydcmuser perm edit']       = 'Edit';
+ 
+ // FORM LABELS
+ $GLOBALS['t']['ydcmuser label username'] = 'Username';
+ $GLOBALS['t']['ydcmuser label password'] = 'Password';
++$GLOBALS['t']['ydcmuser label password2'] = 'Confirm password';
+ $GLOBALS['t']['ydcmuser label name'] = 'Name';
+ $GLOBALS['t']['ydcmuser label email'] = 'Email';
+ $GLOBALS['t']['ydcmuser label other'] = 'Other';
+@@ -32,7 +36,7 @@
+ // FORM RULES/ERRORS/MESSAGES
+ $GLOBALS['t']['ydcmuser mess username exists'] = 'Username already exists';
+ $GLOBALS['t']['ydcmuser mess updated'] = 'User details updated';
+-$GLOBALS['t']['ydcmuser mess impossible to update'] = 'Was not possible to update user';
++$GLOBALS['t']['ydcmuser mess impossible to update'] = 'No updates were made';
+ $GLOBALS['t']['ydcmuser mess created'] = 'New user created';
+ $GLOBALS['t']['ydcmuser mess impossible to create'] = 'Was not possible to create user';
+ $GLOBALS['t']['ydcmuser mess email not valid'] = 'Email is not valid';
+@@ -43,12 +47,20 @@
+ $GLOBALS['t']['ydcmuser mess passwords too big'] = 'All passwords must not exceed 31 characters';
+ $GLOBALS['t']['ydcmuser mess passwords not alphanumeric'] = 'All passwords must be alphanumeric';
+ $GLOBALS['t']['ydcmuser mess password updated'] = 'User password updated';
+-$GLOBALS['t']['ydcmuser mess password not updated'] = 'User password not updated';
++$GLOBALS['t']['ydcmuser mess password not updated'] = 'No updates were made';
+ 
+-// OTHER
+-$GLOBALS['t']['ydcmuser administrator and move children up'] = 'Administrator and move children up';
++// OTHER MESSAGES
++$GLOBALS['t']['ydcmuser mess delete ok'] = 'User deleted';
++$GLOBALS['t']['ydcmuser mess delete empty'] = 'No deletes were made';
++
+ $GLOBALS['t']['ydcmuser administrator and children'] = 'Administrator and children';
+ $GLOBALS['t']['ydcmuser children only'] = 'Children only';
+ $GLOBALS['t']['ydcmuser add group'] = 'Add group';
+ $GLOBALS['t']['ydcmuser change password'] = 'Change password';
++$GLOBALS['t']['ydcmuser personal details'] = 'Personal details';
++$GLOBALS['t']['ydcmuser access'] = 'Access';
++$GLOBALS['t']['ydcmuser reset logins'] = 'reset';
++
++$GLOBALS['t']['ydcmuser passwords management'] = 'Password management';
++$GLOBALS['t']['ydcmuser passwords'] = 'Passwords';
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php	2006-11-14 21:32:24 UTC (rev 2197)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php	2006-11-14 21:33:11 UTC (rev 2198)
+@@ -29,7 +29,6 @@
+ $GLOBALS['t']['state'] = 'State';
+ $GLOBALS['t']['add'] = 'Add';
+ $GLOBALS['t']['add component'] = 'Add component';
+-$GLOBALS['t']['add user'] = 'Add user';
+ $GLOBALS['t']['move'] = 'Move';
+ $GLOBALS['t']['move up'] = 'Move up';
+ $GLOBALS['t']['move down'] = 'Move down';
+@@ -41,7 +40,10 @@
+ $GLOBALS['t']['visitors'] = 'Visitors';
+ $GLOBALS['t']['administrator'] = 'Administrator';
+ $GLOBALS['t']['administrators'] = 'Administrators';
++$GLOBALS['t']['group'] = 'Group';
++$GLOBALS['t']['groups'] = 'Groups';
+ 
++
+ $GLOBALS['t']['published'] = 'Published';
+ $GLOBALS['t']['not published'] = 'Not published';
+ $GLOBALS['t']['schedule'] = 'Schedule';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000747.html">[ydf-devel] r2197 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000749.html">[ydf-devel] r2199 - YDFramework2.0/trunk/examples/cm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#748">[ date ]</a>
+              <a href="thread.html#748">[ thread ]</a>
+              <a href="subject.html#748">[ subject ]</a>
+              <a href="author.html#748">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

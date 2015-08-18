@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2009 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2009%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20manage%0A%09skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200608141133.k7EBXOpE013721%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000515.html">
+   <LINK REL="Next"  HREF="000517.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2009 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2009%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20manage%0A%09skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200608141133.k7EBXOpE013721%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2009 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 14 13:33:24 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000515.html">[ydf-devel] r2008 - in YDFramework2.0/trunk/examples/weblog: .	include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000517.html">[ydf-devel] r2010 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#516">[ date ]</a>
+              <a href="thread.html#516">[ thread ]</a>
+              <a href="subject.html#516">[ subject ]</a>
+              <a href="author.html#516">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-14 13:33:10 +0200 (Mon, 14 Aug 2006)
+New Revision: 2009
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/items.php
+   YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_email.tpl
+Log:
+Changed the way the new item emails are working. An email is now only send if the item is also published on the weblog. When the item is published, the creation date is now changed to make sure it's listed at the top of the weblog.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-08-14 06:43:48 UTC (rev 2008)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-08-14 11:33:10 UTC (rev 2009)
+@@ -110,17 +110,54 @@
+                 // Set the user
+                 $values['user_id'] = $this-&gt;user['id'];
+ 
++                // Check if we need to publish or not
++                $needs_publish_email = false;
++
+                 // If there is an ID, we do an edit
+                 if ( $values['id'] ) {
+ 
++                    // Get the item by ID
++                    $item = $this-&gt;weblog-&gt;getItemByID( $values['id'] );
++
++                    // Check if the item changes from draft to published
++                    if ( $item['is_draft'] &amp;&amp; ! $values['is_draft'] ) {
++
++                        // Remember this
++                        $needs_publish_email = true;
++
++                        // Update the created timestamp
++                        $values['created'] =  time();
++                        $values['modified'] = time();
++
++                    }
++
+                     // Update the database
+                     $this-&gt;weblog-&gt;updateItem( $values );
+ 
+                 } else {
+ 
++                    // Check if the item is draft or not
++                    if ( ! $values['is_draft'] ) {
++
++                        // Remember this
++                        $needs_publish_email = true;
++
++                        // Update the created timestamp
++                        $values['created'] =  time();
++                        $values['modified'] = time();
++
++                    }
++
+                     // Add it to the database
+                     $this-&gt;weblog-&gt;addItem( $values );
+ 
++                }
++
++                // Check if we need to send an email
++                if ( $needs_publish_email ) {
++
++                    die( 'send email' );
++
+                     // Send an email if configured
+                     if ( YDConfig::get( 'email_new_item', true ) ) {
+ 
+@@ -149,11 +186,7 @@
+                         foreach ( $subscribers as $subscriber ) {
+                             $eml-&gt;addBcc( $subscriber['email'], $subscriber['name'] );
+                         }
+-                        if ( $values['is_draft'] ) {
+-                            $eml-&gt;setSubject( t('new_item') . ' (' . t('draft') . '): ' . strip_tags( $values['title'] ) );
+-                        } else {
+-                            $eml-&gt;setSubject( t('new_item') . ': ' . strip_tags( $values['title'] ) );
+-                        }
++                        $eml-&gt;setSubject( t('new_item') . ': ' . strip_tags( $values['title'] ) );
+                         $eml-&gt;setHtmlBody( $this-&gt;fetch( dirname( __FILE__ ) . '/../' . $this-&gt;dir_skins . $this-&gt;skin . '/item_email.tpl' ) );
+                         $eml-&gt;send();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-08-14 06:43:48 UTC (rev 2008)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-08-14 11:33:10 UTC (rev 2009)
+@@ -88,8 +88,10 @@
+                     {if $item.is_draft eq '1'}&lt;/i&gt;{/if}
+                 &lt;/td&gt;
+                 &lt;td class=&quot;adminRowR&quot;&gt;
+-                    &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+-                    |
++                    {if $item.is_draft neq '1'}
++                        &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
++                        |
++                    {/if}
+                     &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$item.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
+                     |
+                     &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$item.id}&quot;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl	2006-08-14 06:43:48 UTC (rev 2008)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl	2006-08-14 11:33:10 UTC (rev 2009)
+@@ -28,7 +28,7 @@
+ 
+         &lt;div id=&quot;content&quot; class=&quot;narrowcolumn&quot;&gt;
+ 
+-            &lt;h3&gt;{t w=&quot;new_item&quot;}{if $item.is_draft} ({t w=&quot;draft&quot;}){/if}: {$item.title}&lt;/h3&gt;
++            &lt;h3&gt;{t w=&quot;new_item&quot;}: {$item.title}&lt;/h3&gt;
+ 
+             &lt;p&gt;
+                 &lt;b&gt;{t w=&quot;weblog&quot;}&lt;/b&gt;: &lt;a href=&quot;{$weblog_link}&quot;&gt;{$weblog_title}&lt;/a&gt;&lt;br/&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_email.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_email.tpl	2006-08-14 06:43:48 UTC (rev 2008)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_email.tpl	2006-08-14 11:33:10 UTC (rev 2009)
+@@ -28,7 +28,7 @@
+ 
+         &lt;div id=&quot;content&quot; class=&quot;narrowcolumn&quot;&gt;
+ 
+-            &lt;h3&gt;{t w=&quot;new_item&quot;}{if $item.is_draft} ({t w=&quot;draft&quot;}){/if}: {$item.title}&lt;/h3&gt;
++            &lt;h3&gt;{t w=&quot;new_item&quot;}: {$item.title}&lt;/h3&gt;
+ 
+             &lt;p&gt;
+                 &lt;b&gt;{t w=&quot;weblog&quot;}&lt;/b&gt;: &lt;a href=&quot;{$weblog_link}&quot;&gt;{$weblog_title}&lt;/a&gt;&lt;br/&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000515.html">[ydf-devel] r2008 - in YDFramework2.0/trunk/examples/weblog: .	include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000517.html">[ydf-devel] r2010 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#516">[ date ]</a>
+              <a href="thread.html#516">[ thread ]</a>
+              <a href="subject.html#516">[ subject ]</a>
+              <a href="author.html#516">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

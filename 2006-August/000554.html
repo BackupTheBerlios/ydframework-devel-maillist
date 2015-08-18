@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2044 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include/languages	examples/weblog/skins/default	examples/weblog/skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2044%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples/weblog%20examples/weblog/include/languages%0A%09examples/weblog/skins/default%0A%09examples/weblog/skins/default_with_lightbox&In-Reply-To=%3C200608281302.k7SD2E84031525%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000553.html">
+   <LINK REL="Next"  HREF="000555.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2044 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include/languages	examples/weblog/skins/default	examples/weblog/skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2044%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples/weblog%20examples/weblog/include/languages%0A%09examples/weblog/skins/default%0A%09examples/weblog/skins/default_with_lightbox&In-Reply-To=%3C200608281302.k7SD2E84031525%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2044 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include/languages	examples/weblog/skins/default	examples/weblog/skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 28 15:02:14 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000553.html">[ydf-devel] r2043 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+        <LI>Next message: <A HREF="000555.html">[ydf-devel] r2045 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#554">[ date ]</a>
+              <a href="thread.html#554">[ thread ]</a>
+              <a href="subject.html#554">[ subject ]</a>
+              <a href="author.html#554">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-28 15:01:50 +0200 (Mon, 28 Aug 2006)
+New Revision: 2044
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/skins/default/default.css
+   YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/default.css
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+Log:
+Added a simple &quot;no spam&quot; check to the comment form.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -133,6 +133,7 @@
+ 
+ 
+             // Add the rules
++            $this-&gt;registerRule( 'value', array( 'YDValidateRules', 'value' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'required', array( 'YDValidateRules', 'required' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'maxlength', array( 'YDValidateRules', 'maxlength' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'minlength', array( 'YDValidateRules', 'minlength' ), 'YDValidateRules.php' );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -50,6 +50,16 @@
+         }
+ 
+         /**
++         *	This function returns true if the variable is equal to the specified value, otherwise, it returns false.
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	The required value.
++         */
++        function value( $val, $opts ) {
++            return $val === $opts;
++        }
++
++        /**
+          *	This function returns true if the variable is smaller than the specified length, otherwise, it returns
+          *	false.
+          *
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -92,6 +92,10 @@
+ $GLOBALS['t']['err_comment'] = 'Comment is required';
+ $GLOBALS['t']['with'] = 'for';
+ $GLOBALS['t']['item_closed'] = 'This item does not allow comments.';
++$GLOBALS['t']['spam'] = 'Spam';
++$GLOBALS['t']['no_spam'] = 'No spam';
++$GLOBALS['t']['choose_no_spam'] = 'Choose &quot;no spam&quot; here';
++$GLOBALS['t']['err_userspam'] = 'You didn\'t select &quot;no spam&quot;';
+ 
+ // comment_email.tpl
+ $GLOBALS['t']['new_comment'] = 'New comment';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -92,6 +92,10 @@
+ $GLOBALS['t']['err_comment'] = 'Een commentaar is vereist';
+ $GLOBALS['t']['with'] = 'bij';
+ $GLOBALS['t']['item_closed'] = 'Dit item laat geen commentaren toe.';
++$GLOBALS['t']['spam'] = 'Spam';
++$GLOBALS['t']['no_spam'] = 'Geen spam';
++$GLOBALS['t']['choose_no_spam'] = 'Kies hier &quot;geen spam&quot;';
++$GLOBALS['t']['err_userspam'] = 'Je selecteerde niet &quot;geen spam&quot;';
+ 
+ // comment_email.tpl
+ $GLOBALS['t']['new_comment'] = 'Nieuw commentaar';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -55,10 +55,14 @@
+                     'comments', 'POST', YDTplModLinkItemRespond( $item ), '_self', array( 'id' =&gt; 'commentform' )
+                 );
+ 
++                // The SPAM options
++                $spam_options = array( 1 =&gt; t('spam'), 2 =&gt; t('spam'), 3 =&gt; t('no_spam'), 4 =&gt; t('spam') );
++
+                 // Add the fields
+                 $form-&gt;addElement( 'text', 'username', t( 'name' ) );
+                 $form-&gt;addElement( 'text', 'useremail', t( 'mail_not_published' ) );
+                 $form-&gt;addElement( 'text', 'userwebsite', t( 'website' ) );
++                $form-&gt;addElement( 'select', '_userspam', t('choose_no_spam'), array(), $spam_options );
+                 $form-&gt;addElement( 'textarea', 'comment', '' );
+                 $form-&gt;addElement( 'submit', 'cmdSubmit', t( 'submit_comment' ), array( 'id' =&gt; 'submit' ) );
+                 $form-&gt;addElement( 'hidden', 'item_id' );
+@@ -78,6 +82,7 @@
+                 $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
+                 $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
+                 $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
++                $form-&gt;addRule( '_userspam',   'value',     t( 'err_userspam' ), '3' );
+                 $form-&gt;addRule( 'comment',     'required',  t( 'err_comment' ) );
+ 
+                 // Add the filters
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/default.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/default.css	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/default.css	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -107,7 +107,7 @@
+ 	color: #b85b5a;
+ 	}
+ 
+-.commentlist li, #commentform input, #commentform textarea {
++.commentlist li, #commentform input, #commentform textarea, #commentform select {
+ 	font: 1em 'Lucida Grande', Verdana, Arial, Sans-Serif;
+ 	}
+ 
+@@ -406,12 +406,16 @@
+ 	width: 130px;
+ 	}
+ 
+-#commentform input {
++#commentform input, #commentform select {
+ 	width: 170px;
+ 	padding: 2px;
+ 	margin: 5px 5px 1px 0;
+ 	}
+ 
++#commentform select {
++	width: 178px;
++}
++
+ #commentform textarea {
+ 	width: 100%;
+ 	height: 160px;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -143,6 +143,7 @@
+             &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
++            &lt;p&gt;{$comments_form._userspam.html} &lt;small&gt;{$comments_form._userspam.label_html}&lt;/small&gt;&lt;/p&gt;
+ 
+             &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/default.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/default.css	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/default.css	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -107,7 +107,7 @@
+ 	color: #b85b5a;
+ 	}
+ 
+-.commentlist li, #commentform input, #commentform textarea {
++.commentlist li, #commentform input, #commentform textarea, #commentform select {
+ 	font: 1em 'Lucida Grande', Verdana, Arial, Sans-Serif;
+ 	}
+ 
+@@ -406,12 +406,16 @@
+ 	width: 130px;
+ 	}
+ 
+-#commentform input {
++#commentform input, #commentform select {
+ 	width: 170px;
+ 	padding: 2px;
+ 	margin: 5px 5px 1px 0;
+ 	}
+ 
++#commentform select {
++	width: 178px;
++}
++
+ #commentform textarea {
+ 	width: 100%;
+ 	height: 160px;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-08-25 09:43:24 UTC (rev 2043)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-08-28 13:01:50 UTC (rev 2044)
+@@ -147,6 +147,7 @@
+             &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
++            &lt;p&gt;{$comments_form._userspam.html} &lt;small&gt;{$comments_form._userspam.label_html}&lt;/small&gt;&lt;/p&gt;
+ 
+             &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000553.html">[ydf-devel] r2043 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+	<LI>Next message: <A HREF="000555.html">[ydf-devel] r2045 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#554">[ date ]</a>
+              <a href="thread.html#554">[ thread ]</a>
+              <a href="subject.html#554">[ subject ]</a>
+              <a href="author.html#554">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

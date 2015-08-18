@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2449 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2449%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha&In-Reply-To=%3C200706251533.l5PFXl2n010319%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001042.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2449 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2449%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha&In-Reply-To=%3C200706251533.l5PFXl2n010319%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2449 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Jun 25 17:33:47 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001042.html">[ydf-devel] r2448 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1043">[ date ]</a>
+              <a href="thread.html#1043">[ thread ]</a>
+              <a href="subject.html#1043">[ subject ]</a>
+              <a href="author.html#1043">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-06-25 17:33:37 +0200 (Mon, 25 Jun 2007)
+New Revision: 2449
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+Log:
+new captcha feature:
+  - YDConfig 'charset' ( predefined charset types to use in image: 'simple', 'complex', 'numeric', 'letters' or custom scheme )
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-06-24 17:42:28 UTC (rev 2448)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-06-25 15:33:37 UTC (rev 2449)
+@@ -35,7 +35,7 @@
+      *  This config defines the total characters to use
+      *  Default: 5.
+      */
+-    YDConfig::set( 'YD_CAPTCHA_NUMCHARS', 5, false );
++    YDConfig::set( 'YD_CAPTCHA_NUMCHARS', 4, false );
+ 
+ 
+     /**
+@@ -52,7 +52,13 @@
+     YDConfig::set( 'YD_CAPTCHA_SHADOW', false, false );
+ 
+ 
++    /**
++     *  This config defines the charset scheme.
++     *  Default: 'simple'. Can be: 'simple', 'complex', 'letters', 'numeric' or a custom scheme.
++     */
++    YDConfig::set( 'YD_CAPTCHA_CHARSET', 'simple', false );
+ 
++
+     // include antispam lib
+     include_once( YD_DIR_HOME . '/3rdparty/captcha/php-captcha.inc.php' );
+ 
+@@ -86,10 +92,6 @@
+ 
+             // create image object
+             $this-&gt;_img = new PhpCaptcha( $fonts, 200, 40 );
+-            
+-            // add simbols ;) 
+-            // don't add possible character problems for user, eg, l &lt;--&gt; 1 (lower L or number ONE?), 0 &lt;--&gt; O (ZERO OR upper O?)
+-            $this-&gt;_img-&gt;SetCharSet( &quot;a-h,!,j-k,#,&amp;,%,$,m-n,@,p-r,2-4,6,&#163;,?,8-9,t-w,y-z,#,&amp;,%,$,A-H,!,J-K,#,&amp;,%,$,M-N,@,P-R,T-W,Y-Z,2-4,6,&#163;,?,8-9&quot; );
+         }
+ 
+ 
+@@ -98,6 +100,25 @@
+          */
+         function create() {
+ 
++            // add simbols ;) 
++            // don't add possible character problems for user, eg, l &lt;--&gt; 1 (lower L or number ONE?), 0 &lt;--&gt; O (ZERO OR upper O?)
++            switch( $ch = YDConfig::get( 'YD_CAPTCHA_CHARSET' ) ){
++
++                case 'simple' :  $this-&gt;_img-&gt;SetCharSet( &quot;a-h,6,2-4,8,j-k,m-n,p-r,2-4,6,8-9,t-w,y-z,A-H,J-K,M-N,6,2-4,8,9,P-R,T-W,Y-Z,2-4,6,8-9&quot; );
++                                 break;
++
++                case 'complex' : $this-&gt;_img-&gt;SetCharSet( &quot;a-h,!,j-k,#,&amp;,%,$,m-n,@,p-r,2-4,6,&#163;,?,8-9,t-w,y-z,#,&amp;,%,$,A-H,!,J-K,#,&amp;,%,$,M-N,@,P-R,T-W,Y-Z,2-4,6,&#163;,?,8-9&quot; );
++                                 break;
++
++                case 'letters' : $this-&gt;_img-&gt;SetCharSet( &quot;a-h,j-k,J-K,M-N,m-n,p-r,t-w,y-z,A-H,J-K,M-N,P-R,p-r,t-w,T-W,Y-Z&quot; );
++                                 break;
++
++                case 'numeric' : $this-&gt;_img-&gt;SetCharSet( &quot;2-4,6,6,3,2,8-9,2-4,6,8-9,8-9,6,2-4,9,7,8,6,3,2&quot; );
++                                 break;
++
++                default :        $this-&gt;_img-&gt;SetCharSet( $ch );
++            }
++
+             $this-&gt;_img-&gt;DisplayShadow( YDConfig::get( 'YD_CAPTCHA_SHADOW' ) );
+             $this-&gt;_img-&gt;useColour( YDConfig::get( 'YD_CAPTCHA_COLOR' ) );
+             $this-&gt;_img-&gt;SetNumChars( YDConfig::get( 'YD_CAPTCHA_NUMCHARS' ) );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001042.html">[ydf-devel] r2448 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1043">[ date ]</a>
+              <a href="thread.html#1043">[ thread ]</a>
+              <a href="subject.html#1043">[ subject ]</a>
+              <a href="author.html#1043">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

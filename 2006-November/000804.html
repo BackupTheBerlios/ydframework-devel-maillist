@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Propose for a YD language repository
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Propose%20for%20a%20YD%20language%20repository&In-Reply-To=%3C4aef63030611211146j6ecdd17qba6c72c69c7c07a1%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000802.html">
+   <LINK REL="Next"  HREF="000808.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Propose for a YD language repository</H1>
+    <B>Pieter Claerhout</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Propose%20for%20a%20YD%20language%20repository&In-Reply-To=%3C4aef63030611211146j6ecdd17qba6c72c69c7c07a1%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] Propose for a YD language repository">pieter at yellowduck.be
+       </A><BR>
+    <I>Tue Nov 21 20:46:03 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000802.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+        <LI>Next message: <A HREF="000808.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#804">[ date ]</a>
+              <a href="thread.html#804">[ thread ]</a>
+              <a href="subject.html#804">[ subject ]</a>
+              <a href="author.html#804">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I'm not to keen on a solution like this, as different applications might
+want to use different terminology for different purposes. Another thing I
+find less good in this approach is that we will end up with tons of includes
+that will slow down the application.
+
+pieter
+
+2006/11/21, Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;:
+&gt;<i>
+</I>&gt;<i> Hi Pieter, Hi all
+</I>&gt;<i>
+</I>&gt;<i> In our applications, it's common to have the option for more than one
+</I>&gt;<i> language. This requires that we have translation files with translated
+</I>&gt;<i> strings, eg, YDWeblog has translation files and my simple application
+</I>&gt;<i> (based on the YDCM draft) too.
+</I>&gt;<i>
+</I>&gt;<i> I propose to have a YDF repository of translated strings.
+</I>&gt;<i> The good on this is that that, in our applications, we can use that
+</I>&gt;<i> strings (we don't need to reinvent the wheel every time) and these
+</I>&gt;<i> strings can be automatically translated/updated (because we have
+</I>&gt;<i> contributors in different languages).
+</I>&gt;<i>
+</I>&gt;<i> Apart from that, i propose to define a common way for those strings.
+</I>&gt;<i> Here goes my ideas:
+</I>&gt;<i>
+</I>&gt;<i> - create a YDF directory for translations (eg: YDFramework2/translations)
+</I>&gt;<i>
+</I>&gt;<i> - create a subdirectory for each context.
+</I>&gt;<i> Eg, for strings related to users, create a
+</I>&gt;<i> YDFramework2/translations/users/ directory. For generic strings (eg:
+</I>&gt;<i> 'add', 'delete') create a generic directory
+</I>&gt;<i> YDFramework2/translations/generic/
+</I>&gt;<i>
+</I>&gt;<i> - for each language we have a file inside each directory. Eg, if we
+</I>&gt;<i> have english and portuguese we would have in users translation directory
+</I>&gt;<i> these files:
+</I>&gt;<i> YDFramework2/translations/users/en.php
+</I>&gt;<i> YDFramework2/translations/users/pt.php
+</I>&gt;<i> or
+</I>&gt;<i> YDFramework2/translations/users/language_en.php
+</I>&gt;<i> YDFramework2/translations/users/language_pt.php
+</I>&gt;<i>
+</I>&gt;<i> - inside each file we could have a structure to define:
+</I>&gt;<i> * permissions
+</I>&gt;<i> * labels
+</I>&gt;<i> * return messages (that can be ok messages, error or form errors)
+</I>&gt;<i>
+</I>&gt;<i> I propose that a string should start by the context name, then type and
+</I>&gt;<i> then name.
+</I>&gt;<i> Eg, in users,
+</I>&gt;<i> permissions could be:
+</I>&gt;<i> $GLOBALS['t']['users perm edit'] = ...
+</I>&gt;<i> $GLOBALS['t']['users perm delete'] = ...
+</I>&gt;<i>
+</I>&gt;<i> labels could be:
+</I>&gt;<i> $GLOBALS['t']['users label username'] = ...
+</I>&gt;<i> $GLOBALS['t']['users label email'] = ...
+</I>&gt;<i>
+</I>&gt;<i> messages could be:
+</I>&gt;<i> $GLOBALS['t']['users mess deleteok'] = ...
+</I>&gt;<i> $GLOBALS['t']['users mess emailnotvalid'] = ...
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> This can be a huge help for all developers, they only need to use the
+</I>&gt;<i> directory they want ( first defining the current language with
+</I>&gt;<i> YDLocale::set() and then including the directory with
+</I>&gt;<i> YDLocale::addDirectory() ), and if a string is missing, it can be added
+</I>&gt;<i> and translated to other languages in a short time.
+</I>&gt;<i> Of course, in this initial phase, the port can be time consuming, but i
+</I>&gt;<i> think its a good practice.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> What do you think?
+</I>&gt;<i>
+</I>&gt;<i> regards
+</I>&gt;<i> Francisco A
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">https://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>
+
+
+-- 
+pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/67770f60/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/67770f60/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000802.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+	<LI>Next message: <A HREF="000808.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#804">[ date ]</a>
+              <a href="thread.html#804">[ thread ]</a>
+              <a href="subject.html#804">[ subject ]</a>
+              <a href="author.html#804">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

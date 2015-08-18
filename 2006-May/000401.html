@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1931 - YDFramework2.0/trunk/YDFramework2/addons/YDCMPage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1931%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMPage&In-Reply-To=%3C200605151505.k4FF5wMW028384%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000400.html">
+   <LINK REL="Next"  HREF="000402.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1931 - YDFramework2.0/trunk/YDFramework2/addons/YDCMPage</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1931%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMPage&In-Reply-To=%3C200605151505.k4FF5wMW028384%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1931 - YDFramework2.0/trunk/YDFramework2/addons/YDCMPage">ximian at berlios.de
+       </A><BR>
+    <I>Mon May 15 17:05:58 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000400.html">[ydf-devel] r1930 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000402.html">[ydf-devel] r1932 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDFormElements addons/YDCMHelpdesk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#401">[ date ]</a>
+              <a href="thread.html#401">[ thread ]</a>
+              <a href="subject.html#401">[ subject ]</a>
+              <a href="author.html#401">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-15 17:05:23 +0200 (Mon, 15 May 2006)
+New Revision: 1931
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/YDCMPage.php
+Log:
+added YDCMPage form rules
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/YDCMPage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/YDCMPage.php	2006-05-15 15:03:11 UTC (rev 1930)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/YDCMPage.php	2006-05-15 15:05:23 UTC (rev 1931)
+@@ -71,7 +71,7 @@
+ 		
+ 			YDInclude( 'YDForm.php' );
+ 
+-			// init template and language object
++			// get template and language object
+ 			$templates = YDCMComponent::module( 'YDCMTemplates' );
+ 			$languages = YDCMComponent::module( 'YDCMLanguages' );
+ 
+@@ -95,10 +95,10 @@
+ 	        $form-&gt;addElement( 'datetimeselect', 'published_date_end',   t('page_enddate'));
+ 	        $form-&gt;addElement( 'select',         'template_pack',        '',                       array(), $template_pack );
+ 	        $form-&gt;addElement( 'select',         'template',             t('page_template'),       array(), $templates-&gt;visitors_templates());
+-	        $form-&gt;addElement( 'select',         'metatags',             t('page_metatags'),       array(), array(0 =&gt; t('no'), 1 =&gt; t('yes')));
+-	        $form-&gt;addElement( 'textarea',       'description',          t('page_description'),    array('cols' =&gt; 50, 'rows' =&gt; 5) );
+-	        $form-&gt;addElement( 'textarea',       'keywords',             t('page_keywords'),       array('cols' =&gt; 50, 'rows' =&gt; 5) );
+-	        $form-&gt;addElement( 'select',         'searcheable',          t('page_search'),         array(), array(0 =&gt; t('no'), 1 =&gt; t('yes')) );
++	        $form-&gt;addElement( 'select',         'metatags',             t('page_metatags'),       array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
++	        $form-&gt;addElement( 'textarea',       'description',          t('page_description'),    array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++	        $form-&gt;addElement( 'textarea',       'keywords',             t('page_keywords'),       array( 'cols' =&gt; 50, 'rows' =&gt; 5 ) );
++	        $form-&gt;addElement( 'select',         'searcheable',          t('page_search'),         array(), array( 0 =&gt; t('no'), 1 =&gt; t('yes') ) );
+ 	        $form-&gt;addElement( 'hidden',         'content_id' );
+ 	        $form-&gt;addElement( 'hidden',         'parent_id' );
+ 	        $form-&gt;addElement( 'hidden',         'language_id' );
+@@ -108,10 +108,24 @@
+ 			$form-&gt;setDefault( 'parent_id',   0 );
+ 			$form-&gt;setDefault( 'language_id', $languages-&gt;adminDefault() );
+ 
+-			// TODO: add form rules
+-			
+-			// content_id .. integer
+-			// language_id .. valid in possible languages
++			// add form rules
++			$form-&gt;addRule( 'reference',      'required',       t('reference_required') );
++			$form-&gt;addRule( 'reference',      'alphanumeric',   t('reference_alphanumeric') );
++			$form-&gt;addRule( 'reference',      'maxwords',       t('reference_maxwords'),  1 );
++			$form-&gt;addRule( 'reference',      'maxlength',      t('reference_maxlength'), 100 );
++			$form-&gt;addRule( 'title',          'required',       t('title_required') );
++			$form-&gt;addRule( 'title',          'maxlength',      t('title_maxlength'), 255 );
++			$form-&gt;addRule( 'content_id',     'required',       t('content_id_required') );
++			$form-&gt;addRule( 'content_id',     'numeric',        t('content_id_numeric') );
++			$form-&gt;addRule( 'parent_id',      'required',       t('parent_id_required') );
++			$form-&gt;addRule( 'parent_id',      'numeric',        t('parent_id_numeric') );
++			$form-&gt;addRule( 'html',           'maxlength',      t('html_maxlength'),  50000 );
++			$form-&gt;addRule( 'xhtml',          'maxlength',      t('xhtml_maxlength'), 50000 );
++			$form-&gt;addRule( 'template_pack',  'in_array',       t('template_pack_invalid'), array( 0, 1 ) );
++			$form-&gt;addRule( 'template',       'in_array',       t('template_invalid'),      array_keys( $templates-&gt;visitors_templates() ) );
++			$form-&gt;addRule( 'metatags',       'in_array',       t('metatags_invalid'),      array( 0, 1 ) );
++			$form-&gt;addRule( 'description',    'maxlength',      t('description_maxlength'), 2000 );
++			$form-&gt;addRule( 'keywords',       'maxlength',      t('keywords_maxlength'),    2000 );
+ 
+ 			return $form;
+ 		}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000400.html">[ydf-devel] r1930 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000402.html">[ydf-devel] r1932 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDFormElements addons/YDCMHelpdesk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#401">[ date ]</a>
+              <a href="thread.html#401">[ thread ]</a>
+              <a href="subject.html#401">[ subject ]</a>
+              <a href="author.html#401">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

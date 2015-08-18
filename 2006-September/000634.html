@@ -1,0 +1,601 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2115 - in YDFramework2.0/trunk/examples/weblog:	include manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2115%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200609081822.k88IMNoc027762%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000633.html">
+   <LINK REL="Next"  HREF="000635.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2115 - in YDFramework2.0/trunk/examples/weblog:	include manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2115%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200609081822.k88IMNoc027762%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2115 - in YDFramework2.0/trunk/examples/weblog:	include manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep  8 20:22:23 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000633.html">[ydf-devel] r2114 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000635.html">[ydf-devel] r2116 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#634">[ date ]</a>
+              <a href="thread.html#634">[ thread ]</a>
+              <a href="subject.html#634">[ subject ]</a>
+              <a href="author.html#634">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-08 20:22:19 +0200 (Fri, 08 Sep 2006)
+New Revision: 2115
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/images.php
+   YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+   YDFramework2.0/trunk/examples/weblog/manage/manage.css
+Log:
+Added support for specifying the maximum image size of uploads.
+
+See also: [ Feature Request #2215 ] Image resize if image is big
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 16:19:38 UTC (rev 2114)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 18:22:19 UTC (rev 2115)
+@@ -841,6 +841,44 @@
+             $this-&gt;db-&gt;executeSql( $sql );
+         }
+ 
++        // Function to resize an uploaded image. Takes a YDFSImage object as it's argument
++        function resizeUploadedImage( $image ) {
++
++            // Convert the YDFSFile objects to images
++            if ( is_object( $image ) &amp;&amp; strtolower( get_class( $image ) ) == 'ydfsfile' ) {
++                $image = new YDFSImage( $image-&gt;getAbsolutePath() );
++            }
++
++            // Convert strings to images
++            if ( is_string( $image ) ) {
++                $image = new YDFSImage( $image );
++            }
++
++            // Get the maximum X and Y size
++            $max_x = YDConfig::get( 'max_img_size_x', '' );
++            $max_y = YDConfig::get( 'max_img_size_y', '' );
++            $max_x = empty( $max_x ) ? 999999 : $max_x;
++            $max_y = empty( $max_y ) ? 999999 : $max_y;
++
++            // Do nothing if maximum sizes are specified
++            if ( $max_x == 99999 &amp;&amp; $max_y == 999999 ) {
++                return $image;
++            }
++
++            // Resize the image
++            $image-&gt;saveThumbnail( $max_x, $max_y, $image-&gt;getAbsolutePath() );
++
++            // Debugging help
++            $image-&gt;getImageSize();
++            YDDebugUtil::dump( $max_x, 'x' );
++            YDDebugUtil::dump( $max_y, 'y' );
++            YDDebugUtil::dump( $image, 'image' );
++
++            // Return the image
++            return $image;
++
++        }
++
+         // Prepare a query
+         function _prepareQuery( $sql, $order=null ) {
+             return is_null( $order ) ? $sql : $sql . ' ORDER BY ' . $order;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-09-08 16:19:38 UTC (rev 2114)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-09-08 18:22:19 UTC (rev 2115)
+@@ -82,6 +82,9 @@
+             $form-&gt;addElement( 'select', 'weblog_language', t( 'cfg_weblog_language' ), array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $languages );
+             $form-&gt;addElement( 'checkbox', 'include_debug_info', t( 'cfg_include_debug_info' ), array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'text', 'google_analytics', t( 'cfg_weblog_google_analytics' ), array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'text', 'weblog_title', t( 'cfg_weblog_title' ), array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'text', 'max_img_size_x', t( 'cfg_max_img_size' ), array( 'class' =&gt; 'tfXS' ) );
++            $form-&gt;addElement( 'text', 'max_img_size_y', t( 'cfg_max_img_size' ), array( 'class' =&gt; 'tfXS' ) );
+ 
+             $form-&gt;addElement( 'checkbox', 'email_new_comment', t( 'cfg_notification_email_comment' ),  array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'checkbox', 'email_new_item', t( 'cfg_notification_email_item' ),  array( 'style' =&gt; 'border: none;' ) );
+@@ -169,6 +172,8 @@
+             $config['dflt_is_draft']        = YDConfig::get( 'dflt_is_draft',        false );
+             $config['blocked_ips']          = YDConfig::get( 'blocked_ips',          YDFormatStringWithListValues( '' ) );
+             $config['akismet_key']          = YDConfig::get( 'akismet_key',          '' );
++            $config['max_img_size_x']       = YDConfig::get( 'max_img_size_x',       '' );
++            $config['max_img_size_y']       = YDConfig::get( 'max_img_size_y',       '' );
+ 
+             // Return the configuration
+             return $config;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-09-08 16:19:38 UTC (rev 2114)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-09-08 18:22:19 UTC (rev 2115)
+@@ -80,6 +80,12 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_weblog_google_analytics&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{$config.google_analytics|default:'-'}&lt;/td&gt;
+         &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_max_img_size&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;
++                {$config.max_img_size_x|default:'-'} x {$config.max_img_size_y|default:'-'} pixels
++            &lt;/td&gt;
++        &lt;/tr&gt;
+     &lt;/table&gt;
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+         &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+@@ -208,6 +214,12 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.google_analytics.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.google_analytics.html}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.max_img_size_x.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {$form.max_img_size_x.html} x {$form.max_img_size_y.html} pixels
++                &lt;/td&gt;
++            &lt;/tr&gt;
+         &lt;/table&gt;
+         &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+             &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/images.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/images.php	2006-09-08 16:19:38 UTC (rev 2114)
++++ YDFramework2.0/trunk/examples/weblog/manage/images.php	2006-09-08 18:22:19 UTC (rev 2115)
+@@ -88,6 +88,9 @@
+                     $thumb-&gt;_createThumbnail( 100, 100, true );
+                     $thumb-&gt;_createThumbnail(  48,  48, true );
+ 
++                    // Resize the uploaded image in place
++                    $thumb = $this-&gt;weblog-&gt;resizeUploadedImage( $thumb );
++
+                 }
+ 
+                 // Get the name of the action
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-09-08 16:19:38 UTC (rev 2114)
++++ YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-09-08 18:22:19 UTC (rev 2115)
+@@ -99,10 +99,11 @@
+                             // Save it as a filee
+                             $entryFile = $dir-&gt;createFile( $entry-&gt;Name, $entry-&gt;Data );
+ 
+-
+                             // Delete it if it's not an image
+                             if ( ! $entryFile-&gt;isImage() ) {
+                                 @ unlink( $entryFile-&gt;getAbsolutePath() );
++                            } else {
++                                $entryFile = $this-&gt;weblog-&gt;resizeUploadedImage( $entryFile );
+                             }
+ 
+                         }
+@@ -112,6 +113,8 @@
+                     // Check if it's an image
+                     if ( ! $fileObj-&gt;isImage() ) {
+                         @unlink( $fileObj-&gt;getAbsolutePath() );
++                    } else {
++                        $fileObj = $this-&gt;weblog-&gt;resizeUploadedImage( $fileObj );
+                     }
+ 
+                     // Delete the thumbnails
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/manage.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-09-08 16:19:38 UTC (rev 2114)
++++ YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-09-08 18:22:19 UTC (rev 2115)
+@@ -1,63 +1,63 @@
+ select, input, textarea, body, p, .normal, li, td {
+-    font-family: 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Verdana, Arial, Sans-Serif;
++	font-family: 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Verdana, Arial, Sans-Serif;
+ }
+ 
+ body, p, .normal, li, td, th {
+-    font-size: 10pt;
+-    line-height: 16pt;
++	font-size: 10pt;
++	line-height: 16pt;
+ }
+ 
+ a {
+-    color: #417690;
+-    text-decoration: underline;
+-    font-weight: normal;
+-    cursor: pointer;
++	color: #417690;
++	text-decoration: underline;
++	font-weight: normal;
++	cursor: pointer;
+ }
+ 
+ .image {
+-    border:1px;
+-    border-color: #000066;
+-    color: #000066;
+-    border-style: solid;
++	border:1px;
++	border-color: #000066;
++	color: #000066;
++	border-style: solid;
+ }
+ 
+ p.title	{
+-    font-size: 150%;
+-    font-weight: normal;
+-    color: #417690;
++	font-size: 150%;
++	font-weight: normal;
++	color: #417690;
+ }
+ 
+ p.titleTop {
+-    font-size: 150%;
+-    font-weight: normal;
+-    color: white;
++	font-size: 150%;
++	font-weight: normal;
++	color: white;
+ }
+ 
+ p.textTop {
+-    font-weight: normal;
+-    color: white;
++	font-weight: normal;
++	color: white;
+ }
+ 
+ .subline {
+-    color: gray;
+-    font-size: 8pt;
++	color: gray;
++	font-size: 8pt;
+ }
+ 
+ .disabled {
+-    color: gray;
++	color: gray;
+ }
+ 
+ .error {
+-    color: red;
+-    margin: 0;
+-    padding: 10px;
+-    background-color: #f8f8f8;
+-    border-top: 1px solid #ddd;
+-    border-bottom: 1px solid #ddd;
++	color: red;
++	margin: 0;
++	padding: 10px;
++	background-color: #f8f8f8;
++	border-top: 1px solid #ddd;
++	border-bottom: 1px solid #ddd;
+ }
+ 
+ .required {
+-    color: red;
++	color: red;
+ }
+ 
+ input, textarea, select	{
+@@ -70,29 +70,33 @@
+ 	border: none;
+ }
+ 
++input.tfXS {
++	width: 100px;
++}
++
+ input.tfS {
+-    width: 300px;
++	width: 300px;
+ }
+ 
+ input.tfL {
+-    width: 400px;
++	width: 400px;
+ }
+ 
+ input.tfM {
+-    width: 400px;
++	width: 400px;
+ }
+ 
+ textarea {
+-    width: 700px;
+-    height: 300px;
+-    font-family: &quot;Lucida Sans Typewriter&quot;, &quot;Andale Mono&quot;, &quot;Courier New&quot;, &quot;Courier&quot;;
+-    font-size: 9pt;
+-    line-height: 14pt;
++	width: 700px;
++	height: 300px;
++	font-family: &quot;Lucida Sans Typewriter&quot;, &quot;Andale Mono&quot;, &quot;Courier New&quot;, &quot;Courier&quot;;
++	font-size: 9pt;
++	line-height: 14pt;
+ }
+ 
+ textarea.tfMNoMce {
+-    width: 400px;
+-    height: 100px;
++	width: 400px;
++	height: 100px;
+ }
+ 
+ td.bbtoolbar {
+@@ -100,109 +104,109 @@
+ }
+ 
+ select.tfS {
+-    width: 200px;
++	width: 200px;
+ 	border:1px solid #ccc;
+ }
+ 
+ input.button {
+-    width: 120px;
+-    color: #417690;
+-    font-weight: bold;
++	width: 120px;
++	color: #417690;
++	font-weight: bold;
+ 	background: white url(images/nav-bg.gif) bottom repeat-x; 
+ }
+ 
+ td, th {
+-    vertical-align: top
++	vertical-align: top
+ }
+ 
+ th {
+-    font-weight: bold;
++	font-weight: bold;
+ }
+ 
+ td.adminRowL, th.adminRowL {
+-    border-bottom: 1px solid #DDDDDD;
+-    padding-top: 4px;
+-    padding-bottom: 4px;
+-    text-align: left;
++	border-bottom: 1px solid #DDDDDD;
++	padding-top: 4px;
++	padding-bottom: 4px;
++	text-align: left;
+ }
+ 
+ td.adminRowLG, th.adminRowLG {
+-    border-bottom: 1px solid #DDDDDD;
++	border-bottom: 1px solid #DDDDDD;
+ 	border-top: 1px solid #DDDDDD;
+-    padding: 4px;
+-    text-align: left;
+-    color: #417690;
++	padding: 4px;
++	text-align: left;
++	color: #417690;
+ 	background: url(images/nav-bg.gif);
+ }
+ 
+ td.adminRowLGR, th.adminRowLGR {
+-    border-bottom: 1px solid #DDDDDD;
++	border-bottom: 1px solid #DDDDDD;
+ 	border-top: 1px solid #DDDDDD;
+-    padding: 4px;
+-    text-align: right;
+-    color: #417690;
++	padding: 4px;
++	text-align: right;
++	color: #417690;
+ 	background: url(images/nav-bg.gif);
+ }
+ 
+ td.adminRowELG, th.adminRowELG {
+-    border-bottom: 1px solid #DDDDDD;
++	border-bottom: 1px solid #DDDDDD;
+ 	border-top: 1px solid #DDDDDD;
+-    padding: 4px;
+-    text-align: left;
+-    color: red;
++	padding: 4px;
++	text-align: left;
++	color: red;
+ 	background: url(images/nav-bg.gif);
+ }
+ 
+ td.adminRowEL, th.adminRowEL {
+-    border-bottom: 1px solid #DDDDDD;
++	border-bottom: 1px solid #DDDDDD;
+ 	border-top: 1px solid #DDDDDD;
+-    padding: 4px;
+-    text-align: left;
++	padding: 4px;
++	text-align: left;
+ 	color: red;
+ 	background-color: #f8f8f8;
+ }
+ 
+ td.adminRowLNB, th.adminRowLNB {
+-    border-bottom: 0px solid #DDDDDD;
+-    padding-top: 4px;
+-    padding-bottom: 4px;
+-    text-align: left;
++	border-bottom: 0px solid #DDDDDD;
++	padding-top: 4px;
++	padding-bottom: 4px;
++	text-align: left;
+ }
+ 
+ td.adminRowCNB, th.adminRowCNB {
+-    border-bottom: 0px solid #DDDDDD;
+-    padding-top: 4px;
+-    padding-bottom: 4px;
+-    text-align: center;
++	border-bottom: 0px solid #DDDDDD;
++	padding-top: 4px;
++	padding-bottom: 4px;
++	text-align: center;
+ }
+ 
+ td.adminRowRNB, th.adminRowRNB {
+-    border-bottom: 0px solid #DDDDDD;
+-    padding-top: 4px;
+-    padding-bottom: 4px;
+-    text-align: right;
++	border-bottom: 0px solid #DDDDDD;
++	padding-top: 4px;
++	padding-bottom: 4px;
++	text-align: right;
+ }
+ 
+ td.adminRowC, th.adminRowC {
+-    border-bottom: 1px solid #DDDDDD;
+-    padding-top: 4px;
+-    padding-bottom: 4px;
+-    text-align: center;
++	border-bottom: 1px solid #DDDDDD;
++	padding-top: 4px;
++	padding-bottom: 4px;
++	text-align: center;
+ }
+ 
+ td.adminRowR, th.adminRowR {
+-    border-bottom: 1px solid #DDDDDD;
+-    padding-top: 4px;
+-    padding-bottom: 4px;
+-    text-align: right;
++	border-bottom: 1px solid #DDDDDD;
++	padding-top: 4px;
++	padding-bottom: 4px;
++	text-align: right;
+ }
+ 
+ table {
+-    border-width: 0px;
++	border-width: 0px;
+ }
+ 
+ td.topRow, td.topRowR {
+-    padding-bottom: 8px;
++	padding-bottom: 8px;
+ 	background:#94da3a url(images/nav-toprow.gif) repeat-x;
+ }
+ 
+@@ -211,56 +215,56 @@
+ }
+ 
+ p.langRow, a.langRow {
+-    color: white;
++	color: white;
+ }
+ 
+ td.langRowL {
+-    background-color: #417690;
++	background-color: #417690;
+ 	background: url(images/default-bg.gif);
+-    padding-top: 2px;
+-    padding-bottom: 2px;
+-    padding-right: 0px;
+-    text-align: left;
++	padding-top: 2px;
++	padding-bottom: 2px;
++	padding-right: 0px;
++	text-align: left;
+ }
+ 
+ td.langRowR {
+-    background-color: #417690;
++	background-color: #417690;
+ 	background: url(images/default-bg.gif);
+-    padding-top: 2px;
+-    padding-bottom: 2px;
+-    padding-left: 0px;
+-    text-align: right;
++	padding-top: 2px;
++	padding-bottom: 2px;
++	padding-left: 0px;
++	text-align: right;
+ }
+ 
+ td.langRowE {
+-    background-color: #000066;
+-    padding: 2px;
+-    padding-left: 4px;
++	background-color: #000066;
++	padding: 2px;
++	padding-left: 4px;
+ }
+ 
+ td.leftCol {
+-    width: 200px;
++	width: 200px;
+ }
+ 
+ a.leftColSelected {
+-    color: darkred;
+-    font-weight: bold;
++	color: darkred;
++	font-weight: bold;
+ }
+ 
+ a.leftColUnselected {
+-    font-weight: bold;
++	font-weight: bold;
+ }
+ 
+ a.yes {
+-    color: green;
++	color: green;
+ }
+ 
+ a.no {
+-    color: red;
++	color: red;
+ }
+ 
+ a.helpLink {
+-    cursor: pointer;
++	cursor: pointer;
+ }
+ 
+ input[type=checkbox], input[type=radio] { border:none; }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000633.html">[ydf-devel] r2114 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000635.html">[ydf-devel] r2116 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#634">[ date ]</a>
+              <a href="thread.html#634">[ thread ]</a>
+              <a href="subject.html#634">[ subject ]</a>
+              <a href="author.html#634">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2059 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2059%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200608311519.k7VFJ8qN011863%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000569.html">
+   <LINK REL="Next"  HREF="000571.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2059 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2059%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200608311519.k7VFJ8qN011863%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2059 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Aug 31 17:19:08 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000569.html">[ydf-devel] r2058 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000571.html">[ydf-devel] r2060 - in YDFramework2.0/trunk/examples/weblog: .	include manage skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#570">[ date ]</a>
+              <a href="thread.html#570">[ thread ]</a>
+              <a href="subject.html#570">[ subject ]</a>
+              <a href="author.html#570">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-31 17:19:03 +0200 (Thu, 31 Aug 2006)
+New Revision: 2059
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php
+   YDFramework2.0/trunk/examples/weblog/manage/serverinfo.tpl
+Log:
+The server info screen now lists the schema version.
+
+The schema version now also has the int column type for the installed field.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-31 14:26:10 UTC (rev 2058)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-31 15:19:03 UTC (rev 2059)
+@@ -144,18 +144,24 @@
+ 
+             // Create the schemaversion table if it doesn't exists
+             if ( ! $this-&gt;dbmeta-&gt;tableExists( '#_schemaversion' ) ) {
+-                $sql = 'CREATE TABLE #_schemaversion (installed TIMESTAMP, version INT (11))';
++                $sql = 'CREATE TABLE #_schemaversion (installed INT(11), version INT (11))';
+                 $this-&gt;db-&gt;executeSql( $sql );
+             }
+ 
+             // Check the schema version
+-            $schema_version = $this-&gt;db-&gt;getRecord( 'select version from #_schemaversion order by installed desc' );
++            $schema_version = $this-&gt;db-&gt;getValue( 'select version from #_schemaversion order by installed desc' );
+ 
+             // Return the schema version
+             return ( $schema_version === false  ) ? 0 : intval( $schema_version );
+ 
+         }
+ 
++        // Get the full schema information
++        function getFullSchemaVersion() {
++            $this-&gt;getSchemaVersion();
++            return $this-&gt;db-&gt;getRecord( 'select installed, version from #_schemaversion order by installed desc' );
++        }
++
+         // Function to set the schema version
+         function setSchemaVersion( $version ) {
+             $values = array();
+@@ -168,7 +174,7 @@
+         function upgradeSchemaIfNeeded() {
+ 
+             // The current weblog schema version
+-            $current_schema = 1;
++            $current_schema = 2;
+ 
+             // Get the schema version
+             $installed_schema = $this-&gt;getSchemaVersion();
+@@ -207,6 +213,10 @@
+                 $this-&gt;executeIfPresent( 'email', $indexes, 'ALTER TABLE #_users DROP INDEX email' );
+                 $this-&gt;executeIfMissing( 'name',  $indexes, 'ALTER TABLE #_users ADD UNIQUE name (name)' );
+ 
++                // Fix the shemaversion table if needed
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_schemaversion CHANGE installed installed INT(11)' );
++                $this-&gt;db-&gt;executeSql( 'UPDATE #_schemaversion SET installed = unix_timestamp() WHERE installed = 0' );
++
+                 // Update the schema information
+                 $this-&gt;setSchemaVersion( $current_schema );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-31 14:26:10 UTC (rev 2058)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-31 15:19:03 UTC (rev 2059)
+@@ -348,5 +348,7 @@
+ $GLOBALS['t']['msg_correct_version'] = 'There are no newer versions available';
+ $GLOBALS['t']['msg_install_update'] = 'Newer versions are available';
+ $GLOBALS['t']['development_changelog'] = 'Development Changelog';
++$GLOBALS['t']['schema_version'] = 'Database schema version';
++$GLOBALS['t']['installed_on'] = 'installed on';
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-31 14:26:10 UTC (rev 2058)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-31 15:19:03 UTC (rev 2059)
+@@ -348,5 +348,7 @@
+ $GLOBALS['t']['msg_correct_version'] = 'Er zijn geen nieuwere versies beschikbaar';
+ $GLOBALS['t']['msg_install_update'] = 'Er zijn nieuwe versies beschikbaar';
+ $GLOBALS['t']['development_changelog'] = 'Ontwikkel Logboek';
++$GLOBALS['t']['schema_version'] = 'Database schema versie';
++$GLOBALS['t']['installed_on'] = 'ge&iuml;nstalleerd op';
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php	2006-08-31 14:26:10 UTC (rev 2058)
++++ YDFramework2.0/trunk/examples/weblog/manage/serverinfo.php	2006-08-31 15:19:03 UTC (rev 2059)
+@@ -55,6 +55,7 @@
+             $php_modules = implode( $php_modules, ', ' );
+ 
+             // Get the other variables
++            $this-&gt;tpl-&gt;assign( 'schema_info',       $this-&gt;weblog-&gt;getFullSchemaVersion() );
+             $this-&gt;tpl-&gt;assign( 'php_version',       phpversion() );
+             $this-&gt;tpl-&gt;assign( 'mysql_version',     mysql_get_server_info() );
+             $this-&gt;tpl-&gt;assign( 'php_modules',       $php_modules );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/serverinfo.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/serverinfo.tpl	2006-08-31 14:26:10 UTC (rev 2058)
++++ YDFramework2.0/trunk/examples/weblog/manage/serverinfo.tpl	2006-08-31 15:19:03 UTC (rev 2059)
+@@ -45,6 +45,10 @@
+         &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$YD_FW_NAMEVERS}&lt;/td&gt;
+     &lt;/tr&gt;
+     &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++        &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;schema_version&quot;}&lt;/td&gt;
++        &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$schema_info.version} ({t w=&quot;installed_on&quot;} {$schema_info.installed|date:&quot;%d %B %Y&quot;|lower})&lt;/td&gt;
++    &lt;/tr&gt;
++    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+         &lt;td class=&quot;adminRowL&quot;&gt;Smarty&lt;/td&gt;
+         &lt;td class=&quot;adminRowL&quot;&gt;Smarty {$smarty.version}&lt;/td&gt;
+     &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000569.html">[ydf-devel] r2058 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000571.html">[ydf-devel] r2060 - in YDFramework2.0/trunk/examples/weblog: .	include manage skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#570">[ date ]</a>
+              <a href="thread.html#570">[ thread ]</a>
+              <a href="subject.html#570">[ subject ]</a>
+              <a href="author.html#570">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

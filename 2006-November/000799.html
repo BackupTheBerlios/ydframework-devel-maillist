@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2233 - YDFramework2.0/trunk/examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2233%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200611210805.kAL85N8f029979%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000797.html">
+   <LINK REL="Next"  HREF="000800.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2233 - YDFramework2.0/trunk/examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2233%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200611210805.kAL85N8f029979%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2233 - YDFramework2.0/trunk/examples/weblog/manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 21 09:05:23 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000797.html">[ydf-devel] r2232 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000800.html">[ydf-devel] r2234 - in YDFramework2.0/trunk/examples/weblog:	include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#799">[ date ]</a>
+              <a href="thread.html#799">[ thread ]</a>
+              <a href="subject.html#799">[ subject ]</a>
+              <a href="author.html#799">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-21 09:05:22 +0100 (Tue, 21 Nov 2006)
+New Revision: 2233
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+Added the seconds to the timestamp in the spam comments view.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-20 20:08:45 UTC (rev 2232)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-21 08:05:22 UTC (rev 2233)
+@@ -109,16 +109,16 @@
+                  onClick=&quot;return confirm( '{t w=&quot;confirm_empty_spam&quot;}' );&quot;&gt;{t w=&quot;empty_spam_now&quot;}&lt;/a&gt;&lt;/i&gt;
+             &lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;17%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;20%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+                 &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;ip_number&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;12%&quot;&gt;{t w=&quot;ip_number&quot;}&lt;/th&gt;
+                 &lt;th class=&quot;adminRowR&quot; width=&quot;33%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             {foreach from=$comments-&gt;set item=&quot;comment&quot;}
+                 &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
+                     &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {$comment.created|date:'%Y/%m/%d %H:%M'}
++                        {$comment.created|date:'%Y/%m/%d %H:%M:%S'}
+                     &lt;/td&gt;
+                     &lt;td class=&quot;adminRowL&quot;&gt;
+                         {$comment.username}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000797.html">[ydf-devel] r2232 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000800.html">[ydf-devel] r2234 - in YDFramework2.0/trunk/examples/weblog:	include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#799">[ date ]</a>
+              <a href="thread.html#799">[ thread ]</a>
+              <a href="subject.html#799">[ subject ]</a>
+              <a href="author.html#799">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2202 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2202%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611152109.kAFL95Rw013812%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000751.html">
+   <LINK REL="Next"  HREF="000753.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2202 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2202%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611152109.kAFL95Rw013812%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2202 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Nov 15 22:09:05 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000751.html">[ydf-devel] r2201 - in YDFramework2.0/trunk/YDFramework2/addons:	YDAjax YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000753.html">[ydf-devel] r2203 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#752">[ date ]</a>
+              <a href="thread.html#752">[ thread ]</a>
+              <a href="subject.html#752">[ subject ]</a>
+              <a href="author.html#752">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-15 22:08:42 +0100 (Wed, 15 Nov 2006)
+New Revision: 2202
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php
+Log:
+some cleanups on YDCMTemplates
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php	2006-11-15 21:06:43 UTC (rev 2201)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php	2006-11-15 21:08:42 UTC (rev 2202)
+@@ -26,7 +26,6 @@
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
+-	YDInclude( 'YDFileSystem.php' );
+ 
+ 	// set admin template directory (without template name directory)
+ 	YDConfig::set( 'YDCMTEMPLATES_ADMIN_PATH', YD_SELF_DIR, false );
+@@ -47,16 +46,7 @@
+ 	// this is a very special component because don't have any DB table (that's way do not extends YDCMComponent)
+     class YDCMTemplates {
+ 
+-        function YDCMTemplates() {
+-        
+-			$this-&gt;admin_path        = YDConfig::get( 'YDCMTEMPLATES_ADMIN_PATH' );
+-			$this-&gt;admin_template    = YDConfig::get( 'YDCMTEMPLATES_ADMIN_TEMPLATE' );
+-			$this-&gt;visitors_path     = YDConfig::get( 'YDCMTEMPLATES_VISITORS_PATH' );
+-			$this-&gt;visitors_template = YDConfig::get( 'YDCMTEMPLATES_VISITORS_TEMPLATE' );
+-			$this-&gt;template_pack     = YDConfig::get( 'YDCMTEMPLATES_PACK' );
+-		}
+ 
+-
+         /**
+          *  This function returns all possible templates for administration side
+          *
+@@ -64,7 +54,7 @@
+          */
+ 		function admin_templates(){
+ 		
+-			return $this-&gt;__getFiles( $this-&gt;admin_path );
++			return YDCMTemplates::__getFiles( YDConfig::get( 'YDCMTEMPLATES_ADMIN_PATH' ) );
+ 		}
+ 
+ 
+@@ -75,7 +65,7 @@
+          */
+ 		function admin_template(){
+ 		
+-			return $this-&gt;admin_template;
++			return YDConfig::get( 'YDCMTEMPLATES_ADMIN_TEMPLATE' );
+ 		}
+ 
+ 
+@@ -88,7 +78,7 @@
+          */
+ 		function admin_complete( $subdir = '' ){
+ 		
+-			return $this-&gt;admin_path . '/' . $this-&gt;admin_template . '/' . $subdir;
++			return YDConfig::get( 'YDCMTEMPLATES_ADMIN_PATH' ) . '/' . YDConfig::get( 'YDCMTEMPLATES_ADMIN_TEMPLATE' ) . '/' . $subdir;
+ 		}
+ 
+ 
+@@ -99,7 +89,7 @@
+          */
+ 		function template_pack(){
+ 		
+-			return $this-&gt;template_pack;
++			return YDConfig::get( 'YDCMTEMPLATES_PACK' );
+ 		}
+ 
+ 
+@@ -110,7 +100,7 @@
+          */
+ 		function visitors_templates(){
+ 		
+-			return $this-&gt;__getFiles( $this-&gt;visitors_path );
++			return YDCMTemplates::__getFiles( YDConfig::get( 'YDCMTEMPLATES_VISITORS_PATH' ) );
+ 		}
+ 
+ 
+@@ -121,7 +111,7 @@
+          */
+ 		function visitors_template(){
+ 		
+-			return $this-&gt;visitors_template;
++			return YDConfig::get( 'YDCMTEMPLATES_VISITORS_TEMPLATE' );
+ 		}
+ 
+ 
+@@ -134,7 +124,7 @@
+          */
+ 		function visitors_complete( $subdir = '' ){
+ 		
+-			return $this-&gt;visitors_path . '/' . $this-&gt;visitors_template . '/' . $subdir;
++			return YDConfig::get( 'YDCMTEMPLATES_VISITORS_PATH' ) . '/' . YDConfig::get( 'YDCMTEMPLATES_VISITORS_TEMPLATE' ) . '/' . $subdir;
+ 		}
+ 
+ 
+@@ -144,7 +134,9 @@
+          *  @returns    Array of filenames, eg: array( 'default' =&gt; 'Default', 'orange' =&gt; ... )
+          */
+ 		function __getFiles( $dir ){
+-		
++
++			YDInclude( 'YDFileSystem.php' );
++
+ 			// init directories
+ 			$directories = array();
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000751.html">[ydf-devel] r2201 - in YDFramework2.0/trunk/YDFramework2/addons:	YDAjax YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000753.html">[ydf-devel] r2203 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#752">[ date ]</a>
+              <a href="thread.html#752">[ thread ]</a>
+              <a href="subject.html#752">[ subject ]</a>
+              <a href="author.html#752">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

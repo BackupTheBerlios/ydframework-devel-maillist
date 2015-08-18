@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1674 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1674%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602141654.k1EGskJZ010457%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000069.html">
+   <LINK REL="Next"  HREF="000071.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1674 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1674%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602141654.k1EGskJZ010457%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1674 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 17:54:46 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000069.html">[ydf-devel] r1673 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000071.html">[ydf-devel] r1675 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#70">[ date ]</a>
+              <a href="thread.html#70">[ thread ]</a>
+              <a href="subject.html#70">[ subject ]</a>
+              <a href="author.html#70">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-14 17:54:46 +0100 (Tue, 14 Feb 2006)
+New Revision: 1674
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+Log:
+Fixed the YDWeblogAPI to make sure that the allow_comments field is created before the index is created.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 16:44:27 UTC (rev 1673)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 16:54:46 UTC (rev 1674)
+@@ -73,12 +73,6 @@
+                 YDConfig::get( 'db_pass', '' ), YDConfig::get( 'db_host', 'localhost' )
+             );
+ 
+-            // Get the list of index for the items table
+-            $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_items', 'key_name' );
+-            if ( ! in_array( 'allow_comments', $indexes ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX allow_comments (allow_comments)' );
+-            }
+-
+             // Add any missing body_more field
+             $fields = $this-&gt;db-&gt;getValuesByName( 'show fields from #_items', 'field' );
+             if ( ! in_array( 'body_more', $fields ) ) {
+@@ -88,6 +82,12 @@
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD allow_comments TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER num_comments' );
+             }
+ 
++            // Get the list of index for the items table
++            $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_items', 'key_name' );
++            if ( ! in_array( 'allow_comments', $indexes ) ) {
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX allow_comments (allow_comments)' );
++            }
++
+             // Get the list of indexes
+             $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_users', 'key_name' );
+             if ( in_array( 'email', $indexes ) ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000069.html">[ydf-devel] r1673 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000071.html">[ydf-devel] r1675 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#70">[ date ]</a>
+              <a href="thread.html#70">[ thread ]</a>
+              <a href="subject.html#70">[ subject ]</a>
+              <a href="author.html#70">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

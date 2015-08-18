@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2445 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2445%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200706241735.l5OHZd2H028518%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001038.html">
+   <LINK REL="Next"  HREF="001040.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2445 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2445%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200706241735.l5OHZd2H028518%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2445 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sun Jun 24 19:35:39 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001038.html">[ydf-devel] r2444 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001040.html">[ydf-devel] r2446 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1039">[ date ]</a>
+              <a href="thread.html#1039">[ thread ]</a>
+              <a href="subject.html#1039">[ subject ]</a>
+              <a href="author.html#1039">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-06-24 19:35:25 +0200 (Sun, 24 Jun 2007)
+New Revision: 2445
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php
+Log:
+- added new list: states
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php	2007-06-16 18:55:38 UTC (rev 2444)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDList.php	2007-06-24 17:35:25 UTC (rev 2445)
+@@ -97,6 +97,49 @@
+ 
+ 
+         /**
++         *  This function will return a array of states.
++         *
++         *  @param $country     Country to search.
++         *  @param $format      Format to return:     NULL  returns complete array.
++         *                                          'keys'  returns keys only.
++         *
++         *  @returns	Array.
++         *  @static
++         */
++        function states( $country, $format = null ){
++            $s = array( 'PT' =&gt; array(  'AV' =&gt; 'Aveiro',
++                                        'BE' =&gt; 'Beja',
++                                        'BR' =&gt; 'Braga',
++                                        'BG' =&gt; 'Bragan&#231;a',
++                                        'CB' =&gt; 'Castelo Branco',
++                                        'CO' =&gt; 'Coimbra',
++                                        'EV' =&gt; '&#201;vora',
++                                        'FA' =&gt; 'Faro',
++                                        'GU' =&gt; 'Guarda',
++                                        'LE' =&gt; 'Leiria',
++                                        'LI' =&gt; 'Lisboa',
++                                        'PL' =&gt; 'Portalegre',
++                                        'PO' =&gt; 'Porto',
++                                        'SA' =&gt; 'Santar&#233;m',
++                                        'SE' =&gt; 'Set&#250;bal',
++                                        'VC' =&gt; 'Viana do Castelo',
++                                        'VI' =&gt; 'Viseu',
++                                        'VR' =&gt; 'Vila Real' ) );
++
++            // check if country code exists
++            if ( ! isset( $s[ $country ] ) ){
++                return array();
++            }
++
++            if ( $format == 'keys' ) {
++                return array_keys( $s[ $country] );
++            }
++
++            return $s[ $country ];
++        }
++
++
++        /**
+          *  This function will return a array with countries.
+          *
+          *  @param $format      Format to return.   NULL  returns complete array
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001038.html">[ydf-devel] r2444 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001040.html">[ydf-devel] r2446 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1039">[ date ]</a>
+              <a href="thread.html#1039">[ thread ]</a>
+              <a href="subject.html#1039">[ subject ]</a>
+              <a href="author.html#1039">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

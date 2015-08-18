@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1910 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1910%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk&In-Reply-To=%3C200605041611.k44GBcxc024449%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000373.html">
+   <LINK REL="Next"  HREF="000375.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1910 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1910%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk&In-Reply-To=%3C200605041611.k44GBcxc024449%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1910 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk">ximian at berlios.de
+       </A><BR>
+    <I>Thu May  4 18:11:38 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000373.html">[ydf-devel] r1909 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000375.html">[ydf-devel] r1911 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#374">[ date ]</a>
+              <a href="thread.html#374">[ thread ]</a>
+              <a href="subject.html#374">[ subject ]</a>
+              <a href="author.html#374">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-04 18:11:15 +0200 (Thu, 04 May 2006)
+New Revision: 1910
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php
+Log:
+lots of updates in YCMHelpdesk
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php	2006-05-04 16:09:26 UTC (rev 1909)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk/YDCMHelpdesk.php	2006-05-04 16:11:15 UTC (rev 1910)
+@@ -57,7 +57,7 @@
+          *  @param $reference  (Optional) Node reference
+          *  @param $parent_id  (Optional) Id of the parent help desk
+          */
+-		function create( $title, $language_id = 'all', $reference = '', $parent_id = 0 ){
++		function addHelpdesk( $title, $language_id = 'all', $reference = '', $parent_id = 0 ){
+ 		
+ 			// add node to content tree
+ 			$node = array();
+@@ -91,7 +91,19 @@
+ 			return $this-&gt;insert();
+ 		}
+ 
++/*
++		function deleteHelpdesk( $id ){
+ 		
++			$this-&gt;resetValues();
++			
++			$this-&gt;content_id = intval( $id );
++			
++			// delete all post that have this parent
++			$posts = new YDCMHelpdesk_posts();
++			$posts-&gt;deleteParent( $id );
++		
++		}
++		*/
+     }
+ 
+ 
+@@ -144,6 +156,64 @@
+             $relState-&gt;setForeignKey( 'state_id' );
+ 		}
+ 
++
++		function addPost( $helpdesk_id, $user_id, $values ){
++		
++			$this-&gt;resetValues();
++		
++			// add required fields
++			// TODO: check if user, urgency and state exist
++			$this-&gt;component_id = $helpdesk_id;
++			$this-&gt;user_id      = $user_id;
++			$this-&gt;urgency_id   = $values['urgency_id'];
++			$this-&gt;state_id     = $values['state_id'];
++
++
++			// add optional fields
++			if ( isset( $values['subject'] ) )           $this-&gt;subject           = $values['subject'];
++			if ( isset( $values['localization'] ) )      $this-&gt;localization      = $values['localization'];
++			if ( isset( $values['text'] ) )              $this-&gt;text              = $values['text'];
++			if ( isset( $values['created_in'] ) )        $this-&gt;created_in        = $values['created_in'];
++			if ( isset( $values['reported_in'] ) )       $this-&gt;reported_in       = $values['reported_in'];
++			if ( isset( $values['reported_by'] ) )       $this-&gt;reported_by       = $values['reported_by'];
++			if ( isset( $values['reported_to_in'] ) )    $this-&gt;reported_to_in    = $values['reported_to_in'];
++			if ( isset( $values['reported_to'] ) )       $this-&gt;reported_to       = $values['reported_to'];
++			if ( isset( $values['reported_to_local'] ) ) $this-&gt;reported_to_local = $values['reported_to_local'];
++			
++			return $this-&gt;insert();
++		}
++		
++		
++		function deletePost( $post_id ){
++		
++			$this-&gt;resetValues();
++			
++			$this-&gt;post_id = intval( $post_id );
++			
++			return $this-&gt;delete();
++		}
++
++
++		function deleteAll( $helpdesk_id ){
++		
++			$this-&gt;resetValues();
++			
++			$this-&gt;component_id = intval( $helpdesk_id );
++			
++			return $this-&gt;delete();
++		}
++
++
++		function deleteParent( $parent_id ){
++		
++			$this-&gt;resetValues();
++			
++			$this-&gt;parent_id = intval( $parent_id );
++			
++			return $this-&gt;delete();
++		}
++
++		
+ 	}
+ 
+ 
+@@ -174,6 +244,24 @@
+             $relUsers-&gt;setForeignKey( 'user_id' );
+ 		}
+ 
++
++		function addResponse( $post_id, $user_id, $message ){
++		
++			YDInclude( 'YDUtil.php' );
++
++			$this-&gt;resetValues();
++		
++			// create response
++			// TODO: check if post_id and user_id are valid
++			$this-&gt;post_id     = intval( $post_id );
++			$this-&gt;user_id     = intval( $user_id );
++			$this-&gt;date        = YDStringUtil::formatDate( time(), 'datetimesql' );
++			$this-&gt;description = $message;
++
++			return $this-&gt;insert();
++		}
++		
++		
+ 	}	
+ 
+ 
+@@ -199,6 +287,20 @@
+ 			$rel-&gt;setForeignJoin( 'LEFT' );
+ 		}
+ 
++
++		function addUrgency( $description, $color = '#FF0000' ){
++		
++			$this-&gt;resetValues();
++
++			// create urgency
++			$this-&gt;description  = $description;
++			$this-&gt;color        = $color;
++
++			return $this-&gt;insert();
++		}
++
++
++
+ 	}	
+ 
+ 
+@@ -224,6 +326,18 @@
+ 			$rel-&gt;setForeignJoin( 'LEFT' );
+ 		}
+ 
++
++		function addState( $description ){
++		
++			$this-&gt;resetValues();
++
++			// create state
++			$this-&gt;description  = $description;
++
++			return $this-&gt;insert();
++		}
++
++
+ 	}	
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000373.html">[ydf-devel] r1909 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000375.html">[ydf-devel] r1911 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#374">[ date ]</a>
+              <a href="thread.html#374">[ thread ]</a>
+              <a href="subject.html#374">[ subject ]</a>
+              <a href="author.html#374">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

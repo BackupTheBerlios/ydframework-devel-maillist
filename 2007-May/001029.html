@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2435 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2435%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200705242229.l4OMTuNE015410%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001028.html">
+   <LINK REL="Next"  HREF="001030.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2435 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2435%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200705242229.l4OMTuNE015410%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2435 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri May 25 00:29:56 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001028.html">[ydf-devel] r2434 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001030.html">[ydf-devel] r2436 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1029">[ date ]</a>
+              <a href="thread.html#1029">[ thread ]</a>
+              <a href="subject.html#1029">[ subject ]</a>
+              <a href="author.html#1029">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-05-25 00:29:49 +0200 (Fri, 25 May 2007)
+New Revision: 2435
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+Log:
+new feature: captcha form element can be better integrated in ajax.
+             Now it's possible to reset the image ( old code is deleted from session var and users can see another code to fill )
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-05-24 22:24:18 UTC (rev 2434)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-05-24 22:29:49 UTC (rev 2435)
+@@ -154,7 +154,7 @@
+          *	@param $attribute	(optional) Element attribute
+          *	@param $options		(optional) The options for the elment.
+          */
+-        function setJS( $result, $attribute = null, $options = null ){ 
++        function setJS( $result = '', $attribute = null, $options = null ){ 
+ 
+              // if atribute is not defined we must create the default one
+              if ( is_null( $attribute ) ) $attribute = 'value';
+@@ -163,7 +163,17 @@
+              $result = htmlspecialchars( $result );
+ 
+              // assign result
+-             return 'document.getElementById(&quot;' . $this-&gt;getAttribute( 'id' ) . '&quot;).' . $attribute . ' = &quot;' . $result . '&quot;;';
++             $js = '';
++
++             // add text result, if exists
++             if ( is_string( $result ) &amp;&amp; $result != '' ){
++                 $js .= 'document.getElementById(&quot;' . $this-&gt;getAttribute( 'id' ) . '&quot;).' . $attribute . ' = &quot;' . $result . '&quot;;';
++             }
++
++             // set a new captcha image
++             $js .= 'document.getElementById(&quot;' . $this-&gt;getAttribute( 'id' ) . '_captcha&quot;).src = &quot;' . $this-&gt;_url . '&quot;;';
++
++             return $js;
+         }
+ 
+     }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001028.html">[ydf-devel] r2434 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001030.html">[ydf-devel] r2436 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1029">[ date ]</a>
+              <a href="thread.html#1029">[ thread ]</a>
+              <a href="subject.html#1029">[ subject ]</a>
+              <a href="author.html#1029">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

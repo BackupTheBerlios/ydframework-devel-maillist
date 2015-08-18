@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1645 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1645%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602081229.k18CTM61016022%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000002.html">
+   <LINK REL="Next"  HREF="000004.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1645 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1645%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602081229.k18CTM61016022%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1645 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Feb  8 13:29:22 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000002.html">[ydf-devel] r1644 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000004.html">[ydf-devel] Comments are not correctly validated in YDWeblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-08 13:29:21 +0100 (Wed, 08 Feb 2006)
+New Revision: 1645
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+Removed the YDStringUtil::convertToQueryString function again as it was not really needed after all.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-08 12:24:38 UTC (rev 1644)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-08 12:29:21 UTC (rev 1645)
+@@ -779,34 +779,6 @@
+             return ( substr( $string, -strlen( $substring ) ) == $substring );
+         }
+ 
+-        /**
+-         *  Converts a query string array to a query string.
+-         *
+-         *  @param  $values The array to convert.
+-         *
+-         *  @returns    A string with the query string variables.
+-         */
+-        function convertToQueryString( $values ) {
+-
+-            // Start with an empty result
+-            $result = '';
+-
+-            // Add the parameters
+-            foreach ( $values as $key1=&gt;$val1 ) {
+-                if ( is_array( $val1 ) ) {
+-                    foreach ( $val1 as $key2=&gt;$val2 ) {
+-                        $result .= rawurlencode( $key1 . '[' . $key2 . ']' ) . '=' . rawurlencode( $val2 ) . '&amp;';
+-                    }
+-                } else {
+-                    $result .= rawurlencode( $key1 ) . '=' . rawurlencode( $val1 ) . '&amp;';
+-                }
+-            }
+-
+-            // Return the URL
+-            return rtrim( $result, '&amp;' );
+-
+-        }
+-
+     }
+ 
+     /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000002.html">[ydf-devel] r1644 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000004.html">[ydf-devel] Comments are not correctly validated in YDWeblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

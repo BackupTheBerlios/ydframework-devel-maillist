@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2184 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2184%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200610262201.k9QM11gu018733%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000720.html">
+   <LINK REL="Next"  HREF="000722.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2184 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2184%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200610262201.k9QM11gu018733%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2184 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Oct 27 00:01:01 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000720.html">[ydf-devel] r2183 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000722.html">[ydf-devel] r2185 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#721">[ date ]</a>
+              <a href="thread.html#721">[ thread ]</a>
+              <a href="subject.html#721">[ subject ]</a>
+              <a href="author.html#721">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-10-27 00:01:00 +0200 (Fri, 27 Oct 2006)
+New Revision: 2184
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+Log:
+on checkboxgroup form element:
+  * added support for attributes
+  * added suport for label attributes
+  * 'select all' checkbox addon is only displayed if we have more than one option
+  * 'select all' checkbox addon is selected if all options are selected too
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-10-19 15:35:13 UTC (rev 2183)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-10-26 22:01:00 UTC (rev 2184)
+@@ -85,6 +85,8 @@
+ 				$this-&gt;_separator = $attributes['separator'];
+ 
+ 			$this-&gt;_addSelectAll = false;
++			$this-&gt;_addSelectAll_chk_attributes = array();
++			$this-&gt;_addSelectAll_label_attributes = array();
+         }
+ 
+ 
+@@ -116,14 +118,29 @@
+ 
+ 
+         /**
++         *	This function sets the attribute for the element.
++         *
++         *	@param	$attribute	Attribute to change
++         *	@param	$value   	Attribute value
++         */
++        function setAttribute( $attribute, $value ) {
++            foreach ( $this-&gt;_items as $k=&gt;$v ) {
++                $this-&gt;_items[$k]-&gt;setAttribute( $attribute, $value );
++            }
++        }
++
++
++        /**
+          *	This function sets checkboxgroup with 'select all' button
+          *
+-         *	@param	$onBottom	(Optional) Boolean that defines if button should be added on top (TRUE) or on bottom (FALSE) options
++         *	@param	$onBottom			(Optional) Boolean that defines if button should be added on bottom (TRUE) or on top (FALSE)
++         *	@param	$chk_attributes		(Optional) Attributes to pass to the select all checkbox
+          */
+-        function addSelectAll( $onBottom = true ) {
++        function addSelectAll( $onBottom = true, $chk_attributes = array() ) {
+ 
+ 			$this-&gt;_addSelectAll = true;
+ 			$this-&gt;_addSelectAll_onBottom = $onBottom;
++			$this-&gt;_addSelectAll_chk_attributes = $chk_attributes;
+         }
+ 
+ 
+@@ -188,22 +205,28 @@
+                 if ( $this-&gt;_position == 'right' ) $output .= $item-&gt;toHtml() . '&nbsp;&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;' . $this-&gt;_separator;
+                 else                               $output .= '&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;&nbsp;' . $item-&gt;toHtml() . $this-&gt;_separator;
+ 
+-			// check if a 'select all' button should be added
+-			if ( $this-&gt;_addSelectAll ){ 
++			// check if we have more than one element and a 'select all' button is defined
++			if ( count( $this-&gt;_items ) &gt; 1 &amp;&amp; $this-&gt;_addSelectAll ){ 
+ 
++				// compute button code
++				$selall = new YDFormElement_Checkbox( $this-&gt;_form, $this-&gt;getAttribute( 'id' ) . 'sall' );
++				$selall-&gt;setAttribute( 'onclick', 'for (var i=0;i&lt;document.forms[\''. $this-&gt;_form . '\'].elements.length;i++) if (document.forms[\''. $this-&gt;_form . '\'].elements[i].type==\'checkbox\' &amp;&amp; !document.forms[\''. $this-&gt;_form . '\'].elements[i].disabled &amp;&amp; /' . $this-&gt;_name . '\[[a-zA-Z0-9]+\]/.test( document.forms[\''. $this-&gt;_form . '\'].elements[i].name ) ) document.forms[\''. $this-&gt;_form . '\'].elements[i].checked = this.checked;' );
++
++				// if all checkboxes are selected, the 'select all' will be selected too
++				$selall-&gt;setValue(1);
++				foreach( $this-&gt;getValue() as $elem =&gt; $value )
++					if ( $value != 1 ){ $selall-&gt;setValue(0); break; }
++
+ 				// check default translation
+ 				if( !isset( $GLOBALS['t']['select all'] ) ) $GLOBALS['t']['select all'] = 'select all';
+ 
+-				// compute button code
+-				$bcode = '&lt;input type=&quot;checkbox&quot; onclick=&quot;for (var i=0;i&lt;document.forms[\''. $this-&gt;_form . '\'].elements.length;i++) if (document.forms[\''. $this-&gt;_form . '\'].elements[i].type==\'checkbox\' &amp;&amp; !document.forms[\''. $this-&gt;_form . '\'].elements[i].disabled &amp;&amp; /' . $this-&gt;_name . '\[[0-9]+\]/.test( document.forms[\''. $this-&gt;_form . '\'].elements[i].name ) ) document.forms[\''. $this-&gt;_form . '\'].elements[i].checked = this.checked;&quot; /&gt;';
+-
+ 				// compute button label
+-				if ( $this-&gt;_position == 'right' ) $bcode = '&lt;span class=&quot;select_all&quot;&gt;&lt;label&gt;' . $bcode . ' ' . t( 'select all' ) . '&lt;/label&gt;&lt;/span&gt;';
+-				else                               $bcode = '&lt;span class=&quot;select_all&quot;&gt;&lt;label&gt;' . t( 'select all' ) . ' ' . $bcode . '&lt;/label&gt;&lt;/span&gt;';
++				if ( $this-&gt;_position == 'right' ) $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;&lt;label&gt;' . $selall-&gt;toHTML() . ' ' . t( 'select all' ) . '&lt;/label&gt;&lt;/span&gt;';
++				else                               $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;&lt;label&gt;' . t( 'select all' ) . ' ' . $selall-&gt;toHTML() . '&lt;/label&gt;&lt;/span&gt;';
+ 
+ 				// add button code to html output
+-				if ( $this-&gt;_addSelectAll_onBottom ) $output = $output . $bcode;
+-				else                                 $output = $bcode . $this-&gt;_separator . $output;
++				if ( $this-&gt;_addSelectAll_onBottom ) $output = $output . $selall_html;
++				else                                 $output = $selall_html . $this-&gt;_separator . $output;
+ 			}
+ 
+             return $output;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000720.html">[ydf-devel] r2183 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000722.html">[ydf-devel] r2185 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#721">[ date ]</a>
+              <a href="thread.html#721">[ thread ]</a>
+              <a href="subject.html#721">[ subject ]</a>
+              <a href="author.html#721">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,1060 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2089 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2089%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage&In-Reply-To=%3C200609071342.k87DggA3005306%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000605.html">
+   <LINK REL="Next"  HREF="000607.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2089 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2089%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage&In-Reply-To=%3C200609071342.k87DggA3005306%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2089 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep  7 15:42:42 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000605.html">[ydf-devel] r2088 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000607.html">[ydf-devel] r2090 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#606">[ date ]</a>
+              <a href="thread.html#606">[ thread ]</a>
+              <a href="subject.html#606">[ subject ]</a>
+              <a href="author.html#606">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-07 15:42:42 +0200 (Thu, 07 Sep 2006)
+New Revision: 2089
+
+Removed:
+   YDFramework2.0/trunk/examples/weblog/manage/stats.php
+   YDFramework2.0/trunk/examples/weblog/manage/stats.tpl
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/index.php
+   YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/manage.css
+   YDFramework2.0/trunk/examples/weblog/xml.php
+Log:
+Removed the internal statistics as they were not as powerful as I would like them to be. Using a tool like Google Analytics or something similar is way more powerful.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -162,7 +162,7 @@
+         function upgradeSchemaIfNeeded() {
+ 
+             // The current weblog schema version
+-            $current_schema = 4;
++            $current_schema = 5;
+ 
+             // Get the schema version
+             $installed_schema = $this-&gt;getSchemaVersion();
+@@ -204,6 +204,10 @@
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_schemaversion CHANGE installed installed INT(11)' );
+                 $this-&gt;db-&gt;executeSql( 'UPDATE #_schemaversion SET installed = unix_timestamp() WHERE installed = 0' );
+ 
++                // Drop the statistics tables
++                $this-&gt;db-&gt;executeSql( 'DROP TABLE #_statistics' );
++                $this-&gt;db-&gt;executeSql( 'DROP TABLE #_statistics_init' );
++
+                 // Update the schema information
+                 $this-&gt;setSchemaVersion( $current_schema );
+ 
+@@ -225,34 +229,6 @@
+             }
+         }
+ 
+-        // Function to log a request to the statistics
+-        function logRequestToStats( $values ) {
+-
+-            // Default to index.php
+-            if ( ! empty( $values['uri'] ) ) {
+-
+-                // Create the where clause
+-                $where = array();
+-                foreach ( $values as $key=&gt;$val ) {
+-                    array_push( $where, $key . '=' . $this-&gt;str( $val ) );
+-                }
+-                $where =implode( ' and ', $where );
+-
+-                // Generate the SQL statement
+-                $sql = $this-&gt;db-&gt;_createSqlUpdate( '#_statistics', $values, $where );
+-                $sql = str_replace( ' WHERE', ',hits=hits+1 WHERE', $sql );
+-
+-                // Execute the SQL
+-                $affected = $this-&gt;db-&gt;executeSql( $sql );
+-                if ( $affected === 0 ) {
+-                    $values['hits'] = '1';
+-                    $this-&gt;db-&gt;executeInsert( '#_statistics', $values );
+-                }
+-
+-            }
+-
+-        }
+-
+         // Function to auto add some records to an item
+         function _fixItem( $item, $order='created desc, title' ) {
+ 
+@@ -713,30 +689,6 @@
+             );
+         }
+ 
+-        // Get the install date
+-        function getInstallDate() {
+-            return strtotime( $this-&gt;db-&gt;getValue( 'SELECT created FROM #_statistics_init LIMIT 1' ) );
+-        }
+-
+-        // Get the total num of hits
+-        function getTotalHits() {
+-            $result = $this-&gt;db-&gt;getValue( 'SELECT SUM(hits) FROM #_statistics' );
+-            return empty( $result ) ? 0 : $result;
+-        }
+-
+-        // Get the total num of hits without the bots
+-        function getTotalHitsNoBots() {
+-            $result = $this-&gt;db-&gt;getValue( 'SELECT SUM(hits) FROM #_statistics WHERE browser != \'bot\'' );
+-            return empty( $result ) ? 0 : $result;
+-        }
+-
+-        // Reset the statistics
+-        function resetStats() {
+-            $this-&gt;db-&gt;executeSql( 'truncate #_statistics' );
+-            $this-&gt;db-&gt;executeSql( 'truncate #_statistics_init' );
+-            $this-&gt;db-&gt;executeInsert( '#_statistics_init', array( 'created' =&gt; $this-&gt;db-&gt;getDate( '__NOW__' ) ) );
+-        }
+-
+         // Get the number of items
+         function getStatsItemCount() {
+             return $this-&gt;db-&gt;getValue( 'SELECT count(*) FROM #_items' );
+@@ -747,85 +699,6 @@
+             return $this-&gt;db-&gt;getValue( 'SELECT count(*) FROM #_comments' );
+         }
+ 
+-        // Get the stats from the last 6 months
+-        function getStatsMonths( $limit=6 ) {
+-            YDInclude( 'YDDate.php' );
+-            $records = $this-&gt;db-&gt;getRecords(
+-                'SELECT DATE_FORMAT(date,\'%Y-%m\') AS YearMonth, SUM(hits) AS hits FROM #_statistics '
+-              . ' GROUP BY YearMonth ORDER BY date DESC', $limit
+-            );
+-            foreach ( $records as $key=&gt;$record ) {
+-                $date = new YDDate( $record['yearmonth'] . '-01' );
+-                $records[$key]['yearmonth'] = $record['yearmonth'] . ' (' . strtolower( $date-&gt;getMonthName() ) . ')';
+-            }
+-            return $records;
+-        }
+-
+-        // Get the stats from the last 7 days
+-        function getStatsDays( $limit=7 ) {
+-            YDInclude( 'YDDate.php' );
+-            $records = $this-&gt;db-&gt;getRecords(
+-                'SELECT date, SUM(hits) AS hits FROM #_statistics GROUP BY date ORDER BY date DESC', $limit
+-            );
+-            foreach ( $records as $key=&gt;$record ) {
+-                $date = new YDDate( $record['date'] );
+-                $records[$key]['date'] = $record['date'] . ' (' . strtolower( $date-&gt;getDayName() ) . ')';
+-            }
+-            return $records;
+-        }
+-
+-        // Get the top 10 URLs
+-        function getStatsUrls( $limit=10 ) {
+-            return $this-&gt;db-&gt;getRecords(
+-                'SELECT uri, SUM(hits) AS hits FROM #_statistics GROUP BY uri ORDER BY hits DESC', $limit
+-            );
+-        }
+-
+-        // Get the browser statistics
+-        function getStatsBrowser() {
+-            $browsers = array(
+-                'bot'       =&gt; 'Automatic Bots',
+-                'opera'     =&gt; 'Opera',
+-                'ie'        =&gt; 'Internet Explorer',
+-                'safari'    =&gt; 'Apple Safari',
+-                'konqueror' =&gt; 'Konqueror',
+-                'feed'      =&gt; 'RSS Reader',
+-                'mozilla'   =&gt; 'Netscape/Mozilla/FireFox',
+-                'unknown'   =&gt; t('other'),
+-            );
+-            $browserStats = $this-&gt;db-&gt;getRecords(
+-                'SELECT browser, SUM(hits) AS hits FROM #_statistics GROUP BY browser ORDER BY hits DESC'
+-            );
+-            if ( sizeof( $browserStats ) &gt; 0 ) {
+-                foreach ( $browserStats as $key=&gt;$val ) {
+-                    $browserStats[$key]['browser'] = $browsers[ $val['browser'] ];
+-                }
+-            }
+-            return $browserStats;
+-        }
+-
+-        // Get the OS statistics
+-        function getStatsOs() {
+-            $platforms = array(
+-                'win'       =&gt; 'Microsoft Windows',
+-                'mac'       =&gt; 'Apple Macintosh',
+-                'linux'     =&gt; 'Linux',
+-                'unix'      =&gt; 'Unix',
+-                'bot'       =&gt; 'Automatic Bots',
+-                'feed'      =&gt; 'RSS Reader',
+-                'unknown'   =&gt; t('other'),
+-            );
+-            $osStats = $this-&gt;db-&gt;getRecords(
+-                'SELECT platform, SUM(hits) AS hits FROM #_statistics GROUP BY platform ORDER BY hits DESC'
+-            );
+-            if ( sizeof( $osStats ) &gt; 0 ) {
+-                foreach ( $osStats as $key=&gt;$val ) {
+-                    $osStats[$key]['platform'] = $platforms[ $val['platform'] ];
+-                }
+-            }
+-            return $osStats;
+-        }
+-
+         // Get the commenter statistics
+         function getCommenterStats( $limit=10 ) {
+             return $this-&gt;db-&gt;getRecords(
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -36,7 +36,6 @@
+             $this-&gt;dir_uploads = YDConfig::get( 'dir_uploads', 'uploads' );
+             $this-&gt;dir_skins   = YDConfig::get( 'dir_skins',   'skins' ) . '/';
+ 
+-
+             // Default to default skin
+             if ( ! is_dir( dirname( __FILE__ ) . '/../' . $this-&gt;dir_skins . $this-&gt;skin . '/' ) ) {
+                 YDConfig::set( 'weblog_skin', 'default' );
+@@ -62,9 +61,6 @@
+             $this-&gt;tpl-&gt;register_modifier( 'text_num_comments', 'YDTplModTextNumComments' );
+             $this-&gt;tpl-&gt;register_modifier( 'text_num_images', 'YDTplModTextNumImages' );
+ 
+-            // Get the browser information
+-            $this-&gt;browser = new YDBrowserInfo();
+-
+         }
+ 
+         // Clear the cache
+@@ -180,7 +176,6 @@
+         // Fetch a template
+         function fetch( $customTpl=null ) {
+             $this-&gt;initTemplate();
+-            $this-&gt;_logRequest();
+             $data = $this-&gt;tpl-&gt;fetch( $customTpl );
+             if ( YDConfig::get( 'use_cache', false ) ) {
+                 if ( $this-&gt;caching === true ) {
+@@ -203,48 +198,6 @@
+             return  $this-&gt;tpl-&gt;template_dir . $name . YD_TPL_EXT;
+         }
+ 
+-        // Function to disbable request logging
+-        function _logRequest() {
+-
+-            // Check if we need to log statistics or not
+-            if ( YDConfig::get( 'keep_stats', true ) ) {
+-
+-                // Get the logging data
+-                $values = array();
+-                $values['uri'] = str_replace( dirname( YD_SELF_SCRIPT ) . '/', '', $this-&gt;getNormalizedUri() );
+-                if ( substr( $values['uri'], 0, 1 ) == '/' ) {
+-                    $values['uri'] = substr( $values['uri'], 1 );
+-                }
+-                if ( substr( $values['uri'], 0, 4 ) == '.php' ) {
+-                    $values['uri'] = basename( YD_SELF_SCRIPT ) . substr( $values['uri'], 4 );
+-                }
+-                $values['date'] = strftime( '%Y-%m-%d' );
+-                $values['browser'] = $this-&gt;browser-&gt;browser;
+-                $values['platform'] = $this-&gt;browser-&gt;platform;
+-
+-                // Fix the short URLs so that they all look the same
+-                if ( YDConfig::get( 'friendly_urls', true ) &amp;&amp; strpos( $values['uri'], '_' ) ) {
+-                    if ( YDStringUtil::startswith( $values['uri'], 'image/', false ) ) {
+-                        $values['uri'] = 'item_gallery.php?id=' . substr( $values['uri'], 6 );
+-                    } elseif ( YDStringUtil::startswith( $values['uri'], 'archive' ) ) {
+-                    } else {
+-                        $values['uri'] = substr( $values['uri'], 0, strpos( $values['uri'], '_' ) )
+-                                       . substr( $values['uri'], strpos( $values['uri'], '.php?id=' ) );
+-                    }
+-                }
+-
+-                // Add index.php
+-                if ( empty( $values['uri'] ) &amp;&amp; basename( YD_SELF_SCRIPT ) == 'index.php' ) {
+-                    $values['uri'] = 'index.php';
+-                }
+-
+-                // Add them to the database
+-                $this-&gt;weblog-&gt;logRequestToStats( $values );
+-
+-            }
+-
+-        }
+-
+         // Check for authentication
+         function isAuthenticated() {
+             if ( ! empty( $_COOKIE[ 'YD_USER_NAME' ] ) &amp;&amp; ! empty( $_COOKIE[ 'YD_USER_PASS' ] ) ) {
+@@ -317,7 +270,6 @@
+             $this-&gt;tpl-&gt;assign( 'weblog_description', YDConfig::get( 'weblog_description', 'Untitled Weblog Description' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_language',    YDConfig::get( 'weblog_language', 'en' ) );
+             $this-&gt;tpl-&gt;assign( 'google_analytics',   YDConfig::get( 'google_analytics', '' ) != '' );
+-            $this-&gt;tpl-&gt;assign( 'keep_stats',         YDConfig::get( 'keep_stats', true ) );
+ 
+             // Get the link to the different directories
+             $uploads_dir = YDUrl::makeLinkAbsolute( '../' . $this-&gt;dir_uploads );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -73,7 +73,6 @@
+                 @include( dirname( __FILE__ ) . '/cache_filter.php' );
+                 $elapsed = $GLOBALS['timer']-&gt;getElapsed();
+                 $req = new YDWeblogRequest();
+-                $req-&gt;_logRequest();
+                 die( $data . YD_CRLF . '&lt;!-- #cached: ' . $elapsed . ' ms --&gt;' );
+             }
+         }
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -293,7 +293,7 @@
+ $GLOBALS['t']['err_auto_close_items'] = 'Do not allow comment after x days should be numeric';
+ $GLOBALS['t']['cfg_include_debug_info'] = 'Show debugging information';
+ $GLOBALS['t']['cfg_default_item_settings'] = 'Default values for new items';
+-$GLOBALS['t']['cfg_weblog_google_analytics'] = 'Google Analytics Account';
++$GLOBALS['t']['cfg_weblog_google_analytics'] = '&lt;a href=&quot;<A HREF="http://www.google.com/analytics/">http://www.google.com/analytics/</A>&quot; target=&quot;_blank&quot;&gt;Google Analytics&lt;/a&gt; Account';
+ $GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
+ $GLOBALS['t']['cfg_keep_stats'] = 'Track statistics';
+ $GLOBALS['t']['cfg_blocked_ips'] = 'Blocked IP addresses separated by comma\'s. An asterix can be used as a wildcard.';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -293,7 +293,7 @@
+ $GLOBALS['t']['err_auto_close_items'] = 'Laat geen commentaren toe na x dagen moet een getal zijn';
+ $GLOBALS['t']['cfg_include_debug_info'] = 'Toon debugging informatie';
+ $GLOBALS['t']['cfg_default_item_settings'] = 'Standaard waardes voor nieuwe posts';
+-$GLOBALS['t']['cfg_weblog_google_analytics'] = 'Google Analytics Account';
++$GLOBALS['t']['cfg_weblog_google_analytics'] = '&lt;a href=&quot;<A HREF="http://www.google.com/analytics/">http://www.google.com/analytics/</A>&quot; target=&quot;_blank&quot;&gt;Google Analytics&lt;/a&gt; Account';
+ $GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
+ $GLOBALS['t']['cfg_keep_stats'] = 'Houdt statistieken bij';
+ $GLOBALS['t']['cfg_blocked_ips'] = 'Geblokkeerde IP adressen gescheiden door comma\'s. Je kan een sterretje gebruiken als wildcard.';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -127,16 +127,11 @@
+                         &raquo; &lt;a href=&quot;cache.php&quot;&gt;{t w=&quot;a_cleanup_cache&quot;}&lt;/a&gt;&lt;br/&gt;
+                     &lt;/td&gt;
+                 &lt;/tr&gt;
+-                {if $keep_stats or $google_analytics}
++                {if $google_analytics}
+                     &lt;tr&gt;
+                         &lt;td class=&quot;adminRowL&quot;&gt;
+                             &lt;b&gt;{t w=&quot;h_statistics&quot;}&lt;/b&gt;&lt;br/&gt;
+-                            {if $keep_stats}
+-                                &raquo; &lt;a href=&quot;stats.php&quot;&gt;{t w=&quot;a_statistics&quot;}&lt;/a&gt;&lt;br/&gt;
+-                            {/if}
+-                            {if $google_analytics}
+-                                &raquo; &lt;a href=&quot;<A HREF="https://www.google.com/analytics/home/">https://www.google.com/analytics/home/</A>&quot; target=&quot;_blank&quot;&gt;{t w=&quot;cfg_google_analytics&quot;}&lt;/a&gt;&lt;br/&gt;
+-                            {/if}
++                            &raquo; &lt;a href=&quot;<A HREF="https://www.google.com/analytics/home/">https://www.google.com/analytics/home/</A>&quot; target=&quot;_blank&quot;&gt;{t w=&quot;cfg_google_analytics&quot;}&lt;/a&gt;&lt;br/&gt;
+                         &lt;/td&gt;
+                     &lt;/tr&gt;
+                 {/if}
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -26,7 +26,6 @@
+             // Fix the boolean values
+             $config['email_new_comment']   = ( $config['email_new_comment'] ) ? t('yes') : t('no');
+             $config['email_new_item']      = ( $config['email_new_item'] ) ? t('yes') : t('no');
+-            $config['keep_stats']          = ( $config['keep_stats'] ) ? t('yes') : t('no');
+             $config['use_cache']           = ( $config['use_cache'] ) ? t('yes') : t('no');
+             $config['friendly_urls']       = ( $config['friendly_urls'] ) ? t('yes') : t('no');
+             $config['include_debug_info']  = ( $config['include_debug_info'] ) ? t('yes') : t('no');
+@@ -79,7 +78,6 @@
+             $form-&gt;addElement( 'select', 'weblog_skin', t( 'cfg_weblog_skin' ), array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $skins );
+             $form-&gt;addElement( 'select', 'weblog_language', t( 'cfg_weblog_language' ), array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $languages );
+             $form-&gt;addElement( 'checkbox', 'include_debug_info', t( 'cfg_include_debug_info' ), array( 'style' =&gt; 'border: none;' ) );
+-            $form-&gt;addElement( 'checkbox', 'keep_stats', t( 'cfg_keep_stats' ), array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'text', 'google_analytics', t( 'cfg_weblog_google_analytics' ), array( 'class' =&gt; 'tfM' ) );
+ 
+             $form-&gt;addElement( 'checkbox', 'email_new_comment', t( 'cfg_notification_email_comment' ),  array( 'style' =&gt; 'border: none;' ) );
+@@ -158,7 +156,6 @@
+             $config['weblog_entries_fp']    = YDConfig::get( 'weblog_entries_fp',    1 );
+             $config['weblog_skin']          = YDConfig::get( 'weblog_skin',          'default' );
+             $config['weblog_language']      = YDConfig::get( 'weblog_language',      'nl' );
+-            $config['keep_stats']           = YDConfig::get( 'keep_stats',           true );
+             $config['google_analytics']     = YDConfig::get( 'google_analytics',     '' );
+             $config['include_debug_info']   = YDConfig::get( 'include_debug_info',   false );
+             $config['email_new_comment']    = YDConfig::get( 'email_new_comment',    true );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -77,10 +77,6 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{$config.include_debug_info}&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_keep_stats&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{$config.keep_stats}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_weblog_google_analytics&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{$config.google_analytics|default:'-'}&lt;/td&gt;
+         &lt;/tr&gt;
+@@ -209,10 +205,6 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.include_debug_info.html}&lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.keep_stats.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.keep_stats.html}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.google_analytics.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.google_analytics.html}&lt;/td&gt;
+             &lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/index.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/index.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -24,30 +24,13 @@
+             $this-&gt;tpl-&gt;assign( 'items', $items );
+ 
+             // Get the global statistics
+-            $installDate   = $this-&gt;weblog-&gt;getInstallDate();
+-            $daysOnline    = round( ( time() - $installDate ) / 86400 );
+             $totalItems    = $this-&gt;weblog-&gt;getStatsItemCount();
+             $totalComments = $this-&gt;weblog-&gt;getStatsCommentCount();
+ 
+             // Assign these to the template
+-            $this-&gt;tpl-&gt;assign( 'installDate',   $installDate );
+-            $this-&gt;tpl-&gt;assign( 'daysOnline',    $daysOnline );
+             $this-&gt;tpl-&gt;assign( 'totalItems',    $totalItems );
+             $this-&gt;tpl-&gt;assign( 'totalComments', $totalComments );
+ 
+-            // Check if we need to log statistics or not
+-            if ( YDConfig::get( 'keep_stats', true ) ) {
+-
+-                // Get the averages
+-                $totalHits     = $this-&gt;weblog-&gt;getTotalHits();
+-                $avg_hitsaday  = @ intval( $totalHits / $daysOnline );
+-
+-                // Assign these to the template
+-                $this-&gt;tpl-&gt;assign( 'totalHits',     $totalHits );
+-                $this-&gt;tpl-&gt;assign( 'avg_hitsaday',  $avg_hitsaday );
+-
+-            }
+-
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -73,27 +73,14 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;server&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$smarty.server.SERVER_NAME}{if $smarty.server.SERVER_PORT != '80'}:{$smarty.server.SERVER_PORT}{/if}&lt;/td&gt;
+         &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;installed_version&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$YD_FW_REVISION}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;installed_since&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot; colspan=&quot;2&quot;&gt;{$installDate|date:&quot;%d %B %Y&quot;|lower}&lt;/td&gt;
+-        &lt;/tr&gt;
+     &lt;/table&gt;
+ &lt;/td&gt;
+ &lt;td width=&quot;350&quot; align=&quot;right&quot; valign=&quot;top&quot;&gt;
+     &lt;table width=&quot;340&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+         &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; &lt;a href=&quot;stats.php&quot;&gt;&lt;b&gt;{t w=&quot;a_statistics&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-            &lt;th class=&quot;adminRowLGR&quot;&gt;&lt;a href=&quot;stats.php&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;&lt;/th&gt;
++            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;3&quot;&gt;&raquo; {t w=&quot;a_statistics&quot;}&lt;/th&gt;
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;num_days_online&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$daysOnline} {t w=&quot;days&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalItems&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalItems} {t w=&quot;items&quot;}&lt;/td&gt;
+         &lt;/tr&gt;
+@@ -101,16 +88,6 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalComments&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalComments} {t w=&quot;comments&quot; lower=true}&lt;/td&gt;
+         &lt;/tr&gt;
+-        {if $keep_stats}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;total_hits&quot;}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalHits} {t w=&quot;hits&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;avg_hits_per_day&quot;}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$avg_hitsaday} {t w=&quot;hits&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+     &lt;/table&gt;
+ &lt;/td&gt;&lt;/tr&gt;
+ &lt;/table&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/manage.css
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/manage.css	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -228,18 +228,6 @@
+     width: 200px;
+ }
+ 
+-td.adminGraphD {
+-	background: url(images/default-bg.gif);
+-	background-position: 0% 100%;
+-	background-repeat: repeat-x;
+-}
+-
+-td.adminGraphL {
+-	background: url(images/nav-bg.gif);
+-	background-position: 0% 100%;
+-	background-repeat: repeat-x;
+-}
+-
+ a.leftColSelected {
+     color: darkred;
+     font-weight: bold;
+@@ -261,6 +249,5 @@
+     cursor: pointer;
+ }
+ 
+-
+ input[type=checkbox], input[type=radio] { border:none; }
+ input[type=submit], input[type=button] { background:white url(images/nav-bg.gif) bottom repeat-x; }
+
+Deleted: YDFramework2.0/trunk/examples/weblog/manage/stats.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/stats.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/stats.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -1,178 +0,0 @@
+-&lt;?php
+-
+-    // Include the Yellow Duck Framework
+-    include_once( dirname( __FILE__ ) . '/../include/YDWeblog_init.php' );
+-
+-    // Class definition
+-    class stats extends YDWeblogAdminRequest {
+-
+-        // Class constructor
+-        function stats() {
+-
+-            // Initialize the parent
+-            $this-&gt;YDWeblogAdminRequest();
+-
+-            // Check if we log statistics or not
+-            if ( ! YDConfig::get( 'keep_stats', true ) ) {
+-                $this-&gt;redirect();
+-            }
+-
+-            // Register the graph template function
+-            $this-&gt;tpl-&gt;register_function( 'graph', array( &amp; $this, 'templateGraph' ) );
+-
+-            // Update the possible wrong statistics
+-            $this-&gt;weblog-&gt;db-&gt;executeSql(
+-                &quot;update #_statistics set uri = concat( 'item', uri ) where uri like '.php?id=%'&quot;
+-            );
+-
+-            // Merge the other and unknown values
+-            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'unknown' where browser = 'other'&quot; );
+-            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'bot' where browser = 'search'&quot; );
+-            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'feed' where browser = 'rss reader'&quot; );
+-            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set browser = 'mozilla' where browser = 'firefox'&quot; );
+-            $this-&gt;weblog-&gt;db-&gt;executeSql( &quot;update #_statistics set platform = 'unknown' where platform = 'other'&quot; );
+-
+-        }
+-
+-        // Special template function to draw a graph
+-        function templateGraph( $params ) {
+-
+-            // Calculate the widths
+-            if ( empty( $params['width'] ) ) {
+-                $params['width'] = '1';
+-                $params['rest']  = '100';
+-            } else {
+-                $params['rest']  = 100 - intval( $params['width'] );
+-            }
+-
+-            // Construct the graph
+-            return '&lt;table width=&quot;100%&quot;  cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;&lt;tr&gt;'
+-                 . '&lt;td class=&quot;adminGraphD&quot; width=&quot;' . $params['width'] . '&quot; height=&quot;10&quot;&gt;&lt;/td&gt;'
+-                 . '&lt;td class=&quot;adminGraphL&quot; width=&quot;' . $params['rest']  . '&quot; height=&quot;10&quot;&gt;&lt;/td&gt;'
+-                 . '&lt;/tr&gt;&lt;/table&gt;';
+-
+-        }
+-
+-        // Default action
+-        function actionDefault() {
+-
+-            // Get the install date
+-            $installDate        = $this-&gt;weblog-&gt;getInstallDate();
+-            $daysOnline         = round( ( time() - $installDate ) / 86400 );
+-            $totalHits          = $this-&gt;weblog-&gt;getTotalHits();
+-            $totalHitsNoBots    = $this-&gt;weblog-&gt;getTotalHitsNoBots();
+-            $avg_hitsaday       = @ intval( $totalHits / $daysOnline );
+-            $avg_hitsadayNoBots = @ intval( $totalHitsNoBots / $daysOnline );
+-            $totalItems         = $this-&gt;weblog-&gt;getStatsItemCount();
+-            $totalComments      = $this-&gt;weblog-&gt;getStatsCommentCount();
+-
+-            // Assign these to the template
+-            $this-&gt;tpl-&gt;assign( 'installDate',        $installDate );
+-            $this-&gt;tpl-&gt;assign( 'daysOnline',         $daysOnline );
+-            $this-&gt;tpl-&gt;assign( 'totalHits',          $totalHits );
+-            $this-&gt;tpl-&gt;assign( 'totalHitsNoBots',    $totalHitsNoBots );
+-            $this-&gt;tpl-&gt;assign( 'avg_hitsaday',       $avg_hitsaday );
+-            $this-&gt;tpl-&gt;assign( 'avg_hitsadayNoBots', $avg_hitsadayNoBots );
+-            $this-&gt;tpl-&gt;assign( 'totalItems',         $totalItems );
+-            $this-&gt;tpl-&gt;assign( 'totalComments',      $totalComments );
+-
+-            // Get the list of the last 6 months
+-            $last6Months  = $this-&gt;weblog-&gt;getStatsMonths();
+-            $last7Days    = $this-&gt;weblog-&gt;getStatsDays();
+-            $top10Urls    = $this-&gt;weblog-&gt;getStatsUrls();
+-            $browserStats = $this-&gt;weblog-&gt;getStatsBrowser();
+-            $osStats      = $this-&gt;weblog-&gt;getStatsOs();
+-            $commentStats = $this-&gt;weblog-&gt;getCommenterStats();
+-
+-            // Assign these to the template
+-            $this-&gt;tpl-&gt;assign( 'last6Months',  $this-&gt;_calculateGraph( $last6Months ) );
+-            $this-&gt;tpl-&gt;assign( 'last7Days',    $this-&gt;_calculateGraph( $last7Days ) );
+-            $this-&gt;tpl-&gt;assign( 'top10Urls',    $this-&gt;_calculateGraph( $top10Urls ) );
+-            $this-&gt;tpl-&gt;assign( 'browserStats', $this-&gt;_calculateGraph( $browserStats ) );
+-            $this-&gt;tpl-&gt;assign( 'osStats',      $this-&gt;_calculateGraph( $osStats ) );
+-            $this-&gt;tpl-&gt;assign( 'commentStats', $this-&gt;_calculateGraph( $commentStats ) );
+-
+-            // Display the template
+-            $this-&gt;display();
+-
+-        }
+-
+-        // The showMonths action
+-        function actionShowMonths() {
+-
+-            // Get the list of all the months
+-            $months = $this-&gt;weblog-&gt;getStatsMonths( -1 );
+-            $this-&gt;tpl-&gt;assign( 'months', $this-&gt;_calculateGraph( $months ) );
+-
+-            // Display the template
+-            $this-&gt;display();
+-
+-        }
+-
+-        // The showDays action
+-        function actionShowDays() {
+-
+-            // Get the list of all the days
+-            $days = $this-&gt;weblog-&gt;getStatsDays( -1 );
+-            $this-&gt;tpl-&gt;assign( 'days', $this-&gt;_calculateGraph( $days ) );
+-
+-            // Display the template
+-            $this-&gt;display();
+-
+-        }
+-
+-        // The showUrls action
+-        function actionShowUrls() {
+-
+-            // Get the list of all the days
+-            $urls = $this-&gt;weblog-&gt;getStatsUrls( -1 );
+-            $this-&gt;tpl-&gt;assign( 'urls', $this-&gt;_calculateGraph( $urls ) );
+-
+-            // Display the template
+-            $this-&gt;display();
+-
+-        }
+-
+-        // The Commenters action
+-        function actionShowCommenters() {
+-
+-            // Get the list of all the days
+-            $commenters = $this-&gt;weblog-&gt;getCommenterStats( -1 );
+-            $this-&gt;tpl-&gt;assign( 'commenters', $this-&gt;_calculateGraph( $commenters ) );
+-
+-            // Display the template
+-            $this-&gt;display();
+-
+-        }
+-
+-        // Reset the statistics
+-        function actionReset() {
+-            $this-&gt;weblog-&gt;resetStats();
+-            $this-&gt;redirectToAction();
+-        }
+-
+-        // Function to calculate the width of the graph elements
+-        function _calculateGraph( $data, $field='hits' ) {
+-            if ( sizeof( $data ) &gt; 0 ) {
+-                $maxHits = 0;
+-                foreach ( $data as $key=&gt;$val ) {
+-                    if ( $val[$field] &gt; $maxHits ) {
+-                        $maxHits = $val[$field];
+-                    }
+-                }
+-                foreach ( $data as $key=&gt;$val ) {
+-                    $data[$key][$field .'_pct'] = intval( ( $val[$field] / $maxHits ) * 100 ) . '%';
+-                    if ( $data[$key][$field .'_pct'] == '0' ) {
+-                        $data[$key][$field .'_pct'] = '1';
+-                    }
+-                }
+-            }
+-            return $data;
+-        }
+-
+-    }
+-
+-    // Process the request
+-    YDInclude( 'YDF2_process.php' );
+-
+-?&gt;
+
+Deleted: YDFramework2.0/trunk/examples/weblog/manage/stats.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/stats.tpl	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/manage/stats.tpl	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -1,269 +0,0 @@
+-{include file=&quot;__mng_header.tpl&quot;}
+-
+-{if $YD_ACTION == 'default'}
+-
+-    &lt;p class=&quot;title&quot;&gt;{t w=&quot;h_statistics&quot;} &raquo; {t w=&quot;a_statistics&quot;}&lt;/p&gt;
+-
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;general_stats&quot;}&lt;/th&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLGR&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=reset&quot;
+-                 onClick=&quot;return YDConfirmAction( '{t w=&quot;reset_stats&quot;}' );&quot;&gt;&lt;b&gt;{t w=&quot;reset_stats&quot;}&lt;/b&gt;&lt;/a&gt;
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;350&quot;&gt;{t w=&quot;installed_since&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; width=&quot;350&quot; colspan=&quot;2&quot;&gt;{$installDate|date:&quot;%d %B %Y&quot;|lower}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;num_days_online&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$daysOnline} {t w=&quot;days&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalItems&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalItems} {t w=&quot;items&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;totalComments&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalComments} {t w=&quot;comments&quot; lower=true}&lt;/td&gt;
+-        &lt;/tr&gt;
+-    &lt;/table&gt;
+-
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;total_average_stats&quot;}&lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;total_hits&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalHits} {t w=&quot;hits&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;total_hits_no_bots&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$totalHitsNoBots} {t w=&quot;hits&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;avg_hits_per_day&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$avg_hitsaday} {t w=&quot;hits&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;avg_hits_per_day_no_bots&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;{$avg_hitsadayNoBots} {t w=&quot;hits&quot;}&lt;/td&gt;
+-        &lt;/tr&gt;
+-
+-        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;hits_last_6_months&quot;}&lt;/th&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLGR&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showMonths&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showMonths&quot;&gt;&lt;b&gt;{t w=&quot;all_months&quot;}&lt;/b&gt;&lt;/a&gt;
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$last6Months item=&quot;last6Month&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;200&quot;&gt;{$last6Month.yearmonth}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$last6Month.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot; width=&quot;100&quot;&gt;{$last6Month.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-
+-        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;hits_last_7_days&quot;}&lt;/th&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLGR&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showDays&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showDays&quot;&gt;&lt;b&gt;{t w=&quot;all_days&quot;}&lt;/b&gt;&lt;/a&gt;
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$last7Days item=&quot;last7Day&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$last7Day.date}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$last7Day.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot;&gt;{$last7Day.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-
+-        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;top_10_urls&quot;}&lt;/th&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLGR&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showUrls&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showUrls&quot;&gt;&lt;b&gt;{t w=&quot;all_urls&quot;}&lt;/b&gt;&lt;/a&gt;
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$top10Urls item=&quot;top10Url&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;
+-                    &lt;a href=&quot;../{$top10Url.uri}&quot; target=&quot;_blank&quot;&gt;{$top10Url.uri}&lt;/a&gt;
+-                &lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$top10Url.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot;&gt;{$top10Url.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-
+-        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;top_10_commenters&quot;}&lt;/th&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLGR&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showCommenters&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=showCommenters&quot;&gt;&lt;b&gt;{t w=&quot;all_commenters&quot;}&lt;/b&gt;&lt;/a&gt;
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$commentStats item=&quot;commenter&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$commenter.username}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$commenter.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot;&gt;{$commenter.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-
+-        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;web_browsers&quot;}&lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$browserStats item=&quot;browserStat&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$browserStat.browser}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$browserStat.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot; width=&quot;100&quot;&gt;{$browserStat.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-
+-        &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th colspan=&quot;3&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;operating_systems&quot;}&lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$osStats item=&quot;osStat&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$osStat.platform}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$osStat.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot; width=&quot;100&quot;&gt;{$osStat.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-
+-    &lt;/table&gt;
+-
+-{/if}
+-
+-{if $YD_ACTION == 'showmonths'}
+-
+-    &lt;p class=&quot;title&quot;&gt;{t w=&quot;h_statistics&quot;} &raquo; {t w=&quot;all_months&quot;}&lt;/p&gt;
+-
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;all_months&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowLGR&quot;&gt;&raquo; &lt;a href=&quot;stats.php&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$months item=&quot;month&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;200&quot;&gt;{$month.yearmonth}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$month.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot; width=&quot;100&quot;&gt;{$month.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-    &lt;/table&gt;
+-
+-{/if}
+-
+-{if $YD_ACTION == 'showdays'}
+-
+-    &lt;p class=&quot;title&quot;&gt;{t w=&quot;h_statistics&quot;} &raquo; {t w=&quot;all_days&quot;}&lt;/p&gt;
+-
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;all_days&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowLGR&quot;&gt;&raquo; &lt;a href=&quot;stats.php&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$days item=&quot;day&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;200&quot;&gt;{$day.date}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$day.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot; width=&quot;100&quot;&gt;{$day.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-    &lt;/table&gt;
+-
+-{/if}
+-
+-{if $YD_ACTION == 'showurls'}
+-
+-    &lt;p class=&quot;title&quot;&gt;{t w=&quot;h_statistics&quot;} &raquo; {t w=&quot;all_urls&quot;}&lt;/p&gt;
+-
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;all_urls&quot;}&lt;/th&gt;
+-             &lt;th class=&quot;adminRowLGR&quot;&gt;&raquo; &lt;a href=&quot;stats.php&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-       &lt;/tr&gt;
+-        {foreach from=$urls item=&quot;url&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;200&quot;&gt;&lt;a href=&quot;../{$url.uri}&quot; target=&quot;_blank&quot;&gt;{$url.uri}&lt;/a&gt;   &lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$url.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot; width=&quot;100&quot;&gt;{$url.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-    &lt;/table&gt;
+-
+-{/if}
+-
+-{if $YD_ACTION == 'showcommenters'}
+-
+-    &lt;p class=&quot;title&quot;&gt;{t w=&quot;h_statistics&quot;} &raquo; {t w=&quot;all_commenters&quot;}&lt;/p&gt;
+-
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th colspan=&quot;2&quot; class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;all_commenters&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowLGR&quot;&gt;&raquo; &lt;a href=&quot;stats.php&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-        &lt;/tr&gt;
+-        {foreach from=$commenters item=&quot;commenter&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;200&quot;&gt;{$commenter.username}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; style=&quot;vertical-align: middle;&quot;&gt;{graph width=$commenter.hits_pct}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot; width=&quot;100&quot;&gt;{$commenter.hits}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {foreachelse}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;3&quot;&gt;{t w=&quot;nothing_found&quot;}&lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/foreach}
+-    &lt;/table&gt;
+-
+-{/if}
+-
+-{include file=&quot;__mng_footer.tpl&quot;}
+
+Modified: YDFramework2.0/trunk/examples/weblog/xml.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/xml.php	2006-09-07 10:55:55 UTC (rev 2088)
++++ YDFramework2.0/trunk/examples/weblog/xml.php	2006-09-07 13:42:42 UTC (rev 2089)
+@@ -17,7 +17,6 @@
+         // Function to output the feed
+         function outputXml( $type ) {
+             $this-&gt;feed-&gt;outputXml( $type );
+-            $this-&gt;_logRequest();
+         }
+ 
+         // Default action
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000605.html">[ydf-devel] r2088 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000607.html">[ydf-devel] r2090 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#606">[ date ]</a>
+              <a href="thread.html#606">[ thread ]</a>
+              <a href="subject.html#606">[ subject ]</a>
+              <a href="author.html#606">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

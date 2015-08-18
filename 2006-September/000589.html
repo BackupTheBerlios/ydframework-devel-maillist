@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2075 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2075%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609041854.k84Is2eZ010585%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000588.html">
+   <LINK REL="Next"  HREF="000590.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2075 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2075%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609041854.k84Is2eZ010585%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2075 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Sep  4 20:54:02 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000588.html">[ydf-devel] r2074 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000590.html">[ydf-devel] r2076 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMUser
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#589">[ date ]</a>
+              <a href="thread.html#589">[ thread ]</a>
+              <a href="subject.html#589">[ subject ]</a>
+              <a href="author.html#589">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-04 20:53:41 +0200 (Mon, 04 Sep 2006)
+New Revision: 2075
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+- new feature YDForm::addRule can apply a rule to all form elements when argument is '__ALL__'.
+
+Eg: $form-&gt;addRule( '__ALL__', 'required', ... );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-04 18:15:44 UTC (rev 2074)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-04 18:53:41 UTC (rev 2075)
+@@ -546,13 +546,16 @@
+          *  Add a rule to the form for the specified field.
+          *
+          *  @param  $element    The element to apply the rule on. If you specify an array, it will add the rule for each
+-         *                      element in the array.
++         *                      element in the array. If you specify '__ALL__', it will add the rule to all form elements
+          *  @param  $rule       The name of the rule to apply.
+          *  @param  $error      The error message to show if an error occured.
+          *  @param  $options    (optional) The options to pass to the validator function.
+          */
+         function addRule( $element, $rule, $error, $options=null ) {
+ 
++			// Check if element is special element '__ALL__'
++			if ( is_string( $element) &amp;&amp; $element == '__ALL__' ) $element = array_keys( $this-&gt;_elements );
++
+             // Check if the element is an array or not
+             if ( is_array( $element ) ) {
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000588.html">[ydf-devel] r2074 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000590.html">[ydf-devel] r2076 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMUser
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#589">[ date ]</a>
+              <a href="thread.html#589">[ thread ]</a>
+              <a href="subject.html#589">[ subject ]</a>
+              <a href="author.html#589">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

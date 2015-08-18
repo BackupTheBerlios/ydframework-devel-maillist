@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2106 - in YDFramework2.0/trunk/examples/weblog: .	include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2106%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include&In-Reply-To=%3C200609080921.k889L4Aj019650%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000622.html">
+   <LINK REL="Next"  HREF="000624.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2106 - in YDFramework2.0/trunk/examples/weblog: .	include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2106%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include&In-Reply-To=%3C200609080921.k889L4Aj019650%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2106 - in YDFramework2.0/trunk/examples/weblog: .	include">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep  8 11:21:04 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000622.html">[ydf-devel] r2105 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000624.html">[ydf-devel] r2107 - in YDFramework2.0/trunk/examples/weblog:	include skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#623">[ date ]</a>
+              <a href="thread.html#623">[ thread ]</a>
+              <a href="subject.html#623">[ subject ]</a>
+              <a href="author.html#623">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-08 11:21:03 +0200 (Fri, 08 Sep 2006)
+New Revision: 2106
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+Log:
+Improved the comment spam protection even more by refining the way the links are counted in the actual comment.
+
+Another improvement that was made is that the comment emails for spam messages no longer get send to all subscribers, but only to the site authors. The email message of a spam comment is now also marked as spam with the word '[spam]' in the subject.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 09:00:28 UTC (rev 2105)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 09:21:03 UTC (rev 2106)
+@@ -510,6 +510,7 @@
+             $values['userip'] = $_SERVER['REMOTE_ADDR'];
+             $values['useragent'] = $_SERVER['HTTP_USER_AGENT'];
+             $values['userrequrl'] = $_SERVER['REQUEST_URI'];
++            $values['is_spam'] = 0;
+ 
+             // Check against akismet if a key is there
+             if ( YDConfig::get( 'akismet_key', '' ) != '' ) {
+@@ -539,23 +540,27 @@
+             }
+ 
+             // Check the amount of hyperlinks in the comments. More than 3 is marked as spam.
+-            $count = preg_match_all( &quot;/http:\/\//i&quot;, $values['comment'], $matches );
+-            if ( $count &gt; 3 ) {
++            $count1 = preg_match_all( &quot;/href=/i&quot;, $values['comment'], $matches1 );
++            $count2 = preg_match_all( &quot;/\[url=/i&quot;, $values['comment'], $matches2 );
++            if ( ( $count1 + $count2 ) &gt; 3 ) {
+                 $values['is_spam'] = 1;
+             }
+ 
+             // Add the comment
+             $result = $this-&gt;_executeInsert( '#_comments', $values );
++            $comment_id = $this-&gt;db-&gt;getLastInsertID();
+ 
+             // Only update the items table if not spam
+             if ( ! $values['is_spam'] ) {
+-                $comment_id = $this-&gt;db-&gt;getLastInsertID();
+                 $sql = 'UPDATE #_items SET num_comments = num_comments+1 WHERE id = ' . $this-&gt;str( $values['item_id'] );
+                 $this-&gt;db-&gt;executeSql( $sql );
+             }
+ 
++            // Update the comment
++            $values['id'] = $comment_id;
++
+             // Return the comment id
+-            return $comment_id;
++            return $values;
+ 
+         }
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-09-08 09:00:28 UTC (rev 2105)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-09-08 09:21:03 UTC (rev 2106)
+@@ -101,10 +101,10 @@
+                 setcookie( 'YD_USER_WEBSITE', $values['userwebsite'], time() + 31536000, '/' );
+ 
+                 // Add the values to the database
+-                $comment_id = $this-&gt;weblog-&gt;addComment( $values );
++                $comment = $this-&gt;weblog-&gt;addComment( $values );
+ 
+                 // Send an email if configured
+-                if ( $comment_id &gt; 0 &amp;&amp; YDConfig::get( 'email_new_comment', true ) ) {
++                if ( $comment['id'] &gt; 0 &amp;&amp; YDConfig::get( 'email_new_comment', true ) ) {
+ 
+                     // Include the YDEmail library
+                     YDInclude( 'YDEmail.php' );
+@@ -127,13 +127,27 @@
+                     }
+                     $eml-&gt;setReplyTo( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">no at reply.net</A>' );
+                     $eml-&gt;addBcc( $item['user_email'] );
+-                    foreach ( $subscribers as $subscriber ) {
+-                        $eml-&gt;addBcc( $subscriber );
++
++                    // Spam emails do not go to the subscribers
++                    if ( $comment['is_spam'] == '0' ) {
++                        foreach ( $subscribers as $subscriber ) {
++                            $eml-&gt;addBcc( $subscriber );
++                        }
+                     }
++
++                    // Email the item owners
+                     foreach ( $users as $user ) {
+                         $eml-&gt;addBcc( $user['email'], $user['name'] );
+                     }
+-                    $eml-&gt;setSubject( t('new_comment') . ': ' . strip_tags( $item['title'] ) );
++
++                    // Set the subject
++                    if ( $comment['is_spam'] == 0 ) {
++                        $eml-&gt;setSubject( t('new_comment') . ': ' . strip_tags( $item['title'] ) );
++                    } else {
++                        $eml-&gt;setSubject( '[spam] ' . t('new_comment') . ': ' . strip_tags( $item['title'] ) );
++                    }
++
++                    // Send the email
+                     $eml-&gt;setHtmlBody( $this-&gt;fetch( 'comment_email' ) );
+                     $eml-&gt;send();
+ 
+@@ -143,7 +157,7 @@
+                 $this-&gt;clearCache();
+ 
+                 // Redirect to the item
+-                $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment_id ) );
++                $this-&gt;redirect( YDTplModLinkItem( $item, '#comment-' . $comment['id'] ) );
+ 
+             }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000622.html">[ydf-devel] r2105 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000624.html">[ydf-devel] r2107 - in YDFramework2.0/trunk/examples/weblog:	include skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#623">[ date ]</a>
+              <a href="thread.html#623">[ thread ]</a>
+              <a href="subject.html#623">[ subject ]</a>
+              <a href="author.html#623">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

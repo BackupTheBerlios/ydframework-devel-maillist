@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2182 - in YDFramework2.0/trunk/examples/weblog: .	include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2182%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include&In-Reply-To=%3C200610141506.k9EF6JNn023379%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000715.html">
+   <LINK REL="Next"  HREF="000717.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2182 - in YDFramework2.0/trunk/examples/weblog: .	include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2182%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include&In-Reply-To=%3C200610141506.k9EF6JNn023379%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2182 - in YDFramework2.0/trunk/examples/weblog: .	include">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Oct 14 17:06:19 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000715.html">[ydf-devel] r2181 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+        <LI>Next message: <A HREF="000717.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#716">[ date ]</a>
+              <a href="thread.html#716">[ thread ]</a>
+              <a href="subject.html#716">[ subject ]</a>
+              <a href="author.html#716">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-10-14 17:06:19 +0200 (Sat, 14 Oct 2006)
+New Revision: 2182
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+Log:
+Made some improvements to the comment spam prevention stuff in the weblog application.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-10-13 19:16:25 UTC (rev 2181)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-10-14 15:06:19 UTC (rev 2182)
+@@ -558,20 +558,26 @@
+ 
+                 // Update the comment values
+                 if ( $result == NULL || $result === false ) {
+-                    $values['is_spam'] = 0;
++                    $values['is_spam'] = '0';
+                 } else {
+-                    $values['is_spam'] = 1;
++                    $values['is_spam'] = '1';
+                 }
+ 
+             }
+ 
+-            // Check the amount of hyperlinks in the comments. More than 3 is marked as spam.
++            // Check the amount of hyperlinks in the comments. More than 1 is marked as spam.
+             $count1 = preg_match_all( &quot;/href=/i&quot;, $values['comment'], $matches1 );
+             $count2 = preg_match_all( &quot;/\[url=/i&quot;, $values['comment'], $matches2 );
+-            if ( ( $count1 + $count2 ) &gt; 3 ) {
+-                $values['is_spam'] = 1;
++            if ( ( $count1 + $count2 ) &gt; 1 ) {
++                $values['is_spam'] = '1';
+             }
+ 
++            // Only 2 http links are allowed
++            $count = preg_match_all( &quot;/http\:\/\//i&quot;, $values['comment'], $matches );
++            if ( ( $count ) &gt; 1 ) {
++                $values['is_spam'] = '1';
++            }
++
+             // Add the comment
+             $result = $this-&gt;_executeInsert( '#_comments', $values );
+             $comment_id = $this-&gt;db-&gt;getLastInsertID();
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-10-13 19:16:25 UTC (rev 2181)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-10-14 15:06:19 UTC (rev 2182)
+@@ -129,7 +129,7 @@
+                     $eml-&gt;addBcc( $item['user_email'] );
+ 
+                     // Spam emails do not go to the subscribers
+-                    if ( intval( $comment['is_spam'] ) == 0 ) {
++                    if ( strval( $comment['is_spam'] ) == '0' ) {
+                         foreach ( $subscribers as $subscriber ) {
+                             $eml-&gt;addBcc( $subscriber );
+                         }
+@@ -141,7 +141,7 @@
+                     }
+ 
+                     // Set the subject
+-                    if ( intval( $comment['is_spam'] ) == 0 ) {
++                    if ( strval( $comment['is_spam'] ) == '0' ) {
+                         $eml-&gt;setSubject( t('new_comment') . ': ' . strip_tags( $item['title'] ) );
+                     } else {
+                         $eml-&gt;setSubject( '[spam] ' . t('new_comment') . ': ' . strip_tags( $item['title'] ) );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000715.html">[ydf-devel] r2181 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+	<LI>Next message: <A HREF="000717.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#716">[ date ]</a>
+              <a href="thread.html#716">[ thread ]</a>
+              <a href="subject.html#716">[ subject ]</a>
+              <a href="author.html#716">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

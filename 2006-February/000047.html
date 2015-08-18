@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1657 - YDFramework2.0/trunk/examples/database_object
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1657%20-%20YDFramework2.0/trunk/examples/database_object&In-Reply-To=%3C200602101725.k1AHPci1031007%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000051.html">
+   <LINK REL="Next"  HREF="000048.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1657 - YDFramework2.0/trunk/examples/database_object</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1657%20-%20YDFramework2.0/trunk/examples/database_object&In-Reply-To=%3C200602101725.k1AHPci1031007%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1657 - YDFramework2.0/trunk/examples/database_object">david_db at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 18:25:38 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000051.html">[ydf-devel] Table key in update
+</A></li>
+        <LI>Next message: <A HREF="000048.html">[ydf-devel] r1658 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#47">[ date ]</a>
+              <a href="thread.html#47">[ thread ]</a>
+              <a href="subject.html#47">[ subject ]</a>
+              <a href="author.html#47">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-02-10 18:25:32 +0100 (Fri, 10 Feb 2006)
+New Revision: 1657
+
+Modified:
+   YDFramework2.0/trunk/examples/database_object/index.php
+   YDFramework2.0/trunk/examples/database_object/phones.tpl
+Log:
+Removed some unneeded code in YDDatabaseObject examples.
+
+Modified: YDFramework2.0/trunk/examples/database_object/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/database_object/index.php	2006-02-10 12:31:55 UTC (rev 1656)
++++ YDFramework2.0/trunk/examples/database_object/index.php	2006-02-10 17:25:32 UTC (rev 1657)
+@@ -236,9 +236,6 @@
+             $user = YDDatabaseObject::getInstance( 'user' );
+             $user-&gt;load( 'phone' ); // now we have a phone object in $user
+             
+-            $user-&gt;resetQuery(); // resets default query statements
+-            $user-&gt;phone-&gt;resetQuery();
+-            
+             $user-&gt;select( 'id', 'name', 'country' );
+             $user-&gt;phone-&gt;select( 'number', 'ord' );
+ 
+
+Modified: YDFramework2.0/trunk/examples/database_object/phones.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/database_object/phones.tpl	2006-02-10 12:31:55 UTC (rev 1656)
++++ YDFramework2.0/trunk/examples/database_object/phones.tpl	2006-02-10 17:25:32 UTC (rev 1657)
+@@ -93,9 +93,6 @@
+ $user = YDDatabaseObject::getInstance( 'user' );
+ $user-&gt;load( 'phone' ); // now we have a phone object in $user
+ 
+-$user-&gt;resetQuery(); // resets default query statements
+-$user-&gt;phone-&gt;resetQuery();
+-
+ $user-&gt;select( 'id', 'name', 'country' );
+ $user-&gt;phone-&gt;select( 'number', 'ord' );
+ 
+@@ -112,8 +109,6 @@
+ 
+     &lt;pre&gt;{$find3_results}&lt;/pre&gt;
+     
+-    &lt;p&gt;The &lt;b&gt;resetQuery&lt;/b&gt; method clears all the default query elements for the following query. By default, all fields of the related objects in the search are added to the select statement, so executing a &lt;b&gt;resetQuery&lt;/b&gt; will clear all of them and you can add only the fields you want to retrieve.&lt;/p&gt;
+-    
+     &lt;p&gt;The example above only uses &lt;b&gt;select&lt;/b&gt;, &lt;b&gt;where&lt;/b&gt;, &lt;b&gt;order&lt;/b&gt; and &lt;b&gt;limit&lt;/b&gt; but there is also &lt;b&gt;group&lt;/b&gt;, &lt;b&gt;having&lt;/b&gt; and the possibility of adding values to the objects fields so your filters can be more complex.&lt;/p&gt;
+ 
+     &lt;p&gt;&nbsp;&lt;/p&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000051.html">[ydf-devel] Table key in update
+</A></li>
+	<LI>Next message: <A HREF="000048.html">[ydf-devel] r1658 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#47">[ date ]</a>
+              <a href="thread.html#47">[ thread ]</a>
+              <a href="subject.html#47">[ subject ]</a>
+              <a href="author.html#47">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061120131103.68288.qmail%40web54007.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000782.html">
+   <LINK REL="Next"  HREF="000784.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061120131103.68288.qmail%40web54007.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Mon Nov 20 14:11:02 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000782.html">[ydf-devel] r2220 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000784.html">[ydf-devel] r2221 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#783">[ date ]</a>
+              <a href="thread.html#783">[ thread ]</a>
+              <a href="subject.html#783">[ subject ]</a>
+              <a href="author.html#783">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Francisco Azevedo wrote:
+&gt;<i> Hi Graeme
+</I>&gt;<i>
+</I>&gt;<i>  &gt; I am switching my code to YDDatabaseTree3 (build
+</I>2214). I have had a
+&gt;<i>  &gt; look at the code and suggest some improvements
+</I>and have identified some
+&gt;<i>  &gt; bugs.
+</I>&gt;<i>  &gt;
+</I>&gt;<i>  &gt;     * suggestion: move the methods escapeSql and
+</I>escapeSqlArray to
+&gt;<i>  &gt;       YDDatabaseObject since they would be useful
+</I>there too.
+&gt;<i>
+</I>&gt;<i> Sounds good. YDDatabaseObject will have those and
+</I>YDDatabaseTree3 too 
+&gt;<i> (because is an YDDO extension).
+</I>&gt;<i>
+</I>&gt;<i>  &gt;     * suggestion: there needs to be a method like
+</I>the old YDDatabaseTree
+&gt;<i>  &gt;       that gets the tree as a traversed tree (I
+</I>have had an attempt to
+&gt;<i>  &gt;       implement this in the attached code,
+</I>however it is not very
+&gt;<i>  &gt;       efficient). The method is
+</I>YDDatabaseTree3::getTraversedTree()
+&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Please create an example on what should
+</I>getTraversedTree() return.
+&gt;<i>   
+</I>
+The code was in my last e-mail regaring YDDT3 (inside 
+YDDatabaseTree3.php). There the additional methods:
+
+        /**
+         *  Helper function to get traversal of tree.
+         *
+         * @param $id   (optional) The ID of the node
+to fetch child 
+data for.
+         *
+         * @returns An array of each node in the tree
+         */
+        function _getTraversedTree( $id = 1 ) {
+       
+            $key_match = false;
+           
+            foreach ( $this-&gt;_tree_data_keys as $key )
+{
+                if ( $this-&gt;_tree_data[$key]['id'] ==
+$id ) {
+                    $key_match = true;
+                    $ref = &amp; $this-&gt;_tree_data[$key];
+                    break;
+                }
+            }
+           
+            if ( $key_match ) {
+                $result = array( $ref );
+            } else {
+                $result = array();
+            }
+           
+            $children = $this-&gt;getChildren ( $id, true
+);
+           
+            foreach ( $children as $child ) {         
+ 
+                $child_ids = $this-&gt;getTraversedTree(
+$child['id'] );    
+           
+                $result = array_merge( $result,
+$child_ids );
+            }
+                       
+            return $result;
+        }
+       
+        /**
+         *  Fetch an array of tree nodes containing a
+traversal of the 
+tree.
+         *
+         * @param $id   (optional) The ID of the node
+to fetch child 
+data for.
+         *
+         * @returns An array of each node in the tree
+         */
+        function getTraversedTree( $id = 1 ) {
+       
+            $this-&gt;_tree_data =
+$this-&gt;getTreeElements();
+            $this-&gt;_tree_data_keys = array_keys(
+$this-&gt;_tree_data );
+       
+            return $this-&gt;_getTraversedTree( $id );
+        }
+
+
+Branches are processed in order (lowest position to
+highest position) at 
+each level. This recursively applies to sub-branches
+(in lowest position 
+to highest position of the branch. It's
+A dump of the test data resulting from calling the
+databasetree3 
+traversal method looks like this.
+
+array (
+  0 =&gt; 
+  array (
+    'id' =&gt; '2',
+    'parent_id' =&gt; '1',
+    'lineage' =&gt; '//',
+    'level' =&gt; '1',
+    'position' =&gt; '1',
+    'title' =&gt; 'General 
+Resources',
+  ),
+  1 =&gt; 
+  array (
+    'id' =&gt; '3',
+    'parent_id' =&gt; '2',
+    'lineage' =&gt; '//2/',
+    'level' =&gt; '2',
+    'position' =&gt; '1',
+    'title' =&gt; 'Code Paste',
+  ),
+  2 =&gt; 
+  array (
+    'id' =&gt; '4',
+    'parent_id' =&gt; '2',
+    'lineage' =&gt; '//2/',
+    'level' =&gt; '2',
+    'position' =&gt; '2',
+    'title' =&gt; 'Documentation',
+  ),
+  3 =&gt; 
+  array (
+    'id' =&gt; '5',
+    'parent_id' =&gt; '2',
+    'lineage' =&gt; '//2/',
+    'level' =&gt; '2',
+    'position' =&gt; '3',
+    'title' =&gt; 'Books &amp; 
+Publications',
+  ),
+  4 =&gt; 
+  array (
+    'id' =&gt; '6',
+    'parent_id' =&gt; '5',
+    'lineage' =&gt; '//2/5/',
+    'level' =&gt; '3',
+    'position' =&gt; '1',
+    'title' =&gt; 'Apache',
+  ),
+  5 =&gt; 
+  array (
+    'id' =&gt; '7',
+    'parent_id' =&gt; '5',
+    'lineage' =&gt; '//2/5/',
+    'level' =&gt; '3',
+    'position' =&gt; '2',
+    'title' =&gt; 'PostgreSQL',
+  ),
+  6 =&gt; 
+  array (
+    'id' =&gt; '8',
+    'parent_id' =&gt; '5',
+    'lineage' =&gt; '//2/5/',
+    'level' =&gt; '3',
+    'position' =&gt; '3',
+    'title' =&gt; 'MySQL',
+  ),
+  7 =&gt; 
+  array (
+    'id' =&gt; '9',
+    'parent_id' =&gt; '2',
+    'lineage' =&gt; '//2/',
+    'level' =&gt; '2',
+    'position' =&gt; '4',
+    'title' =&gt; 'Links',
+  ),
+  8 =&gt; 
+  array (
+    'id' =&gt; '10',
+    'parent_id' =&gt; '9',
+    'lineage' =&gt; '//2/9/',
+    'level' =&gt; '3',
+    'position' =&gt; '1',
+    'title' =&gt; 'Databases',
+  ),
+  9 =&gt; 
+  array (
+    'id' =&gt; '11',
+    'parent_id' =&gt; '9',
+    'lineage' =&gt; '//2/9/',
+    'level' =&gt; '3',
+    'position' =&gt; '2',
+    'title' =&gt; 'Generators',
+  ),
+  10 =&gt; 
+  array (
+    'id' =&gt; '12',
+    'parent_id' =&gt; '9',
+    'lineage' =&gt; '//2/9/',
+    'level' =&gt; '3',
+    'position' =&gt; '3',
+    'title' =&gt; 'Portals',
+  ),
+)
+
+
+&gt;<i>
+</I>&gt;<i>  &gt;     * bug in build 2214: line 668 of
+</I>YDDatabaseTree3.php - need to add
+&gt;<i>  &gt;       statement????:
+</I>&gt;<i>  &gt;       $new_lineage         = $new_parent_node[
+</I>$this-&gt;__lineage ] .
+&gt;<i>  &gt;       $new_parent_id . '/';
+</I>&gt;<i>
+</I>&gt;<i> Please update to latest build (on latest release
+</I>that is done in the 
+&gt;<i> update (search lines below that)).
+</I>&gt;<i>   
+</I>Trying that now.
+&gt;<i>  &gt;     * bug in build 2214: line 698 of
+</I>YDDatabaseTree3.php -
+&gt;<i>  &gt;       $this-&gt;_linage should be $this-&gt;lineage
+</I>&gt;<i>
+</I>&gt;<i> Please update to latest build
+</I>&gt;<i>   
+</I>
+This bug still exists on line 689 of YDDatbaseTree3
+(line 689). 
+Incorrect spelling is used &quot;__linage&quot;  instead of
+&quot;__lineage&quot;
+&gt;<i>
+</I>&gt;<i>  &gt;     * bug in build 2214: moveNode doesn't work
+</I>for moving position of a
+&gt;<i>  &gt;       node in the same parent or moving a node to
+</I>a new parent.
+&gt;<i>  &gt;
+</I>&gt;<i>  &gt; I have copied the original test harness for
+</I>database trees and created a
+&gt;<i>  &gt; new one called database_tree3.php. This uses
+</I>YDDatabaseTree3 and has
+&gt;<i>  &gt; some methods for testing moveNode. This is
+</I>attached.
+&gt;<i>
+</I>&gt;<i> I have created a simple test based on your test
+</I>file. (it's not possible 
+&gt;<i> to move nodes yet.. only see, delete and add.. i
+</I>will add that feature).
+&gt;<i>   
+</I>
+I will try it out.
+
+Regards,
+
+Graeme
+
+
+
+ 
+____________________________________________________________________________________
+Do you Yahoo!?
+Everyone is raving about the all-new Yahoo! Mail beta.
+<A HREF="http://new.mail.yahoo.com">http://new.mail.yahoo.com</A>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000782.html">[ydf-devel] r2220 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000784.html">[ydf-devel] r2221 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#783">[ date ]</a>
+              <a href="thread.html#783">[ thread ]</a>
+              <a href="subject.html#783">[ subject ]</a>
+              <a href="author.html#783">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

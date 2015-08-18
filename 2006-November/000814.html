@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Add YDDatabaseTree3::seedTree() method and changes to	YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Add%20YDDatabaseTree3%3A%3AseedTree%28%29%20method%20and%20changes%20to%0A%09YDDatabaseObject&In-Reply-To=%3C20061122163037.16516.qmail%40web62506.mail.re1.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000816.html">
+   <LINK REL="Next"  HREF="000817.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Add YDDatabaseTree3::seedTree() method and changes to	YDDatabaseObject</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Add%20YDDatabaseTree3%3A%3AseedTree%28%29%20method%20and%20changes%20to%0A%09YDDatabaseObject&In-Reply-To=%3C20061122163037.16516.qmail%40web62506.mail.re1.yahoo.com%3E"
+       TITLE="[ydf-devel] Add YDDatabaseTree3::seedTree() method and changes to	YDDatabaseObject">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Wed Nov 22 17:30:37 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000816.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000817.html">[ydf-devel] Add YDDatabaseTree3::seedTree() method and changes to	YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#814">[ date ]</a>
+              <a href="thread.html#814">[ thread ]</a>
+              <a href="subject.html#814">[ subject ]</a>
+              <a href="author.html#814">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Hi Francisco &amp; David,
+
+I have a suggestion for a new method to add to YDDatabaseTree3 thatwill seed the tree. &quot;Seeding&quot; the tree is the process of creating thenull record with ID 1 that is essential for correct operation ofYDDatabaseTree3 trees.
+
+This method should be used with caution since it could potentiallydestroy a tree and hence the method I created will only seed the treeif the table is empty (or the operation is not forced).
+
+Seeding the tree also requires that the auto-increment index is resetto 1. The implementation I have used should work for MySQL &gt;= 4.1.2( <A HREF="http://dev.mysql.com/doc/refman/4.1/en/alter-table.html">http://dev.mysql.com/doc/refman/4.1/en/alter-table.html</A>). I am not sure if this is valid for other databases.
+
+This is the new seed method:
+
+        /**
+         *  This function can be used to seed the tree by creating thespecial null parent node
+         *
+         *  Use with care!!!!
+         */
+
+        function seedTree( $force = false ) {
+        
+            $this-&gt;reset();
+            $this-&gt;__id = 1;
+            
+            // count number of rows in result
+            $count = $this-&gt;find();
+            
+            // only seed the tree if it does not have a seed
+            if ( $count == 0 || $force ) {
+            
+                if ( $count &gt; 0 ) {
+                
+                    $this-&gt;_db-&gt;executeSql( 'TRUNCATE TABLE ' .$this-&gt;_table );
+                    
+                }
+            
+                $this-&gt;_db-&gt;executeSql( 'ALTER TABLE ' .$this-&gt;_table . ' AUTO_INCREMENT = 1' );
+            
+                $this-&gt;reset();
+        
+                // create the seed row
+                $this-&gt;set( $this-&gt;__id,          1 );
+                $this-&gt;set( $this-&gt;__parent,   null );
+                $this-&gt;set( $this-&gt;__lineage,  '' );
+                $this-&gt;set( $this-&gt;__level,    0 );
+                $this-&gt;set( $this-&gt;__position, 1 );                       
+
+                return $this-&gt;insert();
+            }
+        }
+
+Resetting auto-increments and other parameters might be a usefulfacility in YDDatabaseObject. Can anyone see any benefit in puttingthis functionality into YDDatabaseObject? I can imagine that drop(),truncate() methods being useful and I don't know how easy it is to makethese operations and parameter settings portable among databaseplatforms.
+
+The alternative is to continue using executeSql for these types ofoperations. 
+
+Regards,
+
+Graeme
+
+ 
+---------------------------------
+Sponsored Link
+
+Mortgage rates near 39yr lows. $420,000 Mortgage for $1,399/mo - Calculate new house payment
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061122/c1f6325b/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061122/c1f6325b/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000816.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000817.html">[ydf-devel] Add YDDatabaseTree3::seedTree() method and changes to	YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#814">[ date ]</a>
+              <a href="thread.html#814">[ thread ]</a>
+              <a href="subject.html#814">[ subject ]</a>
+              <a href="author.html#814">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

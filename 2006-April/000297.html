@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDCM feedback
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C4446452F.1060102%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000296.html">
+   <LINK REL="Next"  HREF="000298.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDCM feedback</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C4446452F.1060102%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDCM feedback">francisco at fusemail.com
+       </A><BR>
+    <I>Wed Apr 19 16:11:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000296.html">[ydf-devel] YDCM feedback
+</A></li>
+        <LI>Next message: <A HREF="000298.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#297">[ date ]</a>
+              <a href="thread.html#297">[ thread ]</a>
+              <a href="subject.html#297">[ subject ]</a>
+              <a href="author.html#297">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pieter,
+
+&gt;<i> I like your proposed way of seeing everything as components. I think 
+</I>&gt;<i> that this is a very good basis for a CMS application.
+</I>&gt;<i>  
+</I>&gt;<i> I guess that if we add the building blocks for that to the framework, 
+</I>&gt;<i> and create an example with one or two modules, people can start 
+</I>&gt;<i> developing their own modules. The modules in the end are where most of 
+</I>&gt;<i> the logic is stored, while the underlying CMS framework is just making 
+</I>&gt;<i> it easier to hook everything up. The admin side of things should be part 
+</I>&gt;<i> of the framework as well as we don't want users to create this from 
+</I>&gt;<i> scratch.
+</I>
+I think that we can start to develop some draft ;) but i think it's 
+better to define some standard rules for it.
+I propose that:
+
+- components should be created inside the YDF addons directory (like a 
+standard addon)... or a specific YDCM directory?
+
+- each component should have a name with prefix YDCM and be defined 
+inside a directory with same name (like any YDF addon but specific for 
+CM). Eg: component 'page' should be defined as YDCMPage.php inside a 
+directory YDCMPage.
+
+- each component extends YDDatabaseObject (or a class that we can create 
+that defines an abstract component) and has (at least) a table name with 
+same name.
+
+- we should have a DBDesigner4 file that defined the db scheme of _all_ 
+current components and not a separated file (or sql file) for each 
+component. Because we have an integrated environment with relations it's 
+not recommended to create a sql/DBDesigner4 file for each one. Btw, with 
+DBDesigner4 we can export sql files individually ;) and it's free.
+
+- inside each component directory we must create a &quot;languages&quot; directory 
+that stores filenames about translations (when they are used in 
+component). I propose that a filename here should have the same name as 
+locale (eg, english filename is &quot;en.php&quot;, portugueses filename is &quot;pt.php&quot;).
+
+- in YDF example directory we can create the component example directory 
+(that demonstrates the visitors and administration side). Inside that 
+directory, a template directory with the correspondent templates.
+
+
+... and i think we can start it.
+
+
+What you think?
+
+Francisco A
+
+&gt;<i> We can leave the choice then to the users whether they want to share out 
+</I>&gt;<i> their custom modules with other users or not.
+</I>&gt;<i>  
+</I>&gt;<i> Cheers,
+</I>&gt;<i>  
+</I>&gt;<i>  
+</I>&gt;<i> pieter
+</I>&gt;<i>  
+</I>&gt;<i> On 4/19/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> 
+</I>&gt;<i> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt; wrote:
+</I>&gt;<i> 
+</I>&gt;<i>     Pieter,
+</I>&gt;<i>      &gt; Looks really cool for a way of working. Are you planning to share
+</I>&gt;<i>     this
+</I>&gt;<i>      &gt; with the other Yellow Duck Users?
+</I>&gt;<i>      &gt;
+</I>&gt;<i>     I think this is a specific way of doing things because almost all cms
+</I>&gt;<i>     share a common structure and this is very different.. and if YFcm start
+</I>&gt;<i>     with it all components must be created with this structure in mind..
+</I>&gt;<i>     and
+</I>&gt;<i>     i don't know your feedback about it.
+</I>&gt;<i> 
+</I>&gt;<i>     About sharing.. no problem at all. Languages and dbObject logic (read:
+</I>&gt;<i>     the main parts) are the most difficult part because have all component
+</I>&gt;<i>     operations.. pHObject and templating is different because each
+</I>&gt;<i>     aplication has it's own way of presentation.. but i think we should
+</I>&gt;<i>     create a generic &quot;pHObject&quot; (read: a class and a template directory to
+</I>&gt;<i>     show how the component works).
+</I>&gt;<i> 
+</I>&gt;<i>     What do you think?
+</I>&gt;<i> 
+</I>&gt;<i>     Francisco A
+</I>&gt;<i> 
+</I>&gt;<i>      &gt; pieter
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt; On 4/19/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i>      &gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;&gt;
+</I>&gt;<i>     wrote:
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     img Zip
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     Francisco A
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt; --
+</I>&gt;<i>      &gt; pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;
+</I>&gt;<i>      &gt; . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>&gt;<i> 
+</I>&gt;<i>     _______________________________________________
+</I>&gt;<i>     YDFramework-devel mailing list
+</I>&gt;<i>     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i>     <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>     &lt;<A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; . 
+</I>&gt;<i> <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000296.html">[ydf-devel] YDCM feedback
+</A></li>
+	<LI>Next message: <A HREF="000298.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#297">[ date ]</a>
+              <a href="thread.html#297">[ thread ]</a>
+              <a href="subject.html#297">[ subject ]</a>
+              <a href="author.html#297">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

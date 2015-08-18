@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2350 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2350%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701231908.l0NJ876b014841%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000942.html">
+   <LINK REL="Next"  HREF="000944.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2350 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2350%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701231908.l0NJ876b014841%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2350 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 20:08:07 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000942.html">[ydf-devel] r2349 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000944.html">[ydf-devel] r2351 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#943">[ date ]</a>
+              <a href="thread.html#943">[ thread ]</a>
+              <a href="subject.html#943">[ subject ]</a>
+              <a href="author.html#943">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-23 20:08:02 +0100 (Tue, 23 Jan 2007)
+New Revision: 2350
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+Log:
+Added the following method to YDSimpleCMS:
+- getDb
+- getAdminMenu
+- getModuleManager
+- getVar
+
+The YDSimpleCMSModule constructor now no longer needs any parameters.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 16:42:43 UTC (rev 2349)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 19:08:02 UTC (rev 2350)
+@@ -21,24 +21,9 @@
+ 
+     */
+ 
+-    /*! @page page_YDSimpleCMS Addons - Simple CMS
+-
+-      The Simple CMS addon can be used to build a basic content management system.
+-
+-      @section page_YDSimpleCMS_01 A generic overview
+-
+-      Not written yet...
+-
+-      @section page_YDSimpleCMS_02 The module approach
+-
+-      Not written yet...
+-    */
+-
+     /**
+      *  @addtogroup YDSimpleCMS Addons - Simple CMS
+      *
+-     *  @ref page_YDSimpleCMS More information about the Simple CMS addon.
+-     *
+      *  @todo
+      *      Consolidate the two request classes into one. Based on the scope, it should know if you need to force
+      *      authentication or not.
+@@ -144,6 +129,10 @@
+                 // The current user
+                 $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['currentUser'] = null;
+ 
++                // The module manager instance
++                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['moduleManager'] = new YDSimpleCMSModuleManager();
++                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['moduleManager']-&gt;loadAllModules();
++
+             }
+ 
+         }
+@@ -213,7 +202,7 @@
+         function addAdminMenu( $title, $subtitle, $module, $action ) {
+ 
+             // Link to the menu items
+-            $menu = &amp; $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'];
++            $menu = &amp; YDSimpleCMS::getAdminMenu();
+ 
+             // Construct the URL
+             $url = YD_SELF_SCRIPT . '?module=' . $module . '&amp;action=' . $action;
+@@ -245,10 +234,54 @@
+          *
+          *  @static
+          */
+-        function getDbConnection() {
+-            return $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['db'];
++        function &amp; getDb() {
++            return YDSimpleCMS::getVar( 'db' );
+         }
+ 
++        /**
++         *  This function returns the array with the menu items for the admin menu.
++         *
++         *  @returns    The array with the admin menu.
++         *
++         *  @static
++         */
++        function &amp; getAdminMenu() {
++            return YDSimpleCMS::getVar( 'adminMenu' );
++        }
++
++        /**
++         *  This function returns an instance of the module manager class.
++         *
++         *  @returns    An instance of the module manager class..
++         *
++         *  @static
++         */
++        function &amp; getModuleManager() {
++            return YDSimpleCMS::getVar( 'moduleManager' );
++        }
++
++        /**
++         *  This function returns one of the named variables from the global CMS scope.
++         *
++         *  @param  $var    The name of the variable you want to retrieve.
++         *
++         *  @returns    The contents of that variable, false if the variable doesn't exist.
++         */
++        function &amp; getVar( $var ) {
++
++            // Initialize the SimpleCMS package
++            YDSimpleCMS::initialize();
++
++            // Return the variable if it's set, otherwise return false
++            if ( ! isset( $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME][$var] ) ) {
++                return false;
++            }
++
++            // Return a reference to the variable
++            return $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME][$var];
++
++        }
++
+     }
+ 
+     /**
+@@ -377,10 +410,9 @@
+          *      string of the request.
+          */
+         function actionDefault() {
+-            $moduleManager = new YDSimpleCMSModuleManager();
+-            $moduleManager-&gt;loadAllModules();
+             $module = $this-&gt;getQueryStringParameter( 'module', $this-&gt;defaultModule );
+             $action = $this-&gt;getQueryStringParameter( 'action', 'show' );
++            $moduleManager = &amp; YDSimpleCMS::getModuleManager();
+             $moduleManager-&gt;runModule( $this-&gt;requestScope, $module, $action );
+         }
+ 
+@@ -428,9 +460,6 @@
+             // Initialize the parent
+             $this-&gt;YDSimpleCMSPublicRequest();
+ 
+-            // Make sure the CMS package is initialized
+-            YDSimpleCMS::initialize();
+-
+             // Indicate we require login
+             $this-&gt;setRequiresAuthentication( true );
+ 
+@@ -553,7 +582,7 @@
+             if ( $md5 === false ) {
+                 $fields['loginPass'] = md5( $fields['loginPass'] );
+             }
+-            $db = YDSimpleCMS::getDbConnection();
++            $db = YDSimpleCMS::getDb();
+             $result = $db-&gt;getRecord(
+                 'SELECT * FROM #_users WHERE name = \'' . $db-&gt;escape( $fields['loginName'] ) . '\' AND password = \'' . $db-&gt;escape( $fields['loginPass'] ) . '\''
+             );
+@@ -626,8 +655,8 @@
+          *
+          *  @param  $manager    A reference to the module manager instance that loaded this module.
+          */
+-        function YDSimpleCMSModule( $manager ) {
+-            $this-&gt;manager = &amp; $manager;
++        function YDSimpleCMSModule() {
++            $this-&gt;manager = &amp; YDSimpleCMS::getModuleManager();
+             $this-&gt;tpl = new YDSimpleCMSTemplate( YD_SIMPLECMS_SCOPE_PUBLIC );
+         }
+ 
+@@ -680,7 +709,7 @@
+         function display( $name='' ) {
+             $this-&gt;tpl-&gt;assign( 'currentAction', $this-&gt;currentAction );
+             $this-&gt;tpl-&gt;assign( 'currentScope',  $this-&gt;currentScope );
+-            $this-&gt;tpl-&gt;assign( 'adminMenu',     $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'] );
++            $this-&gt;tpl-&gt;assign( 'adminMenu',     YDSimpleCMS::getAdminMenu() );
+             if ( isset( $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['currentUser'] ) ) {
+                 $this-&gt;tpl-&gt;assign( 'currentUser', $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['currentUser'] );
+             }
+@@ -761,20 +790,21 @@
+             }
+ 
+             // Create the class instance
+-            $moduleInstance = new $moduleClassName( $this );
++            $moduleInstance = new $moduleClassName();
+ 
+             // Set the correct template scope
+             $moduleInstance-&gt;tpl-&gt;scope = $scope;
+ 
+             // Sort the admin menu items
+             if ( $scope == YD_SIMPLECMS_SCOPE_ADMIN ) {
+-                ksort( $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'] );
+-                foreach ( $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'] as $key=&gt;$val ) {
+-                    if ( isset( $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'][$key]['children'] ) ) {
+-                        ksort( $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'][$key]['children'] );
++                $adminMenu = &amp; YDSimpleCMS::getAdminMenu();
++                ksort( $adminMenu );
++                foreach ( $adminMenu as $key=&gt;$val ) {
++                    if ( isset( $adminMenu[$key]['children'] ) ) {
++                        ksort( $adminMenu[$key]['children'] );
+                     }
+                 }
+-                $moduleInstance-&gt;tpl-&gt;assign( 'adminMenu', $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'] );
++                $moduleInstance-&gt;tpl-&gt;assign( 'adminMenu', $adminMenu );
+             }
+ 
+             // Create a link to ourselves
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000942.html">[ydf-devel] r2349 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000944.html">[ydf-devel] r2351 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#943">[ date ]</a>
+              <a href="thread.html#943">[ thread ]</a>
+              <a href="subject.html#943">[ subject ]</a>
+              <a href="author.html#943">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2494 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2494%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200710151247.l9FCl0hM003153%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001087.html">
+   <LINK REL="Next"  HREF="001089.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2494 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2494%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200710151247.l9FCl0hM003153%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2494 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Oct 15 14:47:00 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001087.html">[ydf-devel] r2493 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="001089.html">[ydf-devel] r2495 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1088">[ date ]</a>
+              <a href="thread.html#1088">[ thread ]</a>
+              <a href="subject.html#1088">[ subject ]</a>
+              <a href="author.html#1088">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-10-15 14:46:44 +0200 (Mon, 15 Oct 2007)
+New Revision: 2494
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+NEW: support for custom editors in YDAjax
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-10-12 23:36:35 UTC (rev 2493)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-10-15 12:46:44 UTC (rev 2494)
+@@ -102,8 +102,10 @@
+ 			$this-&gt;autocompleterCss  = '';
+ 			$this-&gt;autocompleterCodeFunctions = array();
+ 
+-			// init wysiwyg editors
+-			$this-&gt;wysiwyg_forms = array();
++            // init wysiwyg editors
++            $this-&gt;wysiwyg_editorpath  = dirname( __FILE__ ) . '/editors/YDAjaxEditor.php';
++            $this-&gt;wysiwyg_editorclass = 'YDAjaxEditor';
++            $this-&gt;wysiwyg_forms       = array();
+ 
+ 			// check url
+ 			if( is_null( $url_string ) ){
+@@ -622,12 +624,12 @@
+ 			// check if form has wysiwyg editors
+ 			if ( isset( $this-&gt;wysiwyg_forms[ $formName ] ) ){
+ 
+-				// include editor lib
+-				require_once( dirname( __FILE__ ) . '/editors/YDAjaxEditor.php' );
++                // include editor lib
++                require_once( $this-&gt;wysiwyg_editorpath );
+ 
+-				// wysiwyg editors require to copy their html to a textarea before submit
+-				foreach( $this-&gt;wysiwyg_forms[ $formName ] as $formElementID )
+-					$js .= YDAjaxEditor::JScopy( $formElementID );
++                // wysiwyg editors require to copy their html to a textarea before submit. Use JScopy static method
++                foreach( $this-&gt;wysiwyg_forms[ $formName ] as $formElementID )
++                    $js .= call_user_func( array( $this-&gt;wysiwyg_editorclass, 'JScopy' ), $formElementID );//YDAjaxEditor::JScopy( $formElementID );
+ 			}
+ 	
+ 			// now return form values
+@@ -812,21 +814,22 @@
+ 
+ 
+         /**
+-         *	This method will process all results added in a response
++         *	This method defined the path and classname to editor JScopy static method
++         *
++         *	@param $path		File path
++         *	@param $classname	Class name to invoke
+          */	
+-		function processResults(){
++        function setEditor( $path, $classname ){
+ 
+-			// include support for wysiwyg editors
+-			if ( ! empty( $this-&gt;wysiwyg_ids ) || ! empty( $this-&gt;wysiwyg_forms ) ){
++            $this-&gt;wysiwyg_editorpath  = $path;
++            $this-&gt;wysiwyg_editorclass = $classname;
++        }
+ 
+-				require_once( dirname( __FILE__ ) . '/editors/YDAjaxEditor.php' );
+ 
+-				// add support for wysiwyg editors applyed to form elements
+-				// foreach form, cycle all wysiwyg elements to compute their initialization
+-				foreach( $this-&gt;wysiwyg_forms as $formName =&gt; $formElements )
+-					foreach( $formElements as $formElementID )
+-						$this-&gt;response-&gt;addScript( YDAjaxEditor::JSinit( $formElementID ) );
+-			}
++        /**
++         *	This method will process all results added in a response
++         */	
++		function processResults(){
+ 
+ 			// return XML to client browser
+ 			return $this-&gt;response-&gt;getXML();
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001087.html">[ydf-devel] r2493 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="001089.html">[ydf-devel] r2495 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1088">[ date ]</a>
+              <a href="thread.html#1088">[ thread ]</a>
+              <a href="subject.html#1088">[ subject ]</a>
+              <a href="author.html#1088">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

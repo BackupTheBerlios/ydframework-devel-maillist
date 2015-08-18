@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2472 -	YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2472%20-%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer&In-Reply-To=%3C200708142235.l7EMZHbg030408%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001065.html">
+   <LINK REL="Next"  HREF="001067.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2472 -	YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2472%20-%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer&In-Reply-To=%3C200708142235.l7EMZHbg030408%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2472 -	YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 15 00:35:17 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001065.html">[ydf-devel] r2471 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001067.html">[ydf-devel] r2473 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1066">[ date ]</a>
+              <a href="thread.html#1066">[ thread ]</a>
+              <a href="subject.html#1066">[ subject ]</a>
+              <a href="author.html#1066">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-08-15 00:34:59 +0200 (Wed, 15 Aug 2007)
+New Revision: 2472
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.phpmailer.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.smtp.php
+Log:
+on PHPMailer:
+ - ENHANCEMENT: added simple comments (useful when server turns offline)
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.phpmailer.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.phpmailer.php	2007-08-14 16:27:23 UTC (rev 2471)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.phpmailer.php	2007-08-14 22:34:59 UTC (rev 2472)
+@@ -551,7 +551,7 @@
+         
+                 if($this-&gt;SMTPAuth)
+                 {
+-                    if(!$this-&gt;smtp-&gt;Authenticate($this-&gt;Username, 
++                    if(!@$this-&gt;smtp-&gt;Authenticate($this-&gt;Username, 
+                                                   $this-&gt;Password))
+                     {
+                         $this-&gt;SetError($this-&gt;Lang(&quot;authenticate&quot;));
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.smtp.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.smtp.php	2007-08-14 16:27:23 UTC (rev 2471)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer/class.smtp.php	2007-08-14 22:34:59 UTC (rev 2472)
+@@ -98,7 +98,7 @@
+         }
+ 
+         #connect to the smtp server
+-        $this-&gt;smtp_conn = fsockopen($host,    # the host of the server
++        $this-&gt;smtp_conn =@fsockopen($host,    # the host of the server
+                                      $port,    # the port to use
+                                      $errno,   # error number if any
+                                      $errstr,  # error message if any
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001065.html">[ydf-devel] r2471 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001067.html">[ydf-devel] r2473 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1066">[ date ]</a>
+              <a href="thread.html#1066">[ thread ]</a>
+              <a href="subject.html#1066">[ subject ]</a>
+              <a href="author.html#1066">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1822 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDMysqlDump
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1822%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20addons/YDMysqlDump&In-Reply-To=%3C200604011423.k31ENl4w003158%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000254.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1822 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDMysqlDump</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1822%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20addons/YDMysqlDump&In-Reply-To=%3C200604011423.k31ENl4w003158%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1822 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDMysqlDump">ximian at berlios.de
+       </A><BR>
+    <I>Sat Apr  1 16:23:47 CEST 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000254.html">[ydf-devel] r1823 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#253">[ date ]</a>
+              <a href="thread.html#253">[ thread ]</a>
+              <a href="subject.html#253">[ subject ]</a>
+              <a href="author.html#253">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-01 16:23:25 +0200 (Sat, 01 Apr 2006)
+New Revision: 1822
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+Log:
+YDDatabase::getNamedInstance can accept YDDatabaseDrivers as argument. This make life a little easier.
+
+YDMysqlDump ported for new YDDatabase::getNamedInstance. Just one line instead of 3.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-03-30 16:00:48 UTC (rev 1821)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-04-01 14:23:25 UTC (rev 1822)
+@@ -468,9 +468,9 @@
+ 
+         /**
+          *  This function will return a YDDatabaseDriver instance for the named database instance. If no instance is
+-         *  given, the one with the name &quot;default&quot; will be used.
++         *  given, the one with the name &quot;default&quot; will be used. You can use database instance objects too.
+          *
+-         *  @param $name    (optional) The name of the database instance. Defaults to &quot;default&quot;.
++         *  @param $name    (optional) The name or object of the database instance. Defaults to &quot;default&quot;.
+          *
+          *  @returns    An instance of YDDatabaseDriver
+          *
+@@ -478,6 +478,9 @@
+          */
+         function getNamedInstance( $name='default' ) {
+ 
++            // Check if name is a YDDatabaseDriver object
++            if ( is_object( $name ) ) return $name;
++
+             // Check if the global array exists
+             YDDatabase::_initNamedInstances();
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-03-30 16:00:48 UTC (rev 1821)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-04-01 14:23:25 UTC (rev 1822)
+@@ -34,9 +34,9 @@
+         /**
+          *  Class constructor for the YDMysqlDump class.
+          *
+-         *  @param $dbinstance      Database instance
++         *  @param $dbinstance      Database instance name or object.
+          */
+-        function YDMysqlDump( $dbinstance = null ) {
++        function YDMysqlDump( $dbinstance = 'default' ) {
+ 
+             // Initializes YDBase
+             $this-&gt;YDAddOnModule();
+@@ -48,9 +48,7 @@
+             $this-&gt;_description = 'This class defines a mysql backup/restore system.';
+ 
+             // database instance
+-            if ( is_null( $dbinstance ) )        $this-&gt;dbinstance = YDDatabase::getNamedInstance();
+-            else if ( is_string( $dbinstance ) ) $this-&gt;dbinstance = YDDatabase::getNamedInstance( $dbinstance );
+-            else                                 $this-&gt;dbinstance = $dbinstance;
++			$this-&gt;dbinstance = YDDatabase::getNamedInstance( $dbinstance );
+ 
+             // predefined filepath for store content (used if we don't want a string)
+             $this-&gt;filepath = YD_DIR_TEMP . '/backup.sql';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000254.html">[ydf-devel] r1823 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#253">[ date ]</a>
+              <a href="thread.html#253">[ thread ]</a>
+              <a href="subject.html#253">[ subject ]</a>
+              <a href="author.html#253">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

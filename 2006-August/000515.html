@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2008 - in YDFramework2.0/trunk/examples/weblog: .	include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2008%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include/languages%20manage&In-Reply-To=%3C200608140643.k7E6hrfL029219%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000514.html">
+   <LINK REL="Next"  HREF="000516.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2008 - in YDFramework2.0/trunk/examples/weblog: .	include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2008%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include/languages%20manage&In-Reply-To=%3C200608140643.k7E6hrfL029219%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2008 - in YDFramework2.0/trunk/examples/weblog: .	include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 14 08:43:53 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000514.html">[ydf-devel] r2007 - in YDFramework2.0/trunk/examples/weblog: .	include
+</A></li>
+        <LI>Next message: <A HREF="000516.html">[ydf-devel] r2009 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#515">[ date ]</a>
+              <a href="thread.html#515">[ thread ]</a>
+              <a href="subject.html#515">[ subject ]</a>
+              <a href="author.html#515">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-14 08:43:48 +0200 (Mon, 14 Aug 2006)
+New Revision: 2008
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.php
+Log:
+Added another check to the email form to prevent comment spam.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-14 06:27:17 UTC (rev 2007)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-14 06:43:48 UTC (rev 2008)
+@@ -109,6 +109,7 @@
+ $GLOBALS['t']['no_comments_yet'] = 'No comments yet';
+ $GLOBALS['t']['comment'] = 'Comment';
+ $GLOBALS['t']['comments'] = 'Comments';
++$GLOBALS['t']['err_name_length'] = 'Name cannot be longer than 35 characters';
+ 
+ // manage/__mng_header.tpl
+ $GLOBALS['t']['confirm_delete'] = 'Are you sure you want to delete:';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-14 06:27:17 UTC (rev 2007)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-14 06:43:48 UTC (rev 2008)
+@@ -109,6 +109,7 @@
+ $GLOBALS['t']['no_comments_yet'] = 'Nog geen commentaren';
+ $GLOBALS['t']['comment'] = 'Commentaar';
+ $GLOBALS['t']['comments'] = 'Commentaren';
++$GLOBALS['t']['err_name_length'] = 'Naam kan niet langer zijn dan 35 karakters';
+ 
+ // manage/__mng_header.tpl
+ $GLOBALS['t']['confirm_delete'] = 'Bent u zeker dat u het volgende wil verwijderen:';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-08-14 06:27:17 UTC (rev 2007)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-08-14 06:43:48 UTC (rev 2008)
+@@ -74,6 +74,7 @@
+                 // Set the rules
+                 $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
+                 $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
++                $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), array( 35 ) );
+                 $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
+                 $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
+                 $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-08-14 06:27:17 UTC (rev 2007)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-08-14 06:43:48 UTC (rev 2008)
+@@ -65,9 +65,13 @@
+             $form-&gt;addElement( 'submit',          '_cmdSubmit',  t('OK'),      array( 'class' =&gt; 'button' ) );
+ 
+             // Add the form rules
+-            $form-&gt;addRule( 'username',  'required', t( 'err_name' ) );
+-            $form-&gt;addRule( 'useremail', 'email',    t( 'err_email' ) );
+-            $form-&gt;addRule( 'comment',   'required', t( 'err_comment' ) );
++            $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
++            $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
++            $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), array( 35 ) );
++            $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
++            $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
++            $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
++            $form-&gt;addRule( 'comment',     'required',  t( 'err_comment' ) );
+ 
+             // Add the filters
+             $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000514.html">[ydf-devel] r2007 - in YDFramework2.0/trunk/examples/weblog: .	include
+</A></li>
+	<LI>Next message: <A HREF="000516.html">[ydf-devel] r2009 - in YDFramework2.0/trunk/examples/weblog: manage	skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#515">[ date ]</a>
+              <a href="thread.html#515">[ thread ]</a>
+              <a href="subject.html#515">[ subject ]</a>
+              <a href="author.html#515">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1958 - in YDFramework2.0/trunk/YDFramework2/3rdparty/smarty: . libs libs/plugins
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1958%20-%20in%20YDFramework2.0/trunk/YDFramework2/3rdparty/smarty%3A%20.%20libs%20libs/plugins&In-Reply-To=%3C200607061831.k66IVYpV016406%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000440.html">
+   <LINK REL="Next"  HREF="000442.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1958 - in YDFramework2.0/trunk/YDFramework2/3rdparty/smarty: . libs libs/plugins</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1958%20-%20in%20YDFramework2.0/trunk/YDFramework2/3rdparty/smarty%3A%20.%20libs%20libs/plugins&In-Reply-To=%3C200607061831.k66IVYpV016406%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1958 - in YDFramework2.0/trunk/YDFramework2/3rdparty/smarty: . libs libs/plugins">pclaerhout at berlios.de
+       </A><BR>
+    <I>Thu Jul  6 20:31:34 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000440.html">[ydf-devel] r1957 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000442.html">[ydf-devel] r1959 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#441">[ date ]</a>
+              <a href="thread.html#441">[ thread ]</a>
+              <a href="subject.html#441">[ subject ]</a>
+              <a href="author.html#441">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-07-06 20:31:32 +0200 (Thu, 06 Jul 2006)
+New Revision: 1958
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.regex_replace.php
+Log:
+Updated Smarty to 2.6.14.
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog	2006-07-06 18:31:11 UTC (rev 1957)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog	2006-07-06 18:31:32 UTC (rev 1958)
+@@ -1,3 +1,78 @@
++2006-05-25  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/Smarty_Compiler.class.php:
++      un-hide hidden xml open tags
++
++2006-05-09  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/Smarty_Compiler.class.php:
++      separate handling of comment blocks from &quot;special blocks&quot;
++
++    * NEWS
++      libs/plugins/function.popup_init.php:
++      reverted {popup_init} as proposed change to insertion behviour was not BC
++
++2006-05-04  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/plugins/function.popup_init.php:
++      changed {popup_init} to only emit code once during a request
++      
++      Thanks to TGKnIght from forums
++
++2006-04-22  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
++
++    * NEWS
++      libs/Smarty_Compiler.class.php:
++      fix handling of block-methods of registered objects
++      thanks to El Hombre Gris
++
++2006-04-04  Monte Ohrt  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">monte at ohrt.com</A>&gt;
++
++    * libs/plugins/function.html_select_date.php:
++      fix typo
++
++2006-03-09  Monte Ohrt  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">monte at ohrt.com</A>&gt;
++
++    * (Smarty_2_6_13)
++      NEWS:
++      update for release
++
++2006-03-08  Monte Ohrt  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">monte at ohrt.com</A>&gt;
++
++    * libs/plugins/modifier.regex_replace.php:
++      remove delim quote
++
++    * libs/plugins/modifier.regex_replace.php:
++      fix delimiter issue
++
++2006-03-03  Monte Ohrt  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">monte at ohrt.com</A>&gt;
++
++    * libs/plugins/modifier.regex_replace.php:
++      use preg_replace to cover any space chars
++
++    * libs/plugins/modifier.regex_replace.php:
++      fix problem with allowing &quot;e&quot; modifier
++
++2006-01-29  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
++
++    * libs/Smarty_Compiler.class.php:
++      removed possiblity for E_NOTICE on an undefined variable in
++      Smarty_Compiler::_compile_if_tag() - thanks to sbeh
++
++2006-01-18  Monte Ohrt  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">monte at ohrt.com</A>&gt;
++
++    * libs/Config_File.class.php
++      libs/Smarty.class.php
++      libs/Smarty_Compiler.class.php:
++      update version numbers
++
++    * (Smarty_2_6_12)
++      NEWS:
++      commit 2.6.12 release
++
+ 2006-01-15  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
+ 
+     * NEWS
+@@ -3645,7 +3720,7 @@
+ 
+     * libs/Smarty.class.php
+       libs/Smarty_Compiler.class.php:
+-      added CVS $Id: ChangeLog,v 1.407 2006/01/16 06:31:51 changelog Exp $
++      added CVS $Id: ChangeLog,v 1.417 2006/05/26 05:32:07 changelog Exp $
+ 
+ 2003-03-31  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS	2006-07-06 18:31:11 UTC (rev 1957)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS	2006-07-06 18:31:32 UTC (rev 1958)
+@@ -1,3 +1,12 @@
++- un-hide hidden xml open tags (boots)
++- fix handling of block-methods of registered objects (El Hombre Gris,
++  messju)
++
++Version 2.6.13 (March 9th, 2006)
++--------------------------------
++
++ - update regex_replace, removing possible use of &quot;e&quot; modifier
++
+ Version 2.6.12 (Jan 18th, 2006)
+ -------------------------------
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php	2006-07-06 18:31:11 UTC (rev 1957)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php	2006-07-06 18:31:32 UTC (rev 1958)
+@@ -18,14 +18,14 @@
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  *
+  * @link <A HREF="http://smarty.php.net/">http://smarty.php.net/</A>
+- * @version 2.6.12
++ * @version 2.6.14
+  * @copyright Copyright: 2001-2005 New Digital Group, Inc.
+  * @author Andrei Zmievski &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">andrei at php.net</A>&gt;
+  * @access public
+  * @package Smarty
+  */
+ 
+-/* $Id: Config_File.class.php,v 1.83 2005/12/14 14:53:55 mohrt Exp $ */
++/* $Id: Config_File.class.php,v 1.84 2006/01/18 19:02:52 mohrt Exp $ */
+ 
+ /**
+  * Config file reading class
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php	2006-07-06 18:31:11 UTC (rev 1957)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php	2006-07-06 18:31:32 UTC (rev 1958)
+@@ -27,10 +27,10 @@
+  * @author Monte Ohrt &lt;monte at ohrt dot com&gt;
+  * @author Andrei Zmievski &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">andrei at php.net</A>&gt;
+  * @package Smarty
+- * @version 2.6.12
++ * @version 2.6.14
+  */
+ 
+-/* $Id: Smarty.class.php,v 1.523 2005/12/31 19:17:04 messju Exp $ */
++/* $Id: Smarty.class.php,v 1.524 2006/01/18 19:02:52 mohrt Exp $ */
+ 
+ /**
+  * DIR_SEP isn't used anymore, but third party apps might
+@@ -464,7 +464,7 @@
+      *
+      * @var string
+      */
+-    var $_version              = '2.6.12';
++    var $_version              = '2.6.14';
+ 
+     /**
+      * current template inclusion depth
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php	2006-07-06 18:31:11 UTC (rev 1957)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php	2006-07-06 18:31:32 UTC (rev 1958)
+@@ -21,12 +21,12 @@
+  * @link <A HREF="http://smarty.php.net/">http://smarty.php.net/</A>
+  * @author Monte Ohrt &lt;monte at ohrt dot com&gt;
+  * @author Andrei Zmievski &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">andrei at php.net</A>&gt;
+- * @version 2.6.12
++ * @version 2.6.14
+  * @copyright 2001-2005 New Digital Group, Inc.
+  * @package Smarty
+  */
+ 
+-/* $Id: Smarty_Compiler.class.php,v 1.376 2006/01/15 19:29:45 messju Exp $ */
++/* $Id: Smarty_Compiler.class.php,v 1.381 2006/05/25 14:46:18 boots Exp $ */
+ 
+ /**
+  * Template compiling class
+@@ -240,6 +240,9 @@
+         $ldq = preg_quote($this-&gt;left_delimiter, '~');
+         $rdq = preg_quote($this-&gt;right_delimiter, '~');
+ 
++        /* un-hide hidden xml open tags  */
++        $source_content = preg_replace(&quot;~&lt;({$ldq}(.*?){$rdq})[?]~s&quot;, '&lt; \\1', $source_content);
++
+         // run template source through prefilter functions
+         if (count($this-&gt;_plugins['prefilter']) &gt; 0) {
+             foreach ($this-&gt;_plugins['prefilter'] as $filter_name =&gt; $prefilter) {
+@@ -880,9 +883,9 @@
+                     $prefix .= &quot;while (\$_block_repeat) { ob_start();&quot;;
+                     $return = null;
+                     $postfix = '';
+-            } else {
+-                    $prefix = &quot;\$_obj_block_content = ob_get_contents(); ob_end_clean(); &quot;;
+-                    $return = &quot;\$_block_repeat=false; \$this-&gt;_reg_objects['$object'][0]-&gt;$obj_comp(\$this-&gt;_tag_stack[count(\$this-&gt;_tag_stack)-1][1], \$_obj_block_content, \$this, \$_block_repeat)&quot;;
++                } else {
++                    $prefix = &quot;\$_obj_block_content = ob_get_contents(); ob_end_clean(); \$_block_repeat=false;&quot;;
++                    $return = &quot;\$this-&gt;_reg_objects['$object'][0]-&gt;$obj_comp(\$this-&gt;_tag_stack[count(\$this-&gt;_tag_stack)-1][1], \$_obj_block_content, \$this, \$_block_repeat)&quot;;
+                     $postfix = &quot;} array_pop(\$this-&gt;_tag_stack);&quot;;
+                 }
+             } else {
+@@ -1253,7 +1256,7 @@
+         $tokens = $match[0];
+ 
+         if(empty($tokens)) {
+-            $_error_msg .= $elseif ? &quot;'elseif'&quot; : &quot;'if'&quot;;
++            $_error_msg = $elseif ? &quot;'elseif'&quot; : &quot;'if'&quot;;
+             $_error_msg .= ' statement requires arguments'; 
+             $this-&gt;_syntax_error($_error_msg, E_USER_ERROR, __FILE__, __LINE__);
+         }
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php	2006-07-06 18:31:11 UTC (rev 1957)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php	2006-07-06 18:31:32 UTC (rev 1958)
+@@ -22,7 +22,7 @@
+  *                month values (Gary Loescher)
+  *           - 1.3.1 added support for choosing format for
+  *                day values (Marcus Bointon)
+- *           - 1.3.2 suppport negative timestamps, force year
++ *           - 1.3.2 support negative timestamps, force year
+  *             dropdown to include given date unless explicitly set (Monte)
+  * @link <A HREF="http://smarty.php.net/manual/en/language.function.html.select.date.php">http://smarty.php.net/manual/en/language.function.html.select.date.php</A> {html_select_date}
+  *      (Smarty online manual)
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.regex_replace.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.regex_replace.php	2006-07-06 18:31:11 UTC (rev 1957)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.regex_replace.php	2006-07-06 18:31:32 UTC (rev 1958)
+@@ -11,7 +11,7 @@
+  *
+  * Type:     modifier&lt;br&gt;
+  * Name:     regex_replace&lt;br&gt;
+- * Purpose:  regular epxression search/replace
++ * Purpose:  regular expression search/replace
+  * @link <A HREF="http://smarty.php.net/manual/en/language.modifier.regex.replace.php">http://smarty.php.net/manual/en/language.modifier.regex.replace.php</A>
+  *          regex_replace (Smarty online manual)
+  * @author   Monte Ohrt &lt;monte at ohrt dot com&gt;
+@@ -22,10 +22,11 @@
+  */
+ function smarty_modifier_regex_replace($string, $search, $replace)
+ {
+-    if (preg_match('!\W(\w+)$!s', $search, $match) &amp;&amp; (strpos($match[1], 'e') !== false)) {
++    if (preg_match('!([a-zA-Z\s]+)$!s', $search, $match) &amp;&amp; (strpos($match[1], 'e') !== false)) {
+         /* remove eval-modifier from $search */
+-        $search = substr($search, 0, -strlen($match[1])) . str_replace('e', '', $match[1]);
++        $search = substr($search, 0, -strlen($match[1])) . preg_replace('![e\s]+!', '', $match[1]);
+     }
++       
+     return preg_replace($search, $replace, $string);
+ }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000440.html">[ydf-devel] r1957 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000442.html">[ydf-devel] r1959 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#441">[ date ]</a>
+              <a href="thread.html#441">[ thread ]</a>
+              <a href="subject.html#441">[ subject ]</a>
+              <a href="author.html#441">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

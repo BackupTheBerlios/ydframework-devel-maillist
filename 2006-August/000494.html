@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1987 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1987%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery&In-Reply-To=%3C200608080035.k780ZGeZ002760%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000493.html">
+   <LINK REL="Next"  HREF="000495.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1987 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery</H1>
+    <B>david_db at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1987%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery&In-Reply-To=%3C200608080035.k780ZGeZ002760%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1987 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery">david_db at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  8 02:35:16 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000493.html">[ydf-devel] r1986 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000495.html">[ydf-devel] r1988 - YDFramework2.0/trunk/examples/database_object
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#494">[ date ]</a>
+              <a href="thread.html#494">[ thread ]</a>
+              <a href="subject.html#494">[ subject ]</a>
+              <a href="author.html#494">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-08-08 02:34:59 +0200 (Tue, 08 Aug 2006)
+New Revision: 1987
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+Log:
+Fixed YDDatabaseQuery::getFrom for INSERT queries.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-08-08 00:33:36 UTC (rev 1986)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-08-08 00:34:59 UTC (rev 1987)
+@@ -527,7 +527,7 @@
+          *
+          *  @returns  The tables references expression.
+          */
+-        function getFrom( $title=true ) {
++        function getFrom( $title=true, $single=false ) {
+ 
+             $from = array();
+ 
+@@ -542,13 +542,13 @@
+                     
+                     $sql  = sizeof( $from ) ? ', ' : '';
+                     $sql .= $this-&gt;reserved( $table );
+-                    if ( strlen( $alias ) ) {
++                    if ( strlen( $alias ) &amp;&amp; ! $single ) {
+                         $sql .= ' AS ' . $this-&gt;reserved( $alias );
+                     }
+                     
+                 }
+ 
+-                if ( array_key_exists( $index, $this-&gt;join ) ) {
++                if ( ! $single &amp;&amp; array_key_exists( $index, $this-&gt;join ) ) {
+ 
+                     $join = $this-&gt;join[ $index ];
+                     $sql .= ' ' . $join['type'] . ' JOIN ';
+@@ -564,6 +564,10 @@
+                 }
+ 
+                 $from[] = $sql;
++                
++                if ( $single ) {
++                    break;
++                }
+             }
+ 
+             return ( $title ? ' FROM ' : '' ) . trim( implode( '', $from ) );
+@@ -854,7 +858,7 @@
+         function getInsertQuery() {
+             
+             return 'INSERT ' . $this-&gt;getOptions() .
+-                   'INTO '   . $this-&gt;getFrom( false ) . $this-&gt;getInsert();
++                   'INTO '   . $this-&gt;getFrom( false, true ) . $this-&gt;getInsert();
+             
+         }
+         
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000493.html">[ydf-devel] r1986 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000495.html">[ydf-devel] r1988 - YDFramework2.0/trunk/examples/database_object
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#494">[ date ]</a>
+              <a href="thread.html#494">[ thread ]</a>
+              <a href="subject.html#494">[ subject ]</a>
+              <a href="author.html#494">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

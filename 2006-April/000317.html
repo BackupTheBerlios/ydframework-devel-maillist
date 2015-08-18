@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1873 - YDFramework2.0/trunk/examples/cms/includes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1873%20-%20YDFramework2.0/trunk/examples/cms/includes&In-Reply-To=%3C200604240545.k3O5jZi2029474%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000316.html">
+   <LINK REL="Next"  HREF="000318.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1873 - YDFramework2.0/trunk/examples/cms/includes</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1873%20-%20YDFramework2.0/trunk/examples/cms/includes&In-Reply-To=%3C200604240545.k3O5jZi2029474%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1873 - YDFramework2.0/trunk/examples/cms/includes">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Apr 24 07:45:35 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000316.html">[ydf-devel] r1872 - in YDFramework2.0/trunk/YDFramework2/addons: YDCMPage YDCMTree
+</A></li>
+        <LI>Next message: <A HREF="000318.html">[ydf-devel] r1874 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#317">[ date ]</a>
+              <a href="thread.html#317">[ thread ]</a>
+              <a href="subject.html#317">[ subject ]</a>
+              <a href="author.html#317">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-04-24 07:45:31 +0200 (Mon, 24 Apr 2006)
+New Revision: 1873
+
+Added:
+   YDFramework2.0/trunk/examples/cms/includes/ydcms.sql
+Log:
+Added the missing database schema for the cms application (which is not the same as the new CMS framework Francisco is adding as we speak).
+
+Added: YDFramework2.0/trunk/examples/cms/includes/ydcms.sql
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/ydcms.sql	2006-04-23 19:43:06 UTC (rev 1872)
++++ YDFramework2.0/trunk/examples/cms/includes/ydcms.sql	2006-04-24 05:45:31 UTC (rev 1873)
+@@ -0,0 +1,97 @@
++# MySQL-Front Dump 2.5
++#
++# Host: localhost   Database: ydcms
++# --------------------------------------------------------
++# Server version 4.0.20a-nt
++
++USE ydcms;
++
++
++#
++# Table structure for table 'content'
++#
++
++DROP TABLE IF EXISTS `content`;
++CREATE TABLE `content` (
++  `id` int(11) NOT NULL auto_increment,
++  `parent_id` int(11) NOT NULL default '0',
++  `name` varchar(255) NOT NULL default '',
++  `nleft` int(11) NOT NULL default '0',
++  `nright` int(11) NOT NULL default '0',
++  `nlevel` int(11) NOT NULL default '0',
++  `created` int(11) NOT NULL default '0',
++  `created_by` varchar(255) NOT NULL default '',
++  `modified` int(11) NOT NULL default '0',
++  `modified_by` varchar(255) NOT NULL default '',
++  `content_type` varchar(255) NOT NULL default 'YDCmfContentNode',
++  `can_delete` tinyint(1) NOT NULL default '1',
++  `title_nl` longtext NOT NULL,
++  `title_en` longtext NOT NULL,
++  `title_fr` longtext NOT NULL,
++  `property_0_nl` longtext,
++  `property_0_en` longtext,
++  `property_0_fr` longtext,
++  `property_1_nl` longtext,
++  `property_1_en` longtext,
++  `property_1_fr` longtext,
++  `property_2_nl` longtext,
++  `property_2_en` longtext,
++  `property_2_fr` longtext,
++  `property_3_nl` longtext,
++  `property_3_en` longtext,
++  `property_3_fr` longtext,
++  `property_4_nl` longtext,
++  `property_4_en` longtext,
++  `property_4_fr` longtext,
++  `property_5_nl` longtext,
++  `property_5_en` longtext,
++  `property_5_fr` longtext,
++  `property_6_nl` longtext,
++  `property_6_en` longtext,
++  `property_6_fr` longtext,
++  `property_7_nl` longtext,
++  `property_7_en` longtext,
++  `property_7_fr` longtext,
++  `property_8_nl` longtext,
++  `property_8_en` longtext,
++  `property_8_fr` longtext,
++  `property_9_nl` longtext,
++  `property_9_en` longtext,
++  `property_9_fr` longtext,
++  `property_10_nl` longtext,
++  `property_10_en` longtext,
++  `property_10_fr` longtext,
++  PRIMARY KEY  (`id`),
++  UNIQUE KEY `content_name` (`name`),
++  KEY `content_parent_id` (`parent_id`),
++  KEY `content_nleft` (`nleft`),
++  KEY `content_nright` (`nright`),
++  KEY `content_nlevel` (`nlevel`),
++  KEY `content_content_type` (`content_type`),
++  KEY `content_can_delete` (`can_delete`)
++) TYPE=MyISAM;
++
++
++
++#
++# Dumping data for table 'content'
++#
++
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;1&quot;, &quot;0&quot;, &quot;home&quot;, &quot;1&quot;, &quot;36&quot;, &quot;1&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfcontentnode&quot;, &quot;1&quot;, &quot;Titel Nederlands&quot;, &quot;Title English&quot;, &quot;Titre Fran&ccedil;ais&quot;, NULL, NULL, NUL!
+ L, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;2&quot;, &quot;1&quot;, &quot;home2&quot;, &quot;2&quot;, &quot;3&quot;, &quot;2&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfhome&quot;, &quot;1&quot;, &quot;Titel2 Nederlands&quot;, &quot;Title2 English&quot;, &quot;Titre2 Fran&ccedil;ais&quot;, NULL, NULL, NULL, N!
+ ULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;3&quot;, &quot;1&quot;, &quot;news&quot;, &quot;4&quot;, &quot;9&quot;, &quot;2&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfhome&quot;, &quot;1&quot;, &quot;News Nederlands&quot;, &quot;News English&quot;, &quot;News Fran&ccedil;ais&quot;, NULL, NULL, NULL, NULL, NU!
+ LL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;4&quot;, &quot;3&quot;, &quot;news/20060417_krabrally_2006&quot;, &quot;5&quot;, &quot;6&quot;, &quot;3&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfhome&quot;, &quot;1&quot;, &quot;News Krabrally 2006 Nederlands&quot;, &quot;News Krabrally 2006 Englis!
+ h&quot;, &quot;News Krabrally 2006 Fran&ccedil;ais&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;5&quot;, &quot;3&quot;, &quot;news/20060418_krabrally_2007&quot;, &quot;7&quot;, &quot;8&quot;, &quot;3&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfhome&quot;, &quot;1&quot;, &quot;News Krabrally 2007 Nederlands&quot;, &quot;News Krabrally 2007 Englis!
+ h&quot;, &quot;News Krabrally 2007 Fran&ccedil;ais&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;6&quot;, &quot;1&quot;, &quot;photo&quot;, &quot;10&quot;, &quot;35&quot;, &quot;2&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgallery&quot;, &quot;1&quot;, &quot;Photo Galleries&quot;, &quot;Photo Galleries&quot;, &quot;Photo Galleries&quot;, NULL, NULL, NULL, NULL!
+ , NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;7&quot;, &quot;6&quot;, &quot;photo/krabrally2006&quot;, &quot;11&quot;, &quot;22&quot;, &quot;3&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryalbum&quot;, &quot;1&quot;, &quot;Krabrally 2006&quot;, &quot;Krabrally 2006&quot;, &quot;Krabrally 2006&quot;, NULL, !
+ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;8&quot;, &quot;6&quot;, &quot;photo/krabrally2007&quot;, &quot;23&quot;, &quot;34&quot;, &quot;3&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryalbum&quot;, &quot;1&quot;, &quot;Krabrally 2007&quot;, &quot;Krabrally 2007&quot;, &quot;Krabrally 2007&quot;, NULL, !
+ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;131&quot;, &quot;7&quot;, &quot;photo/krabrally2006/19990716-MVC-P-014F&quot;, &quot;12&quot;, &quot;13&quot;, &quot;4&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-014F.JPG&quot;, &quot;19990716-MV!
+ C-P-014F.JPG&quot;, &quot;19990716-MVC-P-014F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-014F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-014F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-014F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;132&quot;, &quot;7&quot;, &quot;photo/krabrally2006/19990716-MVC-P-015F&quot;, &quot;14&quot;, &quot;15&quot;, &quot;4&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-015F.JPG&quot;, &quot;19990716-MV!
+ C-P-015F.JPG&quot;, &quot;19990716-MVC-P-015F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-015F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-015F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-015F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;133&quot;, &quot;7&quot;, &quot;photo/krabrally2006/19990716-MVC-P-016F&quot;, &quot;16&quot;, &quot;17&quot;, &quot;4&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-016F.JPG&quot;, &quot;19990716-MV!
+ C-P-016F.JPG&quot;, &quot;19990716-MVC-P-016F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-016F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-016F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-016F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;134&quot;, &quot;7&quot;, &quot;photo/krabrally2006/19990716-MVC-P-017F&quot;, &quot;18&quot;, &quot;19&quot;, &quot;4&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-017F.JPG&quot;, &quot;19990716-MV!
+ C-P-017F.JPG&quot;, &quot;19990716-MVC-P-017F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-017F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-017F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-017F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;135&quot;, &quot;7&quot;, &quot;photo/krabrally2006/19990716-MVC-P-018F&quot;, &quot;20&quot;, &quot;21&quot;, &quot;4&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-018F.JPG&quot;, &quot;19990716-MV!
+ C-P-018F.JPG&quot;, &quot;19990716-MVC-P-018F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-018F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-018F.JPG&quot;, &quot;uploads/krabrally2006/19990716-MVC-P-018F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;136&quot;, &quot;8&quot;, &quot;photo/krabrally2007/19990716-MVC-P-019F&quot;, &quot;24&quot;, &quot;25&quot;, &quot;4&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-019F.JPG&quot;, &quot;19990716-MV!
+ C-P-019F.JPG&quot;, &quot;19990716-MVC-P-019F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-019F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-019F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-019F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;137&quot;, &quot;8&quot;, &quot;photo/krabrally2007/19990716-MVC-P-020F&quot;, &quot;26&quot;, &quot;27&quot;, &quot;4&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389437&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-020F.JPG&quot;, &quot;19990716-MV!
+ C-P-020F.JPG&quot;, &quot;19990716-MVC-P-020F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-020F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-020F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-020F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;138&quot;, &quot;8&quot;, &quot;photo/krabrally2007/19990716-MVC-P-021F&quot;, &quot;28&quot;, &quot;29&quot;, &quot;4&quot;, &quot;1145389438&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389438&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-021F.JPG&quot;, &quot;19990716-MV!
+ C-P-021F.JPG&quot;, &quot;19990716-MVC-P-021F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-021F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-021F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-021F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;139&quot;, &quot;8&quot;, &quot;photo/krabrally2007/19990716-MVC-P-022F&quot;, &quot;30&quot;, &quot;31&quot;, &quot;4&quot;, &quot;1145389438&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389438&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-022F.JPG&quot;, &quot;19990716-MV!
+ C-P-022F.JPG&quot;, &quot;19990716-MVC-P-022F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-022F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-022F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-022F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++INSERT INTO `content` (`id`, `parent_id`, `name`, `nleft`, `nright`, `nlevel`, `created`, `created_by`, `modified`, `modified_by`, `content_type`, `can_delete`, `title_nl`, `title_en`, `title_fr`, `property_0_nl`, `property_0_en`, `property_0_fr`, `property_1_nl`, `property_1_en`, `property_1_fr`, `property_2_nl`, `property_2_en`, `property_2_fr`, `property_3_nl`, `property_3_en`, `property_3_fr`, `property_4_nl`, `property_4_en`, `property_4_fr`, `property_5_nl`, `property_5_en`, `property_5_fr`, `property_6_nl`, `property_6_en`, `property_6_fr`, `property_7_nl`, `property_7_en`, `property_7_fr`, `property_8_nl`, `property_8_en`, `property_8_fr`, `property_9_nl`, `property_9_en`, `property_9_fr`, `property_10_nl`, `property_10_en`, `property_10_fr`) VALUES(&quot;140&quot;, &quot;8&quot;, &quot;photo/krabrally2007/19990716-MVC-P-023F&quot;, &quot;32&quot;, &quot;33&quot;, &quot;4&quot;, &quot;1145389438&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;1145389438&quot;, &quot;pclaerho-lt.cem.creo.com&quot;, &quot;ydcmfgalleryitem&quot;, &quot;1&quot;, &quot;19990716-MVC-P-023F.JPG&quot;, &quot;19990716-MV!
+ C-P-023F.JPG&quot;, &quot;19990716-MVC-P-023F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-023F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-023F.JPG&quot;, &quot;uploads/krabrally2007/19990716-MVC-P-023F.JPG&quot;, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000316.html">[ydf-devel] r1872 - in YDFramework2.0/trunk/YDFramework2/addons: YDCMPage YDCMTree
+</A></li>
+	<LI>Next message: <A HREF="000318.html">[ydf-devel] r1874 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#317">[ date ]</a>
+              <a href="thread.html#317">[ thread ]</a>
+              <a href="subject.html#317">[ subject ]</a>
+              <a href="author.html#317">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,618 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2039 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2039%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200608231510.k7NFA6nS012953%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000558.html">
+   <LINK REL="Next"  HREF="000550.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2039 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2039%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200608231510.k7NFA6nS012953%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2039 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 23 17:10:06 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000558.html">[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000550.html">[ydf-devel] r2040 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDCMComponent YDCMComponent/languages	YDCMComponent/languages/YDCMPage YDCMComponent/languages/YDCMUsers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#549">[ date ]</a>
+              <a href="thread.html#549">[ thread ]</a>
+              <a href="subject.html#549">[ subject ]</a>
+              <a href="author.html#549">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-23 17:09:37 +0200 (Wed, 23 Aug 2006)
+New Revision: 2039
+
+Removed:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMStatistics.php
+Log:
+- deleted all YDCM files from YDF core
+
+Deleted: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-08-23 06:43:55 UTC (rev 2038)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-08-23 15:09:37 UTC (rev 2039)
+@@ -1,421 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-	// include YDF libs
+-    YDInclude( 'YDDatabaseObject.php' );
+-	YDInclude( 'YDDatabaseTree.php' );
+-	YDInclude( 'YDUrl.php' );
+-	YDInclude( 'YDError.php' );
+-
+-	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMComp.php' );
+-
+-	// add generic translation directory
+-	YDLocale::addDirectory( dirname( __FILE__ ) . '/YDCMComponent/languages/' );
+-
+-    class YDCMComponent extends YDDatabaseObject {
+-
+-        function YDCMComponent( $type, $id ) {
+-
+-			// init DB object
+-            $this-&gt;YDDatabaseObject();
+-
+-            $this-&gt;_author = 'unknown author';
+-            $this-&gt;_version = 'unknown version';
+-            $this-&gt;_copyright = 'no copyright';
+-            $this-&gt;_description = 'no description';
+-
+-			// register database as default
+-            $this-&gt;registerDatabase();
+-
+-			// register table for this component
+-            $this-&gt;registerTable( $type );
+-
+-			// add standard relation
+-			$this-&gt;registerField( 'component_id' );
+-       		$rel = &amp; $this-&gt;registerRelation( 'YDCMComp', false, 'YDCMComp' );
+-			$rel-&gt;setLocalKey( 'component_id' );
+-			$rel-&gt;setForeignKey( 'component_id' );
+-
+-			// add comp object
+-			$this-&gt;comp = new YDCMComp( $type, $id );
+-			
+-			$this-&gt;_id = intval( $id );
+-		}
+-
+-
+-        /**
+-         *  This function sets a new id for this component
+-         *
+-         *  @param $id           Component id
+-         */
+-		function setId( $id ){
+-
+-			// set id for all operations in this class
+-			$this-&gt;_id       = intval( $id );
+-
+-			// set id for internal YDComp object
+-			$this-&gt;comp-&gt;_id = intval( $id );
+-		}
+-
+-
+-        /**
+-         *  This function renders this element for menu
+-         *
+-         *  @returns    The YDDatabaseTree object for YDComponent static methods
+-         */
+-		function __getYDDatabaseTree(){
+-		
+-			// TODO: position is required and we must change order from 'parent_id' to 'parent_id ASC, position ASC'
+-			$tree = new YDDatabaseTree( 'default', 'YDCMTree', 'content_id', 'parent_id', 'parent_id' );
+-
+-			// TODO: set sort by parent &amp; position
+-			// $tree-&gt;setSortField( 'parent_id ASC, position ASC' );
+-
+-			// add tree fields
+-			$tree-&gt;addField( 'type' );
+-			$tree-&gt;addField( 'state' );
+-			$tree-&gt;addField( 'reference' );
+-			$tree-&gt;addField( 'access' );
+-			$tree-&gt;addField( 'searcheable' );
+-			$tree-&gt;addField( 'published_date_start' );
+-			$tree-&gt;addField( 'published_date_end' );
+-			$tree-&gt;addField( 'candrag' );
+-			$tree-&gt;addField( 'candrop' );
+-			
+-			return $tree;		
+-		}
+-
+-
+-        /**
+-         *  This function renders this element for menu
+-         *
+-         *  @param $id           Component id
+-         *  @param $urlObj       Url object
+-         *
+-         *  @returns    An html string
+-         */
+-		function render( $id, &amp; $url ){
+-		
+-			return '';
+-		}
+-
+-
+-        /**
+-         *  This function will render a menu
+-         *
+-         *  @returns    An array with all direct children
+-         */
+-		function renderMenu(){
+-		
+-			return $this-&gt;comp-&gt;renderMenu();
+-		}
+-
+-
+-        /**
+-         *  This function returns all node attributes
+-         *
+-         *  @returns    An array with node attributes
+-         */
+-		function getNode(){
+-
+-			// check if we have already node attributes (some sort of caching)
+-			if ( !isset( $this-&gt;__nodeProperties ) ) 
+-				$this-&gt;__nodeProperties = $this-&gt;comp-&gt;getNode();
+-		
+-			return $this-&gt;__nodeProperties;
+-		}
+-
+-
+-		function getInfo(){
+-		
+-			return $this-&gt;comp-&gt;getInfo();
+-		}
+-
+-        /**
+-         *  This function returns a node attribute
+-         *
+-         *  @param $attribute           Attribute name
+-         *
+-         *  @returns    The node attribute
+-         */
+-		function get( $attribute ){
+-
+-			$node = $this-&gt;getNode();
+-
+-			// return attribute if exists 
+-			if ( isset( $node[ $attribute ] ) ) return $node[ $attribute ];
+-
+-			return false;
+-		}
+-
+-
+-        /**
+-         *  This static function returns an YDCMComponent module
+-         *
+-         *  @returns    an module object
+-         */
+-		function module( $name ){
+-
+-			// include lib
+-			// TODO: check if name is a valid lib name
+-			require_once( dirname( __FILE__ ) . '/YDCMComponent/' . $name . '.php' );
+-
+-			// return class
+-			return new $name();
+-		}
+-
+-
+-        /**
+-         *  This function returns all elements (except root)
+-         *
+-         *  @returns    all tree elements 
+-         *  @static
+-         */
+-		function getTreeElements( $id = null ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// check if we have a custom id
+-			if( is_null( $id ) ) $id = $this-&gt;_id;
+-
+-			return $tree-&gt;getDescendants( $id );
+-		}
+-
+-
+-        /**
+-         *  This function checks if elements are valid drag&amp;dropable
+-         *
+-         *  @param $x  Id of dragable node
+-         *  @param $y  Id of dropable node
+-         *
+-         *  @returns    false if elements are invalid, an associative array with node types (eg: array( $x =&gt; 'PHCMPage', $y =&gt; 'PHCMRootmenu ))'
+-         *  @static
+-         */
+-		function getDragDropElements( $x = null, $y = null ){
+-		
+-			// get tree module
+-			$treeObj = YDCMComponent::module( 'YDCMTree' );
+-
+-			// check drop validation
+-			return $treeObj-&gt;getDragDropElements( $x, $y );
+-		}
+-
+-
+-        /**
+-         *  This function returns the path to current node
+-         *
+-         *  @returns    An array with all parents
+-         */
+-		function getPath(){
+-
+-			return $this-&gt;comp-&gt;getPath();
+-		}
+-
+-
+-        /**
+-         *  This function returns all direct elements of a menu
+-         *
+-         *  @returns    An array with all direct children
+-         */
+-		function getMenu(){
+-
+-			return $this-&gt;comp-&gt;getMenu();
+-		}
+-
+-
+-        /**
+-         *  This function returns the path string to current node
+-         *
+-         *  @param $separator    (Optional) Html separator string
+-         *  @param $classParents (Optional) Html class for html links of parents
+-         *  @param $classCurrent (Optional) Url object for element links
+-         *
+-         *  @returns    An html string
+-         */
+-		function getBreadcrum( $separator = ' &gt; ', $classParents = 'breadParents', $classCurrent = 'breadCurrent' ){
+-
+-			// get breadcrum from component
+-			return $this-&gt;comp-&gt;getBreadcrum( $separator, $classParents, $classCurrent );
+-		}
+-
+-
+-        /**
+-         *  This function returns the component author
+-         *
+-         *  @returns    component author
+-         */
+-		function getAuthor(){
+-
+-			return $this-&gt;_author;
+-		}
+-
+-
+-        /**
+-         *  This function returns the component version
+-         *
+-         *  @returns    component version
+-         */
+-		function getVersion(){
+-
+-			return $this-&gt;_version;
+-		}
+-
+-
+-        /**
+-         *  This function returns the component copyright
+-         *
+-         *  @returns    component copyright
+-         */
+-		function getCopyright(){
+-
+-			return $this-&gt;_copyright;
+-		}
+-
+-
+-        /**
+-         *  This function returns the component description
+-         *
+-         *  @returns    component description
+-         */
+-		function getDescription(){
+-
+-			return $this-&gt;_description;
+-		}
+-
+-
+-        /**
+-         *  This function sets a node state
+-         *
+-         *  @param $state      The state code
+-         *
+-         *  @returns    1 if state changed, 0 otherwise
+-         */
+-		function setState( $state, $id = null ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// check if static
+-			if( is_null( $id ) ) $id = $this-&gt;_id;
+-
+-			return $tree-&gt;updateNode( array( 'state' =&gt; $state ), $id );
+-		}
+-
+-
+-        /**
+-         *  This function deletes the tree part of a component only
+-         *
+-         */
+-		function deleteNode(){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			return $tree-&gt;deleteNode( $this-&gt;_id );
+-		}
+-
+-
+-        /**
+-         *  This function adds a standard node in the tree. Experimental
+-         *
+-         *  @param $values  Node values
+-         */
+-		function addNode( $values, $parent_id = null ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// use YDDatabasetree method
+-			return $tree-&gt;addNode( $values, $parent_id );
+-		}
+-
+-
+-        /**
+-         *  This function updates a node
+-         *
+-         *  @param $values  Node values
+-         */
+-		function updateNode( $values, $node_id = null ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// use YDDatabasetree method
+-			return $tree-&gt;updateNode( $values, $node_id );
+-		}
+-
+-
+-        /**
+-         *  This function moves a node
+-         *
+-         *  @param $values  Node values
+-         */
+-		function moveNode( $x, $y ){
+-
+-			// init db tree object
+-			$tree = YDCMComponent::__getYDDatabaseTree();
+-
+-			// use YDDatabasetree method
+-			return $tree-&gt;moveNode( $x, $y );
+-		}
+-
+-
+-    }
+-
+-
+-	@define ( YD_ERROR_OK, 1000 );
+-	
+-    YDConfig::set( 'YD_ERROR_LEVELS', array(
+-            YD_ERROR_NOTICE  =&gt; 'Notice',
+-            YD_ERROR_WARNING =&gt; 'Warning',
+-            YD_ERROR_FATAL   =&gt; 'Fatal',
+-            YD_ERROR_OK      =&gt; 'Ok'
+-        ));
+-
+-	// experimental class to handle all YDCM method results
+-	class YDResult extends YDError{
+-	
+-        /**
+-         *  This method creates a OK type
+-         *
+-         *  @param  $message  The message.
+-         *  @param  $value    (optional) A custom value
+-         *
+-         *  @returns     An YDCMResult object.
+-         *
+-         *  @static
+-         */
+-        function ok( $message, $value = null ) {
+-            return YDError::_error( YD_ERROR_OK, $message, $value );
+-        }
+-
+-
+-	}
+-
+-?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMStatistics.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMStatistics.php	2006-08-23 06:43:55 UTC (rev 2038)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMStatistics.php	2006-08-23 15:09:37 UTC (rev 2039)
+@@ -1,111 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-
+-    class YDCMStatistics {
+-
+-        function YDCMStatistics() {
+-		}
+-		
+-
+-        /**
+-         *  This static function returns php informations
+-         *
+-         *  @returns    an array with php info
+-         */
+-		function php(){
+-		
+-            // Get the general PHP info
+-            ob_start();
+-            phpinfo( INFO_GENERAL );
+-            $phpInfo .= ob_get_contents();
+-            ob_end_clean();
+-
+-            // Get the right part
+-            $phpInfo = substr( $phpInfo, strpos( $phpInfo, '&lt;tr&gt;' ) );
+-            $phpInfo = substr( $phpInfo, 0, strpos( $phpInfo, '&lt;/table&gt;' ) );
+-
+-            // Strip unneeded things
+-            $phpInfo = str_replace( '&lt;tr&gt;&lt;td class=&quot;e&quot;&gt;', '', $phpInfo );
+-            $phpInfo = str_replace( ' &lt;/td&gt;&lt;/tr&gt;', '', $phpInfo );
+-            $phpInfo = trim( $phpInfo );
+-
+-            // Get the settings
+-            $settings = array();
+-            foreach ( explode( &quot;\n&quot;, $phpInfo ) as $line ) {
+-                $line = explode( ' &lt;/td&gt;&lt;td class=&quot;v&quot;&gt;', $line );
+-                if ( isset( $line[1] ) ) $settings[ strtolower( str_replace( ' ', '_', $line[0] ) ) ] = $line[1];
+-                else                     $settings[ strtolower( str_replace( ' ', '_', $line[0] ) ) ] = '';
+-            }
+-
+-			// export other values
+-			$settings[ 'version' ]     = phpversion();
+-			$settings[ 'modules' ]     = implode( get_loaded_extensions(), ', ' );
+-			$settings[ 'os' ]          = PHP_OS;
+-			$settings[ 'includePath' ] = $GLOBALS['YD_INCLUDE_PATH'];
+-
+-			return $settings;
+-		}
+-
+-
+-        /**
+-         *  This static function returns the mail info
+-         *
+-         *  @returns    an array with mail info
+-         */
+-		function mailer(){
+-
+-		    // Includes
+-		    require_once( dirname( __FILE__ ) . '/../3rdparty/phpmailer/class.phpmailer.php' );
+-
+-            // Get the version of phpMailer
+-            $PHPMailer = new PHPMailer();
+-
+-			return array( 'version' =&gt; $PHPMailer-&gt;Version, 'complete' =&gt; 'PHPMailer [version ' . $PHPMailer-&gt;Version . ']' );
+-		}
+-
+-
+-        /**
+-         *  This static function returns an YDCMStatistics module
+-         *
+-         *  @returns    an module object
+-         */
+-		function module( $name ){
+-
+-			// include lib
+-			// TODO: check if name is a valid lib name
+-			require_once( YDConfig::get( 'YD_DBOBJECT_PATH' ) . '/' . $name . '.php' );
+-
+-			// return class
+-			return new $name();
+-		}
+-
+-
+-    }
+-
+-?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000558.html">[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000550.html">[ydf-devel] r2040 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDCMComponent YDCMComponent/languages	YDCMComponent/languages/YDCMPage YDCMComponent/languages/YDCMUsers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#549">[ date ]</a>
+              <a href="thread.html#549">[ thread ]</a>
+              <a href="subject.html#549">[ subject ]</a>
+              <a href="author.html#549">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,2204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1827 - in YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . js
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1827%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax%3A%20.%20js&In-Reply-To=%3C200604041542.k34FgLc1026280%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000257.html">
+   <LINK REL="Next"  HREF="000259.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1827 - in YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . js</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1827%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax%3A%20.%20js&In-Reply-To=%3C200604041542.k34FgLc1026280%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1827 - in YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . js">ximian at berlios.de
+       </A><BR>
+    <I>Tue Apr  4 17:42:21 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000257.html">[ydf-devel] r1826 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000259.html">[ydf-devel] r1828 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#258">[ date ]</a>
+              <a href="thread.html#258">[ thread ]</a>
+              <a href="subject.html#258">[ subject ]</a>
+              <a href="author.html#258">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-04 17:41:53 +0200 (Tue, 04 Apr 2006)
+New Revision: 1827
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/js/xajax.js
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajax.inc.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajaxResponse.inc.php
+Log:
+new YDAjax release (beta).. 
+- Lots of updates
+- addEvent on responses (for runtime events) is better now
+- use new internal xajax version (that has dozens of fixes and has it's own show/hide waiting message and a new debug)
+
+even more fun now!!
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-04-04 15:36:39 UTC (rev 1826)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-04-04 15:41:53 UTC (rev 1827)
+@@ -68,7 +68,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '2.7b';
++            $this-&gt;_version = '2.8b';
+             $this-&gt;_copyright = '(c) Copyright 2002-2006 Francisco Azevedo';
+             $this-&gt;_description = 'This class makes ajax easy for YDF developers';
+ 
+@@ -212,7 +212,7 @@
+ 			// check custom options
+ 			if ( !isset( $options['style.backgroundColor'] ) ) $options['style.backgroundColor'] = '#cccccc';
+ 			if ( !isset( $options['style.top'] ) )             $options['style.top']             = '40%';
+-			if ( !isset( $options['style.left'] ) )            $options['style.left']            = '44%';
++			if ( !isset( $options['style.left'] ) )            $options['style.left']            = '42%';
+ 			if ( !isset( $options['style.border'] ) )          $options['style.border']          = '1px solid #110000';
+ 
+ 			// static values
+@@ -240,10 +240,6 @@
+ 			foreach( $options as $name =&gt; $value )
+ 				$this-&gt;waitingMessageCode .= $this-&gt;wtID . &quot;.&quot; . $name . &quot; = '&quot; . $value . &quot;';&quot;;
+ 
+-			// create js function headers to show/hide waiting message div
+-			$this-&gt;wtFunctionShow = $this-&gt;wtID . &quot;show()&quot;;
+-			$this-&gt;wtFunctionHide = $this-&gt;wtID . &quot;hide()&quot;;
+-
+ 			// create show effect
+ 			if ( is_null( $effectShow ) )
+ 				$effectShow = new YDAjaxEffect( '', 'show', '', 0 );
+@@ -253,22 +249,11 @@
+ 				$effectHide = new YDAjaxEffect( '', 'hide', '', 0 );
+ 
+ 			// create js functions to show/hide div
+-			$this-&gt;waitingMessageCodeFunction  = &quot;function &quot; . $this-&gt;wtFunctionShow . &quot;{&quot; . $effectShow-&gt;getJSHead( $this-&gt;wtID . &quot;id&quot; ) . $effectShow-&gt;getJSBody( $this-&gt;wtID .&quot;id&quot; ) . &quot;}\n&quot;;
+-			$this-&gt;waitingMessageCodeFunction .= &quot;function &quot; . $this-&gt;wtFunctionHide . &quot;{&quot; . $effectHide-&gt;getJSHead( $this-&gt;wtID . &quot;id&quot; ) . $effectHide-&gt;getJSBody( $this-&gt;wtID .&quot;id&quot; ) . &quot;}\n&quot;;
+-
+-			// add script to hide waiting message on response
+-			$this-&gt;response-&gt;addScript( $this-&gt;wtFunctionHide . &quot;;&quot; );
++			$this-&gt;waitingMessageCodeFunction  = &quot;xajax.loadingFunction     = function(){&quot; . $effectShow-&gt;getJSHead( $this-&gt;wtID . &quot;id&quot; ) . $effectShow-&gt;getJSBody( $this-&gt;wtID .&quot;id&quot; ) . &quot;}\n&quot;;
++			$this-&gt;waitingMessageCodeFunction .= &quot;xajax.doneLoadingFunction = function(){&quot; . $effectHide-&gt;getJSHead( $this-&gt;wtID . &quot;id&quot; ) . $effectHide-&gt;getJSBody( $this-&gt;wtID .&quot;id&quot; ) . &quot;}\n&quot;;
+ 		}
+ 
+ 
+-		// internal method to get the js show waiting message function declaration
+-		function _getWMFunctionShow(){
+-
+-			if ( isset( $this-&gt;wtID ) ) return $this-&gt;wtFunctionShow . &quot;;&quot;;
+-			else                        return '';
+-		}
+-
+-
+ 		// internal method to get a form of an element
+ 		function __getForm( $name ){
+ 
+@@ -390,7 +375,7 @@
+ 			if ( !is_array( $options ) ) $options = array( $options );
+ 			
+ 			// get function name
+-			$functionName = $this-&gt;_getWMFunctionShow() . $this-&gt;prefix . $serverFunctionName . '(' . $this-&gt;_computeFunctionArguments( $arguments, $options ) . ');';
++			$functionName = $this-&gt;prefix . $serverFunctionName . '(' . $this-&gt;_computeFunctionArguments( $arguments, $options ) . ');';
+ 
+ 			// process effects
+ 			if ( !is_null( $effects ) ){
+@@ -820,7 +805,6 @@
+ 		function message( $message ){
+ 
+ 			$response = new YDAjaxResponse( YDConfig::get( 'YD_AJAX_ENCODING' ) );
+-			$response-&gt;addScript( 'try{ waitingmessagehide() }catch(e){}' );
+ 			$response-&gt;addAlert( $message );
+ 
+ 			return $response;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/js/xajax.js
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/js/xajax.js	2006-04-04 15:36:39 UTC (rev 1826)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/js/xajax.js	2006-04-04 15:41:53 UTC (rev 1827)
+@@ -1 +1 @@
+-function Xajax(){if(xajaxDebug)this.DebugMessage=function(text){alert(&quot;Xajax Debug:\n &quot;+text)};this.workId='xajaxWork'+new Date().getTime();this.depth=0;this.getRequestObject=function(){if(xajaxDebug)this.DebugMessage(&quot;Initializing Request Object..&quot;);var req;try{req=new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);} catch(e){try{req=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);} catch(e2){req=null;}} if(!req&amp;&amp;typeof XMLHttpRequest!=&quot;undefined&quot;)req=new XMLHttpRequest();if(xajaxDebug){if(!req)this.DebugMessage(&quot;Request Object Instantiation failed.&quot;);} return req;};this.$=function(sId){if(!sId){return null;} var returnObj=document.getElementById(sId);if(xajaxDebug&amp;&amp;!returnObj&amp;&amp;sId!=this.workId){this.DebugMessage(&quot;Element with the id \&quot;&quot;+sId+&quot;\&quot; not found.&quot;);} return returnObj;}; this.include=function(sFileName){var objHead=document.getElementsByTagName('head');var objScript=document.createElement('script');objScript.type='text/javascript';objScript.src=sFileName;objHead[0].appendChild(objScript)!
+ ;}; this.addHandler=function(sElementId,sEvent,sFunctionName){if(window.addEventListener){eval(&quot;this.$('&quot;+sElementId+&quot;').addEventListener('&quot;+sEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);} else{eval(&quot;this.$('&quot;+sElementId+&quot;').attachEvent('on&quot;+sEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);}}; this.removeHandler=function(sElementId,sEvent,sFunctionName){if(window.addEventListener){eval(&quot;this.$('&quot;+sElementId+&quot;').removeEventListener('&quot;+sEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);} else{eval(&quot;this.$('&quot;+sElementId+&quot;').detachEvent('on&quot;+sEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);}}; this.create=function(sParentId,sTag,sId){var objParent=this.$(sParentId);objElement=document.createElement(sTag);objElement.setAttribute('id',sId);objParent.appendChild(objElement);} ;this.insert=function(sBeforeId,sTag,sId){var objSibling=this.$(sBeforeId);objElement=document.createElement(sTag);objElement.setAttribute('id',sId);objSibling.parentNode.insertBefore(objElement,objSibling);} ;this.getInput=function(sType,sName,sId){v!
+ ar Obj;if(sType==&quot;radio&quot;&amp;&amp;!window.addEventListener){Obj=docume!
+ nt.creat
+eElement('&lt;input type=&quot;radio&quot; id=&quot;'+sId+'&quot; name=&quot;'+sName+'&quot;&gt;');} else{Obj=document.createElement('input');Obj.setAttribute('type',sType);Obj.setAttribute('name',sName);Obj.setAttribute('id',sId);} return Obj;}; this.createInput=function(sParentId,sType,sName,sId){var objParent=this.$(sParentId);var objElement=this.getInput(sType,sName,sId);objParent.appendChild(objElement);}; this.insertInput=function(sBeforeId,sType,sName,sId){var objSibling=this.$(sBeforeId);var objElement=this.getInput(sType,sName,sId);objSibling.parentNode.insertBefore(objElement,objSibling);} ; this.remove=function(sId){objElement=this.$(sId);if(objElement.parentNode&amp;&amp;objElement.parentNode.removeChild){objElement.parentNode.removeChild(objElement);}} ;this.replace=function(sId,sAttribute,sSearch,sReplace){var bFunction=false;if(sAttribute==&quot;innerHTML&quot;)sSearch=this.getBrowserHTML(sSearch);eval(&quot;var txt=document.getElementById('&quot;+sId+&quot;').&quot;+sAttribute);if(typeof txt==&quot;function&quot;){txt=txt.toString();bFunctio!
+ n=true;} if(txt.indexOf(sSearch)&gt;-1){var newTxt='';while(txt.indexOf(sSearch)&gt;-1){x=txt.indexOf(sSearch)+sSearch.length+1;newTxt+=txt.substr(0,x).replace(sSearch,sReplace);txt=txt.substr(x,txt.length-x);} newTxt+=txt;if(bFunction){eval(&quot;newTxt =&quot;+newTxt);eval('this.$(&quot;'+sId+'&quot;).'+sAttribute+'=newTxt;');} else if(this.willChange(sId,sAttribute,newTxt)){eval('this.$(&quot;'+sId+'&quot;).'+sAttribute+'=newTxt;');}}}; this.getFormValues=function(frm){var objForm;var submitDisabledElements=false;if(arguments.length&gt;1&amp;&amp;arguments[1]==true)submitDisabledElements=true;if(typeof(frm)==&quot;string&quot;)objForm=this.$(frm);else objForm=frm;var sXml=&quot;&lt;xjxquery&gt;&lt;q&gt;&quot;;if(objForm&amp;&amp;objForm.tagName=='FORM'){var formElements=objForm.elements;for(var i=0;i&lt;formElements.length;i++){if(formElements[i].type&amp;&amp;(formElements[i].type=='radio'||formElements[i].type=='checkbox')&amp;&amp;formElements[i].checked==false)continue;if(formElements[i].disabled&amp;&amp;formElements[i].disabled==true&amp;&amp;submitDisabledElements==false)continue;var!
+  name=formElements[i].name;if(name){if(sXml!='&lt;xjxquery&gt;&lt;q&gt;')s!
+ Xml+='&amp;'
+;if(formElements[i].type=='select-multiple'){for(var j=0;j&lt;formElements[i].length;j++){if(formElements[i].options[j].selected==true)sXml+=name+&quot;=&quot;+encodeURIComponent(formElements[i].options[j].value)+&quot;&amp;&quot;;}} else{sXml+=name+&quot;=&quot;+encodeURIComponent(formElements[i].value);}}}} sXml+=&quot;&lt;\/q&gt;&lt;\/xjxquery&gt;&quot;;return sXml;} ; this.objectToXML=function(obj){var sXml=&quot;&lt;xjxobj&gt;&quot;;for(i in obj){try{if(i=='constructor')continue;if(obj[i]&amp;&amp;typeof(obj[i])=='function')continue;var key=i;var value=obj[i];if(value&amp;&amp;typeof(value)==&quot;object&quot;&amp;&amp;(value.constructor==Array )&amp;&amp;this.depth&lt;=50){this.depth++;value=this.objectToXML(value);this.depth--;} sXml+=&quot;&lt;e&gt;&lt;k&gt;&quot;+key+&quot;&lt;\/k&gt;&lt;v&gt;&quot;+value+&quot;&lt;\/v&gt;&lt;\/e&gt;&quot;;} catch(e){if(xajaxDebug)this.DebugMessage(e);}} sXml+=&quot;&lt;\/xjxobj&gt;&quot;;return sXml;}; this.call=function(sFunction,aArgs,sRequestType){var i,r,postData;if(document.body&amp;&amp;xajaxWaitCursor)document.body.style.cursor='wait';if(xajaxStatusMessages==true)window.status='Sending Request...';if(xajaxDebug)this.DebugMessage(&quot;!
+ Starting xajax...&quot;);if(sRequestType==null){var xajaxRequestType=xajaxDefinedPost;} else{var xajaxRequestType=sRequestType;} var uri=xajaxRequestUri;var value;switch(xajaxRequestType){case xajaxDefinedGet:{var uriGet=uri.indexOf(&quot;?&quot;)==-1?&quot;?xajax=&quot;+encodeURIComponent(sFunction):&quot;&amp;xajax=&quot;+encodeURIComponent(sFunction);if(aArgs){for(i=0;i&lt;aArgs.length;i++){value=aArgs[i];if(typeof(value)==&quot;object&quot;)value=this.objectToXML(value);uriGet+=&quot;&amp;xajaxargs[]=&quot;+encodeURIComponent(value);}} uriGet+=&quot;&amp;xajaxr=&quot;+new Date().getTime();uri+=uriGet;postData=null;}break;case xajaxDefinedPost:{postData=&quot;xajax=&quot;+encodeURIComponent(sFunction);postData+=&quot;&amp;xajaxr=&quot;+new Date().getTime();if(aArgs){for(i=0;i&lt;aArgs.length;i++){value=aArgs[i];if(typeof(value)==&quot;object&quot;)value=this.objectToXML(value);postData=postData+&quot;&amp;xajaxargs[]=&quot;+encodeURIComponent(value);}}}break;default:alert(&quot;Illegal request type: &quot;+xajaxRequestType);return false;break;} r=this.getRequestObject();if(!r)return false;r.open(xajaxRequestT!
+ ype==xajaxDefinedGet?&quot;GET&quot;:&quot;POST&quot;,uri,true);if(xajaxRequestTyp!
+ e==xajax
+DefinedPost){try{r.setRequestHeader(&quot;Method&quot;,&quot;POST &quot;+uri+&quot; HTTP/1.1&quot;);r.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded&quot;);} catch(e){alert(&quot;Your browser does not appear to  support asynchronous requests using POST.&quot;);return false;}} r.onreadystatechange=function(){if(r.readyState!=4)return;if(r.status==200){if(xajaxDebug&amp;&amp;r.responseText.length&lt;1000)xajax.DebugMessage(&quot;Received:\n&quot;+r.responseText);else if(xajaxDebug)xajax.DebugMessage(&quot;Received:\n&quot;+r.responseText.substr(0,1000)+&quot;...\n[long response]\n...&lt;\/xajax&gt;&quot;);if(r.responseXML)xajax.processResponse(r.responseXML);else{alert(&quot;Error: the XML response that was returned from the server is invalid.&quot;);document.body.style.cursor='default';if(xajaxStatusMessages==true)window.status='Invalid XML response error';}} delete r;};  if(xajaxDebug)this.DebugMessage(&quot;Calling &quot;+sFunction+&quot; uri=&quot;+uri+&quot; (post:&quot;+postData+&quot;)&quot;);r.send(postData);if(xajaxStatusMessages==true)window.status='Waiting for data...';delete r;return !
+ true;}; this.getBrowserHTML=function(html){tmpXajax=this.$(this.workId);if(tmpXajax==null){tmpXajax=document.createElement(&quot;div&quot;);tmpXajax.setAttribute('id',this.workId);tmpXajax.style.display=&quot;none&quot;;tmpXajax.style.visibility=&quot;hidden&quot;;document.body.appendChild(tmpXajax);}  tmpXajax.innerHTML=html;var browserHTML=tmpXajax.innerHTML;tmpXajax.innerHTML='';return browserHTML;} ; this.willChange=function(element,attribute,newData){if(!document.body){return true;} var oldData;if(attribute==&quot;innerHTML&quot;){newData=this.getBrowserHTML(newData);} eval(&quot;oldData=document.getElementById('&quot;+element+&quot;').&quot;+attribute);if(newData!=oldData)return true;return false;} ; this.processResponse=function(xml){if(xajaxStatusMessages==true)window.status='Processing...';var tmpXajax=null;xml=xml.documentElement;if(xml==null){alert(&quot;Error: the XML response that was returned from the server cannot be processed.&quot;);document.body.style.cursor='default';if(xajaxStatusMessages==true)window.status='XML response !
+ processing error';return;} for(i=0;i&lt;xml.childNodes.length;i++!
+ ){if(xml
+.childNodes[i].nodeName==&quot;cmd&quot;){var cmd;var id;var property;var data;var search;var type;var before;for(j=0;j&lt;xml.childNodes[i].attributes.length;j++){if(xml.childNodes[i].attributes[j].name==&quot;n&quot;){cmd=xml.childNodes[i].attributes[j].value;} if(xml.childNodes[i].attributes[j].name==&quot;t&quot;){id=xml.childNodes[i].attributes[j].value;} if(xml.childNodes[i].attributes[j].name==&quot;p&quot;){property=xml.childNodes[i].attributes[j].value;} if(xml.childNodes[i].attributes[j].name==&quot;c&quot;){type=xml.childNodes[i].attributes[j].value;}} if(xml.childNodes[i].childNodes.length&gt;1){for(j=0;j&lt;xml.childNodes[i].childNodes.length;j++){if(xml.childNodes[i].childNodes[j].nodeName==&quot;s&quot;){if(xml.childNodes[i].childNodes[j].firstChild)search=xml.childNodes[i].childNodes[j].firstChild.nodeValue;} if(xml.childNodes[i].childNodes[j].nodeName==&quot;r&quot;){if(xml.childNodes[i].childNodes[j].firstChild)data=xml.childNodes[i].childNodes[j].firstChild.data;}}} else if(xml.childNodes[i].firstChild)data=xml.childNodes[i].firstChi!
+ ld.nodeValue;else data=&quot;&quot;;var objElement=this.$(id);try{if(cmd==&quot;al&quot;){alert(data);} if(cmd==&quot;js&quot;){eval(data);} if(cmd==&quot;in&quot;){this.include(data);} if(cmd==&quot;as&quot;){if(this.willChange(id,property,data)){eval(&quot;objElement.&quot;+property+&quot;=data;&quot;);}} if(cmd==&quot;ap&quot;){eval(&quot;objElement.&quot;+property+&quot;+=data;&quot;);} if(cmd==&quot;pp&quot;){eval(&quot;objElement.&quot;+property+&quot;=data+objElement.&quot;+property);} if(cmd==&quot;rp&quot;){this.replace(id,property,search,data)} if(cmd==&quot;rm&quot;){this.remove(id);} if(cmd==&quot;ce&quot;){this.create(id,data,property);} if(cmd==&quot;ie&quot;){this.insert(id,data,property);} if(cmd==&quot;ci&quot;){this.createInput(id,type,data,property);} if(cmd==&quot;ii&quot;){this.insertInput(id,type,data,property);} if(cmd==&quot;ev&quot;){eval(&quot;this.$('&quot;+id+&quot;').&quot;+property+&quot;= function(){&quot;+data+&quot;;}&quot;);} if(cmd==&quot;ah&quot;){this.addHandler(id,property,data);} if(cmd==&quot;rh&quot;){this.removeHandler(id,property,data);}} catch(e){alert(e);} delete objElement;delete cmd;delete id;delete property;delete search;delete data;delete type;delete before;}} delete xml;document.!
+ body.style.cursor='default';if(xajaxStatusMessages==true)windo!
+ w.status
+='Done';}} var xajax=new Xajax();
+\ No newline at end of file
++function Xajax(){this.DebugMessage=function(text){try{if(this.debugWindow==undefined||this.debugWindow.closed==true){this.debugWindow=window.open('about:blank','xajax-debug','width=800,height=600,scrollbars=1,resizable,status');this.debugWindow.document.write('&lt;html&gt;&lt;head&gt;&lt;title&gt;Xajax debug output&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h2&gt;Xajax debug output&lt;/h2&gt;&lt;div id=&quot;debugTag&quot;&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;');}; text=text.replace(/&amp;/g,&quot;&amp;&quot;); text=text.replace(/&lt;/g,&quot;&lt;&quot;); text=text.replace(/&gt;/g,&quot;&gt;&quot;); debugTag=this.debugWindow.document.getElementById('debugTag');debugTag.innerHTML=('&lt;b&gt;'+(new Date()).toString()+'&lt;/b&gt;: '+text+'&lt;hr/&gt;')+debugTag.innerHTML;}catch(e){alert(&quot;Xajax Debug:\n &quot;+text);} };this.workId='xajaxWork'+new Date().getTime();this.depth=0;this.getRequestObject=function(){if(xajaxDebug)this.DebugMessage(&quot;Initializing Request Object..&quot;);var req=null;if(typeof XMLHttpRequest!=&quot;undefined&quot;) req=new XMLHttpRequest();if(!req&amp;&amp;typeof ActiveXObject!=&quot;undefined&quot;){try{req=new ActiveXObject!
+ (&quot;Msxml2.XMLHTTP&quot;);} catch(e){try{req=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);} catch(e2){try{req=new ActiveXObject(&quot;Msxml2.XMLHTTP.4.0&quot;);} catch(e3){req=null;} } } } if(!req&amp;&amp;window.createRequest) req=window.createRequest();if(!req)this.DebugMessage(&quot;Request Object Instantiation failed.&quot;);return req;}; this.$=function(sId){if(!sId){return null;} var returnObj=document.getElementById(sId);if(!returnObj&amp;&amp;document.all){returnObj=document.all[sId];} if(xajaxDebug&amp;&amp;!returnObj&amp;&amp;sId!=this.workId){this.DebugMessage(&quot;Element with the id \&quot;&quot;+sId+&quot;\&quot; not found.&quot;);} return returnObj;}; this.include=function(sFileName){var objHead=document.getElementsByTagName('head');var objScript=document.createElement('script');objScript.type='text/javascript';objScript.src=sFileName;objHead[0].appendChild(objScript);}; this.stripOnPrefix=function(sEventName){sEventName=sEventName.toLowerCase();if(sEventName.indexOf('on')==0){sEventName=sEventName.replace(/on/,'');} return sEventName;}; this.addOnPre!
+ fix=function(sEventName){sEventName=sEventName.toLowerCase();i!
+ f(sEvent
+Name.indexOf('on')!=0){sEventName='on'+sEventName;} return sEventName;}; this.addHandler=function(sElementId,sEvent,sFunctionName){if(window.addEventListener){sEvent=this.stripOnPrefix(sEvent);eval(&quot;this.$('&quot;+sElementId+&quot;').addEventListener('&quot;+sEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);} else{sAltEvent=this.addOnPrefix(sEvent);eval(&quot;this.$('&quot;+sElementId+&quot;').attachEvent('&quot;+sAltEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);} }; this.removeHandler=function(sElementId,sEvent,sFunctionName){if(window.addEventListener){sEvent=this.stripOnPrefix(sEvent);eval(&quot;this.$('&quot;+sElementId+&quot;').removeEventListener('&quot;+sEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);} else{sAltEvent=this.addOnPrefix(sEvent);eval(&quot;this.$('&quot;+sElementId+&quot;').detachEvent('&quot;+sAltEvent+&quot;',&quot;+sFunctionName+&quot;,false);&quot;);} }; this.create=function(sParentId,sTag,sId){var objParent=this.$(sParentId);objElement=document.createElement(sTag);objElement.setAttribute('id',sId);if(objParent) objParent.appendChild(objElement);}; this.insert=function(sBefo!
+ reId,sTag,sId){var objSibling=this.$(sBeforeId);objElement=document.createElement(sTag);objElement.setAttribute('id',sId);objSibling.parentNode.insertBefore(objElement,objSibling);}; this.insertAfter=function(sAfterId,sTag,sId){var objSibling=this.$(sAfterId);objElement=document.createElement(sTag);objElement.setAttribute('id',sId);objSibling.parentNode.insertBefore(objElement,objSibling.nextSibling);}; this.getInput=function(sType,sName,sId){var Obj;if(sType==&quot;radio&quot;&amp;&amp;!window.addEventListener){Obj=document.createElement('&lt;input type=&quot;radio&quot; id=&quot;'+sId+'&quot; name=&quot;'+sName+'&quot;&gt;');} else{Obj=document.createElement('input');Obj.setAttribute('type',sType);Obj.setAttribute('name',sName);Obj.setAttribute('id',sId);} return Obj;}; this.createInput=function(sParentId,sType,sName,sId){var objParent=this.$(sParentId);var objElement=this.getInput(sType,sName,sId);if(objParent&amp;&amp;objElement) objParent.appendChild(objElement);}; this.insertInput=function(sBeforeId,sType,sName,sId){var objSibli!
+ ng=this.$(sBeforeId);var objElement=this.getInput(sType,sName,!
+ sId);if(
+objElement&amp;&amp;objSibling&amp;&amp;objSibling.parentNode) objSibling.parentNode.insertBefore(objElement,objSibling);}; this.remove=function(sId){objElement=this.$(sId);if(objElement&amp;&amp;objElement.parentNode&amp;&amp;objElement.parentNode.removeChild){objElement.parentNode.removeChild(objElement);} }; this.replace=function(sId,sAttribute,sSearch,sReplace){var bFunction=false;if(sAttribute==&quot;innerHTML&quot;) sSearch=this.getBrowserHTML(sSearch);eval(&quot;var txt=this.$('&quot;+sId+&quot;').&quot;+sAttribute);if(typeof txt==&quot;function&quot;){txt=txt.toString();bFunction=true;} if(txt.indexOf(sSearch)&gt;-1){var newTxt='';while(txt.indexOf(sSearch)&gt;-1){x=txt.indexOf(sSearch)+sSearch.length+1;newTxt+=txt.substr(0,x).replace(sSearch,sReplace);txt=txt.substr(x,txt.length-x);} newTxt+=txt;if(bFunction){eval('this.$(&quot;'+sId+'&quot;).'+sAttribute+'=newTxt;');} else if(this.willChange(sId,sAttribute,newTxt)){eval('this.$(&quot;'+sId+'&quot;).'+sAttribute+'=newTxt;');} } }; this.getFormValues=function(frm){var objForm;var submitDisabledElements=false;if(a!
+ rguments.length &gt; 1&amp;&amp;arguments[1]==true) submitDisabledElements=true;var prefix=&quot;&quot;;if(arguments.length &gt; 2) prefix=arguments[2];if(typeof(frm)==&quot;string&quot;) objForm=this.$(frm);else objForm=frm;var sXml=&quot;&lt;xjxquery&gt;&lt;q&gt;&quot;;if(objForm&amp;&amp;objForm.tagName=='FORM'){var formElements=objForm.elements;for(var i=0;i &lt; formElements.length;i++){if(!formElements[i].name) continue;if(formElements[i].name.substring(0,prefix.length)!=prefix) continue;if(formElements[i].type&amp;&amp;(formElements[i].type=='radio'||formElements[i].type=='checkbox')&amp;&amp;formElements[i].checked==false) continue;if(formElements[i].disabled&amp;&amp;formElements[i].disabled==true&amp;&amp;submitDisabledElements==false) continue;var name=formElements[i].name;if(name){if(sXml!='&lt;xjxquery&gt;&lt;q&gt;') sXml+='&amp;';if(formElements[i].type=='select-multiple'){for(var j=0;j &lt; formElements[i].length;j++){if(formElements[i].options[j].selected==true) sXml+=name+&quot;=&quot;+encodeURIComponent(formElements[i].options[j].value)+&quot;&amp;&quot;;} } else{sXml+=name+&quot;=&quot;+encodeURIComponen!
+ t(formElements[i].value);} } } } sXml+=&quot;&lt;/q&gt;&lt;/xjxquery&gt;&quot;;retur!
+ n sXml;}
+; this.objectToXML=function(obj){var sXml=&quot;&lt;xjxobj&gt;&quot;;for(i in obj){try{if(i=='constructor') continue;if(obj[i]&amp;&amp;typeof(obj[i])=='function') continue;var key=i;var value=obj[i];if(value&amp;&amp;typeof(value)==&quot;object&quot;&amp;&amp;this.depth &lt;=50){this.depth++;value=this.objectToXML(value);this.depth--;} sXml+=&quot;&lt;e&gt;&lt;k&gt;&quot;+key+&quot;&lt;/k&gt;&lt;v&gt;&quot;+value+&quot;&lt;/v&gt;&lt;/e&gt;&quot;;}  catch(e){if(xajaxDebug)this.DebugMessage(e.name+&quot;: &quot;+e.message);} } sXml+=&quot;&lt;/xjxobj&gt;&quot;;return sXml;}; this.loadingFunction=function(){};this.doneLoadingFunction=function(){};var loadingTimeout;this.call=function(sFunction,aArgs,sRequestType){var i,r,postData;if(document.body&amp;&amp;xajaxWaitCursor) document.body.style.cursor='wait';if(xajaxStatusMessages==true)window.status='Sending Request...';clearTimeout(loadingTimeout);loadingTimeout=setTimeout(&quot;xajax.loadingFunction();&quot;,400);if(xajaxDebug)this.DebugMessage(&quot;Starting xajax...&quot;);if(sRequestType==null){var xajaxRequestType=xajaxDefinedPost;} else{var xajaxRequestType=sRequestType;} var uri=xajaxReques!
+ tUri;var value;switch(xajaxRequestType){case xajaxDefinedGet:{var uriGet=uri.indexOf(&quot;?&quot;)==-1?&quot;?xajax=&quot;+encodeURIComponent(sFunction):&quot;&amp;xajax=&quot;+encodeURIComponent(sFunction);if(aArgs){for(i=0;i&lt;aArgs.length;i++){value=aArgs[i];if(typeof(value)==&quot;object&quot;) value=this.objectToXML(value);uriGet+=&quot;&amp;xajaxargs[]=&quot;+encodeURIComponent(value);} } uriGet+=&quot;&amp;xajaxr=&quot;+new Date().getTime();uri+=uriGet;postData=null;}break;case xajaxDefinedPost:{postData=&quot;xajax=&quot;+encodeURIComponent(sFunction);postData+=&quot;&amp;xajaxr=&quot;+new Date().getTime();if(aArgs){for(i=0;i &lt;aArgs.length;i++){value=aArgs[i];if(typeof(value)==&quot;object&quot;) value=this.objectToXML(value);postData=postData+&quot;&amp;xajaxargs[]=&quot;+encodeURIComponent(value);} } }break;default: alert(&quot;Illegal request type: &quot;+xajaxRequestType);return false;break;} r=this.getRequestObject();if(!r)return false;r.open(xajaxRequestType==xajaxDefinedGet?&quot;GET&quot;:&quot;POST&quot;,uri,true);if(xajaxRequestType==xajaxDefinedPost){try{r.setRequestHeader(&quot;Method&quot;,&quot;POST &quot;+uri+&quot; HTTP/1.!
+ 1&quot;);r.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-!
+ urlencod
+ed&quot;);} catch(e){alert(&quot;Your browser does not appear to  support asynchronous requests using POST.&quot;);return false;} } r.onreadystatechange=function(){if(r.readyState!=4) return;if(r.status==200){if(xajaxDebug)xajax.DebugMessage(&quot;Received:\n&quot;+r.responseText);if(r.responseXML&amp;&amp;r.responseXML.documentElement) xajax.processResponse(r.responseXML);else{var errorString=&quot;Error: the XML response that was returned from the server is invalid.&quot;;errorString+=&quot;\nReceived:\n&quot;+r.responseText;trimmedResponseText=r.responseText.replace(/^\s+/g,&quot;&quot;);trimmedResponseText=trimmedResponseText.replace(/\s+$/g,&quot;&quot;);if(trimmedResponseText!=r.responseText) errorString+=&quot;\nYou have whitespace in your response.&quot;;alert(errorString);document.body.style.cursor='default';if(xajaxStatusMessages==true)window.status='Invalid XML response error';} } else{var errorString=&quot;Error: the server returned the following HTTP status: &quot;+r.status;errorString+=&quot;\nReceived:\n&quot;+r.responseText;alert(errorString);document.body.sty!
+ le.cursor='default';if(xajaxStatusMessages==true)window.status='Invalid XML response error';} delete r;r=null;}; if(xajaxDebug)this.DebugMessage(&quot;Calling &quot;+sFunction+&quot; uri=&quot;+uri+&quot; (post:&quot;+postData+&quot;)&quot;);r.send(postData);if(xajaxStatusMessages==true)window.status='Waiting for data...';delete r;return true;}; this.getBrowserHTML=function(html){tmpXajax=this.$(this.workId);if(!tmpXajax){tmpXajax=document.createElement(&quot;div&quot;);tmpXajax.setAttribute('id',this.workId);tmpXajax.style.display=&quot;none&quot;;tmpXajax.style.visibility=&quot;hidden&quot;;document.body.appendChild(tmpXajax);} tmpXajax.innerHTML=html;var browserHTML=tmpXajax.innerHTML;tmpXajax.innerHTML='';return browserHTML;}; this.willChange=function(element,attribute,newData){if(!document.body){return true;}; if(attribute==&quot;innerHTML&quot;){newData=this.getBrowserHTML(newData);} elementObject=this.$(element);if(elementObject){var oldData;eval(&quot;oldData=this.$('&quot;+element+&quot;').&quot;+attribute);if(newData!==oldData) return true;} return false;}; this!
+ .viewSource=function(){return &quot;&lt;html&gt;&quot;+document.getElementsByT!
+ agName(&quot;
+HTML&quot;)[0].innerHTML+&quot;&lt;/html&gt;&quot;;}; this.processResponse=function(xml){clearTimeout(loadingTimeout);this.doneLoadingFunction();if(xajaxStatusMessages==true)window.status='Processing...';var tmpXajax=null;xml=xml.documentElement;if(xml==null) return;for(var i=0;i&lt;xml.childNodes.length;i++){if(xml.childNodes[i].nodeName==&quot;cmd&quot;){var cmd;var id;var property;var data;var search;var type;var before;for(var j=0;j&lt;xml.childNodes[i].attributes.length;j++){if(xml.childNodes[i].attributes[j].name==&quot;n&quot;){cmd=xml.childNodes[i].attributes[j].value;} else if(xml.childNodes[i].attributes[j].name==&quot;t&quot;){id=xml.childNodes[i].attributes[j].value;} else if(xml.childNodes[i].attributes[j].name==&quot;p&quot;){property=xml.childNodes[i].attributes[j].value;} else if(xml.childNodes[i].attributes[j].name==&quot;c&quot;){type=xml.childNodes[i].attributes[j].value;} } if(xml.childNodes[i].childNodes.length &gt; 1&amp;&amp;xml.childNodes[i].firstChild.nodeName==&quot;#cdata-section&quot;){data=&quot;&quot;;for(var j=0;j&lt;xml.childNodes[i].childNodes.length;!
+ j++){data+=xml.childNodes[i].childNodes[j].data;} } else if(xml.childNodes[i].childNodes.length &gt; 1){for(var j=0;j&lt;xml.childNodes[i].childNodes.length;j++){if(xml.childNodes[i].childNodes[j].childNodes.length &gt; 1&amp;&amp;xml.childNodes[i].childNodes[j].firstChild.nodeName==&quot;#cdata-section&quot;){var internalData=&quot;&quot;;for(var k=0;k&lt;xml.childNodes[i].childNodes[j].childNodes.length;k++){internalData+=xml.childNodes[i].childNodes[j].childNodes[k].nodeValue;} }else{var internalData=xml.childNodes[i].childNodes[j].firstChild.nodeValue;} if(xml.childNodes[i].childNodes[j].nodeName==&quot;s&quot;){search=internalData;} if(xml.childNodes[i].childNodes[j].nodeName==&quot;r&quot;){data=internalData;} } } else if(xml.childNodes[i].firstChild) data=xml.childNodes[i].firstChild.nodeValue;else data=&quot;&quot;;var objElement=this.$(id);var cmdFullname;try{if(cmd==&quot;al&quot;){cmdFullname=&quot;addAlert&quot;;alert(data);} else if(cmd==&quot;js&quot;){cmdFullname=&quot;addScript/addRedirect&quot;;eval(data);} else if(cmd==&quot;in&quot;){cmdFullname=&quot;addIncludeScript&quot;;this.inc!
+ lude(data);} else if(cmd==&quot;as&quot;){cmdFullname=&quot;addAssign/addClea!
+ r&quot;;if(th
+is.willChange(id,property,data)){eval(&quot;objElement.&quot;+property+&quot;=data;&quot;);} } else if(cmd==&quot;ap&quot;){cmdFullname=&quot;addAppend&quot;;eval(&quot;objElement.&quot;+property+&quot;+=data;&quot;);} else if(cmd==&quot;pp&quot;){cmdFullname=&quot;addPrepend&quot;;eval(&quot;objElement.&quot;+property+&quot;=data+objElement.&quot;+property);} else if(cmd==&quot;rp&quot;){cmdFullname=&quot;addReplace&quot;;this.replace(id,property,search,data) } else if(cmd==&quot;rm&quot;){cmdFullname=&quot;addRemove&quot;;this.remove(id);} else if(cmd==&quot;ce&quot;){cmdFullname=&quot;addCreate&quot;;this.create(id,data,property);} else if(cmd==&quot;ie&quot;){cmdFullname=&quot;addInsert&quot;;this.insert(id,data,property);} else if(cmd==&quot;ia&quot;){cmdFullname=&quot;addInsertAfter&quot;;this.insertAfter(id,data,property);} else if(cmd==&quot;ci&quot;){cmdFullname=&quot;addCreateInput&quot;;this.createInput(id,type,data,property);} else if(cmd==&quot;ii&quot;){cmdFullname=&quot;addInsertInput&quot;;this.insertInput(id,type,data,property);} else if(cmd==&quot;ev&quot;){cmdFullname=&quot;addEvent&quot;;property=this.addOnPrefix(property);eval(&quot;this.$('&quot;+id+&quot;').&quot;+property+&quot;= function(){&quot;+data+&quot;;}&quot;);} else if(cmd==&quot;ah&quot;){cmdFul!
+ lname=&quot;addHandler&quot;;this.addHandler(id,property,data);} else if(cmd==&quot;rh&quot;){cmdFullname=&quot;addRemoveHandler&quot;;this.removeHandler(id,property,data);} } catch(e){if(xajaxDebug) alert(&quot;While trying to '&quot;+cmdFullname+&quot;' (command number &quot;+i+&quot;), the following error occured:\n&quot; +e.name+&quot;: &quot;+e.message+&quot;\n&quot; +(id&amp;&amp;!objElement?&quot;Object with id='&quot;+id+&quot;' wasn't found.\n&quot;:&quot;&quot;));} delete objElement;delete cmd;delete cmdFullname;delete id;delete property;delete search;delete data;delete type;delete before;delete internalData;delete j;delete k;} } delete xml;delete i;document.body.style.cursor='default';if(xajaxStatusMessages==true)window.status='Done';} } var xajax=new Xajax();xajaxLoaded=true;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajax.inc.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajax.inc.php	2006-04-04 15:36:39 UTC (rev 1826)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajax.inc.php	2006-04-04 15:41:53 UTC (rev 1827)
+@@ -1,861 +1,969 @@
+-&lt;?php
+-///////////////////////////////////////////////////////////////////////////////
+-// xajax.inc.php :: Main xajax class and setup file
+-//
+-// xajax version 0.2
+-// copyright (c) 2005 by Jared White &amp; J. Max Wilson
+-// <A HREF="http://xajax.sourceforge.net">http://xajax.sourceforge.net</A>
+-//
+-// xajax is an open source PHP class library for easily creating powerful
+-// PHP-driven, web-based AJAX Applications. Using xajax, you can asynchronously
+-// call PHP functions and update the content of your your webpage without
+-// reloading the page.
+-//
+-// xajax is released under the terms of the LGPL license
+-// <A HREF="http://www.gnu.org/copyleft/lesser.html#SEC3">http://www.gnu.org/copyleft/lesser.html#SEC3</A>
+-//
+-// This library is free software; you can redistribute it and/or
+-// modify it under the terms of the GNU Lesser General Public
+-// License as published by the Free Software Foundation; either
+-// version 2.1 of the License, or (at your option) any later version.
+-//
+-// This library is distributed in the hope that it will be useful,
+-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-// Lesser General Public License for more details.
+-// 
+-// You should have received a copy of the GNU Lesser General Public
+-// License along with this library; if not, write to the Free Software
+-// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-///////////////////////////////////////////////////////////////////////////////
+-
+-// Define XAJAX_DEFAULT_CHAR_ENCODING that is used by both
+-// the xajax and xajaxResponse classes
+-if (!defined ('XAJAX_DEFAULT_CHAR_ENCODING'))
+-{
+-	define ('XAJAX_DEFAULT_CHAR_ENCODING', 'utf-8' );
+-}
+-
+-require_once(&quot;xajaxResponse.inc.php&quot;);
+-
+-// Communication Method Defines
+-if (!defined ('XAJAX_GET'))
+-{
+-	define ('XAJAX_GET', 0);
+-}
+-if (!defined ('XAJAX_POST'))
+-{
+-	define ('XAJAX_POST', 1);
+-}
+-
+-// the xajax class generates the xajax javascript for your page including the 
+-// javascript wrappers for the PHP functions that you want to call from your page.
+-// It also handles processing and executing the command messages in the xml responses
+-// sent back to your page from your PHP functions.
+-class xajax extends YDAddOnModule
+-{
+-	var $aFunctions;				// Array of PHP functions that will be callable through javascript wrappers
+-	var $aObjects;				// Array of object callbacks that will allow Javascript to call PHP methods (key=function name)
+-	var $aFunctionRequestTypes;	// Array of RequestTypes to be used with each function (key=function name)
+-	var $aFunctionIncludeFiles;	// Array of Include Files for any external functions (key=function name)
+-	var $sCatchAllFunction;		// Name of the PHP function to call if no callable function was found
+-	var $sPreFunction;			// Name of the PHP function to call before any other function
+-	var $sRequestURI;			// The URI for making requests to the xajax object
+-	var $bDebug;					// Show debug messages (true/false)
+-	var $bExitAllowed;			// Allow xajax to exit after processing a request (true/false)
+-	var $bErrorHandler;			// Use an special xajax error handler so the errors are sent to the browser properly
+-	var $sLogFile;				// Specify if xajax should log errors (and more information in a future release)
+-	var $sWrapperPrefix;			// The prefix to prepend to the javascript wraper function name
+-	var $bStatusMessages;			// Show debug messages (true/false)
+-	var $bWaitCursor;			// Use wait cursor in browser (true/false)
+-	var $bCleanBuffer;			// Clean all output buffers before outputting response (true/false)
+-	var $aObjArray;				// Array for parsing complex objects
+-	var $iPos;					// Position in $aObjArray
+-	var $sEncoding;				// The Character Encoding to use
+-	
+-	// Contructor
+-	// $sRequestURI - defaults to the current page
+-	// $sWrapperPrefix - defaults to &quot;xajax_&quot;;
+-	// $sEncoding - defaults to XAJAX_DEFAULT_CHAR_ENCODING defined above
+-	// $bDebug Mode - defaults to false
+-	// usage: $xajax = new xajax();
+-	function xajax($sRequestURI=&quot;&quot;,$sWrapperPrefix=&quot;xajax_&quot;,$sEncoding=XAJAX_DEFAULT_CHAR_ENCODING,$bDebug=false)
+-	{
+-	        // Initialize the parent class
+-            $this-&gt;YDAddOnModule();
+-
+-
+-		$this-&gt;aFunctions = array();
+-		$this-&gt;aObjects = array();
+-		$this-&gt;aFunctionIncludeFiles = array();
+-		$this-&gt;sRequestURI = $sRequestURI;
+-		if ($this-&gt;sRequestURI == &quot;&quot;)
+-			$this-&gt;sRequestURI = $this-&gt;_detectURI();
+-		$this-&gt;sWrapperPrefix = $sWrapperPrefix;
+-		$this-&gt;setCharEncoding($sEncoding);
+-		$this-&gt;bDebug = $bDebug;
+-		$this-&gt;bWaitCursor = true;
+-		$this-&gt;bExitAllowed = true;
+-		$this-&gt;bErrorHandler = false;
+-		$this-&gt;sLogFile = &quot;&quot;;
+-		$this-&gt;bCleanBuffer = true;
+-	}
+-		
+-	// setRequestURI() sets the URI to which requests will be made
+-	// usage: $xajax-&gt;setRequestURI(&quot;<A HREF="http://xajax.sourceforge.net">http://xajax.sourceforge.net</A>&quot;);
+-	function setRequestURI($sRequestURI)
+-	{
+-		$this-&gt;sRequestURI = $sRequestURI;
+-	}
+-	
+-	// debugOn() enables debug messages for xajax
+-	function debugOn()
+-	{
+-		$this-&gt;bDebug = true;
+-	}
+-	
+-	// debugOff() disables debug messages for xajax (default behavior)
+-	function debugOff()
+-	{
+-		$this-&gt;bDebug = false;
+-	}
+-	
+-	// statusMessagesOn() enables messages in the statusbar for xajax
+-	function statusMessagesOn()
+-	{
+-		$this-&gt;bStatusMessages = true;
+-	}
+-	
+-	// statusMessagesOff() disables messages in the statusbar for xajax (default behavior)
+-	function statusMessagesOff()
+-	{
+-		$this-&gt;bStatusMessages = false;
+-	}
+-	
+-	// waitCursor() enables the wait cursor to be displayed in the browser (default behavior)
+-	function waitCursorOn()
+-	{
+-		$this-&gt;bWaitCursor = true;
+-	}
+-	
+-	// waitCursorOff() disables the wait cursor to be displayed in the browser
+-	function waitCursorOff()
+-	{
+-		$this-&gt;bWaitCursor = false;
+-	}	
+-	
+-	// exitAllowedOn() enables xajax to exit immediately after processing a request
+-	// and sending the response back to the browser (default behavior)
+-	function exitAllowedOn()
+-	{
+-		$this-&gt;bExitAllowed = true;
+-	}
+-	
+-	// exitAllowedOff() disables xajax's default behavior of exiting immediately
+-	// after processing a request and sending the response back to the browser
+-	function exitAllowedOff()
+-	{
+-		$this-&gt;bExitAllowed = false;
+-	}
+-	
+-	// errorHandlerOn() turns on xajax's error handling system so that PHP errors
+-	// that occur during a request are trapped and pushed to the browser in the
+-	// form of a Javascript alert
+-	function errorHandlerOn()
+-	{
+-		$this-&gt;bErrorHandler = true;
+-	}
+-	// errorHandlerOff() turns off xajax's error handling system (default behavior)
+-	function errorHandlerOff()
+-	{
+-		$this-&gt;bErrorHandler = false;
+-	}
+-	
+-	// setLogFile() specifies a log file that will be written to by xajax during
+-	// a request (used only by the error handling system at present). If you don't
+-	// invoke this method, or you pass in &quot;&quot;, then no log file will be written to.
+-	// usage: $xajax-&gt;setLogFile(&quot;/xajax_logs/errors.log&quot;);
+-	function setLogFile($sFilename)
+-	{
+-		$this-&gt;sLogFile = $sFilename;
+-	}
+-
+-	// cleanBufferOn() causes xajax to clean out all output buffers before outputting
+-	// a response (default behavior)
+-	function cleanBufferOn()
+-	{
+-		$this-&gt;bCleanBuffer = true;
+-	}
+-	// cleanBufferOff() turns off xajax's output buffer cleaning
+-	function cleanBufferOff()
+-	{
+-		$this-&gt;bCleanBuffer = false;
+-	}
+-	
+-	// setWrapperPrefix() sets the prefix that will be appended to the Javascript
+-	// wrapper functions (default is &quot;xajax_&quot;).
+-	function setWrapperPrefix($sPrefix)
+-	{
+-		$this-&gt;sWrapperPrefix = $sPrefix;
+-	}
+-	
+-	// setCharEncoding() sets the character encoding to be used by xajax
+-	// usage: $xajax-&gt;setCharEncoding(&quot;utf-8&quot;);
+-	// *Note: to change the default character encoding for all xajax responses, set 
+-	// the XAJAX_DEFAULT_CHAR_ENCODING constant near the beginning of the xajax.inc.php file
+-	function setCharEncoding($sEncoding)
+-	{
+-		$this-&gt;sEncoding = $sEncoding;
+-	}
+-	
+-	// registerFunction() registers a PHP function or method to be callable through
+-	// xajax in your Javascript. If you want to register a function, pass in the name
+-	// of that function. If you want to register a static class method, pass in an array
+-	// like so:
+-	// array(&quot;myFunctionName&quot;, &quot;myClass&quot;, &quot;myMethod&quot;)
+-	// For an object instance method, use an object variable for the second array element
+-	// (and in PHP 4 make sure you put an &amp; before the variable to pass the object by
+-	// reference). Note: the function name is what you call via Javascript, so it can be
+-	// anything as long as it doesn't conflict with any other registered function name.
+-	// 
+-	// $mFunction is a string containing the function name or an object callback array
+-	// $sRequestType is the RequestType (XAJAX_GET/XAJAX_POST) that should be used 
+-	//		for this function.  Defaults to XAJAX_POST.
+-	// usage: $xajax-&gt;registerFunction(&quot;myFunction&quot;);
+-	//    or: $xajax-&gt;registerFunction(array(&quot;myFunctionName&quot;, &amp;$myObject, &quot;myMethod&quot;));
+-	function registerFunction($mFunction,$sRequestType=XAJAX_POST)
+-	{
+-		if (is_array($mFunction)) {
+-			$this-&gt;aFunctions[$mFunction[0]] = 1;
+-			$this-&gt;aFunctionRequestTypes[$mFunction[0]] = $sRequestType;
+-			$this-&gt;aObjects[$mFunction[0]] = array_slice($mFunction, 1);
+-		}	
+-		else {
+-			$this-&gt;aFunctions[$mFunction] = 1;
+-			$this-&gt;aFunctionRequestTypes[$mFunction] = $sRequestType;
+-		}
+-	}
+-	
+-	// registerExternalFunction() registers a PHP function to be callable through xajax
+-	// which is located in some other file.  If the function is requested the external
+-	// file will be included to define the function before the function is called
+-	// $mFunction is a string containing the function name or an object callback array
+-	//   see registerFunction() for more info on object callback arrays
+-	// $sIncludeFile is a string containing the path and filename of the include file
+-	// $sRequestType is the RequestType (XAJAX_GET/XAJAX_POST) that should be used 
+-	//		for this function.  Defaults to XAJAX_POST.
+-	// usage: $xajax-&gt;registerExternalFunction(&quot;myFunction&quot;,&quot;myFunction.inc.php&quot;,XAJAX_POST);
+-	function registerExternalFunction($mFunction,$sIncludeFile,$sRequestType=XAJAX_POST)
+-	{
+-		$this-&gt;registerFunction($mFunction, $sRequestType);
+-		
+-		if (is_array($mFunction)) {
+-			$this-&gt;aFunctionIncludeFiles[$mFunction[0]] = $sIncludeFile;
+-		}
+-		else {
+-			$this-&gt;aFunctionIncludeFiles[$mFunction] = $sIncludeFile;
+-		}
+-	}
+-	
+-	// registerCatchAllFunction() registers a PHP function to be called when xajax cannot
+-	// find the function being called via Javascript. Because this is technically
+-	// impossible when using &quot;wrapped&quot; functions, the catch-all feature is only useful
+-	// when you're directly using the xajax.call() Javascript method. Use the catch-all
+-	// feature when you want more dynamic ability to intercept unknown calls and handle
+-	// them in a custom way.
+-	// $mFunction is a string containing the function name or an object callback array
+-	//   see registerFunction() for more info on object callback arrays
+-	// usage: $xajax-&gt;registerCatchAllFunction(&quot;myCatchAllFunction&quot;);
+-	function registerCatchAllFunction($mFunction)
+-	{
+-		if (is_array($mFunction)) {
+-			$this-&gt;sCatchAllFunction = $mFunction[0];
+-			$this-&gt;aObjects[$mFunction[0]] = array_slice($mFunction, 1);
+-		}
+-		else {
+-			$this-&gt;sCatchAllFunction = $mFunction;
+-		}
+-	}
+-	
+-	// registerPreFunction() registers a PHP function to be called before xajax calls
+-	// the requested function. xajax will automatically add the request function's response
+-	// to the pre-function's response to create a single response. Another feature is
+-	// the ability to return not just a response, but an array with the first element
+-	// being false (a boolean) and the second being the response. In this case, the
+-	// pre-function's response will be returned to the browser without xajax calling
+-	// the requested function.
+-	// $mFunction is a string containing the function name or an object callback array
+-	//   see registerFunction() for more info on object callback arrays
+-	// usage $xajax-&gt;registerPreFunction(&quot;myPreFunction&quot;);
+-	function registerPreFunction($mFunction)
+-	{
+-		if (is_array($mFunction)) {
+-			$this-&gt;sPreFunction = $mFunction[0];
+-			$this-&gt;aObjects[$mFunction[0]] = array_slice($mFunction, 1);
+-		}
+-		else {
+-			$this-&gt;sPreFunction = $mFunction;
+-		}
+-	}
+-	
+-	// returns true if xajax can process the request, false if otherwise
+-	// you can use this to determine if xajax needs to process the request or not
+-	function canProcessRequests()
+-	{
+-		if ($this-&gt;getRequestMode() != -1) return true;
+-		return false;
+-	}
+-	
+-	// returns the current request mode, or -1 if there is none
+-	function getRequestMode()
+-	{
+-		if (!empty($_GET[&quot;xajax&quot;]))
+-			return XAJAX_GET;
+-		
+-		if (!empty($_POST[&quot;xajax&quot;]))
+-			return XAJAX_POST;
+-			
+-		return -1;
+-	}
+-	
+-	// processRequests() is the main communications engine of xajax
+-	// The engine handles all incoming xajax requests, calls the apporiate PHP functions
+-	// and passes the xml responses back to the javascript response handler
+-	// if your RequestURI is the same as your web page then this function should
+-	// be called before any headers or html has been sent.
+-	// usage: $xajax-&gt;processRequests()
+-	function processRequests()
+-	{	
+-		
+-		$requestMode = -1;
+-		$sFunctionName = &quot;&quot;;
+-		$bFoundFunction = true;
+-		$bFunctionIsCatchAll = false;
+-		$sFunctionNameForSpecial = &quot;&quot;;
+-		$aArgs = array();
+-		$sPreResponse = &quot;&quot;;
+-		$bEndRequest = false;
+-		$sResponse = &quot;&quot;;
+-		
+-		$requestMode = $this-&gt;getRequestMode();
+-		if ($requestMode == -1) return;
+-	
+-		if ($requestMode == XAJAX_POST)
+-		{
+-			$sFunctionName = $_POST[&quot;xajax&quot;];
+-			
+-			if (!empty($_POST[&quot;xajaxargs&quot;])) 
+-				$aArgs = $_POST[&quot;xajaxargs&quot;];
+-		}
+-		else
+-		{	
+-			header (&quot;Expires: Mon, 26 Jul 1997 05:00:00 GMT&quot;);
+-			header (&quot;Last-Modified: &quot; . gmdate(&quot;D, d M Y H:i:s&quot;) . &quot; GMT&quot;);
+-			header (&quot;Cache-Control: no-cache, must-revalidate&quot;);
+-			header (&quot;Pragma: no-cache&quot;);
+-			header(&quot;Content-type: text/xml&quot;);
+-			
+-			$sFunctionName = $_GET[&quot;xajax&quot;];
+-			
+-			if (!empty($_GET[&quot;xajaxargs&quot;])) 
+-				$aArgs = $_GET[&quot;xajaxargs&quot;];
+-		}
+-		
+-		// Use xajax error handler if necessary
+-		if ($this-&gt;bErrorHandler) {
+-			$GLOBALS['xajaxErrorHandlerText'] = &quot;&quot;;
+-			set_error_handler(&quot;xajaxErrorHandler&quot;);
+-		}
+-		
+-		if ($this-&gt;sPreFunction) {
+-			if (!$this-&gt;_isFunctionCallable($this-&gt;sPreFunction)) {
+-				$bFoundFunction = false;
+-				$objResponse = new xajaxResponse();
+-				$objResponse-&gt;addAlert(&quot;Unknown Pre-Function &quot;. $this-&gt;sPreFunction);
+-				$sResponse = $objResponse-&gt;getXML();
+-			}
+-		}
+-		//include any external dependencies associated with this function name
+-		if (array_key_exists($sFunctionName,$this-&gt;aFunctionIncludeFiles))
+-		{
+-			ob_start();
+-			include_once($this-&gt;aFunctionIncludeFiles[$sFunctionName]);
+-			ob_end_clean();
+-		}
+-		
+-		if ($bFoundFunction) {
+-			$sFunctionNameForSpecial = $sFunctionName;
+-			if (!array_key_exists($sFunctionName, $this-&gt;aFunctions))
+-			{
+-				if ($this-&gt;sCatchAllFunction) {
+-					$sFunctionName = $this-&gt;sCatchAllFunction;
+-					$bFunctionIsCatchAll = true;
+-				}
+-				else {
+-					$bFoundFunction = false;
+-					$objResponse = new xajaxResponse();
+-					$objResponse-&gt;addAlert(&quot;Unknown Function $sFunctionName.&quot;);
+-					$sResponse = $objResponse-&gt;getXML();
+-				}
+-			}
+-			else if ($this-&gt;aFunctionRequestTypes[$sFunctionName] != $requestMode)
+-			{
+-				$bFoundFunction = false;
+-				$objResponse = new xajaxResponse();
+-				$objResponse-&gt;addAlert(&quot;Incorrect Request Type.&quot;);
+-				$sResponse = $objResponse-&gt;getXML();
+-			}
+-		}
+-		
+-		if ($bFoundFunction)
+-		{
+-			for ($i = 0; $i &lt; sizeof($aArgs); $i++)
+-			{
+-				// If magic quotes is on, then we need to strip the slashes from the args
+-				if (get_magic_quotes_gpc() == 1 &amp;&amp; is_string($aArgs[$i])) {
+-				
+-					$aArgs[$i] = stripslashes($aArgs[$i]);
+-				}
+-				if (stristr($aArgs[$i],&quot;&lt;xjxobj&gt;&quot;) != false)
+-				{
+-					$aArgs[$i] = $this-&gt;_xmlToArray(&quot;xjxobj&quot;,$aArgs[$i]);	
+-				}
+-				else if (stristr($aArgs[$i],&quot;&lt;xjxquery&gt;&quot;) != false)
+-				{
+-					$aArgs[$i] = $this-&gt;_xmlToArray(&quot;xjxquery&quot;,$aArgs[$i]);	
+-				}
+-			}
+-
+-			if ($this-&gt;sPreFunction) {
+-				$mPreResponse = $this-&gt;_callFunction($this-&gt;sPreFunction, array($sFunctionNameForSpecial, $aArgs));
+-				if (is_array($mPreResponse) &amp;&amp; $mPreResponse[0] === false) {
+-					$bEndRequest = true;
+-					$sPreResponse = $mPreResponse[1];
+-				}
+-				else {
+-					$sPreResponse = $mPreResponse;
+-				}
+-				if (is_a($sPreResponse, &quot;xajaxResponse&quot;)) {
+-					$sPreResponse = $sPreResponse-&gt;getXML();
+-				}
+-				if ($bEndRequest) $sResponse = $sPreResponse;
+-			}
+-			
+-			if (!$bEndRequest) {
+-				if (!$this-&gt;_isFunctionCallable($sFunctionName)) {
+-					$objResponse = new xajaxResponse();
+-					$objResponse-&gt;addAlert(&quot;The Registered Function $sFunctionName Could Not Be Found.&quot;);
+-					$sResponse = $objResponse-&gt;getXML();
+-				}
+-				else {
+-					if ($bFunctionIsCatchAll) {
+-						$aArgs = array($sFunctionNameForSpecial, $aArgs);
+-					}
+-					$sResponse = $this-&gt;_callFunction($sFunctionName, $aArgs);
+-				}
+-				if (is_a($sResponse, &quot;xajaxResponse&quot;)) {
+-					$sResponse = $sResponse-&gt;getXML();
+-				}
+-				if (!is_string($sResponse) || strpos($sResponse, &quot;&lt;xjx&gt;&quot;) === FALSE) {
+-					$objResponse = new xajaxResponse();
+-					$objResponse-&gt;addAlert(&quot;No XML Response Was Returned By Function $sFunctionName.&quot;);
+-					$sResponse = $objResponse-&gt;getXML();
+-				}
+-				else if ($sPreResponse != &quot;&quot;) {
+-					$sNewResponse = new xajaxResponse();
+-					$sNewResponse-&gt;loadXML($sPreResponse);
+-					$sNewResponse-&gt;loadXML($sResponse);
+-					$sResponse = $sNewResponse-&gt;getXML();
+-				}
+-			}
+-		}
+-		
+-		$sContentHeader = &quot;Content-type: text/xml;&quot;;
+-		if ($this-&gt;sEncoding &amp;&amp; strlen(trim($this-&gt;sEncoding)) &gt; 0)
+-			$sContentHeader .= &quot; charset=&quot;.$this-&gt;sEncoding;
+-		header($sContentHeader);
+-		if ($this-&gt;bErrorHandler &amp;&amp; !empty( $GLOBALS['xajaxErrorHandlerText'] )) {
+-			$sErrorResponse = new xajaxResponse();
+-			$sErrorResponse-&gt;addAlert(&quot;** PHP Error Messages: **&quot; . $GLOBALS['xajaxErrorHandlerText']);
+-			if ($this-&gt;sLogFile) {
+-				$fH = @fopen($this-&gt;sLogFile, &quot;a&quot;);
+-				if (!$fH) {
+-					$sErrorResponse-&gt;addAlert(&quot;** Logging Error **\n\nxajax was unable to write to the error log file:\n&quot; . $this-&gt;sLogFile);
+-				}
+-				else {
+-					fwrite($fH, &quot;** xajax Error Log - &quot; . strftime(&quot;%b %e %Y %I:%M:%S %p&quot;) . &quot; **&quot; . $GLOBALS['xajaxErrorHandlerText'] . &quot;\n\n\n&quot;);
+-					fclose($fH);
+-				}
+-			}
+-
+-			$sErrorResponse-&gt;loadXML($sResponse);
+-			$sResponse = $sErrorResponse-&gt;getXML();
+-			
+-		}
+-		if ($this-&gt;bCleanBuffer) while (@ob_end_clean());
+-		print $sResponse;
+-		if ($this-&gt;bErrorHandler) restore_error_handler();
+-		
+-		if ($this-&gt;bExitAllowed)
+-			exit();
+-	}
+-			
+-	// printJavascript() prints the xajax javascript code into your page by printing
+-	// the output of the getJavascript() method. It should only be called between the
+-	// &lt;head&gt; &lt;/head&gt; tags in your HTML page. Remember, if you only want to obtain the
+-	// result of this function, use getJavascript() instead.
+-	// $sJsURI is the relative address of the folder where xajax has been installed.
+-	//   For instance, if your PHP file is &quot;<A HREF="http://www.myserver.com/myfolder/mypage.php">http://www.myserver.com/myfolder/mypage.php</A>&quot;
+-	//   and xajax was installed in &quot;<A HREF="http://www.myserver.com/anotherfolder">http://www.myserver.com/anotherfolder</A>&quot;, then
+-	//   $sJsURI should be set to &quot;../anotherfolder&quot;. Defaults to assuming xajax is in
+-	//   the same folder as your PHP file.
+-	// $sJsFile is the relative folder/file pair of the xajax Javascript engine located
+-	// within the xajax installation folder. Defaults to xajax_js/xajax.js.
+-	// usage:
+-	//	&lt;head&gt;
+-	//		...
+-	//		&lt; ?php $xajax-&gt;printJavascript(); ? &gt;
+-	function printJavascript($sJsURI=&quot;&quot;, $sJsFile=NULL, $sJsFullFilename=NULL)
+-	{
+-		print $this-&gt;getJavascript($sJsURI, $sJsFile, $sJsFullFilename);
+-	}
+-	
+-	// getJavascript() returns the xajax javascript code that should be added to
+-	// your HTML page between the &lt;head&gt; &lt;/head&gt; tags. See printJavascript()
+-	// for information about the function arguments.
+-	// usage:
+-	//  &lt; ?php $xajaxJSHead = $xajax-&gt;getJavascript(); ? &gt;
+-	//	&lt;head&gt;
+-	//		...
+-	//		&lt; ?php echo $xajaxJSHead; ? &gt;
+-	function getJavascript($sJsURI=&quot;&quot;, $sJsFile=NULL, $sJsFullFilename=NULL)
+-	{	
+-		if ($sJsFile == NULL) $sJsFile = &quot;xajax_js/xajax.js&quot;;
+-			
+-		if ($sJsURI != &quot;&quot; &amp;&amp; substr($sJsURI, -1) != &quot;/&quot;) $sJsURI .= &quot;/&quot;;
+-		
+-		$html  = &quot;\t&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot;;
+-		$html .= &quot;var xajaxRequestUri=\&quot;&quot;.$this-&gt;sRequestURI.&quot;\&quot;;\n&quot;;
+-		$html .= &quot;var xajaxDebug=&quot;.($this-&gt;bDebug?&quot;true&quot;:&quot;false&quot;).&quot;;\n&quot;;
+-		$html .= &quot;var xajaxStatusMessages=&quot;.($this-&gt;bStatusMessages?&quot;true&quot;:&quot;false&quot;).&quot;;\n&quot;;
+-		$html .= &quot;var xajaxWaitCursor=&quot;.($this-&gt;bWaitCursor?&quot;true&quot;:&quot;false&quot;).&quot;;\n&quot;;
+-		$html .= &quot;var xajaxDefinedGet=&quot;.XAJAX_GET.&quot;;\n&quot;;
+-		$html .= &quot;var xajaxDefinedPost=&quot;.XAJAX_POST.&quot;;\n&quot;;
+-
+-		foreach($this-&gt;aFunctions as $sFunction =&gt; $bExists) {
+-			$html .= $this-&gt;_wrap($sFunction,$this-&gt;aFunctionRequestTypes[$sFunction]);
+-		}
+-
+-		$html .= &quot;&lt;/script&gt;\n&quot;;
+-		
+-		// Create a compressed file if necessary
+-		if ($sJsFullFilename) {
+-			$realJsFile = $sJsFullFilename;
+-		}
+-		else {
+-			$realPath = realpath(dirname(__FILE__));
+-			$realJsFile = $realPath . &quot;/&quot;. $sJsFile;
+-		}
+-		$srcFile = str_replace(&quot;.js&quot;, &quot;_uncompressed.js&quot;, $realJsFile);
+-		if (!file_exists($srcFile)) {
+-			trigger_error(&quot;The xajax uncompressed Javascript file could not be found in the &lt;b&gt;&quot; . dirname($realJsFile) . &quot;&lt;/b&gt; folder. Error &quot;, E_USER_ERROR);	
+-		}
+-		
+-		if ($this-&gt;bDebug) {
+-			if (!@copy($srcFile, $realJsFile)) {
+-				trigger_error(&quot;The xajax uncompressed javascript file could not be copied to the &lt;b&gt;&quot; . dirname($realJsFile) . &quot;&lt;/b&gt; folder. Error &quot;, E_USER_ERROR);
+-			}
+-		}
+-		else if (!file_exists($realJsFile)) {
+-			require(dirname($realJsFile) . &quot;/xajaxCompress.php&quot;);
+-			$javaScript = implode('', file($srcFile));
+-			$compressedScript = xajaxCompressJavascript($javaScript);
+-			$fH = @fopen($realJsFile, &quot;w&quot;);
+-			if (!$fH) {
+-				trigger_error(&quot;The xajax compressed javascript file could not be written in the &lt;b&gt;&quot; . dirname($realJsFile) . &quot;&lt;/b&gt; folder. Error &quot;, E_USER_ERROR);
+-			}
+-			else {
+-				fwrite($fH, $compressedScript);
+-				fclose($fH);
+-			}
+-		}
+-
+-		$html .= &quot;\t&lt;script type=\&quot;text/javascript\&quot; src=\&quot;&quot; . $sJsURI . $sJsFile . &quot;\&quot;&gt;&lt;/script&gt;\n&quot;;		
+-		
+-		return $html;
+-	}
+-	
+-	// _detectURL() returns the current URL based upon the SERVER vars
+-	// used internally
+-	function _detectURI() {
+-		$aURL = array();
+-
+-		// Try to get the request URL
+-		if (!empty($_SERVER['REQUEST_URI'])) {
+-			$aURL = parse_url($_SERVER['REQUEST_URI']);
+-		}
+-
+-		// Fill in the empty values
+-		if (empty($aURL['scheme'])) {
+-			if (!empty($_SERVER['HTTP_SCHEME'])) {
+-				$aURL['scheme'] = $_SERVER['HTTP_SCHEME'];
+-			} else {
+-				$aURL['scheme'] = (!empty($_SERVER['HTTPS']) &amp;&amp; strtolower($_SERVER['HTTPS']) != 'off') ? 'https' : 'http';
+-			}
+-		}
+-
+-		if (empty($aURL['host'])) {
+-			if (!empty($_SERVER['HTTP_HOST'])) {
+-				if (strpos($_SERVER['HTTP_HOST'], ':') &gt; 0) {
+-					list($aURL['host'], $aURL['port']) = explode(':', $_SERVER['HTTP_HOST']);
+-				} else {
+-					$aURL['host'] = $_SERVER['HTTP_HOST'];
+-				}
+-			} else if (!empty($_SERVER['SERVER_NAME'])) {
+-				$aURL['host'] = $_SERVER['SERVER_NAME'];
+-			} else {
+-				print &quot;xajax Error: xajax failed to automatically identify your Request URI.&quot;;
+-				print &quot;Please set the Request URI explicitly when you instantiate the xajax object.&quot;;
+-				exit();
+-			}
+-		}
+-
+-		if (empty($aURL['port']) &amp;&amp; !empty($_SERVER['SERVER_PORT'])) {
+-			$aURL['port'] = $_SERVER['SERVER_PORT'];
+-		}
+-
+-		if (empty($aURL['path'])) {
+-			if (!empty($_SERVER['PATH_INFO'])) {
+-				$sPath = parse_url($_SERVER['PATH_INFO']);
+-			} else {
+-				$sPath = parse_url($_SERVER['PHP_SELF']);
+-			}
+-			$aURL['path'] = $sPath['path'];
+-			unset($sPath);
+-		}
+-
+-		if (!empty($aURL['query'])) {
+-			$aURL['query'] = '?'.$aURL['query'];
+-		}
+-
+-		// Build the URL: Start with scheme, user and pass
+-		$sURL = $aURL['scheme'].'://';
+-		if (!empty($aURL['user'])) {
+-			$sURL.= $aURL['user'];
+-			if (!empty($aURL['pass'])) {
+-				$sURL.= ':'.$aURL['pass'];
+-			}
+-			$sURL.= '@';
+-		}
+-
+-		// Add the host
+-		$sURL.= $aURL['host'];
+-
+-		// Add the port if needed
+-		if (!empty($aURL['port']) &amp;&amp; (($aURL['scheme'] == 'http' &amp;&amp; $aURL['port'] != 80) || ($aURL['scheme'] == 'https' &amp;&amp; $aURL['port'] != 443))) {
+-			$sURL.= ':'.$aURL['port'];
+-		}
+-
+-		// Add the path and the query string
+-		$sURL.= $aURL['path'].@$aURL['query'];
+-
+-		// Clean up
+-		unset($aURL);
+-		return $sURL;
+-	}
+-	
+-	// returns true if the function name is associated with an object callback,
+-	// false if not.
+-	// user internally
+-	function _isObjectCallback($sFunction)
+-	{
+-		if (array_key_exists($sFunction, $this-&gt;aObjects)) return true;
+-		return false;
+-	}
+-	
+-	// return true if the function or object callback can be called, false if not
+-	// user internally
+-	function _isFunctionCallable($sFunction)
+-	{
+-		if ($this-&gt;_isObjectCallback($sFunction)) {
+-			if (is_object($this-&gt;aObjects[$sFunction][0])) {
+-				return method_exists($this-&gt;aObjects[$sFunction][0], $this-&gt;aObjects[$sFunction][1]);
+-			}
+-			else {
+-				return is_callable($this-&gt;aObjects[$sFunction]);
+-			}
+-		}
+-		else {
+-			return function_exists($sFunction);
+-		}	
+-	}
+-	
+-	// calls the function, class method, or object method with the supplied arguments
+-	// user internally
+-	function _callFunction($sFunction, $aArgs)
+-	{
+-		if ($this-&gt;_isObjectCallback($sFunction)) {
+-			$mReturn = call_user_func_array($this-&gt;aObjects[$sFunction], $aArgs);
+-		}
+-		else {
+-			$mReturn = call_user_func_array($sFunction, $aArgs);
+-		}
+-		return $mReturn;
+-	}
+-	
+-	// generates the javascript wrapper for the specified PHP function
+-	// used internally
+-	function _wrap($sFunction,$sRequestType=XAJAX_POST)
+-	{
+-		$js = &quot;function &quot;.$this-&gt;sWrapperPrefix.&quot;$sFunction(){return xajax.call(\&quot;$sFunction\&quot;, arguments, &quot;.$sRequestType.&quot;);}\n&quot;;		
+-		return $js;
+-	}
+-
+-	// _xmlToArray() takes a string containing xajax xjxobj xml or xjxquery xml
+-	// and builds an array representation of it to pass as an argument to
+-	// the php function being called. Returns an array.
+-	// used internally
+-	function _xmlToArray($rootTag, $sXml)
+-	{
+-		$aArray = array();
+-		$sXml = str_replace(&quot;&lt;$rootTag&gt;&quot;,&quot;&lt;$rootTag&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;/$rootTag&gt;&quot;,&quot;&lt;/$rootTag&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;e&gt;&quot;,&quot;&lt;e&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;/e&gt;&quot;,&quot;&lt;/e&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;k&gt;&quot;,&quot;&lt;k&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;/k&gt;&quot;,&quot;|~|&lt;/k&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;v&gt;&quot;,&quot;&lt;v&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;/v&gt;&quot;,&quot;|~|&lt;/v&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;q&gt;&quot;,&quot;&lt;q&gt;|~|&quot;,$sXml);
+-		$sXml = str_replace(&quot;&lt;/q&gt;&quot;,&quot;|~|&lt;/q&gt;|~|&quot;,$sXml);
+-		
+-		$this-&gt;aObjArray = explode(&quot;|~|&quot;,$sXml);
+-		
+-		$this-&gt;iPos = 0;
+-		$aArray = $this-&gt;_parseObjXml($rootTag);
+-		
+-		return $aArray;
+-	}
+-	
+-	// _parseObjXml() is a recursive function that generates an array from the
+-	// contents of $this-&gt;aObjArray. Returns an array.
+-	// used internally
+-	function _parseObjXml($rootTag)
+-	{
+-		$aArray = array();
+-		
+-		if ($rootTag == &quot;xjxobj&quot;)
+-		{
+-			while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/xjxobj&gt;&quot;))
+-			{
+-				$this-&gt;iPos++;
+-				if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;e&gt;&quot;))
+-				{
+-					$key = &quot;&quot;;
+-					$value = null;
+-						
+-					$this-&gt;iPos++;
+-					while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/e&gt;&quot;))
+-					{
+-						if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;k&gt;&quot;))
+-						{
+-							$this-&gt;iPos++;
+-							while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/k&gt;&quot;))
+-							{
+-								$key .= $this-&gt;aObjArray[$this-&gt;iPos];
+-								$this-&gt;iPos++;
+-							}
+-						}
+-						if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;v&gt;&quot;))
+-						{
+-							$this-&gt;iPos++;
+-							while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/v&gt;&quot;))
+-							{
+-								if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;xjxobj&gt;&quot;))
+-								{
+-									$value = $this-&gt;_parseObjXml(&quot;xjxobj&quot;);
+-									$this-&gt;iPos++;
+-								}
+-								else
+-								{
+-									$value .= $this-&gt;aObjArray[$this-&gt;iPos];
+-								}
+-								$this-&gt;iPos++;
+-							}
+-						}
+-						$this-&gt;iPos++;
+-					}
+-					
+-					$aArray[$key]=$value;
+-				}
+-			}
+-		}
+-		
+-		if ($rootTag == &quot;xjxquery&quot;)
+-		{
+-			$sQuery = &quot;&quot;;
+-			$this-&gt;iPos++;
+-			while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/xjxquery&gt;&quot;))
+-			{
+-				if (stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;q&gt;&quot;) || stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/q&gt;&quot;))
+-				{
+-					$this-&gt;iPos++;
+-					continue;
+-				}
+-				$sQuery	.= $this-&gt;aObjArray[$this-&gt;iPos];
+-				$this-&gt;iPos++;
+-			}
+-			
+-			parse_str($sQuery, $aArray);
+-			// If magic quotes is on, then we need to strip the slashes from the
+-			// array values because of the parse_str pass which adds slashes
+-			if (get_magic_quotes_gpc() == 1) {
+-				$newArray = array();
+-				foreach ($aArray as $sKey =&gt; $sValue) {
+-					if (is_string($sValue))
+-						$newArray[$sKey] = stripslashes($sValue);
+-					else
+-						$newArray[$sKey] = $sValue;
+-				}
+-				$aArray = $newArray;
+-			}
+-		}
+-		
+-		return $aArray;
+-	}
+-		
+-}// end class xajax 
+-
+-// xajaxErrorHandler() is registered with PHP's set_error_handler() function if
+-// the xajax error handling system is turned on
+-// used by the xajax class
+-function xajaxErrorHandler($errno, $errstr, $errfile, $errline)
+-{
+-	$errorReporting = error_reporting();
+-	if ($errorReporting == 0) return;
+-	
+-	if ($errno == E_NOTICE) {
+-		$errTypeStr = &quot;NOTICE&quot;;
+-	}
+-	else if ($errno == E_WARNING) {
+-		$errTypeStr = &quot;WARNING&quot;;
+-	}
+-	else if ($errno == E_USER_NOTICE) {
+-		$errTypeStr = &quot;USER NOTICE&quot;;
+-	}
+-	else if ($errno == E_USER_WARNING) {
+-		$errTypeStr = &quot;USER WARNING&quot;;
+-	}
+-	else if ($errno == E_USER_ERROR) {
+-		$errTypeStr = &quot;USER FATAL ERROR&quot;;
+-	}
+-	else if ($errno == E_STRICT) {
+-		return;
+-	}
+-	else {
+-		$errTypeStr = &quot;UNKNOWN: $errno&quot;;
+-	}
+-	$GLOBALS['xajaxErrorHandlerText'] .= &quot;\n----\n[$errTypeStr] $errstr\nerror in line $errline of file $errfile&quot;;
+-}
+-
+-?&gt;
+\ No newline at end of file
++&lt;?php
++///////////////////////////////////////////////////////////////////////////////
++// xajax.inc.php :: Main xajax class and setup file
++//
++// xajax version 0.2.3
++// copyright (c) 2005 by Jared White &amp; J. Max Wilson
++// <A HREF="http://xajax.sourceforge.net">http://xajax.sourceforge.net</A>
++//
++// xajax is an open source PHP class library for easily creating powerful
++// PHP-driven, web-based AJAX Applications. Using xajax, you can asynchronously
++// call PHP functions and update the content of your your webpage without
++// reloading the page.
++//
++// xajax is released under the terms of the LGPL license
++// <A HREF="http://www.gnu.org/copyleft/lesser.html#SEC3">http://www.gnu.org/copyleft/lesser.html#SEC3</A>
++//
++// This library is free software; you can redistribute it and/or
++// modify it under the terms of the GNU Lesser General Public
++// License as published by the Free Software Foundation; either
++// version 2.1 of the License, or (at your option) any later version.
++//
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++// Lesser General Public License for more details.
++// 
++// You should have received a copy of the GNU Lesser General Public
++// License along with this library; if not, write to the Free Software
++// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++///////////////////////////////////////////////////////////////////////////////
++
++// Define XAJAX_DEFAULT_CHAR_ENCODING that is used by both
++// the xajax and xajaxResponse classes
++if (!defined ('XAJAX_DEFAULT_CHAR_ENCODING'))
++{
++	define ('XAJAX_DEFAULT_CHAR_ENCODING', 'utf-8' );
++}
++
++require_once(&quot;xajaxResponse.inc.php&quot;);
++
++// Communication Method Defines
++if (!defined ('XAJAX_GET'))
++{
++	define ('XAJAX_GET', 0);
++}
++if (!defined ('XAJAX_POST'))
++{
++	define ('XAJAX_POST', 1);
++}
++
++// the xajax class generates the xajax javascript for your page including the 
++// javascript wrappers for the PHP functions that you want to call from your page.
++// It also handles processing and executing the command messages in the xml responses
++// sent back to your page from your PHP functions.
++class xajax
++{
++	var $aFunctions;				// Array of PHP functions that will be callable through javascript wrappers
++	var $aObjects;				// Array of object callbacks that will allow Javascript to call PHP methods (key=function name)
++	var $aFunctionRequestTypes;	// Array of RequestTypes to be used with each function (key=function name)
++	var $aFunctionIncludeFiles;	// Array of Include Files for any external functions (key=function name)
++	var $sCatchAllFunction;		// Name of the PHP function to call if no callable function was found
++	var $sPreFunction;			// Name of the PHP function to call before any other function
++	var $sRequestURI;			// The URI for making requests to the xajax object
++	var $sWrapperPrefix;			// The prefix to prepend to the javascript wraper function name
++	var $bDebug;					// Show debug messages (true/false)
++	var $bStatusMessages;			// Show debug messages (true/false)
++	var $bExitAllowed;			// Allow xajax to exit after processing a request (true/false)
++	var $bWaitCursor;			// Use wait cursor in browser (true/false)
++	var $bErrorHandler;			// Use an special xajax error handler so the errors are sent to the browser properly
++	var $sLogFile;				// Specify if xajax should log errors (and more information in a future release)
++	var $bCleanBuffer;			// Clean all output buffers before outputting response (true/false)
++	var $sEncoding;				// String containing the character encoding used.
++	var $bDecodeUTF8Input;		// Decode input request args from UTF-8 (true/false)
++	var $bOutputEntities;			// Convert special characters to HTML entities (true/false)
++	var $aObjArray;				// Array for parsing complex objects
++	var $iPos;					// Position in $aObjArray
++	
++	// Contructor
++	// $sRequestURI - defaults to the current page
++	// $sWrapperPrefix - defaults to &quot;xajax_&quot;;
++	// $sEncoding - defaults to XAJAX_DEFAULT_CHAR_ENCODING defined above
++	// $bDebug Mode - defaults to false
++	// usage: $xajax = new xajax();
++	function xajax($sRequestURI=&quot;&quot;,$sWrapperPrefix=&quot;xajax_&quot;,$sEncoding=XAJAX_DEFAULT_CHAR_ENCODING,$bDebug=false)
++	{
++		$this-&gt;aFunctions = array();
++		$this-&gt;aObjects = array();
++		$this-&gt;aFunctionIncludeFiles = array();
++		$this-&gt;sRequestURI = $sRequestURI;
++		if ($this-&gt;sRequestURI == &quot;&quot;)
++			$this-&gt;sRequestURI = $this-&gt;_detectURI();
++		$this-&gt;sWrapperPrefix = $sWrapperPrefix;
++		$this-&gt;bDebug = $bDebug;
++		$this-&gt;bStatusMessages = false;
++		$this-&gt;bWaitCursor = true;
++		$this-&gt;bExitAllowed = true;
++		$this-&gt;bErrorHandler = false;
++		$this-&gt;sLogFile = &quot;&quot;;
++		$this-&gt;bCleanBuffer = false;
++		$this-&gt;setCharEncoding($sEncoding);
++		$this-&gt;bDecodeUTF8Input = false;
++		$this-&gt;bOutputEntities = false;
++	}
++		
++	// setRequestURI() sets the URI to which requests will be made
++	// usage: $xajax-&gt;setRequestURI(&quot;<A HREF="http://xajax.sourceforge.net">http://xajax.sourceforge.net</A>&quot;);
++	function setRequestURI($sRequestURI)
++	{
++		$this-&gt;sRequestURI = $sRequestURI;
++	}
++
++	// setWrapperPrefix() sets the prefix that will be appended to the Javascript
++	// wrapper functions (default is &quot;xajax_&quot;).
++	function setWrapperPrefix($sPrefix)
++	{
++		$this-&gt;sWrapperPrefix = $sPrefix;
++	}
++	
++	// debugOn() enables debug messages for xajax
++	function debugOn()
++	{
++		$this-&gt;bDebug = true;
++	}
++	
++	// debugOff() disables debug messages for xajax (default behavior)
++	function debugOff()
++	{
++		$this-&gt;bDebug = false;
++	}
++		
++	// statusMessagesOn() enables messages in the statusbar for xajax
++	function statusMessagesOn()
++	{
++		$this-&gt;bStatusMessages = true;
++	}
++	
++	// statusMessagesOff() disables messages in the statusbar for xajax (default behavior)
++	function statusMessagesOff()
++	{
++		$this-&gt;bStatusMessages = false;
++	}
++	
++	// waitCursor() enables the wait cursor to be displayed in the browser (default behavior)
++	function waitCursorOn()
++	{
++		$this-&gt;bWaitCursor = true;
++	}
++	
++	// waitCursorOff() disables the wait cursor to be displayed in the browser
++	function waitCursorOff()
++	{
++		$this-&gt;bWaitCursor = false;
++	}	
++	
++	// exitAllowedOn() enables xajax to exit immediately after processing a request
++	// and sending the response back to the browser (default behavior)
++	function exitAllowedOn()
++	{
++		$this-&gt;bExitAllowed = true;
++	}
++	
++	// exitAllowedOff() disables xajax's default behavior of exiting immediately
++	// after processing a request and sending the response back to the browser
++	function exitAllowedOff()
++	{
++		$this-&gt;bExitAllowed = false;
++	}
++	
++	// errorHandlerOn() turns on xajax's error handling system so that PHP errors
++	// that occur during a request are trapped and pushed to the browser in the
++	// form of a Javascript alert
++	function errorHandlerOn()
++	{
++		$this-&gt;bErrorHandler = true;
++	}
++	// errorHandlerOff() turns off xajax's error handling system (default behavior)
++	function errorHandlerOff()
++	{
++		$this-&gt;bErrorHandler = false;
++	}
++	
++	// setLogFile() specifies a log file that will be written to by xajax during
++	// a request (used only by the error handling system at present). If you don't
++	// invoke this method, or you pass in &quot;&quot;, then no log file will be written to.
++	// usage: $xajax-&gt;setLogFile(&quot;/xajax_logs/errors.log&quot;);
++	function setLogFile($sFilename)
++	{
++		$this-&gt;sLogFile = $sFilename;
++	}
++
++	// cleanBufferOn() causes xajax to clean out all output buffers before outputting
++	// a response (default behavior)
++	function cleanBufferOn()
++	{
++		$this-&gt;bCleanBuffer = true;
++	}
++	// cleanBufferOff() turns off xajax's output buffer cleaning
++	function cleanBufferOff()
++	{
++		$this-&gt;bCleanBuffer = false;
++	}
++	
++	// setCharEncoding() sets the character encoding to be used by xajax
++	// usage: $xajax-&gt;setCharEncoding(&quot;utf-8&quot;);
++	// *Note: to change the default character encoding for all xajax responses, set 
++	// the XAJAX_DEFAULT_CHAR_ENCODING constant near the beginning of the xajax.inc.php file
++	function setCharEncoding($sEncoding)
++	{
++		$this-&gt;sEncoding = $sEncoding;
++	}
++
++	// decodeUTF8InputOn() causes xajax to decode the input request args from UTF-8 to the
++	// current encoding.
++	function decodeUTF8InputOn()
++	{
++		$this-&gt;bDecodeUTF8Input = true;
++	}
++	// decodeUTF8InputOff() turns off decoding the input request args from UTF-8.
++	// (default behavior)
++	function decodeUTF8InputOff()
++	{
++		$this-&gt;bDecodeUTF8Input = false;
++	}
++	
++	// outputEntitiesOn() tells the response object to convert special characters to
++	// HTML entities automatically (only works if the mb_string extension is available).
++	function outputEntitiesOn()
++	{
++		$this-&gt;bOutputEntities = true;
++	}
++	
++	// outputEntitiesOff() tells the response object to output special characters
++	// intact. (default behavior)
++	function outputEntitiesOff()
++	{
++		$this-&gt;bOutputEntities = false;
++	}
++				
++	// registerFunction() registers a PHP function or method to be callable through
++	// xajax in your Javascript. If you want to register a function, pass in the name
++	// of that function. If you want to register a static class method, pass in an array
++	// like so:
++	// array(&quot;myFunctionName&quot;, &quot;myClass&quot;, &quot;myMethod&quot;)
++	// For an object instance method, use an object variable for the second array element
++	// (and in PHP 4 make sure you put an &amp; before the variable to pass the object by
++	// reference). Note: the function name is what you call via Javascript, so it can be
++	// anything as long as it doesn't conflict with any other registered function name.
++	// 
++	// $mFunction is a string containing the function name or an object callback array
++	// $sRequestType is the RequestType (XAJAX_GET/XAJAX_POST) that should be used 
++	//		for this function.  Defaults to XAJAX_POST.
++	// usage: $xajax-&gt;registerFunction(&quot;myFunction&quot;);
++	//    or: $xajax-&gt;registerFunction(array(&quot;myFunctionName&quot;, &amp;$myObject, &quot;myMethod&quot;));
++	function registerFunction($mFunction,$sRequestType=XAJAX_POST)
++	{
++		if (is_array($mFunction)) {
++			$this-&gt;aFunctions[$mFunction[0]] = 1;
++			$this-&gt;aFunctionRequestTypes[$mFunction[0]] = $sRequestType;
++			$this-&gt;aObjects[$mFunction[0]] = array_slice($mFunction, 1);
++		}	
++		else {
++			$this-&gt;aFunctions[$mFunction] = 1;
++			$this-&gt;aFunctionRequestTypes[$mFunction] = $sRequestType;
++		}
++	}
++	
++	// registerExternalFunction() registers a PHP function to be callable through xajax
++	// which is located in some other file.  If the function is requested the external
++	// file will be included to define the function before the function is called
++	// $mFunction is a string containing the function name or an object callback array
++	//   see registerFunction() for more info on object callback arrays
++	// $sIncludeFile is a string containing the path and filename of the include file
++	// $sRequestType is the RequestType (XAJAX_GET/XAJAX_POST) that should be used 
++	//		for this function.  Defaults to XAJAX_POST.
++	// usage: $xajax-&gt;registerExternalFunction(&quot;myFunction&quot;,&quot;myFunction.inc.php&quot;,XAJAX_POST);
++	function registerExternalFunction($mFunction,$sIncludeFile,$sRequestType=XAJAX_POST)
++	{
++		$this-&gt;registerFunction($mFunction, $sRequestType);
++		
++		if (is_array($mFunction)) {
++			$this-&gt;aFunctionIncludeFiles[$mFunction[0]] = $sIncludeFile;
++		}
++		else {
++			$this-&gt;aFunctionIncludeFiles[$mFunction] = $sIncludeFile;
++		}
++	}
++	
++	// registerCatchAllFunction() registers a PHP function to be called when xajax cannot
++	// find the function being called via Javascript. Because this is technically
++	// impossible when using &quot;wrapped&quot; functions, the catch-all feature is only useful
++	// when you're directly using the xajax.call() Javascript method. Use the catch-all
++	// feature when you want more dynamic ability to intercept unknown calls and handle
++	// them in a custom way.
++	// $mFunction is a string containing the function name or an object callback array
++	//   see registerFunction() for more info on object callback arrays
++	// usage: $xajax-&gt;registerCatchAllFunction(&quot;myCatchAllFunction&quot;);
++	function registerCatchAllFunction($mFunction)
++	{
++		if (is_array($mFunction)) {
++			$this-&gt;sCatchAllFunction = $mFunction[0];
++			$this-&gt;aObjects[$mFunction[0]] = array_slice($mFunction, 1);
++		}
++		else {
++			$this-&gt;sCatchAllFunction = $mFunction;
++		}
++	}
++	
++	// registerPreFunction() registers a PHP function to be called before xajax calls
++	// the requested function. xajax will automatically add the request function's response
++	// to the pre-function's response to create a single response. Another feature is
++	// the ability to return not just a response, but an array with the first element
++	// being false (a boolean) and the second being the response. In this case, the
++	// pre-function's response will be returned to the browser without xajax calling
++	// the requested function.
++	// $mFunction is a string containing the function name or an object callback array
++	//   see registerFunction() for more info on object callback arrays
++	// usage $xajax-&gt;registerPreFunction(&quot;myPreFunction&quot;);
++	function registerPreFunction($mFunction)
++	{
++		if (is_array($mFunction)) {
++			$this-&gt;sPreFunction = $mFunction[0];
++			$this-&gt;aObjects[$mFunction[0]] = array_slice($mFunction, 1);
++		}
++		else {
++			$this-&gt;sPreFunction = $mFunction;
++		}
++	}
++	
++	// returns true if xajax can process the request, false if otherwise
++	// you can use this to determine if xajax needs to process the request or not
++	function canProcessRequests()
++	{
++		if ($this-&gt;getRequestMode() != -1) return true;
++		return false;
++	}
++	
++	// returns the current request mode, or -1 if there is none
++	function getRequestMode()
++	{
++		if (!empty($_GET[&quot;xajax&quot;]))
++			return XAJAX_GET;
++		
++		if (!empty($_POST[&quot;xajax&quot;]))
++			return XAJAX_POST;
++			
++		return -1;
++	}
++	
++	// processRequests() is the main communications engine of xajax
++	// The engine handles all incoming xajax requests, calls the apporiate PHP functions
++	// and passes the xml responses back to the javascript response handler
++	// if your RequestURI is the same as your web page then this function should
++	// be called before any headers or html has been sent.
++	// usage: $xajax-&gt;processRequests()
++	function processRequests()
++	{	
++		
++		$requestMode = -1;
++		$sFunctionName = &quot;&quot;;
++		$bFoundFunction = true;
++		$bFunctionIsCatchAll = false;
++		$sFunctionNameForSpecial = &quot;&quot;;
++		$aArgs = array();
++		$sPreResponse = &quot;&quot;;
++		$bEndRequest = false;
++		$sResponse = &quot;&quot;;
++		
++		$requestMode = $this-&gt;getRequestMode();
++		if ($requestMode == -1) return;
++	
++		if ($requestMode == XAJAX_POST)
++		{
++			$sFunctionName = $_POST[&quot;xajax&quot;];
++			
++			if (!empty($_POST[&quot;xajaxargs&quot;])) 
++				$aArgs = $_POST[&quot;xajaxargs&quot;];
++		}
++		else
++		{	
++			header (&quot;Expires: Mon, 26 Jul 1997 05:00:00 GMT&quot;);
++			header (&quot;Last-Modified: &quot; . gmdate(&quot;D, d M Y H:i:s&quot;) . &quot; GMT&quot;);
++			header (&quot;Cache-Control: no-cache, must-revalidate&quot;);
++			header (&quot;Pragma: no-cache&quot;);
++			
++			$sFunctionName = $_GET[&quot;xajax&quot;];
++			
++			if (!empty($_GET[&quot;xajaxargs&quot;])) 
++				$aArgs = $_GET[&quot;xajaxargs&quot;];
++		}
++		
++		// Use xajax error handler if necessary
++		if ($this-&gt;bErrorHandler) {
++			$GLOBALS['xajaxErrorHandlerText'] = &quot;&quot;;
++			set_error_handler(&quot;xajaxErrorHandler&quot;);
++		}
++		
++		if ($this-&gt;sPreFunction) {
++			if (!$this-&gt;_isFunctionCallable($this-&gt;sPreFunction)) {
++				$bFoundFunction = false;
++				$objResponse = new xajaxResponse();
++				$objResponse-&gt;addAlert(&quot;Unknown Pre-Function &quot;. $this-&gt;sPreFunction);
++				$sResponse = $objResponse-&gt;getXML();
++			}
++		}
++		//include any external dependencies associated with this function name
++		if (array_key_exists($sFunctionName,$this-&gt;aFunctionIncludeFiles))
++		{
++			ob_start();
++			include_once($this-&gt;aFunctionIncludeFiles[$sFunctionName]);
++			ob_end_clean();
++		}
++		
++		if ($bFoundFunction) {
++			$sFunctionNameForSpecial = $sFunctionName;
++			if (!array_key_exists($sFunctionName, $this-&gt;aFunctions))
++			{
++				if ($this-&gt;sCatchAllFunction) {
++					$sFunctionName = $this-&gt;sCatchAllFunction;
++					$bFunctionIsCatchAll = true;
++				}
++				else {
++					$bFoundFunction = false;
++					$objResponse = new xajaxResponse();
++					$objResponse-&gt;addAlert(&quot;Unknown Function $sFunctionName.&quot;);
++					$sResponse = $objResponse-&gt;getXML();
++				}
++			}
++			else if ($this-&gt;aFunctionRequestTypes[$sFunctionName] != $requestMode)
++			{
++				$bFoundFunction = false;
++				$objResponse = new xajaxResponse();
++				$objResponse-&gt;addAlert(&quot;Incorrect Request Type.&quot;);
++				$sResponse = $objResponse-&gt;getXML();
++			}
++		}
++		
++		if ($bFoundFunction)
++		{
++			for ($i = 0; $i &lt; sizeof($aArgs); $i++)
++			{
++				// If magic quotes is on, then we need to strip the slashes from the args
++				if (get_magic_quotes_gpc() == 1 &amp;&amp; is_string($aArgs[$i])) {
++				
++					$aArgs[$i] = stripslashes($aArgs[$i]);
++				}
++				if (stristr($aArgs[$i],&quot;&lt;xjxobj&gt;&quot;) != false)
++				{
++					$aArgs[$i] = $this-&gt;_xmlToArray(&quot;xjxobj&quot;,$aArgs[$i]);	
++				}
++				else if (stristr($aArgs[$i],&quot;&lt;xjxquery&gt;&quot;) != false)
++				{
++					$aArgs[$i] = $this-&gt;_xmlToArray(&quot;xjxquery&quot;,$aArgs[$i]);	
++				}
++				else if ($this-&gt;bDecodeUTF8Input)
++				{
++					$aArgs[$i] = $this-&gt;_decodeUTF8Data($aArgs[$i]);	
++				}
++			}
++
++			if ($this-&gt;sPreFunction) {
++				$mPreResponse = $this-&gt;_callFunction($this-&gt;sPreFunction, array($sFunctionNameForSpecial, $aArgs));
++				if (is_array($mPreResponse) &amp;&amp; $mPreResponse[0] === false) {
++					$bEndRequest = true;
++					$sPreResponse = $mPreResponse[1];
++				}
++				else {
++					$sPreResponse = $mPreResponse;
++				}
++				if (is_a($sPreResponse, &quot;xajaxResponse&quot;)) {
++					$sPreResponse = $sPreResponse-&gt;getXML();
++				}
++				if ($bEndRequest) $sResponse = $sPreResponse;
++			}
++			
++			if (!$bEndRequest) {
++				if (!$this-&gt;_isFunctionCallable($sFunctionName)) {
++					$objResponse = new xajaxResponse();
++					$objResponse-&gt;addAlert(&quot;The Registered Function $sFunctionName Could Not Be Found.&quot;);
++					$sResponse = $objResponse-&gt;getXML();
++				}
++				else {
++					if ($bFunctionIsCatchAll) {
++						$aArgs = array($sFunctionNameForSpecial, $aArgs);
++					}
++					$sResponse = $this-&gt;_callFunction($sFunctionName, $aArgs);
++				}
++				if (is_a($sResponse, &quot;xajaxResponse&quot;)) {
++					$sResponse = $sResponse-&gt;getXML();
++				}
++				if (!is_string($sResponse) || strpos($sResponse, &quot;&lt;xjx&gt;&quot;) === FALSE) {
++					$objResponse = new xajaxResponse();
++					$objResponse-&gt;addAlert(&quot;No XML Response Was Returned By Function $sFunctionName.&quot;);
++					$sResponse = $objResponse-&gt;getXML();
++				}
++				else if ($sPreResponse != &quot;&quot;) {
++					$sNewResponse = new xajaxResponse($this-&gt;sEncoding, $this-&gt;bOutputEntities);
++					$sNewResponse-&gt;loadXML($sPreResponse);
++					$sNewResponse-&gt;loadXML($sResponse);
++					$sResponse = $sNewResponse-&gt;getXML();
++				}
++			}
++		}
++		
++		$sContentHeader = &quot;Content-type: text/xml;&quot;;
++		if ($this-&gt;sEncoding &amp;&amp; strlen(trim($this-&gt;sEncoding)) &gt; 0)
++			$sContentHeader .= &quot; charset=&quot;.$this-&gt;sEncoding;
++		header($sContentHeader);
++		if ($this-&gt;bErrorHandler &amp;&amp; !empty( $GLOBALS['xajaxErrorHandlerText'] )) {
++			$sErrorResponse = new xajaxResponse();
++			$sErrorResponse-&gt;addAlert(&quot;** PHP Error Messages: **&quot; . $GLOBALS['xajaxErrorHandlerText']);
++			if ($this-&gt;sLogFile) {
++				$fH = @fopen($this-&gt;sLogFile, &quot;a&quot;);
++				if (!$fH) {
++					$sErrorResponse-&gt;addAlert(&quot;** Logging Error **\n\nxajax was unable to write to the error log file:\n&quot; . $this-&gt;sLogFile);
++				}
++				else {
++					fwrite($fH, &quot;** xajax Error Log - &quot; . strftime(&quot;%b %e %Y %I:%M:%S %p&quot;) . &quot; **&quot; . $GLOBALS['xajaxErrorHandlerText'] . &quot;\n\n\n&quot;);
++					fclose($fH);
++				}
++			}
++
++			$sErrorResponse-&gt;loadXML($sResponse);
++			$sResponse = $sErrorResponse-&gt;getXML();
++			
++		}
++		if ($this-&gt;bCleanBuffer) while (@ob_end_clean());
++		print $sResponse;
++		if ($this-&gt;bErrorHandler) restore_error_handler();
++		
++		if ($this-&gt;bExitAllowed)
++			exit();
++	}
++			
++	// printJavascript() prints the xajax javascript code into your page by printing
++	// the output of the getJavascript() method. It should only be called between the
++	// &lt;head&gt; &lt;/head&gt; tags in your HTML page. Remember, if you only want to obtain the
++	// result of this function, use getJavascript() instead.
++	// $sJsURI is the relative address of the folder where xajax has been installed.
++	//   For instance, if your PHP file is &quot;<A HREF="http://www.myserver.com/myfolder/mypage.php">http://www.myserver.com/myfolder/mypage.php</A>&quot;
++	//   and xajax was installed in &quot;<A HREF="http://www.myserver.com/anotherfolder">http://www.myserver.com/anotherfolder</A>&quot;, then
++	//   $sJsURI should be set to &quot;../anotherfolder&quot;. Defaults to assuming xajax is in
++	//   the same folder as your PHP file.
++	// $sJsFile is the relative folder/file pair of the xajax Javascript engine located
++	// within the xajax installation folder. Defaults to xajax_js/xajax.js.
++	// usage:
++	//	&lt;head&gt;
++	//		...
++	//		&lt; ?php $xajax-&gt;printJavascript(); ? &gt;
++	function printJavascript($sJsURI=&quot;&quot;, $sJsFile=NULL)
++	{
++		print $this-&gt;getJavascript($sJsURI, $sJsFile);
++	}
++	
++	// getJavascript() returns the xajax javascript code that should be added to
++	// your HTML page between the &lt;head&gt; &lt;/head&gt; tags. See printJavascript()
++	// for information about the function arguments.
++	// usage:
++	//  &lt; ?php $xajaxJSHead = $xajax-&gt;getJavascript(); ? &gt;
++	//	&lt;head&gt;
++	//		...
++	//		&lt; ?php echo $xajaxJSHead; ? &gt;
++	function getJavascript($sJsURI=&quot;&quot;, $sJsFile=NULL)
++	{	
++		$html = $this-&gt;getJavascriptConfig();
++		$html .= $this-&gt;getJavascriptInclude($sJsURI, $sJsFile);
++		
++		return $html;
++	}
++	
++	// getJavascriptConfig() returns a string containing inline Javascript that sets
++	// up the xajax runtime
++	function getJavascriptConfig()
++	{
++		$html  = &quot;\t&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot;;
++		$html .= &quot;var xajaxRequestUri=\&quot;&quot;.$this-&gt;sRequestURI.&quot;\&quot;;\n&quot;;
++		$html .= &quot;var xajaxDebug=&quot;.($this-&gt;bDebug?&quot;true&quot;:&quot;false&quot;).&quot;;\n&quot;;
++		$html .= &quot;var xajaxStatusMessages=&quot;.($this-&gt;bStatusMessages?&quot;true&quot;:&quot;false&quot;).&quot;;\n&quot;;
++		$html .= &quot;var xajaxWaitCursor=&quot;.($this-&gt;bWaitCursor?&quot;true&quot;:&quot;false&quot;).&quot;;\n&quot;;
++		$html .= &quot;var xajaxDefinedGet=&quot;.XAJAX_GET.&quot;;\n&quot;;
++		$html .= &quot;var xajaxDefinedPost=&quot;.XAJAX_POST.&quot;;\n&quot;;
++		$html .= &quot;var xajaxLoaded=false;\n&quot;;
++
++		foreach($this-&gt;aFunctions as $sFunction =&gt; $bExists) {
++			$html .= $this-&gt;_wrap($sFunction,$this-&gt;aFunctionRequestTypes[$sFunction]);
++		}
++
++		$html .= &quot;\t&lt;/script&gt;\n&quot;;
++		return $html;		
++	}
++	
++	// getJavascriptInclude() returns a string containing a Javascript include of the
++	// xajax.js file along with a check to see if the file loaded after six seconds
++	function getJavascriptInclude($sJsURI=&quot;&quot;, $sJsFile=NULL)
++	{
++		if ($sJsFile == NULL) $sJsFile = &quot;xajax_js/xajax.js&quot;;
++			
++		if ($sJsURI != &quot;&quot; &amp;&amp; substr($sJsURI, -1) != &quot;/&quot;) $sJsURI .= &quot;/&quot;;
++		
++		$html = &quot;\t&lt;script type=\&quot;text/javascript\&quot; src=\&quot;&quot; . $sJsURI . $sJsFile . &quot;\&quot;&gt;&lt;/script&gt;\n&quot;;	
++		$html .= &quot;\t&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot;;
++		$html .= &quot;window.setTimeout(function () { if (!xajaxLoaded) { alert('Error: the xajax Javascript file could not be included. Perhaps the URL is incorrect?\\nURL: {$sJsURI}{$sJsFile}'); } }, 6000);\n&quot;;
++		$html .= &quot;\t&lt;/script&gt;\n&quot;;
++		return $html;
++	}
++
++	// autoCompressJavascript() can be used to create a new xajax.js file out of the
++	// xajax_uncompressed.js file (which will only happen if xajax.js doesn't already
++	// exist on the filesystem).
++	// $sJsFullFilename is an optional argument containing the full server file path
++	//  of xajax.js.
++	function autoCompressJavascript($sJsFullFilename=NULL)
++	{	
++		$sJsFile = &quot;xajax_js/xajax.js&quot;;
++		
++		if ($sJsFullFilename) {
++			$realJsFile = $sJsFullFilename;
++		}
++		else {
++			$realPath = realpath(dirname(__FILE__));
++			$realJsFile = $realPath . &quot;/&quot;. $sJsFile;
++		}
++
++		// Create a compressed file if necessary
++		if (!file_exists($realJsFile)) {
++			$srcFile = str_replace(&quot;.js&quot;, &quot;_uncompressed.js&quot;, $realJsFile);
++			if (!file_exists($srcFile)) {
++				trigger_error(&quot;The xajax uncompressed Javascript file could not be found in the &lt;b&gt;&quot; . dirname($realJsFile) . &quot;&lt;/b&gt; folder. Error &quot;, E_USER_ERROR);	
++			}
++			require(&quot;xajaxCompress.php&quot;);
++			$javaScript = implode('', file($srcFile));
++			$compressedScript = xajaxCompressJavascript($javaScript);
++			$fH = @fopen($realJsFile, &quot;w&quot;);
++			if (!$fH) {
++				trigger_error(&quot;The xajax compressed javascript file could not be written in the &lt;b&gt;&quot; . dirname($realJsFile) . &quot;&lt;/b&gt; folder. Error &quot;, E_USER_ERROR);
++			}
++			else {
++				fwrite($fH, $compressedScript);
++				fclose($fH);
++			}
++		}
++	}
++	// _detectURL() returns the current URL based upon the SERVER vars
++	// used internally
++	function _detectURI() {
++		$aURL = array();
++
++		// Try to get the request URL
++		if (!empty($_SERVER['REQUEST_URI'])) {
++			$aURL = parse_url($_SERVER['REQUEST_URI']);
++		}
++
++		// Fill in the empty values
++		if (empty($aURL['scheme'])) {
++			if (!empty($_SERVER['HTTP_SCHEME'])) {
++				$aURL['scheme'] = $_SERVER['HTTP_SCHEME'];
++			} else {
++				$aURL['scheme'] = (!empty($_SERVER['HTTPS']) &amp;&amp; strtolower($_SERVER['HTTPS']) != 'off') ? 'https' : 'http';
++			}
++		}
++
++		if (empty($aURL['host'])) {
++			if (!empty($_SERVER['HTTP_HOST'])) {
++				if (strpos($_SERVER['HTTP_HOST'], ':') &gt; 0) {
++					list($aURL['host'], $aURL['port']) = explode(':', $_SERVER['HTTP_HOST']);
++				} else {
++					$aURL['host'] = $_SERVER['HTTP_HOST'];
++				}
++			} else if (!empty($_SERVER['SERVER_NAME'])) {
++				$aURL['host'] = $_SERVER['SERVER_NAME'];
++			} else {
++				print &quot;xajax Error: xajax failed to automatically identify your Request URI.&quot;;
++				print &quot;Please set the Request URI explicitly when you instantiate the xajax object.&quot;;
++				exit();
++			}
++		}
++
++		if (empty($aURL['port']) &amp;&amp; !empty($_SERVER['SERVER_PORT'])) {
++			$aURL['port'] = $_SERVER['SERVER_PORT'];
++		}
++
++		if (empty($aURL['path'])) {
++			if (!empty($_SERVER['PATH_INFO'])) {
++				$sPath = parse_url($_SERVER['PATH_INFO']);
++			} else {
++				$sPath = parse_url($_SERVER['PHP_SELF']);
++			}
++			$aURL['path'] = $sPath['path'];
++			unset($sPath);
++		}
++
++		if (!empty($aURL['query'])) {
++			$aURL['query'] = '?'.$aURL['query'];
++		}
++
++		// Build the URL: Start with scheme, user and pass
++		$sURL = $aURL['scheme'].'://';
++		if (!empty($aURL['user'])) {
++			$sURL.= $aURL['user'];
++			if (!empty($aURL['pass'])) {
++				$sURL.= ':'.$aURL['pass'];
++			}
++			$sURL.= '@';
++		}
++
++		// Add the host
++		$sURL.= $aURL['host'];
++
++		// Add the port if needed
++		if (!empty($aURL['port']) &amp;&amp; (($aURL['scheme'] == 'http' &amp;&amp; $aURL['port'] != 80) || ($aURL['scheme'] == 'https' &amp;&amp; $aURL['port'] != 443))) {
++			$sURL.= ':'.$aURL['port'];
++		}
++
++		// Add the path and the query string
++		$sURL.= $aURL['path'].@$aURL['query'];
++
++		// Clean up
++		unset($aURL);
++		return $sURL;
++	}
++	
++	// returns true if the function name is associated with an object callback,
++	// false if not.
++	// user internally
++	function _isObjectCallback($sFunction)
++	{
++		if (array_key_exists($sFunction, $this-&gt;aObjects)) return true;
++		return false;
++	}
++	
++	// return true if the function or object callback can be called, false if not
++	// user internally
++	function _isFunctionCallable($sFunction)
++	{
++		if ($this-&gt;_isObjectCallback($sFunction)) {
++			if (is_object($this-&gt;aObjects[$sFunction][0])) {
++				return method_exists($this-&gt;aObjects[$sFunction][0], $this-&gt;aObjects[$sFunction][1]);
++			}
++			else {
++				return is_callable($this-&gt;aObjects[$sFunction]);
++			}
++		}
++		else {
++			return function_exists($sFunction);
++		}	
++	}
++	
++	// calls the function, class method, or object method with the supplied arguments
++	// user internally
++	function _callFunction($sFunction, $aArgs)
++	{
++		if ($this-&gt;_isObjectCallback($sFunction)) {
++			$mReturn = call_user_func_array($this-&gt;aObjects[$sFunction], $aArgs);
++		}
++		else {
++			$mReturn = call_user_func_array($sFunction, $aArgs);
++		}
++		return $mReturn;
++	}
++	
++	// generates the javascript wrapper for the specified PHP function
++	// used internally
++	function _wrap($sFunction,$sRequestType=XAJAX_POST)
++	{
++		$js = &quot;function &quot;.$this-&gt;sWrapperPrefix.&quot;$sFunction(){return xajax.call(\&quot;$sFunction\&quot;, arguments, &quot;.$sRequestType.&quot;);}\n&quot;;		
++		return $js;
++	}
++
++	// _xmlToArray() takes a string containing xajax xjxobj xml or xjxquery xml
++	// and builds an array representation of it to pass as an argument to
++	// the php function being called. Returns an array.
++	// used internally
++	function _xmlToArray($rootTag, $sXml)
++	{
++		$aArray = array();
++		$sXml = str_replace(&quot;&lt;$rootTag&gt;&quot;,&quot;&lt;$rootTag&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;/$rootTag&gt;&quot;,&quot;&lt;/$rootTag&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;e&gt;&quot;,&quot;&lt;e&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;/e&gt;&quot;,&quot;&lt;/e&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;k&gt;&quot;,&quot;&lt;k&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;/k&gt;&quot;,&quot;|~|&lt;/k&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;v&gt;&quot;,&quot;&lt;v&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;/v&gt;&quot;,&quot;|~|&lt;/v&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;q&gt;&quot;,&quot;&lt;q&gt;|~|&quot;,$sXml);
++		$sXml = str_replace(&quot;&lt;/q&gt;&quot;,&quot;|~|&lt;/q&gt;|~|&quot;,$sXml);
++		
++		$this-&gt;aObjArray = explode(&quot;|~|&quot;,$sXml);
++		
++		$this-&gt;iPos = 0;
++		$aArray = $this-&gt;_parseObjXml($rootTag);
++		
++		if ($this-&gt;bDecodeUTF8Input)
++		{
++			foreach ($aArray as $sKey =&gt; $sValue)
++			{
++				$aArray[$sKey] = $this-&gt;_decodeUTF8Data($sValue);
++			}
++		}
++        
++		return $aArray;
++	}
++	
++	// _parseObjXml() is a recursive function that generates an array from the
++	// contents of $this-&gt;aObjArray. Returns an array.
++	// used internally
++	function _parseObjXml($rootTag)
++	{
++		$aArray = array();
++		
++		if ($rootTag == &quot;xjxobj&quot;)
++		{
++			while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/xjxobj&gt;&quot;))
++			{
++				$this-&gt;iPos++;
++				if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;e&gt;&quot;))
++				{
++					$key = &quot;&quot;;
++					$value = null;
++						
++					$this-&gt;iPos++;
++					while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/e&gt;&quot;))
++					{
++						if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;k&gt;&quot;))
++						{
++							$this-&gt;iPos++;
++							while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/k&gt;&quot;))
++							{
++								$key .= $this-&gt;aObjArray[$this-&gt;iPos];
++								$this-&gt;iPos++;
++							}
++						}
++						if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;v&gt;&quot;))
++						{
++							$this-&gt;iPos++;
++							while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/v&gt;&quot;))
++							{
++								if(stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;xjxobj&gt;&quot;))
++								{
++									$value = $this-&gt;_parseObjXml(&quot;xjxobj&quot;);
++									$this-&gt;iPos++;
++								}
++								else
++								{
++									$value .= $this-&gt;aObjArray[$this-&gt;iPos];
++								}
++								$this-&gt;iPos++;
++							}
++						}
++						$this-&gt;iPos++;
++					}
++					
++					$aArray[$key]=$value;
++				}
++			}
++		}
++		
++		if ($rootTag == &quot;xjxquery&quot;)
++		{
++			$sQuery = &quot;&quot;;
++			$this-&gt;iPos++;
++			while(!stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/xjxquery&gt;&quot;))
++			{
++				if (stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;q&gt;&quot;) || stristr($this-&gt;aObjArray[$this-&gt;iPos],&quot;&lt;/q&gt;&quot;))
++				{
++					$this-&gt;iPos++;
++					continue;
++				}
++				$sQuery	.= $this-&gt;aObjArray[$this-&gt;iPos];
++				$this-&gt;iPos++;
++			}
++			
++			parse_str($sQuery, $aArray);
++			// If magic quotes is on, then we need to strip the slashes from the
++			// array values because of the parse_str pass which adds slashes
++			if (get_magic_quotes_gpc() == 1) {
++				$newArray = array();
++				foreach ($aArray as $sKey =&gt; $sValue) {
++					if (is_string($sValue))
++						$newArray[$sKey] = stripslashes($sValue);
++					else
++						$newArray[$sKey] = $sValue;
++				}
++				$aArray = $newArray;
++			}
++		}
++		
++		return $aArray;
++	}
++	
++	function _decodeUTF8Data($sData)
++	{
++		$sValue = $sData;
++		if ($this-&gt;bDecodeUTF8Input)
++		{
++			$sFuncToUse = NULL;
++			
++			if (function_exists('iconv'))
++			{
++				$sFuncToUse = &quot;iconv&quot;;
++			}
++			else if (function_exists('mb_convert_encoding'))
++			{
++				$sFuncToUse = &quot;mb_convert_encoding&quot;;
++			}
++			else if ($this-&gt;sEncoding == &quot;ISO-8859-1&quot;)
++			{
++				$sFuncToUse = &quot;utf8_decode&quot;;
++			}
++			else
++			{
++				trigger_error(&quot;The incoming xajax data could not be converted from UTF-8&quot;, E_USER_NOTICE);
++			}
++			
++			if ($sFuncToUse)
++			{
++				if (is_string($sValue))
++				{
++					if ($sFuncToUse == &quot;iconv&quot;)
++					{
++						$sValue = iconv(&quot;UTF-8&quot;, $this-&gt;sEncoding.'//TRANSLIT', $sValue);
++					}
++					else if ($sFuncToUse == &quot;mb_convert_encoding&quot;)
++					{
++						$sValue = mb_convert_encoding($sValue, $this-&gt;sEncoding, &quot;UTF-8&quot;);
++					}
++					else
++					{
++						$sValue = utf8_decode($sValue);
++					}
++				}
++			}
++		}
++		return $sValue;	
++	}
++		
++}// end class xajax 
++
++// xajaxErrorHandler() is registered with PHP's set_error_handler() function if
++// the xajax error handling system is turned on
++// used by the xajax class
++function xajaxErrorHandler($errno, $errstr, $errfile, $errline)
++{
++	$errorReporting = error_reporting();
++	if (($errno &amp; $errorReporting) == 0) return;
++	
++	if ($errno == E_NOTICE) {
++		$errTypeStr = &quot;NOTICE&quot;;
++	}
++	else if ($errno == E_WARNING) {
++		$errTypeStr = &quot;WARNING&quot;;
++	}
++	else if ($errno == E_USER_NOTICE) {
++		$errTypeStr = &quot;USER NOTICE&quot;;
++	}
++	else if ($errno == E_USER_WARNING) {
++		$errTypeStr = &quot;USER WARNING&quot;;
++	}
++	else if ($errno == E_USER_ERROR) {
++		$errTypeStr = &quot;USER FATAL ERROR&quot;;
++	}
++	else if ($errno == E_STRICT) {
++		return;
++	}
++	else {
++		$errTypeStr = &quot;UNKNOWN: $errno&quot;;
++	}
++	$GLOBALS['xajaxErrorHandlerText'] .= &quot;\n----\n[$errTypeStr] $errstr\nerror in line $errline of file $errfile&quot;;
++}
++
++?&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajaxResponse.inc.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajaxResponse.inc.php	2006-04-04 15:36:39 UTC (rev 1826)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/xajaxResponse.inc.php	2006-04-04 15:41:53 UTC (rev 1827)
+@@ -2,7 +2,7 @@
+ ///////////////////////////////////////////////////////////////////////////////
+ // xajaxResponse.inc.php :: xajax XML response class
+ //
+-// xajax version 0.2
++// xajax version 0.2.3
+ // copyright (c) 2005 by Jared White &amp; J. Max Wilson
+ // <A HREF="http://www.xajaxproject.org">http://www.xajaxproject.org</A>
+ //
+@@ -38,7 +38,7 @@
+ 
+ // The xajaxResponse class is used to created responses to be sent back to your
+ // webpage.  A response contains one or more command messages for updating your page.
+-// Currently xajax supports 17 kinds of command messages, including some common ones such as:
++// Currently xajax supports 18 kinds of command messages, including some common ones such as:
+ // * Assign - sets the specified attribute of an element in your page
+ // * Append - appends data to the end of the specified attribute of an element in your page
+ // * Prepend - prepends data to the beginning of the specified attribute of an element in your page
+@@ -52,14 +52,18 @@
+ {
+ 	var $xml;
+ 	var $sEncoding;
++	var $bOutputEntities;
+ 
+ 	// Constructor. Its main job is to set the character encoding for the response.
+ 	// $sEncoding is a string containing the character encoding string to use.
++	// $bOutputEntities lets you set if you want special characters in the output
++	//  converted to HTML entities
+ 	// * Note: to change the character encoding for all of the responses, set the
+ 	// XAJAX_DEFAULT_ENCODING constant near the beginning of the xajax.inc.php file
+-	function xajaxResponse($sEncoding=XAJAX_DEFAULT_CHAR_ENCODING)
++	function xajaxResponse($sEncoding=XAJAX_DEFAULT_CHAR_ENCODING, $bOutputEntities=false)
+ 	{
+ 		$this-&gt;setCharEncoding($sEncoding);
++		$this-&gt;bOutputEntities = $bOutputEntities;
+ 	}
+ 	
+ 	// setCharEncoding() sets the character encoding for the response based on
+@@ -72,6 +76,20 @@
+ 		$this-&gt;sEncoding = $sEncoding;
+ 	}
+ 	
++	// outputEntitiesOn() tells the response object to convert special characters to
++	// HTML entities automatically (only works if the mb_string extension is available).
++	function outputEntitiesOn()
++	{
++		$this-&gt;bOutputEntities = true;
++	}
++	
++	// outputEntitiesOff() tells the response object to output special characters
++	// intact. (default behavior)
++	function outputEntitiesOff()
++	{
++		$this-&gt;bOutputEntities = false;
++	}
++	
+ 	// addAssign() adds an assign command message to the XML response
+ 	// $sTarget is a string containing the id of an HTML element
+ 	// $sAttribute is the part of the element you wish to modify (&quot;innerHTML&quot;, &quot;value&quot;, etc.)
+@@ -137,7 +155,26 @@
+ 	// usage: $objResponse-&gt;addRedirect(&quot;<A HREF="http://www.xajaxproject.org">http://www.xajaxproject.org</A>&quot;);
+ 	function addRedirect($sURL)
+ 	{
+-		$this-&gt;addScript('window.location = &quot;'.rawurlencode($sURL).'&quot;;');
++		//we need to parse the query part so that the values are rawurlencode()'ed
++		//can't just use parse_url() cos we could be dealing with a relative URL which
++		//  parse_url() can't deal with.
++		$queryStart = strpos($sURL, '?', strrpos($sURL, '/'));
++		if ($queryStart !== FALSE)
++		{
++			$queryStart++;
++			$queryEnd = strpos($sURL, '#', $queryStart);
++			if ($queryEnd === FALSE)
++				$queryEnd = strlen($sURL);
++			$queryPart = substr($sURL, $queryStart, $queryEnd-$queryStart);
++			parse_str($queryPart, $queryParts);
++			$newQueryPart = &quot;&quot;;
++			foreach($queryParts as $key =&gt; $value)
++			{
++				$newQueryPart .= rawurlencode($key).'='.rawurlencode($value).ini_get('arg_separator.output');
++			}
++			$sURL = str_replace($queryPart, $newQueryPart, $sURL);
++		}
++		$this-&gt;addScript('window.location = &quot;'.$sURL.'&quot;;');
+ 	}
+ 
+ 	// addScript() adds a Javascript command message to the XML response
+@@ -184,6 +221,17 @@
+ 	{
+ 		$this-&gt;xml .= $this-&gt;_cmdXML(array(&quot;n&quot;=&gt;&quot;ie&quot;,&quot;t&quot;=&gt;$sBefore,&quot;p&quot;=&gt;$sId),$sTag);
+ 	}
++
++	// addInsertAfter() adds an insert element command message to the XML response
++	// $sAfter is a string containing the id of the child after which the new element
++	// will be inserted
++	// $sTag is the tag to be added
++	// $sId is the id to be assigned to the new element
++	// usage: $objResponse-&gt;addInsertAfter(&quot;childDiv&quot;, &quot;h3&quot;, &quot;myid&quot;);	
++	function addInsertAfter($sAfter, $sTag, $sId)
++	{
++		$this-&gt;xml .= $this-&gt;_cmdXML(array(&quot;n&quot;=&gt;&quot;ia&quot;,&quot;t&quot;=&gt;$sAfter,&quot;p&quot;=&gt;$sId),$sTag);
++	}
+ 	
+ 	// addCreateInput() adds a create input command message to the XML response
+ 	// $sParent is a string containing the id of an HTML element to which the new
+@@ -271,11 +319,14 @@
+ 	// usage: $r1 = $objResponse1-&gt;getXML();
+ 	//        $objResponse2-&gt;loadXML($r1);
+ 	//        return $objResponse2-&gt;getXML();
+-	function loadXML($sXML)
++	function loadXML($mXML)
+ 	{
++		if (is_a($mXML, &quot;xajaxResponse&quot;)) {
++			$mXML = $mXML-&gt;getXML();
++		}
+ 		$sNewXML = &quot;&quot;;
+-		$iStartPos = strpos($sXML, &quot;&lt;xjx&gt;&quot;) + 5;
+-		$sNewXML = substr($sXML, $iStartPos);
++		$iStartPos = strpos($mXML, &quot;&lt;xjx&gt;&quot;) + 5;
++		$sNewXML = substr($mXML, $iStartPos);
+ 		$iEndPos = strpos($sNewXML, &quot;&lt;/xjx&gt;&quot;);
+ 		$sNewXML = substr($sNewXML, 0, $iEndPos);
+ 		$this-&gt;xml .= $sNewXML;
+@@ -284,12 +335,20 @@
+ 	// private method, used internally
+ 	function _cmdXML($aAttributes, $sData)
+ 	{
++		if ($this-&gt;bOutputEntities) {
++			if (function_exists('mb_convert_encoding')) {
++				$sData = call_user_func_array('mb_convert_encoding', array(&amp;$sData, 'HTML-ENTITIES', $this-&gt;sEncoding));
++			}
++			else {
++				trigger_error(&quot;The xajax XML response output could not be converted to HTML entities because the mb_convert_encoding function is not available&quot;, E_USER_NOTICE);
++			}
++		}
+ 		$xml = &quot;&lt;cmd&quot;;
+ 		foreach($aAttributes as $sAttribute =&gt; $sValue)
+ 			$xml .= &quot; $sAttribute=\&quot;$sValue\&quot;&quot;;
+-		if ($sData &amp;&amp; !stristr($sData,'&lt;![CDATA['))
++		if ($sData !== null &amp;&amp; !stristr($sData,'&lt;![CDATA['))
+ 			$xml .= &quot;&gt;&lt;![CDATA[$sData]]&gt;&lt;/cmd&gt;&quot;;
+-		else if ($sData)
++		else if ($sData !== null)
+ 			$xml .= &quot;&gt;$sData&lt;/cmd&gt;&quot;;
+ 		else
+ 			$xml .= &quot;&gt;&lt;/cmd&gt;&quot;;
+@@ -298,4 +357,4 @@
+ 	}
+ 	
+ }// end class xajaxResponse
+-?&gt;
+\ No newline at end of file
++?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000257.html">[ydf-devel] r1826 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000259.html">[ydf-devel] r1828 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#258">[ date ]</a>
+              <a href="thread.html#258">[ thread ]</a>
+              <a href="subject.html#258">[ subject ]</a>
+              <a href="author.html#258">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

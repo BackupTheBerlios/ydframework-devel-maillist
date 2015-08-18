@@ -1,0 +1,477 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2047 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2047%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples&In-Reply-To=%3C200608281942.k7SJgIlr011758%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000556.html">
+   <LINK REL="Next"  HREF="000559.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2047 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2047%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples&In-Reply-To=%3C200608281942.k7SJgIlr011758%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2047 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 28 21:42:18 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000556.html">[ydf-devel] r2046 - in YDFramework2.0/trunk/examples/weblog: .	include/languages skins/default skins/default_with_lightbox
+</A></li>
+        <LI>Next message: <A HREF="000559.html">[ydf-devel] r2048 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#557">[ date ]</a>
+              <a href="thread.html#557">[ thread ]</a>
+              <a href="subject.html#557">[ subject ]</a>
+              <a href="author.html#557">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-28 21:42:16 +0200 (Mon, 28 Aug 2006)
+New Revision: 2047
+
+Added:
+   YDFramework2.0/trunk/examples/callbacks.php
+   YDFramework2.0/trunk/examples/callbacks.tpl
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+Added the callback system provided by maximus meridius.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-08-28 18:50:23 UTC (rev 2046)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-08-28 19:42:16 UTC (rev 2047)
+@@ -32,6 +32,8 @@
+      *	framework is implemented in this class.
+      */
+     class YDRequest extends YDBase {
++	
++        var $_callbacks = null;	
+ 
+         /**
+          *	This is the class constructor for the YDRequest class. This sets the default action to 'actionDefault' (but
+@@ -46,6 +48,11 @@
+             $this-&gt;__isInitialized = true;
+             $this-&gt;__requiresAuthentication = false;
+ 
++            // setup the callbacks object
++            $this-&gt;_callbacks = new YDBase();
++
++            // this is for callbacks applicable to all actions
++            $this-&gt;_callbacks-&gt;set( 'action',   array( 'before' =&gt; array(), 'after' =&gt; array() ) );
+         }
+ 
+         /**
+@@ -57,21 +64,11 @@
+          *	@returns	The name of the current action.
+          */
+         function getActionName() {
+-
+-            // Get the name of the action
+             $action = strtolower( empty( $_GET[ 'do' ] ) ? 'actionDefault' : 'action' . $_GET[ 'do' ] );
+-
+-            // We convert to lowercase
+-            //$action = strtolower( $action );
+-
+-            // Remove the action prefix
+             if ( strpos( $action, 'action' ) === 0 ) {
+                 $action = substr( $action, strlen( 'action' ) );
+             }
+-
+-            // Return the action name
+             return strtolower( $action );
+-
+         }
+ 
+         /**
+@@ -169,6 +166,14 @@
+          *	the action names and so on are also update to reflect this.
+          *
+          *	@param $action	Name of the action to forward to.
++         *
++         *  @returns 	Returns an array containing results returned from action and callback processing.
++         *				Elements of this array are keyed by strings:
++         *					action:before
++         *					&lt;actionname&gt;:before
++         *					&lt;actionname&gt;
++         *					&lt;actionname&gt;:after
++         *					action:after		 
+          */
+         function forward( $action ) {
+             if ( strpos( $action, 'action' ) === 0 ) {
+@@ -178,7 +183,8 @@
+             if ( ! $this-&gt;isActionAllowed() ) {
+                 $this-&gt;errorActionNotAllowed();
+             } else {
+-                call_user_func( array( $this, 'action' . $action ) );
++                // process the requested action (second parameter disables callback processing)
++                return $this-&gt;_processAction( $action, false );
+             }
+         }
+ 
+@@ -230,13 +236,54 @@
+         }
+ 
+         /**
++         *  This function processes the specified action.
++         *
++         *  @param  $action  			The action name.
++         *  @param  $enable_callbacks	Default is true. Use this to disable callback processing.
++         *
++         *  @returns 	Returns an array containing results returned from action and callback processing.
++         *				Elements of this array are keyed by strings:
++         *					action:before
++         *					&lt;actionname&gt;:before
++         *					&lt;actionname&gt;
++         *					&lt;actionname&gt;:after
++         *					action:after
++         *
++         *  @internal
++         */
++        function _processAction( $action, $enable_callbacks = true ) {
++            if ( ! YDStringUtil::startsWith( $action, 'action' ) ) {
++                $action = 'action' . $action;
++            }
++            $results = array();
++            if ( $enable_callbacks == true ) {
++                $results['action:before'] = $this-&gt;_executeCallbacks( 'action' , true );
++                $results[$action . ':before'] = $this-&gt;_executeCallbacks( $action, true );
++            }
++            $results[$action] = call_user_func( array( $this, $action ) );
++            if ( $enable_callbacks == true ) {
++                $results[$action . ':after'] = $this-&gt;_executeCallbacks( $action, false );
++                $results['action:after'] = $this-&gt;_executeCallbacks( 'action', false );
++            }
++            return $results;
++        }
++
++        /**
+          *	This function is the intelligent part of the YDRequest class. Based on the action specified in the URL, it
+          *	will execute the right function of this class. It performs quite a lot of error checking to see whether the
+          *	action function is specified or not.
++         *
++         *  @returns 	Returns an array containing results returned from action and callback processing.
++         *				Elements of this array are keyed by strings:
++         *					action:before
++         *					&lt;actionname&gt;:before
++         *					&lt;actionname&gt;
++         *					&lt;actionname&gt;:after
++         *					action:after
+          */
+         function process() {
+             $action = 'action' . $this-&gt;getActionName();
+-            call_user_func( array( $this, $action ) );
++            return $this-&gt;_processAction( $action, true );
+         }
+ 
+         /**
+@@ -336,6 +383,120 @@
+             trigger_error( 'You are not allow to access the action &quot;' . $this-&gt;getActionName() . '&quot;', YD_ERROR );
+         }
+ 
++        /**
++         *  This function registers an action callback method.
++         *
++         *  'before' and 'after' callbacks can be registered for
++         *  'action' (all actions) or for a specific YDRequest action.
++         *
++         *  By default no YDRequest action callbacks are defined.
++         *
++         *  Callbacks are disabled when an action forwards to another
++         *  action. This is to prevent duplicated processing of callbacks.
++         *  &quot;redirectToAction&quot; is a more compatible with callbacks.
++         *
++         *  Processing of callbacks and actions in the context of a request
++         *  is executed in this order:
++         * 
++         *    1. (optional) before 'action' callbacks - apply to all actions
++         *    2. (optional) before callback for the current action
++         *	  3. Current action
++         *    4. (optional) after callback for the current action
++         *    5. (optional) after 'action' callbacks - apply to all actions
++         *
++         *	example 1: will execute my_before_callback() before each action
++         *		$this-&gt;registerCallback( 'my_before_callback', 'action', true );
++         *
++         *	example 2: will execute my_after_callback() after each action
++         *		$this-&gt;registerCallback( 'my_after_callback', 'action', false );
++         *
++         *	example 3: will execute my_deafult_after_callback() after actionDefault
++         *		$this-&gt;registerCallback( 'my_deafult_after_callback', 'actionDefault', false );		 
++         *
++         *  @param $method  The method name.
++         *  @param $action  The action or array of actions that trigger the call.
++         *  @param $before  (optional) Execute callback before the action. Default: false.
++         */
++        function registerCallback( $method, $action, $before=false ) {
++            if ( strtolower( $action ) != 'action' &amp;&amp; ! $this-&gt;_callbacks-&gt;exists( strtolower( $action ) ) ) {
++                $this-&gt;_callbacks-&gt;set( strtolower( $action ),   array( 'before' =&gt; array(), 'after' =&gt; array() ) );				
++            }
++            if ( strtolower( $action ) != 'action' &amp;&amp; ! $this-&gt;hasMethod( $action ) ) {
++                trigger_error(  $this-&gt;getClassName() . ' - ' .
++                                    ' action &quot;' . $action . '&quot; for callback &quot;' . $method . '&quot; does not exist.', YD_ERROR );					
++            }
++            $sub = $before ? 'before' : 'after';
++            if ( ! is_array( $action ) ) {
++                $action = array( $action );
++            }
++            foreach ( $action as $ac ) {
++                if ( ! $this-&gt;_callbacks-&gt;exists( strtolower( $ac ) ) ) {
++                    trigger_error(  $this-&gt;getClassName() . ' - ' . $ac .
++                                    ' Incorrect action for callback &quot;' . $method . '&quot;.', YD_ERROR );
++                }
++                $aclower = strtolower( $ac );
++                $act = &amp; $this-&gt;_callbacks-&gt;$aclower;
++                $act[ $sub ][ $method ] = '';
++            }
++        }
++
++        /**
++         *  This function unregisters a callback method.
++         *
++         *  @param $method  The method name.
++         *  @param $action  (optional) The action that triggers the call. If null, from all actions. Default: null.
++         */
++        function unregisterCallback( $method, $action=null ) {
++            if ( ! is_null( $action ) &amp;&amp; ! $this-&gt;_callbacks-&gt;exists( strtolower( $action ) ) ) {
++                trigger_error(  $this-&gt;getClassName() . ' -
++                                Incorrect action for unregistering callback method &quot;' . $method . '&quot;.', YD_ERROR );
++            }
++            $actions = array( $action );
++            if ( is_null( $action ) ) {
++                $actions = array_keys( get_object_vars( $this-&gt;_callbacks ) );
++            }
++            foreach ( $actions as $action ) {
++                $ac = strtolower ( $action );
++                $act = &amp; $this-&gt;_callbacks-&gt;$ac;
++                unset( $act[ 'before' ][ $method ] );
++                unset( $act[ 'after' ][ $method ] );
++            }
++        }
++
++        /**
++         *  This function executes all callbacks defined for the action.
++         *
++         *  @param  $action  The action name.
++         *  @param  $before  (optional) Execute the before actions. Default: false.
++         *  @param  $success (optional) Boolean indicating if the action was successful. Default: null - no result.
++         *
++         *  @internal
++         */
++        function _executeCallbacks( $action, $before=false, $success=null ) {
++            $sub = $before ? 'before' : 'after';
++            $actions = &amp; $this-&gt;_callbacks-&gt;$action;
++            if ( $actions[$sub] != null ) {
++                foreach ( $actions[ $sub ] as $callback =&gt; $n ) {
++                    if ( ! $this-&gt;hasMethod( $callback ) ) {
++                        trigger_error(  $this-&gt;getClassName() . ' - The ' . 
++                                        $action . ' callback method &quot;' . $callback . '&quot; is not defined.', YD_ERROR );
++                    }
++                    $res = call_user_func( array( &amp; $this, $callback ), $action, $before, $success );
++                    if ( $res !== true &amp;&amp; $res !== null ) {
++                        return array( 
++                            'class'    =&gt; $this-&gt;getClassName(),
++                            'callback' =&gt; $callback,
++                            'action'   =&gt; $action,
++                            'before'   =&gt; $before,
++                            'success'  =&gt; $success,
++                            'return'   =&gt; $res
++                        );
++                    }
++                }
++            }
++            return true;
++        }
++
+     }
+ 
+ ?&gt;
+
+Added: YDFramework2.0/trunk/examples/callbacks.php
+===================================================================
+--- YDFramework2.0/trunk/examples/callbacks.php	2006-08-28 18:50:23 UTC (rev 2046)
++++ YDFramework2.0/trunk/examples/callbacks.php	2006-08-28 19:42:16 UTC (rev 2047)
+@@ -0,0 +1,83 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDTemplate.php' );
++    YDInclude( 'YDUtil.php' );
++
++    // Class definition
++    class callbacks extends YDRequest {
++
++        // Class constructor
++        function callbacks() {
++            $this-&gt;YDRequest();
++            $this-&gt;template = new YDTemplate();
++
++            // these are callbacks that will be executed for all actions
++            $this-&gt;registerCallback( 'before_action_callback', 'action', true );
++            $this-&gt;registerCallback( 'after_action_callback',  'action', false );
++
++            // this is an example of an action-specific callback
++            $this-&gt;registerCallback( 'before_actionEdit_callback',  'actionEdit', false );
++
++            // uncomment this to test unregisterCallback
++            //$this-&gt;unregisterCallback( 'before_action_callback' );
++            //$this-&gt;unregisterCallback( 'after_action_callback' );
++            //$this-&gt;unregisterCallback( 'before_actionEdit_callback', 'actionEdit' );
++
++        }
++
++        // Default action - note: display is handled by the 'after_action_callback' callback
++        function actionDefault() {
++            $this-&gt;template-&gt;assign( 'title', 'callbacks::actionDefault' );
++        }
++
++        // Edit action
++        function actionEdit() {
++            $this-&gt;template-&gt;assign( 'title', 'callbacks::actionEdit' );
++        }
++
++        // Browser information
++        function actionBrowserInfo() {
++            $this-&gt;template-&gt;assign( 'title', 'callbacks::actionBrowserInfo' );
++        }
++
++        // Forward to BrowserInfo
++        function actionForward() {
++            $this-&gt;forward( 'BrowserInfo' );
++        }
++
++        // Redirect to BrowserInfo
++        function actionRedirect() {
++            $this-&gt;redirectToAction( 'BrowserInfo' );
++        }
++
++        // this method will be executed before all actions
++        function before_action_callback() {
++            $browser = new YDBrowserInfo(); 
++            $agent = YDDebugUtil::r_dump( $browser-&gt;agent, 'Agent' );
++            $this-&gt;template-&gt;assign( 'browserinfo', '&lt;pre&gt;' . $agent . '&lt;/pre&gt;' );
++        }
++
++        // this method will be executed AFTER all actions
++        function after_action_callback() {
++            $this-&gt;template-&gt;display();
++        }
++
++        // this method will be executed BEFORE the actionEdit action
++        function before_actionEdit_callback() {
++            $browser = new YDBrowserInfo(); 
++            $agent = YDDebugUtil::r_dump( $browser-&gt;agent, 'Agent' );
++            $additional_information = &quot;&lt;p&gt;Additional Information added by the before_actionEdit_callback() callback&lt;/p&gt;&quot;;
++            $this-&gt;template-&gt;assign( 'browserinfo', '&lt;pre&gt;' . $agent . '&lt;/pre&gt;' . $additional_information );
++        }
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt; 
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/callbacks.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/callbacks.tpl	2006-08-28 18:50:23 UTC (rev 2046)
++++ YDFramework2.0/trunk/examples/callbacks.tpl	2006-08-28 19:42:16 UTC (rev 2047)
+@@ -0,0 +1,28 @@
++&lt;html&gt;
++
++&lt;head&gt;
++
++    &lt;title&gt;{$YD_FW_NAMEVERS}&lt;/title&gt;
++
++&lt;/head&gt;
++
++&lt;body&gt;
++
++    &lt;h3&gt;{$title}&lt;/h3&gt;
++
++    &lt;p&gt;
++        &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;default action&lt;/a&gt; |
++        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&quot;&gt;edit action&lt;/a&gt; |
++        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=forward&quot;&gt;forward action&lt;/a&gt; |
++        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=redirect&quot;&gt;redirect action&lt;/a&gt; |
++        &lt;a href=&quot;index.php&quot;&gt;other samples&lt;/a&gt;
++    &lt;/p&gt;
++	
++	&lt;h3&gt;Browser Info (added by callbacks)&lt;/h3&gt;
++	&lt;p&gt;
++		{$browserinfo}
++	&lt;/p&gt;
++
++&lt;/body&gt;
++
++&lt;/html&gt;
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-08-28 18:50:23 UTC (rev 2046)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-08-28 19:42:16 UTC (rev 2047)
+@@ -108,7 +108,7 @@
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-            &lt;td rowspan=&quot;4&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
++            &lt;td rowspan=&quot;5&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;sample.php&quot;&gt;Defining and using action requests&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.php&quot;&gt;sample.php&lt;/a&gt;
+@@ -151,6 +151,14 @@
+             &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++            &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;callbacks.php&quot;&gt;Using callbacks&lt;/a&gt; &lt;/td&gt;
++            &lt;td valign=&quot;top&quot;&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.php&quot;&gt;callbacks.php&lt;/a&gt;
++                &lt;br/&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.tpl&quot;&gt;callbacks.tpl&lt;/a&gt;
++            &lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using templates&lt;/b&gt;&lt;/td&gt;
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000556.html">[ydf-devel] r2046 - in YDFramework2.0/trunk/examples/weblog: .	include/languages skins/default skins/default_with_lightbox
+</A></li>
+	<LI>Next message: <A HREF="000559.html">[ydf-devel] r2048 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#557">[ date ]</a>
+              <a href="thread.html#557">[ thread ]</a>
+              <a href="subject.html#557">[ subject ]</a>
+              <a href="author.html#557">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

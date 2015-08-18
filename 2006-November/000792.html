@@ -1,0 +1,644 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2229 - YDFramework2.0/trunk/examples/cm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2229%20-%20YDFramework2.0/trunk/examples/cm&In-Reply-To=%3C200611201917.kAKJHZf7016097%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000791.html">
+   <LINK REL="Next"  HREF="000793.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2229 - YDFramework2.0/trunk/examples/cm</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2229%20-%20YDFramework2.0/trunk/examples/cm&In-Reply-To=%3C200611201917.kAKJHZf7016097%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2229 - YDFramework2.0/trunk/examples/cm">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 20 20:17:35 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000791.html">[ydf-devel] r2228 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages
+</A></li>
+        <LI>Next message: <A HREF="000793.html">[ydf-devel] r2230 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#792">[ date ]</a>
+              <a href="thread.html#792">[ thread ]</a>
+              <a href="subject.html#792">[ subject ]</a>
+              <a href="author.html#792">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-20 20:17:20 +0100 (Mon, 20 Nov 2006)
+New Revision: 2229
+
+Modified:
+   YDFramework2.0/trunk/examples/cm/DBDesigner4.xml
+   YDFramework2.0/trunk/examples/cm/cm.sql
+Log:
+- update YDCM db scheme and sql export
+
+Modified: YDFramework2.0/trunk/examples/cm/DBDesigner4.xml
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/DBDesigner4.xml	2006-11-20 19:14:51 UTC (rev 2228)
++++ YDFramework2.0/trunk/examples/cm/DBDesigner4.xml	2006-11-20 19:17:20 UTC (rev 2229)
+@@ -1,7 +1,7 @@
+ &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot; ?&gt;
+ &lt;DBMODEL Version=&quot;4.0&quot;&gt;
+ &lt;SETTINGS&gt;
+-&lt;GLOBALSETTINGS ModelName=&quot;YDCM scheme&quot; IDModel=&quot;0&quot; IDVersion=&quot;0&quot; VersionStr=&quot;1.0.0.0&quot; Comments=&quot;&quot; UseVersionHistroy=&quot;1&quot; AutoIncVersion=&quot;1&quot; DatabaseType=&quot;MySQL&quot; ZoomFac=&quot;74.00&quot; XPos=&quot;134&quot; YPos=&quot;0&quot; DefaultDataType=&quot;5&quot; DefaultTablePrefix=&quot;0&quot; DefSaveDBConn=&quot;&quot; DefSyncDBConn=&quot;xpto&quot; DefQueryDBConn=&quot;&quot; Printer=&quot;&quot; HPageCount=&quot;4.0&quot; PageAspectRatio=&quot;1.440892512336408&quot; PageOrientation=&quot;1&quot; PageFormat=&quot;A4 (210x297 mm, 8.26x11.7 inches)&quot; SelectedPages=&quot;&quot; UsePositionGrid=&quot;1&quot; PositionGridX=&quot;20&quot; PositionGridY=&quot;20&quot; TableNameInRefs=&quot;0&quot; DefaultTableType=&quot;0&quot; ActivateRefDefForNewRelations=&quot;1&quot; FKPrefix=&quot;&quot; FKPostfix=&quot;&quot; CreateFKRefDefIndex=&quot;0&quot; DBQuoteCharacter=&quot;`&quot; CreateSQLforLinkedObjects=&quot;0&quot; DefModelFont=&quot;Tahoma&quot; CanvasWidth=&quot;4096&quot; CanvasHeight=&quot;2842&quot; /&gt;
++&lt;GLOBALSETTINGS ModelName=&quot;YDCM scheme&quot; IDModel=&quot;0&quot; IDVersion=&quot;0&quot; VersionStr=&quot;1.0.0.0&quot; Comments=&quot;&quot; UseVersionHistroy=&quot;1&quot; AutoIncVersion=&quot;1&quot; DatabaseType=&quot;MySQL&quot; ZoomFac=&quot;74.00&quot; XPos=&quot;21&quot; YPos=&quot;57&quot; DefaultDataType=&quot;5&quot; DefaultTablePrefix=&quot;0&quot; DefSaveDBConn=&quot;&quot; DefSyncDBConn=&quot;xpto&quot; DefQueryDBConn=&quot;&quot; Printer=&quot;&quot; HPageCount=&quot;4.0&quot; PageAspectRatio=&quot;1.440892512336408&quot; PageOrientation=&quot;1&quot; PageFormat=&quot;A4 (210x297 mm, 8.26x11.7 inches)&quot; SelectedPages=&quot;&quot; UsePositionGrid=&quot;1&quot; PositionGridX=&quot;20&quot; PositionGridY=&quot;20&quot; TableNameInRefs=&quot;0&quot; DefaultTableType=&quot;0&quot; ActivateRefDefForNewRelations=&quot;1&quot; FKPrefix=&quot;&quot; FKPostfix=&quot;&quot; CreateFKRefDefIndex=&quot;0&quot; DBQuoteCharacter=&quot;`&quot; CreateSQLforLinkedObjects=&quot;0&quot; DefModelFont=&quot;Tahoma&quot; CanvasWidth=&quot;4096&quot; CanvasHeight=&quot;2842&quot; /&gt;
+ &lt;DATATYPEGROUPS&gt;
+ &lt;DATATYPEGROUP Name=&quot;Numeric Types&quot; Icon=&quot;1&quot; /&gt;
+ &lt;DATATYPEGROUP Name=&quot;Date and Time Types&quot; Icon=&quot;2&quot; /&gt;
+@@ -258,13 +258,13 @@
+ &lt;/SETTINGS&gt;
+ &lt;METADATA&gt;
+ &lt;REGIONS&gt;
++&lt;REGION ID=&quot;1789&quot; RegionName=&quot;MASTER COMPONENT ( user management )&quot; XPos=&quot;760&quot; YPos=&quot;120&quot; Width=&quot;580&quot; Height=&quot;720&quot; RegionColor=&quot;2&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;39&quot; /&gt;
++&lt;REGION ID=&quot;1635&quot; RegionName=&quot;Portal Statistics ( YDCMStatistics )&quot; XPos=&quot;660&quot; YPos=&quot;880&quot; Width=&quot;280&quot; Height=&quot;220&quot; RegionColor=&quot;2&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;51&quot; /&gt;
++&lt;REGION ID=&quot;1613&quot; RegionName=&quot;Guestbook component ( YDCMGuestbook )&quot; XPos=&quot;1460&quot; YPos=&quot;640&quot; Width=&quot;580&quot; Height=&quot;220&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;45&quot; /&gt;
++&lt;REGION ID=&quot;1615&quot; RegionName=&quot;Helpdesk component ( YDCMHelpdesk )&quot; XPos=&quot;1460&quot; YPos=&quot;940&quot; Width=&quot;520&quot; Height=&quot;380&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;46&quot; /&gt;
++&lt;REGION ID=&quot;1619&quot; RegionName=&quot;Page component ( YDCMPage )&quot; XPos=&quot;1460&quot; YPos=&quot;120&quot; Width=&quot;260&quot; Height=&quot;260&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;49&quot; /&gt;
++&lt;REGION ID=&quot;1620&quot; RegionName=&quot;Link component ( YDCMLink )&quot; XPos=&quot;1460&quot; YPos=&quot;440&quot; Width=&quot;260&quot; Height=&quot;140&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;50&quot; /&gt;
+ &lt;REGION ID=&quot;1621&quot; RegionName=&quot;MASTER COMPONENT ( content management )&quot; XPos=&quot;140&quot; YPos=&quot;120&quot; Width=&quot;620&quot; Height=&quot;720&quot; RegionColor=&quot;3&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;50&quot; /&gt;
+-&lt;REGION ID=&quot;1620&quot; RegionName=&quot;Link component ( YDCMLink )&quot; XPos=&quot;1460&quot; YPos=&quot;440&quot; Width=&quot;260&quot; Height=&quot;140&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;50&quot; /&gt;
+-&lt;REGION ID=&quot;1619&quot; RegionName=&quot;Page component ( YDCMPage )&quot; XPos=&quot;1460&quot; YPos=&quot;120&quot; Width=&quot;260&quot; Height=&quot;260&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;49&quot; /&gt;
+-&lt;REGION ID=&quot;1615&quot; RegionName=&quot;Helpdesk component ( YDCMHelpdesk )&quot; XPos=&quot;1460&quot; YPos=&quot;940&quot; Width=&quot;520&quot; Height=&quot;380&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;46&quot; /&gt;
+-&lt;REGION ID=&quot;1613&quot; RegionName=&quot;Guestbook component ( YDCMGuestbook )&quot; XPos=&quot;1460&quot; YPos=&quot;640&quot; Width=&quot;260&quot; Height=&quot;240&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;45&quot; /&gt;
+-&lt;REGION ID=&quot;1635&quot; RegionName=&quot;Portal Statistics ( YDCMStatistics )&quot; XPos=&quot;660&quot; YPos=&quot;880&quot; Width=&quot;280&quot; Height=&quot;220&quot; RegionColor=&quot;2&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;51&quot; /&gt;
+-&lt;REGION ID=&quot;1789&quot; RegionName=&quot;MASTER COMPONENT ( user management )&quot; XPos=&quot;760&quot; YPos=&quot;120&quot; Width=&quot;580&quot; Height=&quot;720&quot; RegionColor=&quot;2&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;39&quot; /&gt;
+ &lt;/REGIONS&gt;
+ &lt;TABLES&gt;
+ &lt;TABLE ID=&quot;1160&quot; Tablename=&quot;YDCMPage&quot; PrevTableName=&quot;component_page&quot; XPos=&quot;1480&quot; YPos=&quot;160&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;INSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (1,1,\aApache html all lang\a,\aApache xhtml all lang\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (2,1,\aPostgreSQL en html\a,\aPostgreSQL en xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (3,1,\aPostgreSQL pt html\a,\aPostgreSQL pt xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (4!
+ ,1,\amySQL en html\a,\amySQL en xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (5,1,\amySQL pt html\a,\amySQL pt xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (6,1,\aDatabases html\a,\aDatabases xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (7,1,\aBases de dados html\a,\aBases de dados xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (8,1,\aGenerators html\a,\aGenerators xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`templat!
+ e_pack`,`template`,`metatags`,`description`,`keywords`) VALUES!
+  (9,1,\a
+Geradores html\a,\aGeradores xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (10,1,\aPortals html\a,\aPortals xhtml\a,0,\a\a,0,\a\a,\a\a);\nINSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (11,1,\aPortais html\a,\aPortais xhtml\a,0,\a\a,0,\a\a,\a\a);\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;4&quot; &gt;
+@@ -319,7 +319,7 @@
+ &lt;RELATION_END ID=&quot;1704&quot; /&gt;
+ &lt;/RELATIONS_END&gt;
+ &lt;/TABLE&gt;
+-&lt;TABLE ID=&quot;1162&quot; Tablename=&quot;YDCMTree&quot; PrevTableName=&quot;content&quot; XPos=&quot;160&quot; YPos=&quot;180&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (1,1,1,22,1,1,\aYDCMRoot\a,\a\a,7,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (2,1,2,3,2,1,\aYDCMRootmenu\a,\amenu Code Paste\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag!
+ `,`candrop`) VALUES (3,1,4,5,2,1,\aYDCMRootmenu\a,\amenu Documentation\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (4,1,6,13,2,1,\aYDCMRootmenu\a,\amenu Books\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (5,4,7,8,3,1,\aYDCMPage\a,\aApache\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (6,4,9,10,3,1,\aYDCMPage\!
+ a,\aPostegreSQL\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 0!
+ 0:00:00\
+a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (7,4,11,12,3,1,\aYDCMPage\a,\amysql\a,0,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (8,1,14,21,2,1,\aYDCMRootmenu\a,\alinks\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (9,8,15,16,3,1,\aYDCMPage\a,\adatabases\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`n!
+ left`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (10,8,17,18,3,1,\aYDCMPage\a,\agenerators\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (11,8,19,20,3,1,\aYDCMPage\a,\aportals\a,1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;6&quot; &gt;
++&lt;TABLE ID=&quot;1162&quot; Tablename=&quot;YDCMTree&quot; PrevTableName=&quot;content&quot; XPos=&quot;160&quot; YPos=&quot;180&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;INSERT INTO `ydcmtree` VALUES (  1,null,   \a\a,              0, 1, \aYDCMRoot\a,         \a\a,                               1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,0,0);\nINSERT INTO `ydcmtree` VALUES (  2,    1,  \a//\a,            1, 2, \aYDCMRootmenu\a, \amenu Code Paste\a,      1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  3,    1,  \a//\a,            1, 3, \aYDCMRootmenu\a, \amenu Documentation\a, 1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  4,    1,  \a//\a,            1, 4, \aYDCMRootmenu\a, \amenu Books\a,              1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  5,    4,  \a//4/\a,         2, 1, \aYDCMPage\a,         \aApache\a, !
+                     1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  6,    4,  \a//4/\a,         2, 2, \aYDCMPage\a,         \aPostegreSQL\a,             1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  7,    4,  \a//4/\a,         2, 3, \aYDCMPage\a,         \amysql\a,                       0,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  8,    1,  \a//\a,            1, 5, \aYDCMRootmenu\a,  \alinks\a,                        1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  9,    8,  \a//1/8/\a,      3, 1, \aYDCMPage\a,          \adatabases\a,                1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSERT INTO `ydcmtree` VALUES (  10,  8,  \a//1/8/\a,      3, 2, \aYDCMPage\a,          \agenerators\a,               1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\nINSE!
+ RT INTO `ydcmtree` VALUES (  11, 10, \a//1/8/10/\a,  4, 1, \aY!
+ DCMPage\
+a,          \aportals\a,                    1,1,1,\a0000-00-00 00:00:00\a,\a0000-00-00 00:00:00\a,1,1);\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;6&quot; &gt;
+ &lt;COLUMNS&gt;
+ &lt;COLUMN ID=&quot;1191&quot; ColName=&quot;content_id&quot; PrevColName=&quot;&quot; Pos=&quot;1&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;(10)&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;Autoincrement id&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+@@ -327,25 +327,18 @@
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1799&quot; ColName=&quot;parent_id&quot; PrevColName=&quot;&quot; Pos=&quot;14&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;COLUMN ID=&quot;1799&quot; ColName=&quot;parent_id&quot; PrevColName=&quot;&quot; Pos=&quot;14&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;(10)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;1&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+-&lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1418&quot; ColName=&quot;nleft&quot; PrevColName=&quot;&quot; Pos=&quot;18&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;0&quot; Comments=&quot;&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1419&quot; ColName=&quot;nright&quot; PrevColName=&quot;&quot; Pos=&quot;19&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;0&quot; Comments=&quot;&quot;&gt;
++&lt;COLUMN ID=&quot;1419&quot; ColName=&quot;lineage&quot; PrevColName=&quot;nright&quot; Pos=&quot;19&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;\a//\a&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1420&quot; ColName=&quot;nlevel&quot; PrevColName=&quot;&quot; Pos=&quot;20&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;0&quot; Comments=&quot;&quot;&gt;
++&lt;COLUMN ID=&quot;1420&quot; ColName=&quot;level&quot; PrevColName=&quot;nlevel&quot; Pos=&quot;20&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;0&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+@@ -409,7 +402,11 @@
+ &lt;RELATIONS_START&gt;
+ &lt;RELATION_START ID=&quot;1437&quot; /&gt;
+ &lt;RELATION_START ID=&quot;1692&quot; /&gt;
++&lt;RELATION_START ID=&quot;2036&quot; /&gt;
+ &lt;/RELATIONS_START&gt;
++&lt;RELATIONS_END&gt;
++&lt;RELATION_END ID=&quot;2036&quot; /&gt;
++&lt;/RELATIONS_END&gt;
+ &lt;INDICES&gt;
+ &lt;INDEX ID=&quot;1210&quot; IndexName=&quot;PRIMARY&quot; IndexKind=&quot;0&quot; FKRefDef_Obj_id=&quot;-1&quot;&gt;
+ &lt;INDEXCOLUMNS&gt;
+@@ -442,7 +439,7 @@
+ &lt;RELATION_END ID=&quot;1706&quot; /&gt;
+ &lt;/RELATIONS_END&gt;
+ &lt;/TABLE&gt;
+-&lt;TABLE ID=&quot;1165&quot; Tablename=&quot;YDCMLanguages&quot; PrevTableName=&quot;languages&quot; XPos=&quot;520&quot; YPos=&quot;540&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;INSERT INTO `ydcmlanguages` (`language_id`,`name`,`active`,`visitors_default`,`admin_default`) VALUES (\aen\a,\aEnglish\a,1,1,1);\nINSERT INTO `ydcmlanguages` (`language_id`,`name`,`active`,`visitors_default`,`admin_default`) VALUES (\apt\a,\aPortugu\234s\a,1,0,0);\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;9&quot; &gt;
++&lt;TABLE ID=&quot;1165&quot; Tablename=&quot;YDCMLanguages&quot; PrevTableName=&quot;languages&quot; XPos=&quot;780&quot; YPos=&quot;520&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;INSERT INTO `ydcmlanguages` (`language_id`,`name`,`active`,`visitors_default`,`admin_default`) VALUES (\aen\a,\aEnglish\a,1,1,1);\nINSERT INTO `ydcmlanguages` (`language_id`,`name`,`active`,`visitors_default`,`admin_default`) VALUES (\apt\a,\aPortugu\234s\a,1,0,0);\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;9&quot; &gt;
+ &lt;COLUMNS&gt;
+ &lt;COLUMN ID=&quot;1219&quot; ColName=&quot;language_id&quot; PrevColName=&quot;&quot; Pos=&quot;3&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;language code&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+@@ -755,9 +752,9 @@
+ &lt;/INDEX&gt;
+ &lt;/INDICES&gt;
+ &lt;/TABLE&gt;
+-&lt;TABLE ID=&quot;1537&quot; Tablename=&quot;YDCMGuestbook_posts&quot; PrevTableName=&quot;Table_23&quot; XPos=&quot;1480&quot; YPos=&quot;680&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;37&quot; &gt;
++&lt;TABLE ID=&quot;1537&quot; Tablename=&quot;YDCMGuestbook&quot; PrevTableName=&quot;Table_23&quot; XPos=&quot;1480&quot; YPos=&quot;680&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;37&quot; &gt;
+ &lt;COLUMNS&gt;
+-&lt;COLUMN ID=&quot;1539&quot; ColName=&quot;post_id&quot; PrevColName=&quot;&quot; Pos=&quot;0&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;COLUMN ID=&quot;1539&quot; ColName=&quot;guestbook_id&quot; PrevColName=&quot;post_id&quot; Pos=&quot;0&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+@@ -769,41 +766,14 @@
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1542&quot; ColName=&quot;date&quot; PrevColName=&quot;&quot; Pos=&quot;2&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;post date&quot;&gt;
++&lt;COLUMN ID=&quot;1542&quot; ColName=&quot;guestbook_datecreation&quot; PrevColName=&quot;date&quot; Pos=&quot;2&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;post date&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1543&quot; ColName=&quot;name&quot; PrevColName=&quot;&quot; Pos=&quot;3&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;poster username&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1544&quot; ColName=&quot;email&quot; PrevColName=&quot;&quot; Pos=&quot;4&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;poster email&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1545&quot; ColName=&quot;message&quot; PrevColName=&quot;&quot; Pos=&quot;5&quot; idDatatype=&quot;28&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1546&quot; ColName=&quot;active&quot; PrevColName=&quot;&quot; Pos=&quot;6&quot; idDatatype=&quot;1&quot; DatatypeParams=&quot;(1)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;1&quot; Comments=&quot;post is active and can be seen after creation. 1 yes, 0 no&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1663&quot; ColName=&quot;website&quot; PrevColName=&quot;&quot; Pos=&quot;7&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1664&quot; ColName=&quot;ip&quot; PrevColName=&quot;&quot; Pos=&quot;8&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(15)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+ &lt;/COLUMNS&gt;
++&lt;RELATIONS_START&gt;
++&lt;RELATION_START ID=&quot;2019&quot; /&gt;
++&lt;/RELATIONS_START&gt;
+ &lt;RELATIONS_END&gt;
+ &lt;RELATION_END ID=&quot;1709&quot; /&gt;
+ &lt;/RELATIONS_END&gt;
+@@ -841,7 +811,7 @@
+ &lt;/INDEX&gt;
+ &lt;/INDICES&gt;
+ &lt;/TABLE&gt;
+-&lt;TABLE ID=&quot;1678&quot; Tablename=&quot;YDCMComp&quot; PrevTableName=&quot;Table_17&quot; XPos=&quot;160&quot; YPos=&quot;520&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;INSERT INTO `ydcmcomp` VALUES (1,5,\aen\a,\aApache friends\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (2,6,\aen\a,\aPostGre en\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (3,6,\apt\a,\aPostGre pt\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (4,7,\aen\a,\amySql howto\a,1,\a2000-01-01 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (5,7,\apt\a,\aajuda mySql\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (6,9,\aen\a,\aDatabases we use\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (7,9,\apt\a,\aBases de dados\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (8,10,\aen\a,\aGenerators help\a,1,\a2000-01-01 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (9,10,\apt\a,\aAjuda sobre geradores\a,1,\a2002-02-02 00:00:00\a);\!
+ nINSERT INTO `ydcmcomp` VALUES (10,11,\aen\a,\aPortals\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (11,11,\apt\a,\aPortais\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (12,8,\aen\a,\aMenu Links\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (13,8,\apt\a,\aO meu menu de atalhos\a,1,\a0000-00-00 00:00:00\a);\nINSERT INTO `ydcmcomp` VALUES (14,10,\aen\a,\aGener\a,0,\a3002-02-02 00:00:00\a);\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;46&quot; &gt;
++&lt;TABLE ID=&quot;1678&quot; Tablename=&quot;YDCMComp&quot; PrevTableName=&quot;Table_17&quot; XPos=&quot;160&quot; YPos=&quot;520&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;INSERT INTO `ydcmcomp` VALUES (1,     5,\aen\a,\aApache friends\a);\nINSERT INTO `ydcmcomp` VALUES (2,     6,\aen\a,\aPostGre en\a);\nINSERT INTO `ydcmcomp` VALUES (3,     6,\apt\a,\aPostGre pt\a);\nINSERT INTO `ydcmcomp` VALUES (4,     7,\aen\a,\amySql howto\a);\nINSERT INTO `ydcmcomp` VALUES (5,     7,\apt\a,\aajuda mySql\a);\nINSERT INTO `ydcmcomp` VALUES (6,     9,\aen\a,\aDatabases we use\a);\nINSERT INTO `ydcmcomp` VALUES (7,     9,\apt\a,\aBases de dados\a);\nINSERT INTO `ydcmcomp` VALUES (8,   10,\aen\a,\aGenerators help\a);\nINSERT INTO `ydcmcomp` VALUES (9,   10,\apt\a,\aAjuda sobre geradores\a);\nINSERT INTO `ydcmcomp` VALUES (10, 11,\aen\a,\aPortals\a);\nINSERT INTO `ydcmcomp` VALUES (11, 11,\apt\a,\aPortais\a);\nINSERT INTO `ydcmcomp` VALUES (12,  8,\aen\a,\aMenu Links\a);\nINSERT IN!
+ TO `ydcmcomp` VALUES (13,  8,\apt\a,\aO meu menu de atalhos\a);\nINSERT INTO `ydcmcomp` VALUES (14, 10,\aen\a,\aGener\a);\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;46&quot; &gt;
+ &lt;COLUMNS&gt;
+ &lt;COLUMN ID=&quot;1680&quot; ColName=&quot;component_id&quot; PrevColName=&quot;&quot; Pos=&quot;0&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+@@ -865,16 +835,6 @@
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1683&quot; ColName=&quot;version_default&quot; PrevColName=&quot;&quot; Pos=&quot;2&quot; idDatatype=&quot;1&quot; DatatypeParams=&quot;(1)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;1&quot; Comments=&quot;This is the default version&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1737&quot; ColName=&quot;version_date&quot; PrevColName=&quot;&quot; Pos=&quot;5&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;Version created in this date&quot;&gt;
+-&lt;OPTIONSELECTED&gt;
+-&lt;/OPTIONSELECTED&gt;
+-&lt;/COLUMN&gt;
+ &lt;/COLUMNS&gt;
+ &lt;RELATIONS_START&gt;
+ &lt;RELATION_START ID=&quot;1704&quot; /&gt;
+@@ -1010,6 +970,62 @@
+ &lt;RELATION_END ID=&quot;1877&quot; /&gt;
+ &lt;/RELATIONS_END&gt;
+ &lt;/TABLE&gt;
++&lt;TABLE ID=&quot;2014&quot; Tablename=&quot;YDCMGuestbook_posts&quot; PrevTableName=&quot;Table_16&quot; XPos=&quot;1820&quot; YPos=&quot;680&quot; TableType=&quot;1&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;40&quot; &gt;
++&lt;COLUMNS&gt;
++&lt;COLUMN ID=&quot;2017&quot; ColName=&quot;post_id&quot; PrevColName=&quot;idYDCMGuestbook_posts&quot; Pos=&quot;0&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
++&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;COLUMN ID=&quot;2020&quot; ColName=&quot;guestbook_id&quot; PrevColName=&quot;&quot; Pos=&quot;1&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;1&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
++&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;COLUMN ID=&quot;2023&quot; ColName=&quot;post_name&quot; PrevColName=&quot;&quot; Pos=&quot;2&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;COLUMN ID=&quot;2024&quot; ColName=&quot;post_email&quot; PrevColName=&quot;&quot; Pos=&quot;3&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;COLUMN ID=&quot;2025&quot; ColName=&quot;post_message&quot; PrevColName=&quot;&quot; Pos=&quot;4&quot; idDatatype=&quot;28&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;COLUMN ID=&quot;2026&quot; ColName=&quot;post_active&quot; PrevColName=&quot;&quot; Pos=&quot;5&quot; idDatatype=&quot;1&quot; DatatypeParams=&quot;(1)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
++&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;COLUMN ID=&quot;2027&quot; ColName=&quot;post_website&quot; PrevColName=&quot;&quot; Pos=&quot;6&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(255)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;COLUMN ID=&quot;2028&quot; ColName=&quot;ip&quot; PrevColName=&quot;&quot; Pos=&quot;7&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(5)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
++&lt;/OPTIONSELECTED&gt;
++&lt;/COLUMN&gt;
++&lt;/COLUMNS&gt;
++&lt;RELATIONS_END&gt;
++&lt;RELATION_END ID=&quot;2019&quot; /&gt;
++&lt;/RELATIONS_END&gt;
++&lt;INDICES&gt;
++&lt;INDEX ID=&quot;2018&quot; IndexName=&quot;PRIMARY&quot; IndexKind=&quot;0&quot; FKRefDef_Obj_id=&quot;-1&quot;&gt;
++&lt;INDEXCOLUMNS&gt;
++&lt;INDEXCOLUMN idColumn=&quot;2017&quot; LengthParam=&quot;0&quot; /&gt;
++&lt;/INDEXCOLUMNS&gt;
++&lt;/INDEX&gt;
++&lt;/INDICES&gt;
++&lt;/TABLE&gt;
+ &lt;/TABLES&gt;
+ &lt;RELATIONS&gt;
+ &lt;RELATION ID=&quot;1383&quot; RelationName=&quot;userobject_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1367&quot; FKFields=&quot;userobject_id=userobject_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;4&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;8&quot; StartIntervalOffsetY=&quot;-23&quot; EndIntervalOffsetX=&quot;5&quot; EndIntervalOffsetY=&quot;-4&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;1&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;21&quot; /&gt;
+@@ -1028,6 +1044,8 @@
+ &lt;RELATION ID=&quot;1984&quot; RelationName=&quot;userobject_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1771&quot; FKFields=&quot;userobject_id=permission_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=1\nOnUpdate=1\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;38&quot; /&gt;
+ &lt;RELATION ID=&quot;1989&quot; RelationName=&quot;userobject_id&quot; Kind=&quot;5&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1800&quot; FKFields=&quot;userobject_id=group_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=1\nOnUpdate=1\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;38&quot; /&gt;
+ &lt;RELATION ID=&quot;2009&quot; RelationName=&quot;parent_id&quot; Kind=&quot;5&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1168&quot; FKFields=&quot;userobject_id=parent_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;-5&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=1\nOnUpdate=1\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;39&quot; /&gt;
++&lt;RELATION ID=&quot;2019&quot; RelationName=&quot;guestbook_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1537&quot; DestTable=&quot;2014&quot; FKFields=&quot;guestbook_id=guestbook_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;41&quot; /&gt;
++&lt;RELATION ID=&quot;2036&quot; RelationName=&quot;parent_id&quot; Kind=&quot;5&quot; SrcTable=&quot;1162&quot; DestTable=&quot;1162&quot; FKFields=&quot;content_id=parent_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=1\nOnUpdate=1\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;42&quot; /&gt;
+ &lt;/RELATIONS&gt;
+ &lt;NOTES&gt;
+ &lt;/NOTES&gt;
+
+Modified: YDFramework2.0/trunk/examples/cm/cm.sql
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/cm.sql	2006-11-20 19:14:51 UTC (rev 2228)
++++ YDFramework2.0/trunk/examples/cm/cm.sql	2006-11-20 19:17:20 UTC (rev 2229)
+@@ -1,3 +1,11 @@
++CREATE TABLE YDCMStatistics_downloads (
++  download_is INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
++  date DATETIME NULL,
++  filename VARCHAR(255) NULL,
++  PRIMARY KEY(download_is)
++)
++TYPE=InnoDB;
++
+ CREATE TABLE YDCMLanguages (
+   language_id VARCHAR(255) NOT NULL,
+   name VARCHAR(50) NOT NULL,
+@@ -12,47 +20,6 @@
+ INSERT INTO `ydcmlanguages` (`language_id`,`name`,`active`,`visitors_default`,`admin_default`) VALUES ('pt','Portugu&#234;s',1,0,0);
+ 
+ 
+-CREATE TABLE YDCMTree (
+-  content_id INTEGER(10) NOT NULL AUTO_INCREMENT,
+-  parent_id INTEGER UNSIGNED NULL,
+-  nleft INTEGER NOT NULL DEFAULT 0,
+-  nright INTEGER NOT NULL DEFAULT 0,
+-  nlevel INTEGER NOT NULL DEFAULT 0,
+-  position INTEGER(10) NULL DEFAULT 1,
+-  type VARCHAR(20) NOT NULL,
+-  reference VARCHAR(100) NOT NULL,
+-  state TINYINT(1) NOT NULL,
+-  access TINYINT(2) NOT NULL DEFAULT 1,
+-  searcheable TINYINT(1) NOT NULL,
+-  published_date_start DATETIME NOT NULL,
+-  published_date_end DATETIME NOT NULL,
+-  candrag TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+-  candrop TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+-  PRIMARY KEY(content_id)
+-)
+-TYPE=InnoDB;
+-
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (1,1,1,22,1,1,'YDCMRoot','',7,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (2,1,2,3,2,1,'YDCMRootmenu','menu Code Paste',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (3,1,4,5,2,1,'YDCMRootmenu','menu Documentation',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (4,1,6,13,2,1,'YDCMRootmenu','menu Books',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (5,4,7,8,3,1,'YDCMPage','Apache',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (6,4,9,10,3,1,'YDCMPage','PostegreSQL',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (7,4,11,12,3,1,'YDCMPage','mysql',0,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (8,1,14,21,2,1,'YDCMRootmenu','links',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (9,8,15,16,3,1,'YDCMPage','databases',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (10,8,17,18,3,1,'YDCMPage','generators',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-INSERT INTO `ydcmtree` (`content_id`,`parent_id`,`nleft`,`nright`,`nlevel`,`position`,`type`,`reference`,`state`,`access`,`searcheable`,`published_date_start`,`published_date_end`,`candrag`,`candrop`) VALUES (11,8,19,20,3,1,'YDCMPage','portals',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
+-
+-
+-CREATE TABLE YDCMStatistics_downloads (
+-  download_is INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+-  date DATETIME NULL,
+-  filename VARCHAR(255) NULL,
+-  PRIMARY KEY(download_is)
+-)
+-TYPE=InnoDB;
+-
+ CREATE TABLE YDCMStatistics_searches (
+   search_id INTEGER(10) NOT NULL AUTO_INCREMENT,
+   date DATETIME NOT NULL,
+@@ -92,6 +59,42 @@
+ INSERT INTO `ydcmuserobject` VALUES (12,   4,  '//2/4/',    3, 3, 'YDCMGroup',   'extra',1);
+ 
+ 
++CREATE TABLE YDCMTree (
++  content_id INTEGER(10) NOT NULL AUTO_INCREMENT,
++  parent_id INTEGER(10) NULL,
++  lineage VARCHAR(255) NOT NULL DEFAULT '//',
++  level INTEGER NOT NULL DEFAULT 0,
++  position INTEGER(10) NULL DEFAULT 1,
++  type VARCHAR(20) NOT NULL,
++  reference VARCHAR(100) NOT NULL,
++  state TINYINT(1) NOT NULL,
++  access TINYINT(2) NOT NULL DEFAULT 1,
++  searcheable TINYINT(1) NOT NULL,
++  published_date_start DATETIME NOT NULL,
++  published_date_end DATETIME NOT NULL,
++  candrag TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
++  candrop TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
++  PRIMARY KEY(content_id),
++  FOREIGN KEY(parent_id)
++    REFERENCES YDCMTree(content_id)
++      ON DELETE CASCADE
++      ON UPDATE CASCADE
++)
++TYPE=InnoDB;
++
++INSERT INTO `ydcmtree` VALUES (  1,null,   '',              0, 1, 'YDCMRoot',         '',                               1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',0,0);
++INSERT INTO `ydcmtree` VALUES (  2,    1,  '//',            1, 2, 'YDCMRootmenu', 'menu Code Paste',      1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  3,    1,  '//',            1, 3, 'YDCMRootmenu', 'menu Documentation', 1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  4,    1,  '//',            1, 4, 'YDCMRootmenu', 'menu Books',              1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  5,    4,  '//4/',         2, 1, 'YDCMPage',         'Apache',                     1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  6,    4,  '//4/',         2, 2, 'YDCMPage',         'PostegreSQL',             1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  7,    4,  '//4/',         2, 3, 'YDCMPage',         'mysql',                       0,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  8,    1,  '//',            1, 5, 'YDCMRootmenu',  'links',                        1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  9,    8,  '//1/8/',      3, 1, 'YDCMPage',          'databases',                1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  10,  8,  '//1/8/',      3, 2, 'YDCMPage',          'generators',               1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++INSERT INTO `ydcmtree` VALUES (  11, 10, '//1/8/10/',  4, 1, 'YDCMPage',          'portals',                    1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00',1,1);
++
++
+ CREATE TABLE YDCMPermission (
+   permission_id INTEGER(10) NOT NULL,
+   class VARCHAR(255) NOT NULL,
+@@ -166,8 +169,6 @@
+   content_id INTEGER(10) NOT NULL,
+   language_id VARCHAR(255) NULL,
+   title VARCHAR(255) NULL,
+-  version_default TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
+-  version_date DATETIME NOT NULL,
+   PRIMARY KEY(component_id),
+   FOREIGN KEY(content_id)
+     REFERENCES YDCMTree(content_id)
+@@ -180,20 +181,20 @@
+ )
+ TYPE=InnoDB;
+ 
+-INSERT INTO `ydcmcomp` VALUES (1,5,'en','Apache friends',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (2,6,'en','PostGre en',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (3,6,'pt','PostGre pt',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (4,7,'en','mySql howto',1,'2000-01-01 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (5,7,'pt','ajuda mySql',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (6,9,'en','Databases we use',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (7,9,'pt','Bases de dados',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (8,10,'en','Generators help',1,'2000-01-01 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (9,10,'pt','Ajuda sobre geradores',1,'2002-02-02 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (10,11,'en','Portals',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (11,11,'pt','Portais',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (12,8,'en','Menu Links',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (13,8,'pt','O meu menu de atalhos',1,'0000-00-00 00:00:00');
+-INSERT INTO `ydcmcomp` VALUES (14,10,'en','Gener',0,'3002-02-02 00:00:00');
++INSERT INTO `ydcmcomp` VALUES (1,     5,'en','Apache friends');
++INSERT INTO `ydcmcomp` VALUES (2,     6,'en','PostGre en');
++INSERT INTO `ydcmcomp` VALUES (3,     6,'pt','PostGre pt');
++INSERT INTO `ydcmcomp` VALUES (4,     7,'en','mySql howto');
++INSERT INTO `ydcmcomp` VALUES (5,     7,'pt','ajuda mySql');
++INSERT INTO `ydcmcomp` VALUES (6,     9,'en','Databases we use');
++INSERT INTO `ydcmcomp` VALUES (7,     9,'pt','Bases de dados');
++INSERT INTO `ydcmcomp` VALUES (8,   10,'en','Generators help');
++INSERT INTO `ydcmcomp` VALUES (9,   10,'pt','Ajuda sobre geradores');
++INSERT INTO `ydcmcomp` VALUES (10, 11,'en','Portals');
++INSERT INTO `ydcmcomp` VALUES (11, 11,'pt','Portais');
++INSERT INTO `ydcmcomp` VALUES (12,  8,'en','Menu Links');
++INSERT INTO `ydcmcomp` VALUES (13,  8,'pt','O meu menu de atalhos');
++INSERT INTO `ydcmcomp` VALUES (14, 10,'en','Gener');
+ 
+ 
+ CREATE TABLE YDCMLocks (
+@@ -213,6 +214,59 @@
+ )
+ TYPE=InnoDB;
+ 
++CREATE TABLE YDCMHelpdesk_posts (
++  post_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
++  userobject_id INTEGER(10) NOT NULL,
++  component_id INTEGER UNSIGNED NOT NULL,
++  state_id VARCHAR(255) NULL,
++  urgency_id VARCHAR(255) NULL,
++  subject TEXT NULL,
++  text TEXT NULL,
++  creation_date DATETIME NOT NULL,
++  reportedby_user TINYINT(1) UNSIGNED NULL,
++  reportedby_local VARCHAR(255) NULL,
++  reportedby_date DATETIME NOT NULL,
++  reportedby_type VARCHAR(255) NULL,
++  assignedto_user TINYINT(1) UNSIGNED NULL,
++  assignedto_local VARCHAR(255) NULL,
++  assignedto_date DATETIME NOT NULL,
++  assignedto_type VARCHAR(255) NULL,
++  PRIMARY KEY(post_id),
++  FOREIGN KEY(userobject_id)
++    REFERENCES YDCMUserobject(userobject_id)
++      ON DELETE NO ACTION
++      ON UPDATE NO ACTION,
++  FOREIGN KEY(component_id)
++    REFERENCES YDCMComp(component_id)
++      ON DELETE NO ACTION
++      ON UPDATE NO ACTION
++)
++TYPE=InnoDB;
++
++INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (1,1,'1','1',4,'','','2006-07-05 15:50:33',NULL,NULL,'0000-00-00 00:00:00',NULL,0,'','2006-07-05 15:50:33','0');
++INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (2,1,'1','1',4,'sub','text','2006-07-05 15:50:33',NULL,NULL,'0000-00-00 00:00:00',NULL,0,'ass local','2006-07-05 15:50:33','0');
++INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (3,1,'1','1',4,'sub','text','2006-07-05 15:50:33',0,'rep local','2006-07-05 15:50:33','0',0,'ass local','2006-07-05 15:50:33','0');
++INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (4,1,'1','1',4,'sub','text','2006-07-05 15:50:33',0,'rep local','2006-07-05 15:50:33','0',0,'ass local','2006-07-05 15:50:33','0');
++
++
++CREATE TABLE YDCMHelpdesk_response (
++  response_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
++  userobject_id INTEGER(10) NOT NULL,
++  post_id INTEGER UNSIGNED NOT NULL,
++  date DATETIME NULL,
++  description TEXT NULL,
++  PRIMARY KEY(response_id),
++  FOREIGN KEY(post_id)
++    REFERENCES YDCMHelpdesk_posts(post_id)
++      ON DELETE NO ACTION
++      ON UPDATE NO ACTION,
++  FOREIGN KEY(userobject_id)
++    REFERENCES YDCMUserobject(userobject_id)
++      ON DELETE NO ACTION
++      ON UPDATE NO ACTION
++)
++TYPE=InnoDB;
++
+ CREATE TABLE YDCMPage (
+   component_id INTEGER UNSIGNED NOT NULL,
+   current_version TINYINT(1) NULL,
+@@ -243,24 +297,6 @@
+ INSERT INTO `ydcmpage` (`component_id`,`current_version`,`html`,`xhtml`,`template_pack`,`template`,`metatags`,`description`,`keywords`) VALUES (11,1,'Portais html','Portais xhtml',0,'',0,'','');
+ 
+ 
+-CREATE TABLE YDCMGuestbook_posts (
+-  post_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+-  component_id INTEGER UNSIGNED NOT NULL,
+-  date DATETIME NOT NULL,
+-  name VARCHAR(255) NOT NULL,
+-  email VARCHAR(255) NULL,
+-  message TEXT NOT NULL,
+-  active TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
+-  website VARCHAR(255) NULL,
+-  ip VARCHAR(15) NULL,
+-  PRIMARY KEY(post_id),
+-  FOREIGN KEY(component_id)
+-    REFERENCES YDCMComp(component_id)
+-      ON DELETE NO ACTION
+-      ON UPDATE NO ACTION
+-)
+-TYPE=InnoDB;
+-
+ CREATE TABLE YDCMLink (
+   component_id INTEGER UNSIGNED NOT NULL,
+   url VARCHAR(255) NOT NULL,
+@@ -272,28 +308,11 @@
+ )
+ TYPE=InnoDB;
+ 
+-CREATE TABLE YDCMHelpdesk_posts (
+-  post_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+-  userobject_id INTEGER(10) NOT NULL,
++CREATE TABLE YDCMGuestbook (
++  guestbook_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+   component_id INTEGER UNSIGNED NOT NULL,
+-  state_id VARCHAR(255) NULL,
+-  urgency_id VARCHAR(255) NULL,
+-  subject TEXT NULL,
+-  text TEXT NULL,
+-  creation_date DATETIME NOT NULL,
+-  reportedby_user TINYINT(1) UNSIGNED NULL,
+-  reportedby_local VARCHAR(255) NULL,
+-  reportedby_date DATETIME NOT NULL,
+-  reportedby_type VARCHAR(255) NULL,
+-  assignedto_user TINYINT(1) UNSIGNED NULL,
+-  assignedto_local VARCHAR(255) NULL,
+-  assignedto_date DATETIME NOT NULL,
+-  assignedto_type VARCHAR(255) NULL,
+-  PRIMARY KEY(post_id),
+-  FOREIGN KEY(userobject_id)
+-    REFERENCES YDCMUserobject(userobject_id)
+-      ON DELETE NO ACTION
+-      ON UPDATE NO ACTION,
++  guestbook_datecreation DATETIME NOT NULL,
++  PRIMARY KEY(guestbook_id),
+   FOREIGN KEY(component_id)
+     REFERENCES YDCMComp(component_id)
+       ON DELETE NO ACTION
+@@ -301,26 +320,19 @@
+ )
+ TYPE=InnoDB;
+ 
+-INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (1,1,'1','1',4,'','','2006-07-05 15:50:33',NULL,NULL,'0000-00-00 00:00:00',NULL,0,'','2006-07-05 15:50:33','0');
+-INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (2,1,'1','1',4,'sub','text','2006-07-05 15:50:33',NULL,NULL,'0000-00-00 00:00:00',NULL,0,'ass local','2006-07-05 15:50:33','0');
+-INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (3,1,'1','1',4,'sub','text','2006-07-05 15:50:33',0,'rep local','2006-07-05 15:50:33','0',0,'ass local','2006-07-05 15:50:33','0');
+-INSERT INTO `ydcmhelpdesk_posts` (`post_id`,`component_id`,`state_id`,`urgency_id`,`userobject_id`,`subject`,`text`,`creation_date`,`reportedby_user`,`reportedby_local`,`reportedby_date`,`reportedby_type`,`assignedto_user`,`assignedto_local`,`assignedto_date`,`assignedto_type`) VALUES (4,1,'1','1',4,'sub','text','2006-07-05 15:50:33',0,'rep local','2006-07-05 15:50:33','0',0,'ass local','2006-07-05 15:50:33','0');
+-
+-
+-CREATE TABLE YDCMHelpdesk_response (
+-  response_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+-  userobject_id INTEGER(10) NOT NULL,
+-  post_id INTEGER UNSIGNED NOT NULL,
+-  date DATETIME NULL,
+-  description TEXT NULL,
+-  PRIMARY KEY(response_id),
+-  FOREIGN KEY(post_id)
+-    REFERENCES YDCMHelpdesk_posts(post_id)
++CREATE TABLE YDCMGuestbook_posts (
++  post_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
++  guestbook_id INTEGER UNSIGNED NOT NULL,
++  post_name VARCHAR(255) NULL,
++  post_email VARCHAR(255) NULL,
++  post_message TEXT NULL,
++  post_active TINYINT(1) UNSIGNED NULL,
++  post_website VARCHAR(255) NULL,
++  ip VARCHAR(5) NULL,
++  PRIMARY KEY(post_id),
++  FOREIGN KEY(guestbook_id)
++    REFERENCES YDCMGuestbook(guestbook_id)
+       ON DELETE NO ACTION
+-      ON UPDATE NO ACTION,
+-  FOREIGN KEY(userobject_id)
+-    REFERENCES YDCMUserobject(userobject_id)
+-      ON DELETE NO ACTION
+       ON UPDATE NO ACTION
+ )
+ TYPE=InnoDB;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000791.html">[ydf-devel] r2228 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages
+</A></li>
+	<LI>Next message: <A HREF="000793.html">[ydf-devel] r2230 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#792">[ date ]</a>
+              <a href="thread.html#792">[ thread ]</a>
+              <a href="subject.html#792">[ subject ]</a>
+              <a href="author.html#792">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

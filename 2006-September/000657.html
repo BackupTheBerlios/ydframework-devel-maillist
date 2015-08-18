@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2138 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2138%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200609141411.k8EEBQ2O028717%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000656.html">
+   <LINK REL="Next"  HREF="000658.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2138 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2138%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200609141411.k8EEBQ2O028717%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2138 - YDFramework2.0/trunk/YDFramework2">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep 14 16:11:26 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000656.html">[ydf-devel] r2137 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000658.html">[ydf-devel] r2139 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#657">[ date ]</a>
+              <a href="thread.html#657">[ thread ]</a>
+              <a href="subject.html#657">[ subject ]</a>
+              <a href="author.html#657">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-14 16:11:25 +0200 (Thu, 14 Sep 2006)
+New Revision: 2138
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+$_SERVER['PATH_TRANSLATED'] is now only used for YD_SELF_FILE if it's a file. If not,  $_SERVER['SCRIPT_FILENAME'] is used instead.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-09-14 13:49:02 UTC (rev 2137)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-09-14 14:11:25 UTC (rev 2138)
+@@ -67,7 +67,7 @@
+ 
+     // File and URL constants
+     @define( 'YD_SELF_SCRIPT', $_SERVER['PHP_SELF'] );
+-    if ( isset( $_SERVER['PATH_TRANSLATED'] ) ) {
++    if ( isset( $_SERVER['PATH_TRANSLATED'] ) &amp;&amp; is_file( $_SERVER['PATH_TRANSLATED'] ) ) {
+         @define( 'YD_SELF_FILE', $_SERVER['PATH_TRANSLATED'] );
+     } else {
+         @define( 'YD_SELF_FILE', $_SERVER['SCRIPT_FILENAME'] );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000656.html">[ydf-devel] r2137 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000658.html">[ydf-devel] r2139 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#657">[ date ]</a>
+              <a href="thread.html#657">[ thread ]</a>
+              <a href="subject.html#657">[ subject ]</a>
+              <a href="author.html#657">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2376 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2376%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200702012337.l11NbI23000557%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000970.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2376 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2376%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200702012337.l11NbI23000557%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2376 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Feb  2 00:37:18 CET 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000970.html">[ydf-devel] r2377 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/contrib
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#969">[ date ]</a>
+              <a href="thread.html#969">[ thread ]</a>
+              <a href="subject.html#969">[ subject ]</a>
+              <a href="author.html#969">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-02-02 00:37:07 +0100 (Fri, 02 Feb 2007)
+New Revision: 2376
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+Log:
+FIX: crop info was not used in thumb saving/reading. Fixed now.
+     <A HREF="http://ydframework.berlios.de/forum/index.php?topic=29.0">http://ydframework.berlios.de/forum/index.php?topic=29.0</A>
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-01-30 00:01:03 UTC (rev 2375)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-02-01 23:37:07 UTC (rev 2376)
+@@ -1056,7 +1056,7 @@
+             }
+ 
+             // Get the cache filename
+-            $cacheFName = YD_DIR_TEMP . '/' . $this-&gt;_createThumbnailName( $width, $height );
++            $cacheFName = YD_DIR_TEMP . '/' . $this-&gt;_createThumbnailName( $width, $height, $crop );
+ 
+             // Check if caching is enabled
+             if ( $cache === true ) {
+@@ -1239,9 +1239,10 @@
+          *
+          *	@param $width	The maximum width of the thumbnail.
+          *	@param $height	The maximum height of the thumbnail.
++         *	@param $crop	Indicate if is the cropped version.
+          */
+-        function _createThumbnailName( $width, $height ) {
+-            $cacheFName = $this-&gt;getAbsolutePath() . '/' . $width . '/' . $height . '/' . $this-&gt;getLastModified();
++        function _createThumbnailName( $width, $height, $crop ) {
++            $cacheFName = $this-&gt;getAbsolutePath() . '/' . $width . '/' . $height . '/' . strval( $crop ) . $this-&gt;getLastModified();
+             $cacheFName = YD_TMP_PRE . 'N_' . md5( $cacheFName ) . '.' . strtolower( $this-&gt;getExtension() );
+             return $cacheFName;
+         }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000970.html">[ydf-devel] r2377 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/contrib
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#969">[ date ]</a>
+              <a href="thread.html#969">[ thread ]</a>
+              <a href="subject.html#969">[ subject ]</a>
+              <a href="author.html#969">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

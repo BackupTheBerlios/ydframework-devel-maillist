@@ -1,0 +1,4069 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2171 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDFormElements addons/YDBBCode javascript
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2171%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20YDClasses/YDFormElements%20addons/YDBBCode%20javascript&In-Reply-To=%3C200610020835.k928ZlPo016050%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000701.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2171 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDFormElements addons/YDBBCode javascript</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2171%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20YDClasses/YDFormElements%20addons/YDBBCode%20javascript&In-Reply-To=%3C200610020835.k928ZlPo016050%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2171 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDFormElements addons/YDBBCode javascript">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Oct  2 10:35:47 CEST 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000701.html">[ydf-devel] r2172 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#700">[ date ]</a>
+              <a href="thread.html#700">[ thread ]</a>
+              <a href="subject.html#700">[ subject ]</a>
+              <a href="author.html#700">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-10-02 10:35:47 +0200 (Mon, 02 Oct 2006)
+New Revision: 2171
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser.class.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser_bbcode.class.php
+   YDFramework2.0/trunk/YDFramework2/javascript/
+   YDFramework2.0/trunk/YDFramework2/javascript/bbtextarea.js
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+Log:
+Rewrote the BBCode addon and rewrote the javascript that inserts bbcodes in a bbtextarea form element.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2006-09-29 12:02:32 UTC (rev 2170)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2006-10-02 08:35:47 UTC (rev 2171)
+@@ -149,27 +149,7 @@
+             $out = '';
+             if ( sizeof( $this-&gt;_buttons ) &gt; 0 ) {
+                 if ( ! defined( 'YD_BBTA_MAINSCRIPT' ) ) {
+-                    $out .= '&lt;script type=&quot;text/javascript&quot;&gt;';
+-                    $out .= '	function AddText( element, startTag, defaultText, endTag ) {';
+-                    $out .= '		objElement = document.getElementById( element );';
+-                    $out .= '		if ( objElement.createTextRange ) {';
+-                    $out .= '			var text;';
+-                    $out .= '			objElement.focus( objElement.caretPos);';
+-                    $out .= '			objElement.caretPos = document.selection.createRange().duplicate();';
+-                    $out .= '			if ( objElement.caretPos.text.length &gt; 0 ) {' . &quot;\n&quot;;
+-                    $out .= '				objElement.caretPos.text = startTag + objElement.caretPos.text + endTag;';
+-                    $out .= '			} else {';
+-                    $out .= '				objElement.caretPos.text = startTag + defaultText + endTag;';
+-                    $out .= '			}';
+-                    $out .= '		} else {';
+-                    $out .= '			objElement.value += startTag + defaultText + endTag;';
+-                    $out .= '		}';
+-                    $out .= '	}';
+-                    $out .= '	function openWin( url, name, opts ) {';
+-                    $out .= '		win = window.open( url, name, opts );';
+-                    $out .= '		win.focus();';
+-                    $out .= '	}';
+-                    $out .= '&lt;/script&gt;';
++                    $out .= '&lt;script src=&quot;' . YD_SELF_SCRIPT . '?do=JsBBTextArea&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
+                     define( 'YD_BBTA_MAINSCRIPT', 1 );
+                 }
+                 $out .= '&lt;script type=&quot;text/javascript&quot;&gt;';
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-09-29 12:02:32 UTC (rev 2170)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-10-02 08:35:47 UTC (rev 2171)
+@@ -614,6 +614,15 @@
+             unset( $_COOKIE[$name] );
+         }
+ 
++        /**
++         *  Action to include the JavaScript for the bbtextarea field.
++         *
++         *  @internal
++         */
++        function actionJsBBTextArea() {
++            header( 'Content-Type: application/x-javascript' );
++            die( readfile( dirname( __FILE__ ) . '/../javascript/bbtextarea.js' ) );
++        }
+ 
+     }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2006-09-29 12:02:32 UTC (rev 2170)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2006-10-02 08:35:47 UTC (rev 2171)
+@@ -26,6 +26,13 @@
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++    // Includes
++    YDInclude( dirname( __FILE__ ) . '/stringparser_bbcode.class.php' );
++
++    // Configure the default for this class
++    YDConfig::set( 'YD_BBCODE_SMILIES_DIR', null, false );
++    YDConfig::set( 'YD_BBCODE_SMILIES_URL', null, false );
++
+     /**
+      *	This class implements a BBCode parser. By default, it supports a number of standard codes that can be
+      *	implemented. The following codes are supported by default: img, url, mail, email, color, b, i, u, code, quote, p
+@@ -46,31 +53,42 @@
+             $this-&gt;_copyright = '(c) Copyright 2002-2005 Pieter Claerhout';
+             $this-&gt;_description = 'This class implements a BBCode parser. By default, it supports a number of standard '
+                                . 'codes that can be implemented. The following codes are supported by default: img, '
+-                               . 'url, mail, email, color, b, i, u, code, quote, p';
++                               . 'url, mail, email, color, b, i, u, code, quote, p, size';
+ 
+-            // Conversions
+-            $this-&gt;_conversions = array();
++            // Create a new parser class
++            $this-&gt;parser = new StringParser_BBCode();
+ 
+-            // Add the initial conversions
+-            $this-&gt;addRule( &quot;/\[[bB]\](.+?)\[\/[bB]\]/s&quot;, '&lt;b&gt;\\1&lt;/b&gt;' );
+-            $this-&gt;addRule( &quot;/\[[iI]\](.+?)\[\/[iI]\]/s&quot;, '&lt;i&gt;\\1&lt;/i&gt;' );
+-            $this-&gt;addRule( &quot;/\[[uU]\](.+?)\[\/[uU]\]/s&quot;, '&lt;u&gt;\\1&lt;/u&gt;' );
+-            $this-&gt;addRule( &quot;/\[[pP]\](.+?)\[\/[pP]\]/s&quot;, '&lt;p&gt;\\1&lt;/p&gt;' );
+-            $this-&gt;addRule( &quot;/\[code\](.+?)\[\/code\]/s&quot;, '&lt;code&gt;\\1&lt;/code&gt;' );
+-            $this-&gt;addRule( &quot;/\[quote\](.+?)\[\/quote\]/s&quot;, '&lt;blockquote&gt;\\1&lt;/blockquote&gt;' );
+-            $this-&gt;addRule( &quot;/\[url=([^&lt;&gt; \n]+?)\](.+?)\[\/url\]/i&quot;, '&lt;a href=&quot;\\1&quot;&gt;\\2&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[url\]([^&lt;&gt; \n]+?)\[\/url\]/i&quot;, '&lt;a href=&quot;\\1&quot;&gt;\\1&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[mail=([^&lt;&gt; \n]+?)\](.+?)\[\/mail\]/i&quot;, '&lt;a href=&quot;mailto:\\1&quot;&gt;\\2&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[mail\]([^&lt;&gt; \n]+?)\[\/mail\]/i&quot;, '&lt;a href=&quot;mailto:\\1&quot;&gt;\\1&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[email=([^&lt;&gt; \n]+?)\](.+?)\[\/email\]/i&quot;, '&lt;a href=&quot;mailto:\\1&quot;&gt;\\2&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[email\]([^&lt;&gt; \n]+?)\[\/email\]/i&quot;, '&lt;a href=&quot;mailto:\\1&quot;&gt;\\1&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[img=([^&lt;&gt; \n]+?)\](.+?)\[\/img\]/i&quot;, '&lt;a href=&quot;\\1&quot;&gt;&lt;img border=&quot;0&quot; src=&quot;\\2&quot; alt=&quot;\\2&quot; /&gt;&lt;/a&gt;' );
+-            $this-&gt;addRule( &quot;/\[img\]([^&lt;&gt; \n]+?)\[\/img\]/i&quot;, '&lt;img border=&quot;0&quot; src=&quot;\\1&quot; alt=&quot;\\1&quot; /&gt;' );
+-            $this-&gt;addRule( &quot;/\[color=([^&lt;&gt; \n]+?)\](.+?)\[\/color\]/i&quot;, '&lt;font color=&quot;\\1&quot;&gt;\\2&lt;/font&gt;' );
+-            $this-&gt;addRule( &quot;/\[quote](.+?)\[\/quote\]/msi&quot;, '&lt;blockquote&gt;\\1&lt;/blockquote&gt;' );
+-            $this-&gt;addRule( &quot;/\[quote=\&quot;([^&lt;&gt; \n]+?)\&quot;\](.+?)\[\/quote\]/msi&quot;, '&lt;blockquote&gt;&lt;b&gt;\\1&lt;/b&gt;&lt;br/&gt;\\2&lt;/blockquote&gt;' );
+-            $this-&gt;addRule( &quot;/\[quote=([^&lt;&gt; \n]+?)\](.+?)\[\/quote\]/msi&quot;, '&lt;blockquote&gt;&lt;b&gt;\\1&lt;/b&gt;&lt;br/&gt;\\2&lt;/blockquote&gt;' );
++            // Make tags not case sensitive and allow mixed attributes
++            $this-&gt;parser-&gt;setGlobalCaseSensitive( false );
++            $this-&gt;parser-&gt;setMixedAttributeTypes( true );
+ 
++            // Register the codes
++            $this-&gt;addCode( 'b', 'simple_replace', 'inline', null, array('start_tag'=&gt;'&lt;b&gt;', 'end_tag'=&gt;'&lt;/b&gt;') );
++            $this-&gt;addCode( 'i', 'simple_replace', 'inline', null, array('start_tag'=&gt;'&lt;i&gt;', 'end_tag'=&gt;'&lt;/i&gt;') );
++            $this-&gt;addCode( 'u', 'simple_replace', 'inline', null, array('start_tag'=&gt;'&lt;u&gt;', 'end_tag'=&gt;'&lt;/u&gt;') );
++            $this-&gt;addCode( 'p', 'simple_replace', 'inline', null, array('start_tag'=&gt;'&lt;p&gt;', 'end_tag'=&gt;'&lt;/p&gt;') );
++            $this-&gt;addCode( 'code', 'usecontent', 'block', array( &amp;$this, 'doTagCode' ) );
++            $this-&gt;addCode( 'color', 'callback_replace', 'inline', array( &amp;$this, 'doTagColor' ) );
++            $this-&gt;addCode( 'size', 'callback_replace', 'inline', array( &amp;$this, 'doTagSize' ) );
++            $this-&gt;addCode( 'quote', 'callback_replace', 'block', array( &amp;$this, 'doTagQuote' ) );
++            $this-&gt;addCode( 'url', 'usecontent?', 'link', array( &amp;$this, 'doTagUrl' ), array('usecontent_param'=&gt;'default') );
++            $this-&gt;addCode( 'link', 'usecontent?', 'link', array( &amp;$this, 'doTagUrl' ), array('usecontent_param'=&gt;'default') );
++            $this-&gt;addCode( 'mail', 'usecontent?', 'link', array( &amp;$this, 'doTagEmail' ), array('usecontent_param'=&gt;'default') );
++            $this-&gt;addCode( 'email', 'usecontent?', 'link', array( &amp;$this, 'doTagEmail' ), array('usecontent_param'=&gt;'default') );
++            $this-&gt;addCode( 'img', 'usecontent?', 'image', array( &amp;$this, 'doTagImg' ), array('usecontent_param'=&gt;'default') );
++            $this-&gt;addCode( 'hr', 'simple_replace', 'inline', null, array('start_tag'=&gt;'&lt;hr /&gt;','end_tag'=&gt;'') );
++
++            // Add list handling
++            $this-&gt;addCode( 'list', 'simple_replace', 'list', null, array('start_tag'=&gt;'&lt;ul&gt;', 'end_tag'=&gt;'&lt;/ul&gt;') );
++            $this-&gt;addCode( '*', 'simple_replace', 'listitem', null, array('start_tag'=&gt;'&lt;li&gt;', 'end_tag'=&gt;'&lt;/li&gt;') );
++
++            // Add some parser flags
++            $this-&gt;parser-&gt;setCodeFlag( '*', 'closetag', BBCODE_CLOSETAG_OPTIONAL );
++            $this-&gt;parser-&gt;setCodeFlag( 'hr', 'closetag', BBCODE_CLOSETAG_FORBIDDEN );
++            $this-&gt;parser-&gt;setCodeFlag( 'list', 'opentag.before.newline', BBCODE_NEWLINE_DROP );
++            $this-&gt;parser-&gt;setCodeFlag( 'list', 'closetag.before.newline', BBCODE_NEWLINE_DROP );
++            $this-&gt;parser-&gt;setCodeFlag( 'hr', 'opentag.before.newline', BBCODE_NEWLINE_DROP );
++
+             // Attributes to convert links
+             $this-&gt;_convertLinks = array(
+                 &quot;#([\t\r\n ])([a-z0-9]+?){1}://([\w\-]+\.([\w\-]+\.)*[\w]+(:[0-9]+)?(/[^ \&quot;\n\r\t&lt;]*)?)#i&quot; =&gt; '\1[url]\2://\3[/url]',
+@@ -78,19 +96,232 @@
+                 &quot;#([\n ])([a-z0-9\-_.]+?)@([\w\-]+\.([\w\-\.]+\.)*[\w]+)#i&quot; =&gt; &quot;\\1[email]\\2@\\3[/email]&quot;
+             );
+ 
++            // The list of smilies that this class supports
++            $this-&gt;smilies = array(
++                ':D' =&gt; 'icon_biggrin.gif',
++                ':-D' =&gt; 'icon_biggrin.gif',
++                ':grin:' =&gt; 'icon_biggrin.gif',
++                ':)' =&gt; 'icon_smile.gif',
++                ':-)' =&gt; 'icon_smile.gif',
++                ':smile:' =&gt; 'icon_smile.gif',
++                ':(' =&gt; 'icon_sad.gif',
++                ':-(' =&gt; 'icon_sad.gif',
++                ':sad:' =&gt; 'icon_sad.gif',
++                ':o' =&gt; 'icon_surprised.gif',
++                ':-o' =&gt; 'icon_surprised.gif',
++                ':eek:' =&gt; 'icon_surprised.gif',
++                ':shock:' =&gt; 'icon_eek.gif',
++                ':?' =&gt; 'icon_confused.gif',
++                ':-?' =&gt; 'icon_confused.gif',
++                ':???:' =&gt; 'icon_confused.gif',
++                '8)' =&gt; 'icon_cool.gif',
++                '8-)' =&gt; 'icon_cool.gif',
++                ':cool:' =&gt; 'icon_cool.gif',
++                ':lol:' =&gt; 'icon_lol.gif',
++                ':x' =&gt; 'icon_mad.gif',
++                ':-x' =&gt; 'icon_mad.gif',
++                ':mad:' =&gt; 'icon_mad.gif',
++                ':P' =&gt; 'icon_razz.gif',
++                ':-P' =&gt; 'icon_razz.gif',
++                ':razz:' =&gt; 'icon_razz.gif',
++                ':oops:' =&gt; 'icon_redface.gif',
++                ':cry:' =&gt; 'icon_cry.gif',
++                ':evil:' =&gt; 'icon_evil.gif',
++                ':twisted:' =&gt; 'icon_twisted.gif',
++                ':roll:' =&gt; 'icon_rolleyes.gif',
++                ':wink:' =&gt; 'icon_wink.gif',
++                ';)' =&gt; 'icon_wink.gif',
++                ';-)' =&gt; 'icon_wink.gif',
++                ':!:' =&gt; 'icon_exclaim.gif',
++                ':?:' =&gt; 'icon_question.gif',
++                ':idea:' =&gt; 'icon_idea.gif',
++                ':arrow:' =&gt; 'icon_arrow.gif',
++                ':|' =&gt; 'icon_neutral.gif',
++                ':-|' =&gt; 'icon_neutral.gif',
++                ':neutral:' =&gt; 'icon_neutral.gif',
++                ':mrgreen:' =&gt; 'icon_mrgreen.gif',
++                ':--' =&gt; 'icon_mrgreen.gif',
++            );
++
+         }
+ 
+         /**
+-         *	You can use this function to add a conversion rule to the parser.
++         *  Function to add a new code to the parser.
+          *
+-         *	@param $regex	Regular expression matching the tags.
+-         *	@param $replace	The replacement for the tag regex.
++         *  @param  $code           The code to register
++         *  @param  $type           The type of the code to register
++         *  @param  $content_type   The content type of the code to register
++         *  @param  $callback       The callback function to handle the code
++         *  @param  $params         (optional) The parameters for the callback function.
+          */
+-        function addRule( $regex, $replace ) {
+-            $this-&gt;_conversions[ $regex ] = $replace;
++        function addCode( $code, $type, $content_type, $callback=null, $params=array() ) {
++            $this-&gt;parser-&gt;addCode(
++                $code, $type, $callback, $params, $content_type, array( 'block', 'inline', 'listitem', 'list', 'link' ), array( 'image' )
++            );
+         }
+ 
+         /**
++         *  Function to handle the code tag.
++         *
++         *  @params $action         The action that is executed.
++         *  @params $attributes     The attributes specified in the tag
++         *  @params $content        The content value of the tag.
++         *  @params $params         The parameters for the tag
++         *  @params $node_object    A reference to the node object.
++         *
++         *  @returns    The html version of the tag.
++         */
++        function doTagCode( $action, $attributes, $content, $params, $node_object ) {
++            if ( $action == 'validate' ) {
++                return true;
++            } else {
++                if ( isset( $attributes['default'] ) &amp;&amp; strtolower( $attributes['default'] == 'bbcode' ) ) {
++                    $content = str_replace( '[', '&lt;font color=&quot;blue&quot;&gt;[', $content );
++                    $content = str_replace( ']', ']&lt;/font&gt;', $content );
++                }
++                return '&lt;code&gt;' . $content . '&lt;/code&gt;';
++            }
++        }
++
++        /**
++         *  Function to handle the color tag.
++         *
++         *  @params $action         The action that is executed.
++         *  @params $attributes     The attributes specified in the tag
++         *  @params $content        The content value of the tag.
++         *  @params $params         The parameters for the tag
++         *  @params $node_object    A reference to the node object.
++         *
++         *  @returns    The html version of the tag.
++         */
++        function doTagColor( $action, $attributes, $content, $params, $node_object ) {
++            if ( $action == 'validate' ) {
++                return true;
++            } else {
++                if ( isset( $attributes['default'] ) &amp;&amp; ! empty( $attributes['default'] ) ) {
++                    return '&lt;font color=&quot;' . $attributes['default'] . '&quot;&gt;' . $content . '&lt;/font&gt;';
++                } else {
++                    return $content;
++                }
++            }
++        }
++
++        /**
++         *  Function to handle the size tag.
++         *
++         *  @params $action         The action that is executed.
++         *  @params $attributes     The attributes specified in the tag
++         *  @params $content        The content value of the tag.
++         *  @params $params         The parameters for the tag
++         *  @params $node_object    A reference to the node object.
++         *
++         *  @returns    The html version of the tag.
++         */
++        function doTagSize( $action, $attributes, $content, $params, $node_object ) {
++            if ( $action == 'validate' ) {
++                return true;
++            } else {
++                if ( isset( $attributes['default'] ) &amp;&amp; is_numeric( $attributes['default'] ) ) {
++                    return '&lt;font size=&quot;' . $attributes['default'] . '&quot;&gt;' . $content . '&lt;/font&gt;';
++                } else {
++                    return $content;
++                }
++            }
++        }
++
++        /**
++         *  Function to handle the quote tag.
++         *
++         *  @params $action         The action that is executed.
++         *  @params $attributes     The attributes specified in the tag
++         *  @params $content        The content value of the tag.
++         *  @params $params         The parameters for the tag
++         *  @params $node_object    A reference to the node object.
++         *
++         *  @returns    The html version of the tag.
++         */
++        function doTagQuote( $action, $attributes, $content, $params, $node_object ) {
++            if ( $action == 'validate' ) {
++                return true;
++            } else {
++                if ( isset( $attributes['default'] ) &amp;&amp; ! empty( $attributes['default'] ) ) {
++                    $content = '&lt;b&gt;' . $attributes['default'] . ' ' . t('wrote') . &quot;&lt;/b&gt;\n&quot; . $content;
++                }
++                return '&lt;blockquote&gt;' . $content . '&lt;/blockquote&gt;';
++            }
++        }
++
++        /**
++         *  Function to handle the url tag.
++         *
++         *  @params $action         The action that is executed.
++         *  @params $attributes     The attributes specified in the tag
++         *  @params $content        The content value of the tag.
++         *  @params $params         The parameters for the tag
++         *  @params $node_object    A reference to the node object.
++         *
++         *  @returns    The html version of the tag.
++         */
++        function doTagUrl( $action, $attributes, $content, $params, $node_object ) {
++            if ( $action == 'validate' ) {
++                return true;
++            } else {
++                if ( isset( $attributes['default'] ) &amp;&amp; ! empty( $attributes['default'] ) ) {
++                    return '&lt;a href=&quot;' . $attributes['default'] . '&quot;&gt;' . $content . &quot;&lt;/a&gt;&quot;;
++                } else {
++                    return '&lt;a href=&quot;' . $content . '&quot;&gt;' . $content . &quot;&lt;/a&gt;&quot;;
++                }
++            }
++        }
++
++        /**
++         *  Function to handle the email tag.
++         *
++         *  @params $action         The action that is executed.
++         *  @params $attributes     The attributes specified in the tag
++         *  @params $content        The content value of the tag.
++         *  @params $params         The parameters for the tag
++         *  @params $node_object    A reference to the node object.
++         *
++         *  @returns    The html version of the tag.
++         */
++        function doTagEmail( $action, $attributes, $content, $params, $node_object ) {
++            if ( $action == 'validate' ) {
++                return true;
++            } else {
++                if ( isset( $attributes['default'] ) &amp;&amp; ! empty( $attributes['default'] ) ) {
++                    return '&lt;a href=&quot;mailto:' . $attributes['default'] . '&quot;&gt;' . $content . &quot;&lt;/a&gt;&quot;;
++                } else {
++                    return '&lt;a href=&quot;mailto:' . $content . '&quot;&gt;' . $content . &quot;&lt;/a&gt;&quot;;
++                }
++            }
++        }
++
++        /**
++         *  Function to handle the img tag.
++         *
++         *  @params $action         The action that is executed.
++         *  @params $attributes     The attributes specified in the tag
++         *  @params $content        The content value of the tag.
++         *  @params $params         The parameters for the tag
++         *  @params $node_object    A reference to the node object.
++         *
++         *  @returns    The html version of the tag.
++         */
++        function doTagImg( $action, $attributes, $content, $params, $node_object ) {
++            if ( $action == 'validate' ) {
++                return true;
++            } else {
++                if ( isset( $attributes['default'] ) &amp;&amp; ! empty( $attributes['default'] ) ) {
++                    $url = $attributes['default'];
++                } else {
++                    $url = $content;
++                }
++                return '&lt;img src=&quot;' . preg_replace( '/\[[A-Za-z]+\]/i', '', $url ) . '&quot; alt=&quot;' . $content . '&quot; /&gt;';
++            }
++        }
++
++        /**
+          *	This function will highlight links in the given text.
+          *
+          *	@remarks
+@@ -139,9 +370,17 @@
+                 $data = str_replace( '&gt;', '&gt;', $data );
+             }
+ 
++            // Fix common problems
++            $data = str_replace( &quot;\r\n&quot;, &quot;\n&quot;, $data );
++            $data = str_replace( &quot;\r&quot;, &quot;\n&quot;, $data );
++            $data = str_replace( &quot;[/quote]\n\n&quot;, &quot;[/quote]\n&quot;, $data );
++
+             // Convert the tags
+-            $data = preg_replace( array_keys( $this-&gt;_conversions ), array_values( $this-&gt;_conversions ), $data  );
++            $data = $this-&gt;parser-&gt;parse( $data );
+ 
++            // Strip the leftover tags
++            $data = trim( preg_replace( '/\[\/[a-z]+\]/i', '', $data ) );
++
+             // Open http links in a new window
+             $data = str_replace( ' href=&quot;<A HREF="http://">http://</A>', ' target=&quot;_blank&quot; href=&quot;<A HREF="http://">http://</A>', $data );
+ 
+@@ -150,6 +389,15 @@
+                 $data = nl2br( trim( $data ) );
+             }
+ 
++            // Convert smilies if needed
++            $smilies_path = YDConfig::get( 'YD_BBCODE_SMILIES_DIR', '' );
++            $smilies_url = YDConfig::get( 'YD_BBCODE_SMILIES_URL', '' );
++            if ( is_dir( $smilies_path ) ) {
++                foreach ( $this-&gt;smilies as $smilie=&gt;$file ) {
++                    $data = str_replace( $smilie, '&lt;img src=&quot;' . $smilies_url . '/' . $file . '&quot; width=&quot;15&quot; height=&quot;15&quot; /&gt;', $data );
++                }
++            }
++
+             // Make links absolute if needed
+             if ( ! is_null( $baseUrl ) ) {
+                 include_once( dirname( __FILE__ ) . '/../../YDClasses/YDUrl.php' );
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser.class.php	2006-09-29 12:02:32 UTC (rev 2170)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser.class.php	2006-10-02 08:35:47 UTC (rev 2171)
+@@ -0,0 +1,1546 @@
++&lt;?php
++/**
++ * Generic string parsing infrastructure
++ *
++ * These classes provide the means to parse any kind of string into a tree-like
++ * memory structure. It would e.g. be possible to create an HTML parser based
++ * upon this class.
++ * 
++ * Version: 0.3.1
++ *
++ * @author Christian Seiler &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">spam at christian-seiler.de</A>&gt;
++ * @copyright Christian Seiler 2006
++ * @package stringparser
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of either:
++ *
++ *  a) the GNU General Public License as published by the Free
++ *  Software Foundation; either version 1, or (at your option) any
++ *  later version, or
++ *
++ *  b) the Artistic License as published by Larry Wall, either version 2.0,
++ *     or (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either
++ *  the GNU General Public License or the Artistic License for more details.
++ *
++ *  You should have received a copy of the Artistic License with this Kit,
++ *  in the file named &quot;Artistic.clarified&quot;.  If not, I'll be glad to provide
++ *  one.
++ *
++ *  You should also have received a copy of the GNU General Public License
++ *  along with this program in the file named &quot;COPYING&quot;; if not, write to
++ *  the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ *  MA 02111-1307, USA.
++ */
++
++/**
++ * String parser mode: Search for the next character
++ * @see StringParser::_parserMode
++ */
++define ('STRINGPARSER_MODE_SEARCH', 1);
++/**
++ * String parser mode: Look at each character of the string
++ * @see StringParser::_parserMode
++ */
++define ('STRINGPARSER_MODE_LOOP', 2);
++/**
++ * Filter type: Prefilter
++ * @see StringParser::addFilter, StringParser::_prefilters
++ */
++define ('STRINGPARSER_FILTER_PRE', 1);
++/**
++ * Filter type: Postfilter
++ * @see StringParser::addFilter, StringParser::_postfilters
++ */
++define ('STRINGPARSER_FILTER_POST', 2);
++
++/**
++ * Generic string parser class
++ *
++ * This is an abstract class for any type of string parser.
++ *
++ * @package stringparser
++ */
++class StringParser {
++	/**
++	 * String parser mode
++	 *
++	 * There are two possible modes: searchmode and loop mode. In loop mode
++	 * every single character is looked at in a loop and it is then decided
++	 * what action to take. This is the most straight-forward approach to
++	 * string parsing but due to the nature of PHP as a scripting language,
++	 * it can also cost performance. In search mode the class posseses a
++	 * list of relevant characters for parsing and uses the
++	 * {@link PHP_MANUAL#strpos strpos} function to search for the next
++	 * relevant character. The search mode will be faster than the loop mode
++	 * in most circumstances but it is also more difficult to implement.
++	 * The subclass that does the string parsing itself will define which
++	 * mode it will implement.
++	 *
++	 * @access protected
++	 * @var int
++	 * @see STRINGPARSER_MODE_SEARCH, STRINGPARSER_MODE_LOOP
++	 */
++	var $_parserMode = STRINGPARSER_MODE_SEARCH;
++	
++	/**
++	 * Raw text
++	 * @access protected
++	 * @var string
++	 */
++	var $_text = '';
++	
++	/**
++	 * Parse stack
++	 * @access protected
++	 * @var array
++	 */
++	var $_stack = array ();
++	
++	/**
++	 * Current position in raw text
++	 * @access protected
++	 * @var integer
++	 */
++	var $_cpos = -1;
++	
++	/**
++	 * Root node
++	 * @access protected
++	 * @var mixed
++	 */
++	var $_root = null;
++	
++	/**
++	 * Length of the text
++	 * @access protected
++	 * @var integer
++	 */
++	var $_length = -1;
++	
++	/**
++	 * Flag if this object is already parsing a text
++	 *
++	 * This flag is to prevent recursive calls to the parse() function that
++	 * would cause very nasty things.
++	 *
++	 * @access protected
++	 * @var boolean
++	 */
++	var $_parsing = false;
++	
++	/**
++	 * Strict mode
++	 *
++	 * Whether to stop parsing if a parse error occurs.
++	 *
++	 * @access public
++	 * @var boolean
++	 */
++	var $strict = false;
++	
++	/**
++	 * Characters or strings to look for
++	 * @access protected
++	 * @var array
++	 */
++	var $_charactersSearch = array ();
++	
++	/**
++	 * Characters currently allowed
++	 *
++	 * Note that this will only be evaluated in loop mode; in search mode
++	 * this would ruin every performance increase. Note that only single
++	 * characters are permitted here, no strings. Please also note that in
++	 * loop mode, {@link StringParser::_charactersSearch _charactersSearch}
++	 * is evaluated before this variable.
++	 *
++	 * If in strict mode, parsing is stopped if a character that is not
++	 * allowed is encountered. If not in strict mode, the character is
++	 * simply ignored.
++	 *
++	 * @access protected
++	 * @var array
++	 */
++	var $_charactersAllowed = array ();
++	
++	/**
++	 * Current parser status
++	 * @access protected
++	 * @var int
++	 */
++	var $_status = 0;
++	
++	/**
++	 * Prefilters
++	 * @access protected
++	 * @var array
++	 */
++	var $_prefilters = array ();
++	
++	/**
++	 * Postfilters
++	 * @access protected
++	 * @var array
++	 */
++	var $_postfilters = array ();
++	
++	/**
++	 * Recently reparsed?
++	 * @access protected
++	 * @var bool
++	 */
++	var $_recentlyReparsed = false;
++	 
++	/**
++	 * Constructor
++	 *
++	 * @access public
++	 */
++	function StringParser () {
++	}
++	
++	/**
++	 * Add a filter
++	 *
++	 * @access public
++	 * @param int $type The type of the filter
++	 * @param mixed $callback The callback to call
++	 * @return bool
++	 * @see STRINGPARSER_FILTER_PRE, STRINGPARSER_FILTER_POST
++	 */
++	function addFilter ($type, $callback) {
++		// make sure the function is callable
++		if (!is_callable ($callback)) {
++			return false;
++		}
++		
++		switch ($type) {
++			case STRINGPARSER_FILTER_PRE:
++				$this-&gt;_prefilters[] = $callback;
++				break;
++			case STRINGPARSER_FILTER_POST:
++				$this-&gt;_postfilters[] = $callback;
++				break;
++			default:
++				return false;
++		}
++		
++		return true;
++	}
++	
++	/**
++	 * Remove all filters
++	 *
++	 * @access public
++	 * @param int $type The type of the filter or 0 for all
++	 * @return bool
++	 * @see STRINGPARSER_FILTER_PRE, STRINGPARSER_FILTER_POST
++	 */
++	function clearFilters ($type = 0) {
++		switch ($type) {
++			case 0:
++				$this-&gt;_prefilters = array ();
++				$this-&gt;_postfilters = array ();
++				break;
++			case STRINGPARSER_FILTER_PRE:
++				$this-&gt;_prefilters = array ();
++				break;
++			case STRINGPARSER_FILTER_POST:
++				$this-&gt;_postfilters = array ();
++				break;
++			default:
++				return false;
++		}
++		return true;
++	}
++	
++	/**
++	 * This function parses the text
++	 *
++	 * @access public
++	 * @param string $text The text to parse
++	 * @return mixed Either the root object of the tree if no output method
++	 *               is defined, the tree reoutput to e.g. a string or false
++	 *               if an internal error occured, such as a parse error if
++	 *               in strict mode or the object is already parsing a text.
++	 */
++	function parse ($text) {
++		if ($this-&gt;_parsing) {
++			return false;
++		}
++		$this-&gt;_parsing = true;
++		$this-&gt;_text = $this-&gt;_applyPrefilters ($text);
++		$this-&gt;_output = null;
++		$this-&gt;_length = strlen ($this-&gt;_text);
++		$this-&gt;_cpos = 0;
++		unset ($this-&gt;_stack);
++		$this-&gt;_stack = array ();
++		if (is_object ($this-&gt;_root)) {
++			StringParser_Node::destroyNode ($this-&gt;_root);
++		}
++		unset ($this-&gt;_root);
++		$this-&gt;_root =&amp; new StringParser_Node_Root ();
++		$this-&gt;_stack[0] =&amp; $this-&gt;_root;
++		
++		$this-&gt;_parserInit ();
++		
++		$finished = false;
++		
++		while (!$finished) {
++			switch ($this-&gt;_parserMode) {
++				case STRINGPARSER_MODE_SEARCH:
++					$res = $this-&gt;_searchLoop ();
++					if (!$res) {
++						$this-&gt;_parsing = false;
++						return false;
++					}
++					break;
++				case STRINGPARSER_MODE_LOOP:
++					$res = $this-&gt;_loop ();
++					if (!$res) {
++						$this-&gt;_parsing = false;
++						return false;
++					}
++					break;
++				default:
++					$this-&gt;_parsing = false;
++					return false;
++			}
++			
++			$res = $this-&gt;_closeRemainingBlocks ();
++			if (!$res) {
++				if ($this-&gt;strict) {
++					$this-&gt;_parsing = false;
++					return false;
++				} else {
++					$res = $this-&gt;_reparseAfterCurrentBlock ();
++					if (!$res) {
++						$this-&gt;_parsing = false;
++						return false;
++					}
++					continue;
++				}
++			}
++			$finished = true;
++		}
++		
++		$res = $this-&gt;_modifyTree ();
++		
++		if (!$res) {
++			$this-&gt;_parsing = false;
++			return false;
++		}
++		
++		$res = $this-&gt;_outputTree ();
++		
++		if (!$res) {
++			$this-&gt;_parsing = false;
++			return false;
++		}
++		
++		if (is_null ($this-&gt;_output)) {
++			$root =&amp; $this-&gt;_root;
++			unset ($this-&gt;_root);
++			$this-&gt;_root = null;
++			while (count ($this-&gt;_stack)) {
++				unset ($this-&gt;_stack[count($this-&gt;_stack)-1]);
++			}
++			$this-&gt;_stack = array ();
++			$this-&gt;_parsing = false;
++			return $root;
++		}
++		
++		$res = StringParser_Node::destroyNode ($this-&gt;_root);
++		if (!$res) {
++			$this-&gt;_parsing = false;
++			return false;
++		}
++		unset ($this-&gt;_root);
++		$this-&gt;_root = null;
++		while (count ($this-&gt;_stack)) {
++			unset ($this-&gt;_stack[count($this-&gt;_stack)-1]);
++		}
++		$this-&gt;_stack = array ();
++		
++		$this-&gt;_parsing = false;
++		return $this-&gt;_output;
++	}
++	
++	/**
++	 * Apply prefilters
++	 *
++	 * It is possible to specify prefilters for the parser to do some
++	 * manipulating of the string beforehand.
++	 */
++	function _applyPrefilters ($text) {
++		foreach ($this-&gt;_prefilters as $filter) {
++			if (is_callable ($filter)) {
++				$ntext = call_user_func ($filter, $text);
++				if (is_string ($ntext)) {
++					$text = $ntext;
++				}
++			}
++		}
++		return $text;
++	}
++	
++	/**
++	 * Apply postfilters
++	 *
++	 * It is possible to specify postfilters for the parser to do some
++	 * manipulating of the string afterwards.
++	 */
++	function _applyPostfilters ($text) {
++		foreach ($this-&gt;_postfilters as $filter) {
++			if (is_callable ($filter)) {
++				$ntext = call_user_func ($filter, $text);
++				if (is_string ($ntext)) {
++					$text = $ntext;
++				}
++			}
++		}
++		return $text;
++	}
++	
++	/**
++	 * Abstract method: Manipulate the tree
++	 * @access protected
++	 * @return bool
++	 */
++	function _modifyTree () {
++		return true;
++	}
++	
++	/**
++	 * Abstract method: Output tree
++	 * @access protected
++	 * @return bool
++	 */
++	function _outputTree () {
++		// this could e.g. call _applyPostfilters
++		return true;
++	}
++	
++	/**
++	 * Restart parsing after current block
++	 *
++	 * To achieve this the current top stack object is removed from the
++	 * tree. Then the current item
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _reparseAfterCurrentBlock () {
++		// this should definitely not happen!
++		if (($stack_count = count ($this-&gt;_stack)) &lt; 2) {
++			return false;
++		}
++		$topelem =&amp; $this-&gt;_stack[$stack_count-1];
++		
++		$node_parent =&amp; $topelem-&gt;_parent;
++		// remove the child from the tree
++		$res = $node_parent-&gt;removeChild ($topelem, false);
++		if (!$res) {
++			return false;
++		}
++		$res = $this-&gt;_popNode ();
++		if (!$res) {
++			return false;
++		}
++		
++		// now try to get the position of the object
++		if ($topelem-&gt;occurredAt &lt; 0) {
++			return false;
++		}
++		// HACK: could it be necessary to set a different status
++		// if yes, how should this be achieved? Another member of
++		// StringParser_Node?
++		$this-&gt;_setStatus (0);
++		$res = $this-&gt;_appendText ($this-&gt;_text{$topelem-&gt;occurredAt});
++		if (!$res) {
++			return false;
++		}
++		
++		$this-&gt;_cpos = $topelem-&gt;occurredAt + 1;
++		$this-&gt;_recentlyReparsed = true;
++		
++		return true;
++	}
++	
++	/**
++	 * Abstract method: Close remaining blocks
++	 * @access protected
++	 */
++	function _closeRemainingBlocks () {
++		// everything closed
++		if (count ($this-&gt;_stack) == 1) {
++			return true;
++		}
++		// not everything closed
++		if ($this-&gt;strict) {
++			return false;
++		}
++		while (count ($this-&gt;_stack) &gt; 1) {
++			$res = $this-&gt;_popNode ();
++			if (!$res) {
++				return false;
++			}
++		}
++		return true;
++	}
++	
++	/**
++	 * Abstract method: Initialize the parser
++	 * @access protected
++	 */
++	function _parserInit () {
++		$this-&gt;_setStatus (0);
++	}
++	
++	/**
++	 * Abstract method: Set a specific status
++	 * @access protected
++	 */
++	function _setStatus ($status) {
++		if ($status != 0) {
++			return false;
++		}
++		$this-&gt;_charactersSearch = array ();
++		$this-&gt;_charactersAllowed = array ();
++		$this-&gt;_status = $status;
++		return true;
++	}
++	
++	/**
++	 * Abstract method: Handle status
++	 * @access protected
++	 * @param int $status The current status
++	 * @param string $needle The needle that was found
++	 * @return bool
++	 */
++	function _handleStatus ($status, $needle) {
++		$this-&gt;_appendText ($needle);
++		$this-&gt;_cpos += strlen ($needle);
++		return true;
++	}
++	
++	/**
++	 * Search mode loop
++	 * @access protected
++	 * @return bool
++	 */
++	function _searchLoop () {
++		$i = 0;
++		while (1) {
++			// make sure this is false!
++			$this-&gt;_recentlyReparsed = false;
++			
++			list ($needle, $offset) = $this-&gt;_strpos ($this-&gt;_charactersSearch, $this-&gt;_cpos);
++			// parser ends here
++			if ($needle === false) {
++				// original status 0 =&gt; no problem
++				if (!$this-&gt;_status) {
++					break;
++				}
++				// not in original status? strict mode?
++				if ($this-&gt;strict) {
++					return false;
++				}
++				// break up parsing operation of current node
++				$res = $this-&gt;_reparseAfterCurrentBlock ();
++				if (!$res) {
++					return false;
++				}
++				continue;
++			}
++			// get subtext
++			$subtext = substr ($this-&gt;_text, $this-&gt;_cpos, $offset - $this-&gt;_cpos);
++			$res = $this-&gt;_appendText ($subtext);
++			if (!$res) {
++				return false;
++			}
++			$this-&gt;_cpos = $offset;
++			$res = $this-&gt;_handleStatus ($this-&gt;_status, $needle);
++			if (!$res &amp;&amp; $this-&gt;strict) {
++				return false;
++			}
++			if (!$res) {
++				$res = $this-&gt;_appendText ($this-&gt;_text{$this-&gt;_cpos});
++				if (!$res) {
++					return false;
++				}
++				$this-&gt;_cpos++;
++				continue;
++			}
++			if ($this-&gt;_recentlyReparsed) {
++				$this-&gt;_recentlyReparsed = false;
++				continue;
++			}
++			$this-&gt;_cpos += strlen ($needle);
++		}
++		
++		// get subtext
++		if ($this-&gt;_cpos &lt; strlen ($this-&gt;_text)) {
++			$subtext = substr ($this-&gt;_text, $this-&gt;_cpos);
++			$res = $this-&gt;_appendText ($subtext);
++			if (!$res) {
++				return false;
++			}
++		}
++		
++		return true;
++	}
++	
++	/**
++	 * Loop mode loop
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _loop () {
++		// HACK: This method ist not yet implemented correctly, the code below
++		// DOES NOT WORK! Do not use!
++		
++		return false;
++		/*
++		while ($this-&gt;_cpos &lt; $this-&gt;_length) {
++			$needle = $this-&gt;_strDetect ($this-&gt;_charactersSearch, $this-&gt;_cpos);
++			
++			if ($needle === false) {
++				// not found =&gt; see if character is allowed
++				if (!in_array ($this-&gt;_text{$this-&gt;_cpos}, $this-&gt;_charactersAllowed)) {
++					if ($strict) {
++						return false;
++					}
++					// ignore
++					continue;
++				}
++				// lot's of FIXMES
++				$res = $this-&gt;_appendText ($this-&gt;_text{$this-&gt;_cpos});
++				if (!$res) {
++					return false;
++				}
++			}
++			
++			// get subtext
++			$subtext = substr ($this-&gt;_text, $offset, $offset - $this-&gt;_cpos);
++			$res = $this-&gt;_appendText ($subtext);
++			if (!$res) {
++				return false;
++			}
++			$this-&gt;_cpos = $subtext;
++			$res = $this-&gt;_handleStatus ($this-&gt;_status, $needle);
++			if (!$res &amp;&amp; $strict) {
++				return false;
++			}
++		}
++		// original status 0 =&gt; no problem
++		if (!$this-&gt;_status) {
++			return true;
++		}
++		// not in original status? strict mode?
++		if ($this-&gt;strict) {
++			return false;
++		}
++		// break up parsing operation of current node
++		$res = $this-&gt;_reparseAfterCurrentBlock ();
++		if (!$res) {
++			return false;
++		}
++		// this will not cause an infinite loop because
++		// _reparseAfterCurrentBlock will increase _cpos by one!
++		return $this-&gt;_loop ();
++		*/
++	}
++	
++	/**
++	 * Abstract method Append text depending on current status
++	 * @access protected
++	 * @param string $text The text to append
++	 * @return bool On success, the function returns true, else false
++	 */
++	function _appendText ($text) {
++		if (!strlen ($text)) {
++			return true;
++		}
++		// default: call _appendToLastTextChild
++		return $this-&gt;_appendToLastTextChild ($text);
++	}
++	
++	/**
++	 * Append text to last text child of current top parser stack node
++	 * @access protected
++	 * @param string $text The text to append
++	 * @return bool On success, the function returns true, else false
++	 */
++	function _appendToLastTextChild ($text) {
++		$scount = count ($this-&gt;_stack);
++		if ($scount == 0) {
++			return false;
++		}
++		return $this-&gt;_stack[$scount-1]-&gt;appendToLastTextChild ($text);
++	}
++	
++	/**
++	 * Searches {@link StringParser::_text _text} for every needle that is
++	 * specified by using the {@link PHP_MANUAL#strpos strpos} function. It
++	 * returns an associative array with the key &lt;code&gt;'needle'&lt;/code&gt;
++	 * pointing at the string that was found first and the key
++	 * &lt;code&gt;'offset'&lt;/code&gt; pointing at the offset at which the string was
++	 * found first. If no needle was found, the &lt;code&gt;'needle'&lt;/code&gt;
++	 * element is &lt;code&gt;false&lt;/code&gt; and the &lt;code&gt;'offset'&lt;/code&gt; element
++	 * is &lt;code&gt;-1&lt;/code&gt;.
++	 *
++	 * @access protected
++	 * @param array $needles
++	 * @param int $offset
++	 * @return array
++	 * @see StringParser::_text
++	 */
++	function _strpos ($needles, $offset) {
++		$cur_needle = false;
++		$cur_offset = -1;
++		
++		if ($offset &lt; strlen ($this-&gt;_text)) {
++			foreach ($needles as $needle) {
++				$n_offset = strpos ($this-&gt;_text, $needle, $offset);
++				if ($n_offset !== false &amp;&amp; ($n_offset &lt; $cur_offset || $cur_offset &lt; 0)) {
++					$cur_needle = $needle;
++					$cur_offset = $n_offset;
++				}
++			}
++		}
++		
++		return array ($cur_needle, $cur_offset, 'needle' =&gt; $cur_needle, 'offset' =&gt; $cur_offset);
++	}
++	
++	/**
++	 * Detects a string at the current position
++	 *
++	 * @access protected
++	 * @param array $needles The strings that are to be detected
++	 * @param int $offset The current offset
++	 * @return mixed The string that was detected or the needle
++	 */
++	function _strDetect ($needles, $offset) {
++		foreach ($needles as $needle) {
++			$l = strlen ($needle);
++			if (substr ($this-&gt;_text, $offset, $l) == $needle) {
++				return $needle;
++			}
++		}
++		return false;
++	}
++	
++	
++	/**
++	 * Adds a node to the current parse stack
++	 *
++	 * @access protected
++	 * @param object $node The node that is to be added
++	 * @return bool True on success, else false.
++	 * @see StringParser_Node, StringParser::_stack
++	 */
++	function _pushNode (&amp;$node) {
++		$stack_count = count ($this-&gt;_stack);
++		$max_node =&amp; $this-&gt;_stack[$stack_count-1];
++		if (!$max_node-&gt;appendChild ($node)) {
++			return false;
++		}
++		$this-&gt;_stack[$stack_count] =&amp; $node;
++		return true;
++	}
++	
++	/**
++	 * Removes a node from the current parse stack
++	 *
++	 * @access protected
++	 * @return bool True on success, else false.
++	 * @see StringParser_Node, StringParser::_stack
++	 */
++	function _popNode () {
++		$stack_count = count ($this-&gt;_stack);
++		unset ($this-&gt;_stack[$stack_count-1]);
++		return true;
++	}
++	
++	/**
++	 * Execute a method on the top element
++	 *
++	 * @access protected
++	 * @return mixed
++	 */
++	function _topNode () {
++		$args = func_get_args ();
++		if (!count ($args)) {
++			return; // oops?
++		}
++		$method = array_shift ($args);
++		$stack_count = count ($this-&gt;_stack);
++		$method = array (&amp;$this-&gt;_stack[$stack_count-1], $method);
++		if (!is_callable ($method)) {
++			return; // oops?
++		}
++		return call_user_func_array ($method, $args);
++	}
++	
++	/**
++	 * Get a variable of the top element
++	 *
++	 * @access protected
++	 * @return mixed
++	 */
++	function _topNodeVar ($var) {
++		$stack_count = count ($this-&gt;_stack);
++		return $this-&gt;_stack[$stack_count-1]-&gt;$var;
++	}
++}
++
++/**
++ * Node type: Unknown node
++ * @see StringParser_Node::_type
++ */
++define ('STRINGPARSER_NODE_UNKNOWN', 0);
++
++/**
++ * Node type: Root node
++ * @see StringParser_Node::_type
++ */
++define ('STRINGPARSER_NODE_ROOT', 1);
++
++/**
++ * Node type: Text node
++ * @see StringParser_Node::_type
++ */
++define ('STRINGPARSER_NODE_TEXT', 2);
++
++/**
++ * Global value that is a counter of string parser node ids. Compare it to a
++ * sequence in databases.
++ * @var int
++ */
++$GLOBALS['__STRINGPARSER_NODE_ID'] = 0;
++
++/**
++ * Generic string parser node class
++ *
++ * This is an abstract class for any type of node that is used within the
++ * string parser. General warning: This class contains code regarding references
++ * that is very tricky. Please do not touch this code unless you exactly know
++ * what you are doing. Incorrect handling of references may cause PHP to crash
++ * with a segmentation fault! You have been warned.
++ *
++ * @package stringparser
++ */
++class StringParser_Node {
++	/**
++	 * The type of this node.
++	 * 
++	 * There are three standard node types: root node, text node and unknown
++	 * node. All node types are integer constants. Any node type of a
++	 * subclass must be at least 32 to allow future developements.
++	 *
++	 * @access protected
++	 * @var int
++	 * @see STRINGPARSER_NODE_ROOT, STRINGPARSER_NODE_TEXT
++	 * @see STRINGPARSER_NODE_UNKNOWN
++	 */
++	var $_type = STRINGPARSER_NODE_UNKNOWN;
++	
++	/**
++	 * The node ID
++	 *
++	 * This ID uniquely identifies this node. This is needed when searching
++	 * for a specific node in the children array. Please note that this is
++	 * only an internal variable and should never be used - not even in
++	 * subclasses and especially not in external data structures. This ID
++	 * has nothing to do with any type of ID in HTML oder XML.
++	 *
++	 * @access protected
++	 * @var int
++	 * @see StringParser_Node::_children
++	 */
++	var $_id = -1;
++	
++	/**
++	 * The parent of this node.
++	 *
++	 * It is either null (root node) or a reference to the parent object.
++	 *
++	 * @access protected
++	 * @var mixed
++	 * @see StringParser_Node::_children
++	 */
++	var $_parent = null;
++	
++	/**
++	 * The children of this node.
++	 *
++	 * It contains an array of references to all the children nodes of this
++	 * node.
++	 *
++	 * @access protected
++	 * @var array
++	 * @see StringParser_Node::_parent
++	 */
++	var $_children = array ();
++	
++	/**
++	 * Occured at
++	 *
++	 * This defines the position in the parsed text where this node occurred
++	 * at. If -1, this value was not possible to be determined.
++	 *
++	 * @access public
++	 * @var int
++	 */
++	var $occurredAt = -1;
++	
++	/**
++	 * Constructor
++	 *
++	 * Currently, the constructor only allocates a new ID for the node and
++	 * assigns it.
++	 *
++	 * @access public
++	 * @param int $occurredAt The position in the text where this node
++	 *                        occurred at. If not determinable, it is -1.
++	 * @global __STRINGPARSER_NODE_ID
++	 */
++	function StringParser_Node ($occurredAt = -1) {
++		$this-&gt;_id = $GLOBALS['__STRINGPARSER_NODE_ID']++;
++		$this-&gt;occurredAt = $occurredAt;
++	}
++	
++	/**
++	 * Type of the node
++	 *
++	 * This function returns the type of the node
++	 *
++	 * @access public
++	 * @return int
++	 */
++	function type () {
++		return $this-&gt;_type;
++	}
++	
++	/**
++	 * Prepend a node
++	 *
++	 * @access public
++	 * @param object $node The node to be prepended.
++	 * @return bool On success, the function returns true, else false.
++	 */
++	function prependChild (&amp;$node) {
++		if (!is_object ($node)) {
++			return false;
++		}
++		
++		// root nodes may not be children of other nodes!
++		if ($node-&gt;_type == STRINGPARSER_NODE_ROOT) {
++			return false;
++		}
++		
++		// if node already has a parent
++		if ($node-&gt;_parent !== false) {
++			// remove node from there
++			$parent =&amp; $node-&gt;_parent;
++			if (!$parent-&gt;removeChild ($node, false)) {
++				return false;
++			}
++			unset ($parent);
++		}
++		
++		$index = count ($this-&gt;_children) - 1;
++		// move all nodes to a new index
++		while ($index &gt;= 0) {
++			// save object
++			$object =&amp; $this-&gt;_children[$index];
++			// we have to unset it because else it will be
++			// overridden in in the loop
++			unset ($this-&gt;_children[$index]);
++			// put object to new position
++			$this-&gt;_children[$index+1] =&amp; $object;
++			$index--;
++		}
++		$this-&gt;_children[0] =&amp; $node;
++		return true;
++	}
++	
++	/**
++	 * Append text to last text child
++	 * @access public
++	 * @param string $text The text to append
++	 * @return bool On success, the function returns true, else false
++	 */
++	function appendToLastTextChild ($text) {
++		$ccount = count ($this-&gt;_children);
++		if ($ccount == 0 || $this-&gt;_children[$ccount-1]-&gt;_type != STRINGPARSER_NODE_TEXT) {
++			$ntextnode =&amp; new StringParser_Node_Text ($text);
++			return $this-&gt;appendChild ($ntextnode);
++		} else {
++			$this-&gt;_children[$ccount-1]-&gt;appendText ($text);
++			return true;
++		}
++	}
++	
++	/**
++	 * Append a node to the children
++	 *
++	 * This function appends a node to the children array(). It
++	 * automatically sets the {@link StrinParser_Node::_parent _parent}
++	 * property of the node that is to be appended.
++	 *
++	 * @access public
++	 * @param object $node The node that is to be appended.
++	 * @return bool On success, the function returns true, else false.
++	 */
++	function appendChild (&amp;$node) {
++		if (!is_object ($node)) {
++			return false;
++		}
++		
++		// root nodes may not be children of other nodes!
++		if ($node-&gt;_type == STRINGPARSER_NODE_ROOT) {
++			return false;
++		}
++		
++		// if node already has a parent
++		if ($node-&gt;_parent !== null) {
++			// remove node from there
++			$parent =&amp; $node-&gt;_parent;
++			if (!$parent-&gt;removeChild ($node, false)) {
++				return false;
++			}
++			unset ($parent);
++		}
++		
++		// append it to current node
++		$new_index = count ($this-&gt;_children);
++		$this-&gt;_children[$new_index] =&amp; $node;
++		$node-&gt;_parent =&amp; $this;
++		return true;
++	}
++	
++	/**
++	 * Insert a node before another node
++	 *
++	 * @access public
++	 * @param object $node The node to be inserted.
++	 * @param object $reference The reference node where the new node is
++	 *                          to be inserted before.
++	 * @return bool On success, the function returns true, else false.
++	 */
++	function insertChildBefore (&amp;$node, &amp;$reference) {
++		if (!is_object ($node)) {
++			return false;
++		}
++		
++		// root nodes may not be children of other nodes!
++		if ($node-&gt;_type == STRINGPARSER_NODE_ROOT) {
++			return false;
++		}
++		
++		// is the reference node a child?
++		$child = $this-&gt;_findChild ($reference);
++		
++		if ($child === false) {
++			return false;
++		}
++		
++		// if node already has a parent
++		if ($node-&gt;_parent !== null) {
++			// remove node from there
++			$parent =&amp; $node-&gt;_parent;
++			if (!$parent-&gt;removeChild ($node, false)) {
++				return false;
++			}
++			unset ($parent);
++		}
++		
++		$index = count ($this-&gt;_children) - 1;
++		// move all nodes to a new index
++		while ($index &gt;= $child) {
++			// save object
++			$object =&amp; $this-&gt;_children[$index];
++			// we have to unset it because else it will be
++			// overridden in in the loop
++			unset ($this-&gt;_children[$index]);
++			// put object to new position
++			$this-&gt;_children[$index+1] =&amp; $object;
++			$index--;
++		}
++		$this-&gt;_children[$child] =&amp; $node;
++		return true;
++	}
++	
++	/**
++	 * Insert a node after another node
++	 *
++	 * @access public
++	 * @param object $node The node to be inserted.
++	 * @param object $reference The reference node where the new node is
++	 *                          to be inserted after.
++	 * @return bool On success, the function returns true, else false.
++	 */
++	function insertChildAfter (&amp;$node, &amp;$reference) {
++		if (!is_object ($node)) {
++			return false;
++		}
++		
++		// root nodes may not be children of other nodes!
++		if ($node-&gt;_type == STRINGPARSER_NODE_ROOT) {
++			return false;
++		}
++		
++		// is the reference node a child?
++		$child = $this-&gt;_findChild ($reference);
++		
++		if ($child === false) {
++			return false;
++		}
++		
++		// if node already has a parent
++		if ($node-&gt;_parent !== false) {
++			// remove node from there
++			$parent =&amp; $node-&gt;_parent;
++			if (!$parent-&gt;removeChild ($node, false)) {
++				return false;
++			}
++			unset ($parent);
++		}
++		
++		$index = count ($this-&gt;_children) - 1;
++		// move all nodes to a new index
++		while ($index &gt;= $child + 1) {
++			// save object
++			$object =&amp; $this-&gt;_children[$index];
++			// we have to unset it because else it will be
++			// overridden in in the loop
++			unset ($this-&gt;_children[$index]);
++			// put object to new position
++			$this-&gt;_children[$index+1] =&amp; $object;
++			$index--;
++		}
++		$this-&gt;_children[$child + 1] =&amp; $node;
++		return true;
++	}
++	
++	/**
++	 * Remove a child node
++	 *
++	 * This function removes a child from the children array. A parameter
++	 * tells the function whether to destroy the child afterwards or not.
++	 * If the specified node is not a child of this node, the function will
++	 * return false.
++	 *
++	 * @access public
++	 * @param mixed $child The child to destroy; either an integer
++	 *                     specifying the index of the child or a reference
++	 *                     to the child itself.
++	 * @param bool $destroy Destroy the child afterwards.
++	 * @return bool On success, the function returns true, else false.
++	 */
++	function removeChild (&amp;$child, $destroy = false) {
++		if (is_object ($child)) {
++			// if object: get index
++			$object =&amp; $child;
++			unset ($child);
++			$child = $this-&gt;_findChild ($object);
++			if ($child === false) {
++				return false;
++			}
++		} else {
++			// remove reference on $child
++			$save = $child;
++			unset($child);
++			$child = $save;
++			
++			// else: get object
++			if (!isset($this-&gt;_children[$child])) {
++				return false;
++			}
++			$object =&amp; $this-&gt;_children[$child];
++		}
++		
++		// store count for later use
++		$ccount = count ($this-&gt;_children);
++		
++		// index out of bounds
++		if (!is_int ($child) || $child &lt; 0 || $child &gt;= $ccount) {
++			return false;
++		}
++		
++		// inkonsistency
++		if ($this-&gt;_children[$child]-&gt;_parent === null ||
++		    $this-&gt;_children[$child]-&gt;_parent-&gt;_id != $this-&gt;_id) {
++			return false;
++		}
++		
++		// $object-&gt;_parent = null would equal to $this = null
++		// as $object-&gt;_parent is a reference to $this!
++		// because of this, we have to unset the variable to remove
++		// the reference and then redeclare the variable
++		unset ($object-&gt;_parent); $object-&gt;_parent = null;
++		
++		// we have to unset it because else it will be overridden in
++		// in the loop
++		unset ($this-&gt;_children[$child]);
++		
++		// move all remaining objects one index higher
++		while ($child &lt; $ccount - 1) {
++			// save object
++			$obj =&amp; $this-&gt;_children[$child+1];
++			// we have to unset it because else it will be
++			// overridden in in the loop
++			unset ($this-&gt;_children[$child+1]);
++			// put object to new position
++			$this-&gt;_children[$child] =&amp; $obj;
++			// UNSET THE OBJECT!
++			unset ($obj);
++			$child++;
++		}
++		
++		if ($destroy) {
++			return StringParser_Node::destroyNode ($object);
++			unset ($object);
++		}
++		return true;
++	}
++	
++	/**
++	 * Get the first child of this node
++	 *
++	 * @access public
++	 * @return mixed
++	 */
++	function &amp;firstChild () {
++		$ret = null;
++		if (!count ($this-&gt;_children)) {
++			return $ret;
++		}
++		return $this-&gt;_children[0];
++	}
++	
++	/**
++	 * Get the last child of this node
++	 *
++	 * @access public
++	 * @return mixed
++	 */
++	function &amp;lastChild () {
++		$ret = null;
++		$c = count ($this-&gt;_children);
++		if (!$c) {
++			return $ret;
++		}
++		return $this-&gt;_children[$c-1];
++	}
++	
++	/**
++	 * Destroy a node
++	 *
++	 * @access public
++	 * @static
++	 * @param object $node The node to destroy
++	 * @return bool True on success, else false.
++	 */
++	function destroyNode (&amp;$node) {
++		if ($node === null) {
++			return false;
++		}
++		// if parent exists: remove node from tree!
++		if ($node-&gt;_parent !== null) {
++			$parent =&amp; $node-&gt;_parent;
++			// directly return that result because the removeChild
++			// method will call destroyNode again
++			return $parent-&gt;removeChild ($node, true);
++		}
++		
++		// node has children
++		while (count ($node-&gt;_children)) {
++			$child = 0;
++			// remove first child until no more children remain
++			if (!$node-&gt;removeChild ($child, true)) {
++				return false;
++			}
++			unset($child);
++		}
++		
++		// now call the nodes destructor
++		if (!$node-&gt;_destroy ()) {
++			return false;
++		}
++		
++		// now just unset it and prey that there are no more references
++		// to this node
++		unset ($node);
++		
++		return true;
++	}
++	
++	/**
++	 * Destroy this node
++	 *
++	 *
++	 * @access protected
++	 * @return bool True on success, else false.
++	 */
++	function _destroy () {
++		return true;
++	}
++	
++	/** 
++	 * Find a child node
++	 *
++	 * This function searches for a node in the own children and returns
++	 * the index of the node or false if the node is not a child of this
++	 * node.
++	 *
++	 * @access protected
++	 * @param mixed $child The node to look for.
++	 * @return mixed The index of the child node on success, else false.
++	 */
++	function _findChild (&amp;$child) {
++		if (!is_object ($child)) {
++			return false;
++		}
++		
++		$ccount = count ($this-&gt;_children);
++		for ($i = 0; $i &lt; $ccount; $i++) {
++			if ($this-&gt;_children[$i]-&gt;_id == $child-&gt;_id) {
++				return $i;
++			}
++		}
++		
++		return false;
++	}
++	
++	/** 
++	 * Checks equality of this node and another node
++	 *
++	 * @access public
++	 * @param mixed $node The node to be compared with
++	 * @return bool True if the other node equals to this node, else false.
++	 */
++	function equals (&amp;$node) {
++		return ($this-&gt;_id == $node-&gt;_id);
++	}
++	
++	/**
++	 * Determines whether a criterium matches this node
++	 *
++	 * @access public
++	 * @param string $criterium The criterium that is to be checked
++	 * @param mixed $value The value that is to be compared
++	 * @return bool True if this node matches that criterium
++	 */
++	function matchesCriterium ($criterium, $value) {
++		return false;
++	}
++	
++	/**
++	 * Search for nodes with a certain criterium
++	 *
++	 * This may be used to implement getElementsByTagName etc.
++	 *
++	 * @access public
++	 * @param string $criterium The criterium that is to be checked
++	 * @param mixed $value The value that is to be compared
++	 * @return array All subnodes that match this criterium
++	 */
++	function &amp;getNodesByCriterium ($criterium, $value) {
++		$nodes = array ();
++		$node_ctr = 0;
++		for ($i = 0; $i &lt; count ($this-&gt;_children); $i++) {
++			if ($this-&gt;_children[$i]-&gt;matchesCriterium ($criterium, $value)) {
++				$nodes[$node_ctr++] =&amp; $this-&gt;_children[$i];
++			}
++			$subnodes = $this-&gt;_children[$i]-&gt;getNodesByCriterium ($criterium, $value);
++			if (count ($subnodes)) {
++				$subnodes_count = count ($subnodes);
++				for ($j = 0; $j &lt; $subnodes_count; $j++) {
++					$nodes[$node_ctr++] =&amp; $subnodes[$j];
++					unset ($subnodes[$j]);
++				}
++			}
++			unset ($subnodes);
++		}
++		return $nodes;
++	}
++	
++	/**
++	 * Search for nodes with a certain criterium and return the count
++	 *
++	 * Similar to getNodesByCriterium
++	 *
++	 * @access public
++	 * @param string $criterium The criterium that is to be checked
++	 * @param mixed $value The value that is to be compared
++	 * @return int The number of subnodes that match this criterium
++	 */
++	function getNodeCountByCriterium ($criterium, $value) {
++		$node_ctr = 0;
++		for ($i = 0; $i &lt; count ($this-&gt;_children); $i++) {
++			if ($this-&gt;_children[$i]-&gt;matchesCriterium ($criterium, $value)) {
++				$node_ctr++;
++			}
++			$subnodes = $this-&gt;_children[$i]-&gt;getNodeCountByCriterium ($criterium, $value);
++			$node_ctr += $subnodes;
++		}
++		return $node_ctr;
++	}
++	
++	/**
++	 * Dump nodes
++	 *
++	 * This dumps a tree of nodes
++	 *
++	 * @access public
++	 * @param string $prefix The prefix that is to be used for indentation
++	 * @param string $linesep The line separator
++	 * @param int $level The initial level of indentation
++	 * @return string
++	 */
++	function dump ($prefix = &quot; &quot;, $linesep = &quot;\n&quot;, $level = 0) {
++		$str = str_repeat ($prefix, $level) . $this-&gt;_id . &quot;: &quot; . $this-&gt;_dumpToString () . $linesep;
++		for ($i = 0; $i &lt; count ($this-&gt;_children); $i++) {
++			$str .= $this-&gt;_children[$i]-&gt;dump ($prefix, $linesep, $level + 1);
++		}
++		return $str;
++	}
++	
++	/**
++	 * Dump this node to a string
++	 *
++	 * @access protected
++	 * @return string
++	 */
++	function _dumpToString () {
++		if ($this-&gt;_type == STRINGPARSER_NODE_ROOT) {
++			return &quot;root&quot;;
++		}
++		return (string)$this-&gt;_type;
++	}
++}
++
++/**
++ * String parser root node class
++ *
++ * @package stringparser
++ */
++class StringParser_Node_Root extends StringParser_Node {
++	/**
++	 * The type of this node.
++	 * 
++	 * This node is a root node.
++	 *
++	 * @access protected
++	 * @var int
++	 * @see STRINGPARSER_NODE_ROOT
++	 */
++	var $_type = STRINGPARSER_NODE_ROOT;
++}
++
++/**
++ * String parser text node class
++ *
++ * @package stringparser
++ */
++class StringParser_Node_Text extends StringParser_Node {
++	/**
++	 * The type of this node.
++	 * 
++	 * This node is a text node.
++	 *
++	 * @access protected
++	 * @var int
++	 * @see STRINGPARSER_NODE_TEXT
++	 */
++	var $_type = STRINGPARSER_NODE_TEXT;
++	
++	/**
++	 * Node flags
++	 * 
++	 * @access protected
++	 * @var array
++	 */
++	var $_flags = array ();
++	
++	/**
++	 * The content of this node
++	 * @access public
++	 * @var string
++	 */
++	var $content = '';
++	
++	/**
++	 * Constructor
++	 *
++	 * @access public
++	 * @param string $content The initial content of this element
++	 * @param int $occurredAt The position in the text where this node
++	 *                        occurred at. If not determinable, it is -1.
++	 * @see StringParser_Node_Text::content
++	 */
++	function StringParser_Node_Text ($content, $occurredAt = -1) {
++		parent::StringParser_Node ($occurredAt);
++		$this-&gt;content = $content;
++	}
++	
++	/**
++	 * Append text to content
++	 *
++	 * @access public
++	 * @param string $text The text to append
++	 * @see StringParser_Node_Text::content
++	 */
++	function appendText ($text) {
++		$this-&gt;content .= $text;
++	}
++	
++	/**
++	 * Set a flag
++	 *
++	 * @access public
++	 * @param string $name The name of the flag
++	 * @param mixed $value The value of the flag
++	 */
++	function setFlag ($name, $value) {
++		$this-&gt;_flags[$name] = $value;
++		return true;
++	}
++	
++	/**
++	 * Get Flag
++	 *
++	 * @access public
++	 * @param string $flag The requested flag
++	 * @param string $type The requested type of the return value
++	 * @param mixed $default The default return value
++	 */
++	function getFlag ($flag, $type = 'mixed', $default = null) {
++		if (!isset ($this-&gt;_flags[$flag])) {
++			return $default;
++		}
++		$return = $this-&gt;_flags[$flag];
++		if ($type != 'mixed') {
++			settype ($return, $type);
++		}
++		return $return;
++	}
++	
++	/**
++	 * Dump this node to a string
++	 */
++	function _dumpToString () {
++		return &quot;text \&quot;&quot;.substr (preg_replace ('/\s+/', ' ', $this-&gt;content), 0, 40).&quot;\&quot; [f:&quot;.preg_replace ('/\s+/', ' ', join(':', array_keys ($this-&gt;_flags))).&quot;]&quot;;
++	}
++}
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser_bbcode.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser_bbcode.class.php	2006-09-29 12:02:32 UTC (rev 2170)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/stringparser_bbcode.class.php	2006-10-02 08:35:47 UTC (rev 2171)
+@@ -0,0 +1,1960 @@
++&lt;?php
++/**
++ * BB code string parsing class
++ *
++ * Version: 0.3.1
++ *
++ * @author Christian Seiler &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">spam at christian-seiler.de</A>&gt;
++ * @copyright Christian Seiler 2006
++ * @package stringparser
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of either:
++ *
++ *  a) the GNU General Public License as published by the Free
++ *  Software Foundation; either version 1, or (at your option) any
++ *  later version, or
++ *
++ *  b) the Artistic License as published by Larry Wall, either version 2.0,
++ *     or (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either
++ *  the GNU General Public License or the Artistic License for more details.
++ *
++ *  You should have received a copy of the Artistic License with this Kit,
++ *  in the file named &quot;Artistic.clarified&quot;.  If not, I'll be glad to provide
++ *  one.
++ *
++ *  You should also have received a copy of the GNU General Public License
++ *  along with this program in the file named &quot;COPYING&quot;; if not, write to
++ *  the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ *  MA 02111-1307, USA.
++ */
++ 
++require_once dirname(__FILE__).'/stringparser.class.php';
++
++define ('BBCODE_CLOSETAG_FORBIDDEN', -1);
++define ('BBCODE_CLOSETAG_OPTIONAL', 0);
++define ('BBCODE_CLOSETAG_IMPLICIT', 1);
++define ('BBCODE_CLOSETAG_IMPLICIT_ON_CLOSE_ONLY', 2);
++define ('BBCODE_CLOSETAG_MUSTEXIST', 3);
++
++define ('BBCODE_NEWLINE_PARSE', 0);
++define ('BBCODE_NEWLINE_IGNORE', 1);
++define ('BBCODE_NEWLINE_DROP', 2);
++
++define ('BBCODE_PARAGRAPH_ALLOW_BREAKUP', 0);
++define ('BBCODE_PARAGRAPH_ALLOW_INSIDE', 1);
++define ('BBCODE_PARAGRAPH_BLOCK_ELEMENT', 2);
++
++/**
++ * BB code string parser class
++ *
++ * @package stringparser
++ */
++class StringParser_BBCode extends StringParser {
++	/**
++	 * String parser mode
++	 *
++	 * The BBCode string parser works in search mode
++	 *
++	 * @access protected
++	 * @var int
++	 * @see STRINGPARSER_MODE_SEARCH, STRINGPARSER_MODE_LOOP
++	 */
++	var $_parserMode = STRINGPARSER_MODE_SEARCH;
++	
++	/**
++	 * Defined BB Codes
++	 *
++	 * The registered BB codes
++	 *
++	 * @access protected
++	 * @var array
++	 */
++	var $_codes = array ();
++	
++	/**
++	 * Registered parsers
++	 *
++	 * @access protected
++	 * @var array
++	 */
++	var $_parsers = array ();
++	
++	/**
++	 * Defined maximum occurrences
++	 *
++	 * @access protected
++	 * @var array
++	 */
++	var $_maxOccurrences = array ();
++	
++	/**
++	 * Root content type
++	 *
++	 * @access protected
++	 * @var string
++	 */
++	var $_rootContentType = 'block';
++	
++	/**
++	 * Do not output but return the tree
++	 *
++	 * @access protected
++	 * @var bool
++	 */
++	var $_noOutput = false;
++	
++	/**
++	 * Global setting: case sensitive
++	 *
++	 * @access protected
++	 * @var bool
++	 */
++	var $_caseSensitive = true;
++	
++	/**
++	 * Root paragraph handling enabled
++	 *
++	 * @access protected
++	 * @var bool
++	 */
++	var $_rootParagraphHandling = false;
++	
++	/**
++	 * Paragraph handling parameters
++	 * @access protected
++	 * @var array
++	 */
++	var $_paragraphHandling = array (
++		'detect_string' =&gt; &quot;\n\n&quot;,
++		'start_tag' =&gt; '&lt;p&gt;',
++		'end_tag' =&gt; &quot;&lt;/p&gt;\n&quot;
++	);
++	
++	/**
++	 * Allow mixed attribute types (e.g. [code=bla attr=blub])
++	 * @access private
++	 * @var bool
++	 */
++	var $_mixedAttributeTypes = false;
++	
++	/**
++	 * Whether to call validation function again (with $action == 'validate_auto') when closetag comes
++	 * @access protected
++	 * @var bool
++	 */
++	var $_validateAgain = false;
++	
++	/**
++	 * Add a code
++	 *
++	 * @access public
++	 * @param string $name The name of the code
++	 * @param string $callback_type See documentation
++	 * @param string $callback_func The callback function to call
++	 * @param array $callback_params The callback parameters
++	 * @param string $content_type See documentation
++	 * @param array $allowed_within See documentation
++	 * @param array $not_allowed_within See documentation
++	 * @return bool
++	 */
++	function addCode ($name, $callback_type, $callback_func, $callback_params, $content_type, $allowed_within, $not_allowed_within) {
++		if (isset ($this-&gt;_codes[$name])) {
++			return false; // already exists
++		}
++		if (!preg_match ('/^[a-zA-Z0-9*_!+-]+$/', $name)) {
++			return false; // invalid
++		}
++		$this-&gt;_codes[$name] = array (
++			'name' =&gt; $name,
++			'callback_type' =&gt; $callback_type,
++			'callback_func' =&gt; $callback_func,
++			'callback_params' =&gt; $callback_params,
++			'content_type' =&gt; $content_type,
++			'allowed_within' =&gt; $allowed_within,
++			'not_allowed_within' =&gt; $not_allowed_within,
++			'flags' =&gt; array ()
++		);
++		return true;
++	}
++	
++	/**
++	 * Remove a code
++	 *
++	 * @access public
++	 * @param $name The code to remove
++	 * @return bool
++	 */
++	function removeCode ($name) {
++		if (isset ($this-&gt;_codes[$name])) {
++			unset ($this-&gt;_codes[$name]);
++			return true;
++		}
++		return false;
++	}
++	
++	/**
++	 * Remove all codes
++	 *
++	 * @access public
++	 */
++	function removeAllCodes () {
++		$this-&gt;_codes = array ();
++	}
++	
++	/**
++	 * Set a code flag
++	 *
++	 * @access public
++	 * @param string $name The name of the code
++	 * @param string $flag The name of the flag to set
++	 * @param mixed $value The value of the flag to set
++	 * @return bool
++	 */
++	function setCodeFlag ($name, $flag, $value) {
++		if (!isset ($this-&gt;_codes[$name])) {
++			return false;
++		}
++		$this-&gt;_codes[$name]['flags'][$flag] = $value;
++		return true;
++	}
++	
++	/**
++	 * Set occurrence type
++	 *
++	 * Example:
++	 *   $bbcode-&gt;setOccurrenceType ('url', 'link');
++	 *   $bbcode-&gt;setMaxOccurrences ('link', 4);
++	 * Would create the situation where a link may only occur four
++	 * times in the hole text.
++	 *
++	 * @access public
++	 * @param string $code The name of the code
++	 * @param string $type The name of the occurrence type to set
++	 * @return bool
++	 */
++	function setOccurrenceType ($code, $type) {
++		return $this-&gt;setCodeFlag ($code, 'occurrence_type', $type);
++	}
++	
++	/**
++	 * Set maximum number of occurrences
++	 *
++	 * @access public
++	 * @param string $type The name of the occurrence type
++	 * @param int $count The maximum number of occurrences
++	 * @return bool
++	 */
++	function setMaxOccurrences ($type, $count) {
++		settype ($count, 'integer');
++		if ($count &lt; 0) { // sorry, does not make any sense
++			return false;
++		}
++		$this-&gt;_maxOccurrences[$type] = $count;
++		return true;
++	}
++	
++	/**
++	 * Add a parser
++	 *
++	 * @access public
++	 * @param string $type The content type for which the parser is to add
++	 * @param mixed $parser The function to call
++	 * @return bool
++	 */
++	function addParser ($type, $parser) {
++		if (is_array ($type)) {
++			foreach ($type as $t) {
++				$this-&gt;addParser ($t, $parser);
++			}
++			return true;
++		}
++		if (!isset ($this-&gt;_parsers[$type])) {
++			$this-&gt;_parsers[$type] = array ();
++		}
++		$this-&gt;_parsers[$type][] = $parser;
++		return true;
++	}
++	
++	/**
++	 * Set root content type
++	 *
++	 * @access public
++	 * @param string $content_type The new root content type
++	 */
++	function setRootContentType ($content_type) {
++		$this-&gt;_rootContentType = $content_type;
++	}
++	
++	/**
++	 * Set paragraph handling on root element
++	 *
++	 * @access public
++	 * @param bool $enabled The new status of paragraph handling on root element
++	 */
++	function setRootParagraphHandling ($enabled) {
++		$this-&gt;_rootParagraphHandling = (bool)$enabled;
++	}
++	
++	/**
++	 * Set paragraph handling parameters
++	 *
++	 * @access public
++	 * @param string $detect_string The string to detect
++	 * @param string $start_tag The replacement for the start tag (e.g. &lt;p&gt;)
++	 * @param string $end_tag The replacement for the start tag (e.g. &lt;/p&gt;)
++	 */
++	function setParagraphHandlingParameters ($detect_string, $start_tag, $end_tag) {
++		$this-&gt;_paragraphHandling = array (
++			'detect_string' =&gt; $detect_string,
++			'start_tag' =&gt; $start_tag,
++			'end_tag' =&gt; $end_tag
++		);
++	}
++	
++	/**
++	 * Set global case sensitive flag
++	 *
++	 * If this is set to true, the class normally is case sensitive, but
++	 * the case_sensitive code flag may override this for a single code.
++	 *
++	 * If this is set to false, all codes are case insensitive.
++	 *
++	 * @access public
++	 * @param bool $caseSensitive
++	 */
++	function setGlobalCaseSensitive ($caseSensitive) {
++		$this-&gt;_caseSensitive = (bool)$caseSensitive;
++	}
++	
++	/**
++	 * Get global case sensitive flag
++	 *
++	 * @access public
++	 * @return bool
++	 */
++	function globalCaseSensitive () {
++		return $this-&gt;_caseSensitive;
++	}
++	
++	/**
++	 * Set mixed attribute types flag
++	 *
++	 * If set, [code=val1 attr=val2] will cause 2 attributes to be parsed:
++	 * 'default' will have value 'val1', 'attr' will have value 'val2'.
++	 * If not set, only one attribute 'default' will have the value
++	 * 'val1 attr=val2' (the default and original behaviour)
++	 *
++	 * @access public
++	 * @param bool $mixedAttributeTypes
++	 */
++	function setMixedAttributeTypes ($mixedAttributeTypes) {
++		$this-&gt;_mixedAttributeTypes = (bool)$mixedAttributeTypes;
++	}
++	
++	/**
++	 * Get mixed attribute types flag
++	 *
++	 * @access public
++	 * @return bool
++	 */
++	function mixedAttributeTypes () {
++		return $this-&gt;_mixedAttributeTypes;
++	}
++	
++	/**
++	 * Set validate again flag
++	 *
++	 * If this is set to true, the class calls the validation function
++	 * again with $action == 'validate_again' when closetag comes.
++	 *
++	 * @access public
++	 * @param bool $validateAgain
++	 */
++	function setValidateAgain ($validateAgain) {
++		$this-&gt;_validateAgain = (bool)$validateAgain;
++	}
++	
++	/**
++	 * Get validate again flag
++	 *
++	 * @access public
++	 * @return bool
++	 */
++	function validateAgain () {
++		return $this-&gt;_validateAgain;
++	}
++	
++	/**
++	 * Get a code flag
++	 *
++	 * @access public
++	 * @param string $name The name of the code
++	 * @param string $flag The name of the flag to get
++	 * @param string $type The type of the return value
++	 * @param mixed $default The default return value
++	 * @return bool
++	 */
++	function getCodeFlag ($name, $flag, $type = 'mixed', $default = null) {
++		if (!isset ($this-&gt;_codes[$name])) {
++			return $default;
++		}
++		if (!array_key_exists ($flag, $this-&gt;_codes[$name]['flags'])) {
++			return $default;
++		}
++		$return = $this-&gt;_codes[$name]['flags'][$flag];
++		if ($type != 'mixed') {
++			settype ($return, $type);
++		}
++		return $return;
++	}
++	
++	/**
++	 * Set a specific status
++	 * @access protected
++	 */
++	function _setStatus ($status) {
++		switch ($status) {
++			case 0:
++				$this-&gt;_charactersSearch = array ('[/', '[');
++				$this-&gt;_status = $status;
++				break;
++			case 1:
++				$this-&gt;_charactersSearch = array (']', ' = &quot;', '=&quot;', ' = \'', '=\'', ' = ', '=', ': ', ':', ' ');
++				$this-&gt;_status = $status;
++				break;
++			case 2:
++				$this-&gt;_charactersSearch = array (']');
++				$this-&gt;_status = $status;
++				$this-&gt;_savedName = '';
++				break;
++			case 3:
++				if ($this-&gt;_quoting !== null) {
++					if ($this-&gt;_mixedAttributeTypes) {
++						$this-&gt;_charactersSearch = array ('\\\\', '\\'.$this-&gt;_quoting, $this-&gt;_quoting.' ', $this-&gt;_quoting.']', $this-&gt;_quoting);
++					} else {
++						$this-&gt;_charactersSearch = array ('\\\\', '\\'.$this-&gt;_quoting, $this-&gt;_quoting.']', $this-&gt;_quoting);
++					}
++					$this-&gt;_status = $status;
++					break;
++				}
++				if ($this-&gt;_mixedAttributeTypes) {
++					$this-&gt;_charactersSearch = array (' ', ']');
++				} else {
++					$this-&gt;_charactersSearch = array (']');
++				}
++				$this-&gt;_status = $status;
++				break;
++			case 4:
++				$this-&gt;_charactersSearch = array (' ', ']', '=&quot;', '=\'', '=');
++				$this-&gt;_status = $status;
++				$this-&gt;_savedName = '';
++				$this-&gt;_savedValue = '';
++				break;
++			case 5:
++				if ($this-&gt;_quoting !== null) {
++					$this-&gt;_charactersSearch = array ('\\\\', '\\'.$this-&gt;_quoting, $this-&gt;_quoting.' ', $this-&gt;_quoting.']', $this-&gt;_quoting);
++				} else {
++					$this-&gt;_charactersSearch = array (' ', ']');
++				}
++				$this-&gt;_status = $status;
++				$this-&gt;_savedValue = '';
++				break;
++			case 7:
++				$this-&gt;_charactersSearch = array ('[/'.$this-&gt;_topNode ('name').']');
++				if (!$this-&gt;_topNode ('getFlag', 'case_sensitive', 'boolean', true) || !$this-&gt;_caseSensitive) {
++					$this-&gt;_charactersSearch[] = '[/';
++				}
++				$this-&gt;_status = $status;
++				break;
++			default:
++				return false;
++		}
++		return true;
++	}
++	
++	/**
++	 * Abstract method Append text depending on current status
++	 * @access protected
++	 * @param string $text The text to append
++	 * @return bool On success, the function returns true, else false
++	 */
++	function _appendText ($text) {
++		if (!strlen ($text)) {
++			return true;
++		}
++		switch ($this-&gt;_status) {
++			case 0:
++			case 7:
++				return $this-&gt;_appendToLastTextChild ($text);
++			case 1:
++				return $this-&gt;_topNode ('appendToName', $text);
++			case 2:
++			case 4:
++				$this-&gt;_savedName .= $text;
++				return true;
++			case 3:
++				return $this-&gt;_topNode ('appendToAttribute', 'default', $text);
++			case 5:
++				$this-&gt;_savedValue .= $text;
++				return true;
++			default:
++				return false;
++		}
++	}
++	
++	/**
++	 * Restart parsing after current block
++	 *
++	 * To achieve this the current top stack object is removed from the
++	 * tree. Then the current item
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _reparseAfterCurrentBlock () {
++		if ($this-&gt;_status == 2) {
++			// this status will *never* call _reparseAfterCurrentBlock itself
++			// so this is called if the loop ends
++			// therefore, just add the [/ to the text
++			
++			// _savedName should be empty but just in case
++			$this-&gt;_cpos -= strlen ($this-&gt;_savedName);
++			$this-&gt;_savedName = '';
++			$this-&gt;_status = 0;
++			$this-&gt;_appendText ('[/');
++			return true;
++		} else {
++			return parent::_reparseAfterCurrentBlock ();
++		}
++	}
++	
++	/**
++	 * Apply parsers
++	 */
++	function _applyParsers ($type, $text) {
++		if (!isset ($this-&gt;_parsers[$type])) {
++			return $text;
++		}
++		foreach ($this-&gt;_parsers[$type] as $parser) {
++			if (is_callable ($parser)) {
++				$ntext = call_user_func ($parser, $text);
++				if (is_string ($ntext)) {
++					$text = $ntext;
++				}
++			}
++		}
++		return $text;
++	}
++	
++	/**
++	 * Handle status
++	 * @access protected
++	 * @param int $status The current status
++	 * @param string $needle The needle that was found
++	 * @return bool
++	 */
++	function _handleStatus ($status, $needle) {
++		switch ($status) {
++			case 0: // NORMAL TEXT
++				if ($needle != '[' &amp;&amp; $needle != '[/') {
++					$this-&gt;_appendText ($needle);
++					return true;
++				}
++				if ($needle == '[') {
++					$node =&amp; new StringParser_BBCode_Node_Element ($this-&gt;_cpos);
++					$res = $this-&gt;_pushNode ($node);
++					if (!$res) {
++						return false;
++					}
++					$this-&gt;_setStatus (1);
++				} else if ($needle == '[/') {
++					if (count ($this-&gt;_stack) &lt;= 1) {
++						$this-&gt;_appendText ($needle);
++						return true;
++					}
++					$this-&gt;_setStatus (2);
++				}
++				break;
++			case 1: // OPEN TAG
++				if ($needle == ']') {
++					return $this-&gt;_openElement (0);
++				} else if (trim ($needle) == ':' || trim ($needle) == '=') {
++					$this-&gt;_quoting = null;
++					$this-&gt;_setStatus (3); // default value parser
++					break;
++				} else if (trim ($needle) == '=&quot;' || trim ($needle) == '= &quot;' || trim ($needle) == '=\'' || trim ($needle) == '= \'') {
++					$this-&gt;_quoting = substr (trim ($needle), -1);
++					$this-&gt;_setStatus (3); // default value parser with quotation
++					break;
++				} else if ($needle == ' ') {
++					$this-&gt;_setStatus (4); // attribute parser
++					break;
++				} else {
++					$this-&gt;_appendText ($needle);
++					return true;
++				}
++				// break not necessary because every if clause contains return
++			case 2: // CLOSE TAG
++				if ($needle != ']') {
++					$this-&gt;_appendText ($needle);
++					return true;
++				}
++				$closecount = 0;
++				if (!$this-&gt;_isCloseable ($this-&gt;_savedName, $closecount)) {
++					$this-&gt;_setStatus (0);
++					$this-&gt;_appendText ('[/'.$this-&gt;_savedName.$needle);
++					return true;
++				}
++				// this validates the code(s) to be closed after the content tree of
++				// that code(s) are built - if the second validation fails, we will have
++				// to reparse. note that as _reparseAfterCurrentBlock will not work correctly
++				// if we're in $status == 2, we will have to set our status to 0 manually
++				if (!$this-&gt;_validateCloseTags ($closecount)) {
++					$this-&gt;_setStatus (0);
++					return $this-&gt;_reparseAfterCurrentBlock ();
++				}
++				$this-&gt;_setStatus (0);
++				for ($i = 0; $i &lt; $closecount; $i++) {
++					if ($i == $closecount - 1) {
++						$this-&gt;_topNode ('setHadCloseTag');
++					}
++					if (!$this-&gt;_popNode ()) {
++						return false;
++					}
++				}
++				break;
++			case 3: // DEFAULT ATTRIBUTE
++				if ($this-&gt;_quoting !== null) {
++					if ($needle == '\\\\') {
++						$this-&gt;_appendText ('\\');
++						return true;
++					} else if ($needle == '\\'.$this-&gt;_quoting) {
++						$this-&gt;_appendText ($this-&gt;_quoting);
++						return true;
++					} else if ($needle == $this-&gt;_quoting.' ') {
++						$this-&gt;_setStatus (4);
++						return true;
++					} else if ($needle == $this-&gt;_quoting.']') {
++						return $this-&gt;_openElement (2);
++					} else if ($needle == $this-&gt;_quoting) {
++						// can't be, only ']' and ' ' allowed after quoting char
++						return $this-&gt;_reparseAfterCurrentBlock ();
++					} else {
++						$this-&gt;_appendText ($needle);
++						return true;
++					}
++				} else {
++					if ($needle == ' ') {
++						$this-&gt;_setStatus (4);
++						return true;
++					} else if ($needle == ']') {
++						return $this-&gt;_openElement (2);
++					} else {
++						$this-&gt;_appendText ($needle);
++						return true;
++					}
++				}
++				// break not needed because every if clause contains return!
++			case 4: // ATTRIBUTE NAME
++				if ($needle == ' ') {
++					if (strlen ($this-&gt;_savedName)) {
++						$this-&gt;_topNode ('setAttribute', $this-&gt;_savedName, true);
++					}
++					// just ignore and continue in same mode
++					$this-&gt;_setStatus (4); // reset parameters
++					return true;
++				} else if ($needle == ']') {
++					if (strlen ($this-&gt;_savedName)) {
++						$this-&gt;_topNode ('setAttribute', $this-&gt;_savedName, true);
++					}
++					return $this-&gt;_openElement (2);
++				} else if ($needle == '=') {
++					$this-&gt;_quoting = null;
++					$this-&gt;_setStatus (5);
++					return true;
++				} else if ($needle == '=&quot;') {
++					$this-&gt;_quoting = '&quot;';
++					$this-&gt;_setStatus (5);
++					return true;
++				} else if ($needle == '=\'') {
++					$this-&gt;_quoting = '\'';
++					$this-&gt;_setStatus (5);
++					return true;
++				} else {
++					$this-&gt;_appendText ($needle);
++					return true;
++				}
++				// break not needed because every if clause contains return!
++			case 5: // ATTRIBUTE VALUE
++				if ($this-&gt;_quoting !== null) {
++					if ($needle == '\\\\') {
++						$this-&gt;_appendText ('\\');
++						return true;
++					} else if ($needle == '\\'.$this-&gt;_quoting) {
++						$this-&gt;_appendText ($this-&gt;_quoting);
++						return true;
++					} else if ($needle == $this-&gt;_quoting.' ') {
++						$this-&gt;_topNode ('setAttribute', $this-&gt;_savedName, $this-&gt;_savedValue);
++						$this-&gt;_setStatus (4);
++						return true;
++					} else if ($needle == $this-&gt;_quoting.']') {
++						$this-&gt;_topNode ('setAttribute', $this-&gt;_savedName, $this-&gt;_savedValue);
++						return $this-&gt;_openElement (2);
++					} else if ($needle == $this-&gt;_quoting) {
++						// can't be, only ']' and ' ' allowed after quoting char
++						return $this-&gt;_reparseAfterCurrentBlock ();
++					} else {
++						$this-&gt;_appendText ($needle);
++						return true;
++					}
++				} else {
++					if ($needle == ' ') {
++						$this-&gt;_topNode ('setAttribute', $this-&gt;_savedName, $this-&gt;_savedValue);
++						$this-&gt;_setStatus (4);
++						return true;
++					} else if ($needle == ']') {
++						$this-&gt;_topNode ('setAttribute', $this-&gt;_savedName, $this-&gt;_savedValue);
++						return $this-&gt;_openElement (2);
++					} else {
++						$this-&gt;_appendText ($needle);
++						return true;
++					}
++				}
++				// break not needed because every if clause contains return!
++			case 7:
++				if ($needle == '[/') {
++					// this was case insensitive match
++					if (strtolower (substr ($this-&gt;_text, $this-&gt;_cpos + strlen ($needle), strlen ($this-&gt;_topNode ('name')) + 1)) == strtolower ($this-&gt;_topNode ('name').']')) {
++						// this matched
++						$this-&gt;_cpos += strlen ($this-&gt;_topNode ('name')) + 1;
++					} else {
++						// it didn't match
++						$this-&gt;_appendText ($needle);
++						return true;
++					}
++				}
++				$closecount = $this-&gt;_savedCloseCount;
++				if (!$this-&gt;_topNode ('validate')) {
++					return $this-&gt;_reparseAfterCurrentBlock ();
++				}
++				// do we have to close subnodes?
++				if ($closecount) {
++					// get top node
++					$mynode =&amp; $this-&gt;_stack[count ($this-&gt;_stack)-1];
++					// close necessary nodes
++					for ($i = 0; $i &lt;= $closecount; $i++) {
++						if (!$this-&gt;_popNode ()) {
++							return false;
++						}
++					}
++					if (!$this-&gt;_pushNode ($mynode)) {
++						return false;
++					}
++				}
++				$this-&gt;_setStatus (0);
++				$this-&gt;_popNode ();
++				return true;
++			default: 
++				return false;
++		}
++		return true;
++	}
++	
++	/**
++	 * Open the next element
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _openElement ($type = 0) {
++		$name = $this-&gt;_topNode ('name');
++		if (!isset ($this-&gt;_codes[$name])) {
++			if (isset ($this-&gt;_codes[strtolower ($name)]) &amp;&amp; (!$this-&gt;getCodeFlag (strtolower ($name), 'case_sensitive', 'boolean', true) || !$this-&gt;_caseSensitive)) {
++				$name = strtolower ($name);
++			} else {
++				return $this-&gt;_reparseAfterCurrentBlock ();
++			}
++		}
++		$occ_type = $this-&gt;getCodeFlag ($name, 'occurrence_type', 'string');
++		if ($occ_type !== null &amp;&amp; isset ($this-&gt;_maxOccurrences[$occ_type])) {
++			$max_occs = $this-&gt;_maxOccurrences[$occ_type];
++			$occs = $this-&gt;_root-&gt;getNodeCountByCriterium ('flag:occurrence_type', $occ_type);
++			if ($occs &gt;= $max_occs) {
++				return $this-&gt;_reparseAfterCurrentBlock ();
++			}
++		}
++		$closecount = 0;
++		$this-&gt;_topNode ('setCodeInfo', $this-&gt;_codes[$name]);
++		if (!$this-&gt;_isOpenable ($name, $closecount)) {
++			return $this-&gt;_reparseAfterCurrentBlock ();
++		}
++		$this-&gt;_setStatus (0);
++		switch ($type) {
++		case 0:
++			$cond = $this-&gt;_isUseContent ($this-&gt;_stack[count($this-&gt;_stack)-1], false);
++			break;
++		case 1:
++			$cond = $this-&gt;_isUseContent ($this-&gt;_stack[count($this-&gt;_stack)-1], true);
++			break;
++		case 2:
++			$cond = $this-&gt;_isUseContent ($this-&gt;_stack[count($this-&gt;_stack)-1], true);
++			break;
++		default:
++			$cond = false;
++			break;
++		}
++		if ($cond) {
++			$this-&gt;_savedCloseCount = $closecount;
++			$this-&gt;_setStatus (7);
++			return true;
++		}
++		if (!$this-&gt;_topNode ('validate')) {
++			return $this-&gt;_reparseAfterCurrentBlock ();
++		}
++		// do we have to close subnodes?
++		if ($closecount) {
++			// get top node
++			$mynode =&amp; $this-&gt;_stack[count ($this-&gt;_stack)-1];
++			// close necessary nodes
++			for ($i = 0; $i &lt;= $closecount; $i++) {
++				if (!$this-&gt;_popNode ()) {
++					return false;
++				}
++			}
++			if (!$this-&gt;_pushNode ($mynode)) {
++				return false;
++			}
++		}
++		
++		if ($this-&gt;_codes[$name]['callback_type'] == 'simple_replace_single' || $this-&gt;_codes[$name]['callback_type'] == 'callback_replace_single') {
++			if (!$this-&gt;_popNode ())  {
++				return false;
++			}
++		}
++		
++		return true;
++	}
++	
++	/**
++	 * Is a node closeable?
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _isCloseable ($name, &amp;$closecount) {
++		$node =&amp; $this-&gt;_findNamedNode ($name, false);
++		if ($node === false) {
++			return false;
++		}
++		$scount = count ($this-&gt;_stack);
++		for ($i = $scount - 1; $i &gt; 0; $i--) {
++			$closecount++;
++			if ($this-&gt;_stack[$i]-&gt;equals ($node)) {
++				return true;
++			}
++			if ($this-&gt;_stack[$i]-&gt;getFlag ('closetag', 'integer', BBCODE_CLOSETAG_IMPLICIT) == BBCODE_CLOSETAG_MUSTEXIST) {
++				return false;
++			}
++		}
++		return false;
++	}
++	
++	/**
++	 * Revalidate codes when close tags appear
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _validateCloseTags ($closecount) {
++		$scount = count ($this-&gt;_stack);
++		for ($i = $scount - 1; $i &gt;= $scount - $closecount; $i--) {
++			if ($this-&gt;_validateAgain) {
++				if (!$this-&gt;_stack[$i]-&gt;validate ('validate_again')) {
++					return false;
++				}
++			}
++		}
++		return true;
++	}
++	
++	/**
++	 * Is a node openable?
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _isOpenable ($name, &amp;$closecount) {
++		if (!isset ($this-&gt;_codes[$name])) {
++			return false;
++		}
++		
++		$closecount = 0;
++		
++		$allowed_within = $this-&gt;_codes[$name]['allowed_within'];
++		$not_allowed_within = $this-&gt;_codes[$name]['not_allowed_within'];
++		
++		$scount = count ($this-&gt;_stack);
++		if ($scount == 2) { // top level element
++			if (!in_array ($this-&gt;_rootContentType, $allowed_within)) {
++				return false;
++			}
++		} else {
++			if (!in_array ($this-&gt;_stack[$scount-2]-&gt;_codeInfo['content_type'], $allowed_within)) {
++				return $this-&gt;_isOpenableWithClose ($name, $closecount);
++			}
++		}
++		
++		for ($i = 1; $i &lt; $scount - 1; $i++) {
++			if (in_array ($this-&gt;_stack[$i]-&gt;_codeInfo['content_type'], $not_allowed_within)) {
++				return $this-&gt;_isOpenableWithClose ($name, $closecount);
++			}
++		}
++		
++		return true;
++	}
++	
++	/**
++	 * Is a node openable by closing other nodes?
++	 *
++	 * @access protected
++	 * @return bool
++	 */
++	function _isOpenableWithClose ($name, &amp;$closecount) {
++		$tnname = $this-&gt;_topNode ('name');
++		if (isset ($this-&gt;_codes[strtolower($tnname)]) &amp;&amp; (!$this-&gt;getCodeFlag (strtolower($tnname), 'case_sensitive', 'boolean', true) || !$this-&gt;_caseSensitive)) {
++			$tnname = strtolower($tnname);
++		}
++		if (!in_array ($this-&gt;getCodeFlag ($tnname, 'closetag', 'integer', BBCODE_CLOSETAG_IMPLICIT), array (BBCODE_CLOSETAG_FORBIDDEN, BBCODE_CLOSETAG_OPTIONAL))) {
++			return false;
++		}
++		$node =&amp; $this-&gt;_findNamedNode ($name, true);
++		if ($node === false) {
++			return false;
++		}
++		$scount = count ($this-&gt;_stack);
++		if ($scount &lt; 3) {
++			return false;
++		}
++		for ($i = $scount - 2; $i &gt; 0; $i--) {
++			$closecount++;
++			if ($this-&gt;_stack[$i]-&gt;equals ($node)) {
++				return true;
++			}
++			if (in_array ($this-&gt;_stack[$i]-&gt;getFlag ('closetag', 'integer', BBCODE_CLOSETAG_IMPLICIT), array (BBCODE_CLOSETAG_IMPLICIT_ON_CLOSE_ONLY, BBCODE_CLOSETAG_MUSTEXIST))) {
++				return false;
++			}
++			if ($this-&gt;_validateAgain) {
++				if (!$this-&gt;_stack[$i]-&gt;validate ('validate_again')) {
++					return false;
++				}
++			}
++		}
++		
++		return false;
++	}
++	
++	/**
++	 * Abstract method: Close remaining blocks
++	 * @access protected
++	 */
++	function _closeRemainingBlocks () {
++		// everything closed
++		if (count ($this-&gt;_stack) == 1) {
++			return true;
++		}
++		// not everything close
++		if ($this-&gt;strict) {
++			return false;
++		}
++		while (count ($this-&gt;_stack) &gt; 1) {
++			if ($this-&gt;_topNode ('getFlag', 'closetag', 'integer', BBCODE_CLOSETAG_IMPLICIT) == BBCODE_CLOSETAG_MUSTEXIST) {
++				return false; // sorry
++			}
++			$res = $this-&gt;_popNode ();
++			if (!$res) {
++				return false;
++			}
++		}
++		return true;
++	}
++	
++	/**
++	 * Find a node with a specific name in stack
++	 *
++	 * @access protected
++	 * @return mixed
++	 */
++	function &amp;_findNamedNode ($name, $searchdeeper = false) {
++		$lname = strtolower ($name);
++		if (isset ($this-&gt;_codes[$lname]) &amp;&amp; (!$this-&gt;getCodeFlag ($lname, 'case_sensitive', 'boolean', true) || !$this-&gt;_caseSensitive)) {
++			$name = $lname;
++			$case_sensitive = false;
++		} else {
++			$case_sensitive = true;
++		}
++		$scount = count ($this-&gt;_stack);
++		if ($searchdeeper) {
++			$scount--;
++		}
++		for ($i = $scount - 1; $i &gt; 0; $i--) {
++			if (!$case_sensitive) {
++				$cmp_name = strtolower ($this-&gt;_stack[$i]-&gt;name ());
++			} else {
++				$cmp_name = $this-&gt;_stack[$i]-&gt;name ();
++			}
++			if ($cmp_name == $name) {
++				return $this-&gt;_stack[$i];
++			}
++		}
++		$result = false;
++		return $result;
++	}
++	
++	/**
++	 * Abstract method: Output tree
++	 * @access protected
++	 * @return bool
++	 */
++	function _outputTree () {
++		if ($this-&gt;_noOutput) {
++			return true;
++		}
++		$output = $this-&gt;_outputNode ($this-&gt;_root);
++		if (is_string ($output)) {
++			$this-&gt;_output = $this-&gt;_applyPostfilters ($output);
++			unset ($output);
++			return true;
++		}
++		
++		return false;
++	}
++	
++	/**
++	 * Output a node
++	 * @access protected
++	 * @return bool
++	 */
++	function _outputNode (&amp;$node) {
++		$output = '';
++		if ($node-&gt;_type == STRINGPARSER_BBCODE_NODE_PARAGRAPH || $node-&gt;_type == STRINGPARSER_BBCODE_NODE_ELEMENT || $node-&gt;_type == STRINGPARSER_NODE_ROOT) {
++			$ccount = count ($node-&gt;_children);
++			for ($i = 0; $i &lt; $ccount; $i++) {
++				$suboutput = $this-&gt;_outputNode ($node-&gt;_children[$i]);
++				if (!is_string ($suboutput)) {
++					return false;
++				}
++				$output .= $suboutput;
++			}
++			if ($node-&gt;_type == STRINGPARSER_BBCODE_NODE_PARAGRAPH) {
++				return $this-&gt;_paragraphHandling['start_tag'].$output.$this-&gt;_paragraphHandling['end_tag'];
++			}
++			if ($node-&gt;_type == STRINGPARSER_BBCODE_NODE_ELEMENT) {
++				return $node-&gt;getReplacement ($output);
++			}
++			return $output;
++		} else if ($node-&gt;_type == STRINGPARSER_NODE_TEXT) {
++			$output = $node-&gt;content;
++			$before = '';
++			$after = '';
++			$ol = strlen ($output);
++			switch ($node-&gt;getFlag ('newlinemode.begin', 'integer', BBCODE_NEWLINE_PARSE)) {
++			case BBCODE_NEWLINE_IGNORE:
++				if ($ol &amp;&amp; $output{0} == &quot;\n&quot;) {
++					$before = &quot;\n&quot;;
++				}
++				// don't break!
++			case BBCODE_NEWLINE_DROP:
++				if ($ol &amp;&amp; $output{0} == &quot;\n&quot;) {
++					$output = substr ($output, 1);
++					$ol--;
++				}
++				break;
++			}
++			switch ($node-&gt;getFlag ('newlinemode.end', 'integer', BBCODE_NEWLINE_PARSE)) {
++			case BBCODE_NEWLINE_IGNORE:
++				if ($ol &amp;&amp; $output{$ol-1} == &quot;\n&quot;) {
++					$after = &quot;\n&quot;;
++				}
++				// don't break!
++			case BBCODE_NEWLINE_DROP:
++				if ($ol &amp;&amp; $output{$ol-1} == &quot;\n&quot;) {
++					$output = substr ($output, 0, -1);
++					$ol--;
++				}
++				break;
++			}
++			// can't do anything
++			if ($node-&gt;_parent === null) {
++				return $before.$output.$after;
++			}
++			if ($node-&gt;_parent-&gt;_type == STRINGPARSER_BBCODE_NODE_PARAGRAPH)  {
++				$parent =&amp; $node-&gt;_parent;
++				unset ($node);
++				$node =&amp; $parent;
++				unset ($parent);
++				// if no parent for this paragraph
++				if ($node-&gt;_parent === null) {
++					return $before.$output.$after;
++				}
++			}
++			if ($node-&gt;_parent-&gt;_type == STRINGPARSER_NODE_ROOT) {
++				return $before.$this-&gt;_applyParsers ($this-&gt;_rootContentType, $output).$after;
++			}
++			if ($node-&gt;_parent-&gt;_type == STRINGPARSER_BBCODE_NODE_ELEMENT) {
++				return $before.$this-&gt;_applyParsers ($node-&gt;_parent-&gt;_codeInfo['content_type'], $output).$after;
++			}
++			return $before.$output.$after;
++		}
++	}
++	
++	/**
++	 * Abstract method: Manipulate the tree
++	 * @access protected
++	 * @return bool
++	 */
++	function _modifyTree () {
++		// first pass: try to do newline handling
++		$nodes =&amp; $this-&gt;_root-&gt;getNodesByCriterium ('needsTextNodeModification', true);
++		$nodes_count = count ($nodes);
++		for ($i = 0; $i &lt; $nodes_count; $i++) {
++			$v = $nodes[$i]-&gt;getFlag ('opentag.before.newline', 'integer', BBCODE_NEWLINE_PARSE);
++			if ($v != BBCODE_NEWLINE_PARSE) {
++				$n =&amp; $nodes[$i]-&gt;findPrevAdjentTextNode ();
++				if (!is_null ($n)) {
++					$n-&gt;setFlag ('newlinemode.end', $v);
++				}
++				unset ($n);
++			}
++			$v = $nodes[$i]-&gt;getFlag ('opentag.after.newline', 'integer', BBCODE_NEWLINE_PARSE);
++			if ($v != BBCODE_NEWLINE_PARSE) {
++				$n =&amp; $nodes[$i]-&gt;firstChildIfText ();
++				if (!is_null ($n)) {
++					$n-&gt;setFlag ('newlinemode.begin', $v);
++				}
++				unset ($n);
++			}
++			$v = $nodes[$i]-&gt;getFlag ('closetag.before.newline', 'integer', BBCODE_NEWLINE_PARSE);
++			if ($v != BBCODE_NEWLINE_PARSE) {
++				$n =&amp; $nodes[$i]-&gt;lastChildIfText ();
++				if (!is_null ($n)) {
++					$n-&gt;setFlag ('newlinemode.end', $v);
++				}
++				unset ($n);
++			}
++			$v = $nodes[$i]-&gt;getFlag ('closetag.after.newline', 'integer', BBCODE_NEWLINE_PARSE);
++			if ($v != BBCODE_NEWLINE_PARSE) {
++				$n =&amp; $nodes[$i]-&gt;findNextAdjentTextNode ();
++				if (!is_null ($n)) {
++					$n-&gt;setFlag ('newlinemode.begin', $v);
++				}
++				unset ($n);
++			}
++		}
++		
++		// second pass a: do paragraph handling on root element
++		if ($this-&gt;_rootParagraphHandling) {
++			$res = $this-&gt;_handleParagraphs ($this-&gt;_root);
++			if (!$res) {
++				return false;
++			}
++		}
++		
++		// second pass b: do paragraph handling on other elements
++		unset ($nodes);
++		$nodes =&amp; $this-&gt;_root-&gt;getNodesByCriterium ('flag:paragraphs', true);
++		$nodes_count = count ($nodes);
++		for ($i = 0; $i &lt; $nodes_count; $i++) {
++			$res = $this-&gt;_handleParagraphs ($nodes[$i]);
++			if (!$res) {
++				return false;
++			}
++		}
++		
++		// second pass c: search for empty paragraph nodes and remove them
++		unset ($nodes);
++		$nodes =&amp; $this-&gt;_root-&gt;getNodesByCriterium ('empty', true);
++		$nodes_count = count ($nodes);
++		if (isset ($parent)) {
++			unset ($parent); $parent = null;
++		}
++		for ($i = 0; $i &lt; $nodes_count; $i++) {
++			if ($nodes[$i]-&gt;_type != STRINGPARSER_BBCODE_NODE_PARAGRAPH) {
++				continue;
++			}
++			unset ($parent);
++			$parent =&amp; $nodes[$i]-&gt;_parent;
++			$parent-&gt;removeChild ($nodes[$i], true);
++		}
++		
++		return true;
++	}
++	
++	/**
++	 * Handle paragraphs
++	 * @access protected
++	 * @param object $node The node to handle
++	 * @return bool
++	 */
++	function _handleParagraphs (&amp;$node) {
++		// if this node is already a subnode of a paragraph node, do NOT 
++		// do paragraph handling on this node!
++		if ($this-&gt;_hasParagraphAncestor ($node)) {
++			return true;
++		}
++		$dest_nodes = array ();
++		$last_node_was_paragraph = false;
++		$prevtype = STRINGPARSER_NODE_TEXT;
++		$paragraph = null;
++		while (count ($node-&gt;_children)) {
++			$mynode =&amp; $node-&gt;_children[0];
++			$node-&gt;removeChild ($mynode);
++			$subprevtype = $prevtype;
++			$sub_nodes =&amp; $this-&gt;_breakupNodeByParagraphs ($mynode);
++			for ($i = 0; $i &lt; count ($sub_nodes); $i++) {
++				if (!$last_node_was_paragraph ||  ($prevtype == $sub_nodes[$i]-&gt;_type &amp;&amp; ($i != 0 || $prevtype != STRINGPARSER_BBCODE_NODE_ELEMENT))) {
++					unset ($paragraph);
++					$paragraph =&amp; new StringParser_BBCode_Node_Paragraph ();
++				}
++				$prevtype = $sub_nodes[$i]-&gt;_type;
++				if ($sub_nodes[$i]-&gt;_type != STRINGPARSER_BBCODE_NODE_ELEMENT || $sub_nodes[$i]-&gt;getFlag ('paragraph_type', 'integer', BBCODE_PARAGRAPH_ALLOW_BREAKUP) != BBCODE_PARAGRAPH_BLOCK_ELEMENT) {
++					$paragraph-&gt;appendChild ($sub_nodes[$i]);
++					$dest_nodes[] =&amp; $paragraph;
++					$last_node_was_paragraph = true;
++				} else {
++					$dest_nodes[] =&amp; $sub_nodes[$i];
++					$last_onde_was_paragraph = false;
++					unset ($paragraph);
++					$paragraph =&amp; new StringParser_BBCode_Node_Paragraph ();
++				}
++			}
++		}
++		$count = count ($dest_nodes);
++		for ($i = 0; $i &lt; $count; $i++) {
++			$node-&gt;appendChild ($dest_nodes[$i]);
++		}
++		unset ($dest_nodes);
++		unset ($paragraph);
++		return true;
++	}
++	
++	/**
++	 * Search for a paragraph node in tree in upward direction
++	 * @access protected
++	 * @param object $node The node to analyze
++	 * @return bool
++	 */
++	function _hasParagraphAncestor (&amp;$node) {
++		if ($node-&gt;_parent === null) {
++			return false;
++		}
++		$parent =&amp; $node-&gt;_parent;
++		if ($parent-&gt;_type == STRINGPARSER_BBCODE_NODE_PARAGRAPH) {
++			return true;
++		}
++		return $this-&gt;_hasParagraphAncestor ($parent);
++	}
++	
++	/**
++	 * Break up nodes
++	 * @access protected
++	 * @param object $node The node to break up
++	 * @return array
++	 */
++	function &amp;_breakupNodeByParagraphs (&amp;$node) {
++		$detect_string = $this-&gt;_paragraphHandling['detect_string'];
++		$dest_nodes = array ();
++		// text node =&gt; no problem
++		if ($node-&gt;_type == STRINGPARSER_NODE_TEXT) {
++			$cpos = 0;
++			while (($npos = strpos ($node-&gt;content, $detect_string, $cpos)) !== false) {
++				$subnode =&amp; new StringParser_Node_Text (substr ($node-&gt;content, $cpos, $npos - $cpos), $node-&gt;occurredAt + $cpos);
++				// copy flags
++				foreach ($node-&gt;_flags as $flag =&gt; $value) {
++					if ($flag == 'newlinemode.begin') {
++						if ($cpos == 0) {
++							$subnode-&gt;setFlag ($flag, $value);
++						}
++					} else if ($flag == 'newlinemode.end') {
++						// do nothing
++					} else {
++						$subnode-&gt;setFlag ($flag, $value);
++					}
++				}
++				$dest_nodes[] =&amp; $subnode;
++				unset ($subnode);
++				$cpos = $npos + strlen ($detect_string);
++			}
++			$subnode =&amp; new StringParser_Node_Text (substr ($node-&gt;content, $cpos), $node-&gt;occurredAt + $cpos);
++			if ($cpos == 0) {
++				$value = $node-&gt;getFlag ('newlinemode.begin', 'integer', null);
++				if ($value !== null) {
++					$subnode-&gt;setFlag ('newlinemode.begin', $value);
++				}
++			}
++			$value = $node-&gt;getFlag ('newlinemode.end', 'integer', null);
++			if ($value !== null) {
++				$subnode-&gt;setFlag ('newlinemode.end', $value);
++			}
++			$dest_nodes[] =&amp; $subnode;
++			unset ($subnode);
++			return $dest_nodes;
++		}
++		// not a text node or an element node =&gt; no way
++		if ($node-&gt;_type != STRINGPARSER_BBCODE_NODE_ELEMENT) {
++			$dest_nodes[] =&amp; $node;
++			return $dest_nodes;
++		}
++		if ($node-&gt;getFlag ('paragraph_type', 'integer', BBCODE_PARAGRAPH_ALLOW_BREAKUP) != BBCODE_PARAGRAPH_ALLOW_BREAKUP || !count ($node-&gt;_children)) {
++			$dest_nodes[] =&amp; $node;
++			return $dest_nodes;
++		}
++		$dest_node =&amp; $node-&gt;duplicate ();
++		$nodecount = count ($node-&gt;_children);
++		// now this node allows breakup - do it
++		for ($i = 0; $i &lt; $nodecount; $i++) {
++			$firstnode =&amp; $node-&gt;_children[0];
++			$node-&gt;removeChild ($firstnode);
++			$sub_nodes =&amp; $this-&gt;_breakupNodeByParagraphs ($firstnode);
++			for ($j = 0; $j &lt; count ($sub_nodes); $j++) {
++				if ($j != 0) {
++					$dest_nodes[] =&amp; $dest_node;
++					unset ($dest_node);
++					$dest_node =&amp; $node-&gt;duplicate ();
++				}
++				$dest_node-&gt;appendChild ($sub_nodes[$j]);
++			}
++			unset ($sub_nodes);
++		}
++		$dest_nodes[] =&amp; $dest_node;
++		return $dest_nodes;
++	}
++	
++	/**
++	 * Is this node a usecontent node
++	 * @access protected
++	 * @param object $node The node to check
++	 * @param bool $check_attrs Also check whether 'usecontent?'-attributes exist
++	 * @return bool
++	 */
++	function _isUseContent (&amp;$node, $check_attrs = false) {
++		$name = strtolower($node-&gt;name ());
++		if ($this-&gt;_codes[$name]['callback_type'] == 'usecontent') {
++			return true;
++		}
++		$result = false;
++		if ($this-&gt;_codes[$name]['callback_type'] == 'callback_replace?') {
++			$result = true;
++		} else if ($this-&gt;_codes[$name]['callback_type'] != 'usecontent?') {
++			return false;
++		}
++		if ($check_attrs === false) {
++			return !$result;
++		}
++		$attributes = array_keys ($this-&gt;_topNodeVar ('_attributes'));
++		$p = @$this-&gt;_codes[$name]['callback_params']['usecontent_param'];
++		if (is_array ($p)) {
++			foreach ($p as $param) {
++				if (in_array ($param, $attributes)) {
++					return $result;
++				}
++			}
++		} else {
++			if (in_array ($p, $attributes)) {
++				return $result;
++			}
++		}
++		return !$result;
++	}
++}
++
++/**
++ * Node type: BBCode Element node
++ * @see StringParser_BBCode_Node_Element::_type
++ */
++define ('STRINGPARSER_BBCODE_NODE_ELEMENT', 32);
++
++/**
++ * Node type: BBCode Paragraph node
++ * @see StringParser_BBCode_Node_Paragraph::_type
++ */
++define ('STRINGPARSER_BBCODE_NODE_PARAGRAPH', 33);
++
++
++/**
++ * BBCode String parser paragraph node class
++ *
++ * @package stringparser
++ */
++class StringParser_BBCode_Node_Paragraph extends StringParser_Node {
++	/**
++	 * The type of this node.
++	 * 
++	 * This node is a bbcode paragraph node.
++	 *
++	 * @access protected
++	 * @var int
++	 * @see STRINGPARSER_BBCODE_NODE_PARAGRAPH
++	 */
++	var $_type = STRINGPARSER_BBCODE_NODE_PARAGRAPH;
++	
++	/**
++	 * Determines whether a criterium matches this node
++	 *
++	 * @access public
++	 * @param string $criterium The criterium that is to be checked
++	 * @param mixed $value The value that is to be compared
++	 * @return bool True if this node matches that criterium
++	 */
++	function matchesCriterium ($criterium, $value) {
++		if ($criterium == 'empty') {
++			if (!count ($this-&gt;_children)) {
++				return true;
++			}
++			if (count ($this-&gt;_children) &gt; 1) {
++				return false;
++			}
++			if ($this-&gt;_children[0]-&gt;_type != STRINGPARSER_NODE_TEXT) {
++				return false;
++			}
++			if (!strlen ($this-&gt;_children[0]-&gt;content)) {
++				return true;
++			}
++			if (strlen ($this-&gt;_children[0]-&gt;content) &gt; 2) {
++				return false;
++			}
++			$f_begin = $this-&gt;_children[0]-&gt;getFlag ('newlinemode.begin', 'integer', BBCODE_NEWLINE_PARSE);
++			$f_end = $this-&gt;_children[0]-&gt;getFlag ('newlinemode.end', 'integer', BBCODE_NEWLINE_PARSE);
++			$content = $this-&gt;_children[0]-&gt;content;
++			if ($f_begin != BBCODE_NEWLINE_PARSE &amp;&amp; $content{0} == &quot;\n&quot;) {
++				$content = substr ($content, 1);
++			}
++			if ($f_end != BBCODE_NEWLINE_PARSE &amp;&amp; $content{strlen($content)-1} == &quot;\n&quot;) {
++				$content = substr ($content, 0, -1);
++			}
++			if (!strlen ($content)) {
++				return true;
++			}
++			return false;
++		}
++	}
++}
++
++/**
++ * BBCode String parser element node class
++ *
++ * @package stringparser
++ */
++class StringParser_BBCode_Node_Element extends StringParser_Node {
++	/**
++	 * The type of this node.
++	 * 
++	 * This node is a bbcode element node.
++	 *
++	 * @access protected
++	 * @var int
++	 * @see STRINGPARSER_BBCODE_NODE_ELEMENT
++	 */
++	var $_type = STRINGPARSER_BBCODE_NODE_ELEMENT;
++	
++	/**
++	 * Element name
++	 *
++	 * @access protected
++	 * @var string
++	 * @see StringParser_BBCode_Node_Element::name
++	 * @see StringParser_BBCode_Node_Element::setName
++	 * @see StringParser_BBCode_Node_Element::appendToName
++	 */
++	var $_name = '';
++	
++	/**
++	 * Element flags
++	 * 
++	 * @access protected
++	 * @var array
++	 */
++	var $_flags = array ();
++	
++	/**
++	 * Element attributes
++	 * 
++	 * @access protected
++	 * @var array
++	 */
++	var $_attributes = array ();
++	
++	/**
++	 * Had a close tag
++	 *
++	 * @access protected
++	 * @var bool
++	 */
++	var $_hadCloseTag = false;
++	
++	/**
++	 * Was processed by paragraph handling
++	 *
++	 * @access protected
++	 * @var bool
++	 */
++	var $_paragraphHandled = false;
++	
++	//////////////////////////////////////////////////
++	
++	/**
++	 * Duplicate this node (but without children / parents)
++	 *
++	 * @access public
++	 * @return object
++	 */
++	function &amp;duplicate () {
++		$newnode =&amp; new StringParser_BBCode_Node_Element ($this-&gt;occurredAt);
++		$newnode-&gt;_name = $this-&gt;_name;
++		$newnode-&gt;_flags = $this-&gt;_flags;
++		$newnode-&gt;_attributes = $this-&gt;_attributes;
++		$newnode-&gt;_hadCloseTag = $this-&gt;_hadCloseTag;
++		$newnode-&gt;_paragraphHandled = $this-&gt;_paragraphHandled;
++		$newnode-&gt;_codeInfo = $this-&gt;_codeInfo;
++		return $newnode;
++	}
++	
++	/**
++	 * Retreive name of this element
++	 *
++	 * @access public
++	 * @return string
++	 */
++	function name () {
++		return $this-&gt;_name;
++	}
++	
++	/**
++	 * Set name of this element
++	 *
++	 * @access public
++	 * @param string $name The new name of the element
++	 */
++	function setName ($name) {
++		$this-&gt;_name = $name;
++		return true;
++	}
++	
++	/**
++	 * Append to name of this element
++	 *
++	 * @access public
++	 * @param string $chars The chars to append to the name of the element
++	 */
++	function appendToName ($chars) {
++		$this-&gt;_name .= $chars;
++		return true;
++	}
++	
++	/**
++	 * Append to attribute of this element
++	 *
++	 * @access public
++	 * @param string $name The name of the attribute
++	 * @param string $chars The chars to append to the attribute of the element
++	 */
++	function appendToAttribute ($name, $chars) {
++		if (!isset ($this-&gt;_attributes[$name])) {
++			$this-&gt;_attributes[$name] = $chars;
++			return true;
++		}
++		$this-&gt;_attributes[$name] .= $chars;
++		return true;
++	}
++	
++	/**
++	 * Set attribute
++	 *
++	 * @access public
++	 * @param string $name The name of the attribute
++	 * @param string $value The new value of the attribute
++	 */
++	function setAttribute ($name, $value) {
++		$this-&gt;_attributes[$name] = $value;
++		return true;
++	}
++	
++	/**
++	 * Set code info
++	 *
++	 * @access public
++	 * @param array $info The code info array
++	 */
++	function setCodeInfo ($info) {
++		$this-&gt;_codeInfo = $info;
++		$this-&gt;_flags = $info['flags'];
++		return true;
++	}
++	
++	/**
++	 * Get attribute value
++	 *
++	 * @access public
++	 * @param string $name The name of the attribute
++	 */
++	function attribute ($name) {
++		if (!isset ($this-&gt;_attributes[$name])) {
++			return null;
++		}
++		return $this-&gt;_attributes[$name];
++	}
++	
++	/**
++	 * Set flag that this element had a close tag
++	 *
++	 * @access public
++	 */
++	function setHadCloseTag () {
++		$this-&gt;_hadCloseTag = true;
++	}
++	
++	/**
++	 * Set flag that this element was already processed by paragraph handling
++	 *
++	 * @access public
++	 */
++	function setParagraphHandled () {
++		$this-&gt;_paragraphHandled = true;
++	}
++	
++	/**
++	 * Get flag if this element was already processed by paragraph handling
++	 *
++	 * @access public
++	 * @return bool
++	 */
++	function paragraphHandled () {
++		return $this-&gt;_paragraphHandled;
++	}
++	
++	/**
++	 * Get flag if this element had a close tag
++	 *
++	 * @access public
++	 * @return bool
++	 */
++	function hadCloseTag () {
++		return $this-&gt;_hadCloseTag;
++	}
++	
++	/**
++	 * Determines whether a criterium matches this node
++	 *
++	 * @access public
++	 * @param string $criterium The criterium that is to be checked
++	 * @param mixed $value The value that is to be compared
++	 * @return bool True if this node matches that criterium
++	 */
++	function matchesCriterium ($criterium, $value) {
++		if ($criterium == 'tagName') {
++			return ($value == $this-&gt;_name);
++		}
++		if ($criterium == 'needsTextNodeModification') {
++			return (($this-&gt;getFlag ('opentag.before.newline', 'integer', BBCODE_NEWLINE_PARSE) != BBCODE_NEWLINE_PARSE || $this-&gt;getFlag ('opentag.after.newline', 'integer', BBCODE_NEWLINE_PARSE) != BBCODE_NEWLINE_PARSE || ($this-&gt;_hadCloseTag &amp;&amp; ($this-&gt;getFlag ('closetag.before.newline', 'integer', BBCODE_NEWLINE_PARSE) != BBCODE_NEWLINE_PARSE || $this-&gt;getFlag ('closetag.after.newline', 'integer', BBCODE_NEWLINE_PARSE) != BBCODE_NEWLINE_PARSE))) == (bool)$value);
++		}
++		if (substr ($criterium, 0, 5) == 'flag:') {
++			$criterium = substr ($criterium, 5);
++			return ($this-&gt;getFlag ($criterium) == $value);
++		}
++		if (substr ($criterium, 0, 6) == '!flag:') {
++			$criterium = substr ($criterium, 6);
++			return ($this-&gt;getFlag ($criterium) != $value);
++		}
++		if (substr ($criterium, 0, 6) == 'flag=:') {
++			$criterium = substr ($criterium, 6);
++			return ($this-&gt;getFlag ($criterium) === $value);
++		}
++		if (substr ($criterium, 0, 7) == '!flag=:') {
++			$criterium = substr ($criterium, 7);
++			return ($this-&gt;getFlag ($criterium) !== $value);
++		}
++		return parent::matchesCriterium ($criterium, $value);
++	}
++	
++	/**
++	 * Get first child if it is a text node
++	 *
++	 * @access public
++	 * @return mixed
++	 */
++	function &amp;firstChildIfText () {
++		$ret =&amp; $this-&gt;firstChild ();
++		if (is_null ($ret)) {
++			return $ret;
++		}
++		if ($ret-&gt;_type != STRINGPARSER_NODE_TEXT) {
++			// DON'T DO $ret = null WITHOUT unset BEFORE!
++			// ELSE WE WILL ERASE THE NODE ITSELF! EVIL!
++			unset ($ret);
++			$ret = null;
++		}
++		return $ret;
++	}
++	
++	/**
++	 * Get last child if it is a text node AND if this element had a close tag
++	 *
++	 * @access public
++	 * @return mixed
++	 */
++	function &amp;lastChildIfText () {
++		$ret =&amp; $this-&gt;lastChild ();
++		if (is_null ($ret)) {
++			return $ret;
++		}
++		if ($ret-&gt;_type != STRINGPARSER_NODE_TEXT || !$this-&gt;_hadCloseTag) {
++			// DON'T DO $ret = null WITHOUT unset BEFORE!
++			// ELSE WE WILL ERASE THE NODE ITSELF! EVIL!
++			if ($ret-&gt;_type != STRINGPARSER_NODE_TEXT &amp;&amp; !$ret-&gt;hadCloseTag ()) {
++				$ret2 =&amp; $ret-&gt;_findPrevAdjentTextNodeHelper ();
++				unset ($ret);
++				$ret =&amp; $ret2;
++				unset ($ret2);
++			} else {
++				unset ($ret);
++				$ret = null;
++			}
++		}
++		return $ret;
++	}
++	
++	/**
++	 * Find next adjent text node after close tag
++	 *
++	 * returns the node or null if none exists
++	 *
++	 * @access public
++	 * @return mixed
++	 */
++	function &amp;findNextAdjentTextNode () {
++		$ret = null;
++		if (is_null ($this-&gt;_parent)) {
++			return $ret;
++		}
++		if (!$this-&gt;_hadCloseTag) {
++			return $ret;
++		}
++		$ccount = count ($this-&gt;_parent-&gt;_children);
++		$found = false;
++		for ($i = 0; $i &lt; $ccount; $i++) {
++			if ($this-&gt;_parent-&gt;_children[$i]-&gt;equals ($this)) {
++				$found = $i;
++				break;
++			}
++		}
++		if ($found === false) {
++			return $ret;
++		}
++		if ($found &lt; $ccount - 1) {
++			if ($this-&gt;_parent-&gt;_children[$found+1]-&gt;_type == STRINGPARSER_NODE_TEXT) {
++				return $this-&gt;_parent-&gt;_children[$found+1];
++			}
++			return $ret;
++		}
++		if ($this-&gt;_parent-&gt;_type == STRINGPARSER_BBCODE_NODE_ELEMENT &amp;&amp; !$this-&gt;_parent-&gt;hadCloseTag ()) {
++			$ret =&amp; $this-&gt;_parent-&gt;findNextAdjentTextNode ();
++			return $ret;
++		}
++		return $ret;
++	}
++	
++	/**
++	 * Find previous adjent text node before open tag
++	 *
++	 * returns the node or null if none exists
++	 *
++	 * @access public
++	 * @return mixed
++	 */
++	function &amp;findPrevAdjentTextNode () {
++		$ret = null;
++		if (is_null ($this-&gt;_parent)) {
++			return $ret;
++		}
++		$ccount = count ($this-&gt;_parent-&gt;_children);
++		$found = false;
++		for ($i = 0; $i &lt; $ccount; $i++) {
++			if ($this-&gt;_parent-&gt;_children[$i]-&gt;equals ($this)) {
++				$found = $i;
++				break;
++			}
++		}
++		if ($found === false) {
++			return $ret;
++		}
++		if ($found &gt; 0) {
++			if ($this-&gt;_parent-&gt;_children[$found-1]-&gt;_type == STRINGPARSER_NODE_TEXT) {
++				return $this-&gt;_parent-&gt;_children[$found-1];
++			}
++			if (!$this-&gt;_parent-&gt;_children[$found-1]-&gt;hadCloseTag ()) {
++				$ret =&amp; $this-&gt;_parent-&gt;_children[$found-1]-&gt;_findPrevAdjentTextNodeHelper ();
++			}
++			return $ret;
++		}
++		return $ret;
++	}
++	
++	/**
++	 * Helper function for findPrevAdjentTextNode
++	 *
++	 * Looks at the last child node; if it's a text node, it returns it,
++	 * if the element node did not have an open tag, it calls itself
++	 * recursively.
++	 */
++	function &amp;_findPrevAdjentTextNodeHelper () {
++		$lastnode =&amp; $this-&gt;lastChild ();
++		if ($lastnode-&gt;_type == STRINGPARSER_NODE_TEXT) {
++			return $lastnode;
++		}
++		if (!$lastnode-&gt;hadCloseTag ()) {
++			$ret =&amp; $lastnode-&gt;_findPrevAdjentTextNodeHelper ();
++		} else {
++			$ret = null;
++		}
++		return $ret;
++	}
++	
++	/**
++	 * Get Flag
++	 *
++	 * @access public
++	 * @param string $flag The requested flag
++	 * @param string $type The requested type of the return value
++	 * @param mixed $default The default return value
++	 * @return mixed
++	 */
++	function getFlag ($flag, $type = 'mixed', $default = null) {
++		if (!isset ($this-&gt;_flags[$flag])) {
++			return $default;
++		}
++		$return = $this-&gt;_flags[$flag];
++		if ($type != 'mixed') {
++			settype ($return, $type);
++		}
++		return $return;
++	}
++	
++	/**
++	 * Set a flag
++	 *
++	 * @access public
++	 * @param string $name The name of the flag
++	 * @param mixed $value The value of the flag
++	 */
++	function setFlag ($name, $value) {
++		$this-&gt;_flags[$name] = $value;
++		return true;
++	}
++	
++	/**
++	 * Validate code
++	 *
++	 * @access public
++	 * @param string $action The action which is to be called ('validate'
++	 *                       for first validation, 'validate_again' for
++	 *                       second validation (optional))
++	 * @return bool
++	 */
++	function validate ($action = 'validate') {
++		if ($action != 'validate' &amp;&amp; $action != 'validate_again') {
++			return false;
++		}
++		if ($this-&gt;_codeInfo['callback_type'] != 'simple_replace' &amp;&amp; $this-&gt;_codeInfo['callback_type'] != 'simple_replace_single') {
++			if (!is_callable ($this-&gt;_codeInfo['callback_func'])) {
++				return false;
++			}
++			
++			if (($this-&gt;_codeInfo['callback_type'] == 'usecontent' || $this-&gt;_codeInfo['callback_type'] == 'usecontent?' || $this-&gt;_codeInfo['callback_type'] == 'callback_replace?') &amp;&amp; count ($this-&gt;_children) == 1 &amp;&amp; $this-&gt;_children[0]-&gt;_type == STRINGPARSER_NODE_TEXT) {
++				// we have to make sure the object gets passed on as a reference
++				// if we do call_user_func(..., &amp;$this) this will clash with PHP5
++				$callArray = array ($action, $this-&gt;_attributes, $this-&gt;_children[0]-&gt;content, $this-&gt;_codeInfo['callback_params']);
++				$callArray[] =&amp; $this;
++				$res = call_user_func_array ($this-&gt;_codeInfo['callback_func'], $callArray);
++				if ($res) {
++					// ok, now, if we've got a usecontent type, set a flag that
++					// this may not be broken up by paragraph handling!
++					// but PLEASE do NOT change if already set to any other setting
++					// than BBCODE_PARAGRAPH_ALLOW_BREAKUP because we could
++					// override e.g. BBCODE_PARAGRAPH_BLOCK_ELEMENT!
++					$val = $this-&gt;getFlag ('paragraph_type', 'integer', BBCODE_PARAGRAPH_ALLOW_BREAKUP);
++					if ($val == BBCODE_PARAGRAPH_ALLOW_BREAKUP) {
++						$this-&gt;_flags['paragraph_type'] = BBCODE_PARAGRAPH_ALLOW_INSIDE;
++					}
++				}
++				return $res;
++			}
++			
++			// we have to make sure the object gets passed on as a reference
++			// if we do call_user_func(..., &amp;$this) this will clash with PHP5
++			$callArray = array ($action, $this-&gt;_attributes, null, $this-&gt;_codeInfo['callback_params']);
++			$callArray[] =&amp; $this;
++			return call_user_func_array ($this-&gt;_codeInfo['callback_func'], $callArray);
++		}
++		return (bool)(!count ($this-&gt;_attributes));
++	}
++	
++	/**
++	 * Get replacement for this code
++	 *
++	 * @access public
++	 * @param string $subcontent The content of all sub-nodes
++	 * @return string
++	 */
++	function getReplacement ($subcontent) {
++		if ($this-&gt;_codeInfo['callback_type'] == 'simple_replace' || $this-&gt;_codeInfo['callback_type'] == 'simple_replace_single') {
++			if ($this-&gt;_codeInfo['callback_type'] == 'simple_replace_single') {
++				if (strlen ($subcontent)) { // can't be!
++					return false;
++				}
++				return $this-&gt;_codeInfo['callback_params']['start_tag'];
++			}
++			return $this-&gt;_codeInfo['callback_params']['start_tag'].$subcontent.$this-&gt;_codeInfo['callback_params']['end_tag'];
++		}
++		// else usecontent, usecontent? or callback_replace or callback_replace_single
++		// =&gt; call function (the function is callable, determined in validate()!)
++		
++		// we have to make sure the object gets passed on as a reference
++		// if we do call_user_func(..., &amp;$this) this will clash with PHP5
++		$callArray = array ('output', $this-&gt;_attributes, $subcontent, $this-&gt;_codeInfo['callback_params']);
++		$callArray[] =&amp; $this;
++		return call_user_func_array ($this-&gt;_codeInfo['callback_func'], $callArray);
++	}
++	
++	/**
++	 * Dump this node to a string
++	 *
++	 * @access protected
++	 * @return string
++	 */
++	function _dumpToString () {
++		$str = &quot;bbcode \&quot;&quot;.substr (preg_replace ('/\s+/', ' ', $this-&gt;_name), 0, 40).&quot;\&quot;&quot;;
++		if (count ($this-&gt;_attributes)) {
++			$attribs = array_keys ($this-&gt;_attributes);
++			sort ($attribs);
++			$str .= ' (';
++			$i = 0;
++			foreach ($attribs as $attrib) {
++				if ($i != 0) {
++					$str .= ', ';
++				}
++				$str .= $attrib.'=&quot;';
++				$str .= substr (preg_replace ('/\s+/', ' ', $this-&gt;_attributes[$attrib]), 0, 10);
++				$str .= '&quot;';
++				$i++;
++			}
++			$str .= ')';
++		}
++		return $str;
++	}
++}
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/javascript/bbtextarea.js
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/javascript/bbtextarea.js	2006-09-29 12:02:32 UTC (rev 2170)
++++ YDFramework2.0/trunk/YDFramework2/javascript/bbtextarea.js	2006-10-02 08:35:47 UTC (rev 2171)
+@@ -0,0 +1,56 @@
++function AddText( myField, startTag, defaultText, endTag ) {
++    myField = document.getElementById( myField );
++    if ( document.selection ) {
++        myField.focus();
++        sel = document.selection.createRange();
++        if ( sel.text.length &gt; 0 ) {
++            sel.text = startTag + sel.text + endTag;
++        } else {
++            if ( endTag == '') {
++                sel.text = startTag;
++            } else {
++                sel.text = startTag + endTag;
++            }
++        }
++    } else if ( myField.selectionStart || myField.selectionStart == '0' ) {
++        var startPos = myField.selectionStart;
++        var endPos = myField.selectionEnd;
++        var cursorPos = endPos;
++        var scrollTop = myField.scrollTop;
++        if ( startPos != endPos ) {
++            myField.value = myField.value.substring(0, startPos)
++                          + startTag
++                          + myField.value.substring(startPos, endPos) 
++                          + endTag
++                          + myField.value.substring(endPos, myField.value.length);
++            cursorPos += startTag.length + endTag.length;
++        } else {
++            if ( endTag == '') {
++                myField.value = myField.value.substring(0, startPos) 
++                              + startTag
++                              + myField.value.substring(endPos, myField.value.length);
++                cursorPos = startPos + startTag.length;
++            } else {
++                myField.value = myField.value.substring(0, startPos) 
++                              + endTag
++                              + myField.value.substring(endPos, myField.value.length);
++                cursorPos = startPos + endTag.length;
++            }
++        }
++        myField.selectionStart = cursorPos;
++        myField.selectionEnd = cursorPos;
++        myField.scrollTop = scrollTop;
++    } else {
++        if ( endTag == '') {
++            myField.value += startTag;
++        } else {
++            myField.value += startTag + endTag;
++        }
++    }
++    myField.focus();
++}
++
++function openWin( url, name, opts ) {
++    win = window.open( url, name, opts );
++    win.focus();
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000701.html">[ydf-devel] r2172 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#700">[ date ]</a>
+              <a href="thread.html#700">[ thread ]</a>
+              <a href="subject.html#700">[ subject ]</a>
+              <a href="author.html#700">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

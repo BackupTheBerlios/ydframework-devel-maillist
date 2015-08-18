@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1702 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1702%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602201250.k1KCoP09002724%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000110.html">
+   <LINK REL="Next"  HREF="000112.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1702 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1702%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602201250.k1KCoP09002724%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1702 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 20 13:50:25 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000110.html">[ydf-devel] r1701 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000112.html">[ydf-devel] r1703 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-20 13:50:10 +0100 (Mon, 20 Feb 2006)
+New Revision: 1702
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+Fixed a small issue in YDRecordSet where the setTotalRows function with the argument 0 would not work properly.
+
+Bug #6485
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-20 12:37:16 UTC (rev 1701)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-20 12:50:10 UTC (rev 1702)
+@@ -182,12 +182,12 @@
+          *                    Default: false.
+          */
+         function setTotalRows( $value, $offset=false ) {
+-            
+-            // Return if total is 0
+-            if ( strval( $value ) == '0' ) {
+-                return;
+-            }
+ 
++            //// Return if total is 0
++            //if ( strval( $value ) == '0' ) {
++            //    return;
++            //}
++
+             // Set the number of records an integer
+             $value = intval( $value );
+             
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000110.html">[ydf-devel] r1701 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000112.html">[ydf-devel] r1703 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

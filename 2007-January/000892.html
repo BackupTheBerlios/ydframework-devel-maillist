@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2300 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2300%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701071737.l07HbMGt021733%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000891.html">
+   <LINK REL="Next"  HREF="000893.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2300 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2300%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701071737.l07HbMGt021733%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2300 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan  7 18:37:22 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000891.html">[ydf-devel] r2299 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+        <LI>Next message: <A HREF="000893.html">[ydf-devel] r2301 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#892">[ date ]</a>
+              <a href="thread.html#892">[ thread ]</a>
+              <a href="subject.html#892">[ subject ]</a>
+              <a href="author.html#892">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-07 18:37:21 +0100 (Sun, 07 Jan 2007)
+New Revision: 2300
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+Improved the SQL formatter a little bit.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-07 14:22:28 UTC (rev 2299)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-07 17:37:21 UTC (rev 2300)
+@@ -1468,6 +1468,11 @@
+             $sql = str_ireplace( ' INSERT ', ' INSERT ', $sql );
+             $sql = str_ireplace( ' UNION ', YD_CRLF . 'UNION' . YD_CRLF, $sql );
+             $sql = str_ireplace( ' FROM ', YD_CRLF . 'FROM ', $sql );
++            $sql = str_ireplace( ' LEFT JOIN ', YD_CRLF . 'LEFT JOIN ', $sql );
++            $sql = str_ireplace( ' RIGHT JOIN ', YD_CRLF . 'RIGHT JOIN ', $sql );
++            $sql = str_ireplace( ' JOIN ', YD_CRLF . 'JOIN ', $sql );
++            $sql = str_ireplace( 'LEFT' . YD_CRLF . 'JOIN ', 'LEFT JOIN ', $sql );
++            $sql = str_ireplace( 'RIGHT' . YD_CRLF . 'JOIN ', 'RIGHT JOIN ', $sql );
+             $sql = str_ireplace( ' INTO ', YD_CRLF . 'INTO ', $sql );
+             $sql = str_ireplace( ' VALUES ', YD_CRLF . 'VALUES ', $sql );
+             $sql = str_ireplace( ' LEFT JOIN ', YD_CRLF . 'LEFT JOIN ', $sql );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000891.html">[ydf-devel] r2299 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+	<LI>Next message: <A HREF="000893.html">[ydf-devel] r2301 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#892">[ date ]</a>
+              <a href="thread.html#892">[ thread ]</a>
+              <a href="subject.html#892">[ subject ]</a>
+              <a href="author.html#892">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

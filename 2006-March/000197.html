@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1774 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1774%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200603121828.k2CISkgb012056%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000196.html">
+   <LINK REL="Next"  HREF="000198.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1774 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1774%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200603121828.k2CISkgb012056%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1774 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at berlios.de
+       </A><BR>
+    <I>Sun Mar 12 19:28:46 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000196.html">[ydf-devel] r1773 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000198.html">[ydf-devel] r1775 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#197">[ date ]</a>
+              <a href="thread.html#197">[ thread ]</a>
+              <a href="subject.html#197">[ subject ]</a>
+              <a href="author.html#197">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-03-12 19:28:27 +0100 (Sun, 12 Mar 2006)
+New Revision: 1774
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+Log:
+added:
+- SwitchMenu predefined constructor arguments
+- SwitchMenu::addCss() method to include predefined css in a template
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2006-03-07 14:09:06 UTC (rev 1773)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2006-03-12 18:28:27 UTC (rev 1774)
+@@ -43,7 +43,7 @@
+          *	@param $attributes	(optional) The attributes for the form element.
+          *	@param $options		(optional) The menu elements.
+          */
+-        function YDFormElement_SwitchMenu( $form, $name, $label='', $attributes=array(), $options=array() ) {
++        function YDFormElement_SwitchMenu( $form = 'YDForm', $name = 'SMenu', $label='', $attributes=array(), $options=array() ) {
+ 
+             // Initialize the parent
+             $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
+@@ -122,6 +122,19 @@
+ 
+ 
+         /**
++         *	This function adds custom css to the template
++         *
++         *	@param $template		The template object 
++         */
++		function addCss( &amp; $template ){
++
++			$template-&gt;addCss( '.menutitle{ cursor:pointer;margin-bottom: 5px;background-color:#ECECFF;color:#000000;width:140px;padding:2px;text-align:center;font-weight:bold;border:1px solid #000000; }' );
++			$template-&gt;addCss( '.submenu{ margin-bottom: 0.5em; }' );
++			
++		}
++
++
++        /**
+          *	This function adds a new menu item
+          *
+          *	@param $menu		The name of the menu
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000196.html">[ydf-devel] r1773 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000198.html">[ydf-devel] r1775 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#197">[ date ]</a>
+              <a href="thread.html#197">[ thread ]</a>
+              <a href="subject.html#197">[ subject ]</a>
+              <a href="author.html#197">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

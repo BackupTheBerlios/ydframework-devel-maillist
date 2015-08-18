@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1752 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1752%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200602281428.k1SESj7I020981%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000168.html">
+   <LINK REL="Next"  HREF="000170.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1752 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1752%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200602281428.k1SESj7I020981%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1752 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at berlios.de
+       </A><BR>
+    <I>Tue Feb 28 15:28:45 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000168.html">[ydf-devel] r1751 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+        <LI>Next message: <A HREF="000170.html">[ydf-devel] r1754 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#169">[ date ]</a>
+              <a href="thread.html#169">[ thread ]</a>
+              <a href="subject.html#169">[ subject ]</a>
+              <a href="author.html#169">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-02-28 15:27:11 +0100 (Tue, 28 Feb 2006)
+New Revision: 1752
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+- YDAjax can be defined without a form object. This is particular useful when all YDAjax events are applied to js functions.
+
+- Lots of clean ups on js identation
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-02-27 20:15:29 UTC (rev 1751)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-02-28 14:27:11 UTC (rev 1752)
+@@ -65,7 +65,7 @@
+          *	@param $template		Template object.
+          *	@param $form			Form object.
+          */
+-        function YDAjax( &amp; $template, &amp; $form){
++        function YDAjax( &amp; $template, &amp; $form = null){
+ 
+ 			// prefix string used in js function names
+ 			$this-&gt;prefix = YDConfig::get( 'YD_AJAX_PREFIX' );
+@@ -118,33 +118,34 @@
+ 			$html .= &quot;var xajaxDefinedPost    = 1;\n&quot;;
+ 
+ 			// get standard xajax code
+-			$html .= file_get_contents( dirname( __FILE__ ) . '/js/xajax.js');
++			$html .= file_get_contents( dirname( __FILE__ ) . '/js/xajax.js') . &quot;\n&quot;;
+ 
+ 			// include generic effects lib .. yes, it must be ALWAYS included
+-			$html .= &quot;\n&quot;. file_get_contents( dirname( __FILE__ ) . '/js/prototype.lite.js_moo.fx.js_moo.fx.pack.js');
++			$html .= file_get_contents( dirname( __FILE__ ) . '/js/prototype.lite.js_moo.fx.js_moo.fx.pack.js') . &quot;\n&quot;;
+ 
+ 			// send autocompleter code
+-			$html .= &quot;\n&quot; . $this-&gt;autocompleterCode;
++			$html .= $this-&gt;autocompleterCode;
+ 
+ 			// compute ONLOAD code
+ 			$onload = '';
+ 
+ 				// export effects js
+ 				foreach( $this-&gt;effects as $eff_name =&gt; $eff_code )
+-					$onload  .= $eff_code . &quot;\n\t&quot;;
++					$onload  .= &quot;\t&quot; . $eff_code . &quot;\n&quot;;
+ 
+ 				// send js waiting message creation code
+ 				if ($this-&gt;waitingMessageCode != '')
+-					$onload  .= $this-&gt;waitingMessageCode . &quot;\n\t&quot;;
++					$onload  .= &quot;\t&quot; . $this-&gt;waitingMessageCode . &quot;\n&quot;;
+ 
+ 				// send autocompleter functions code
+-				$onload  .= implode( &quot;\n\t&quot;, $this-&gt;autocompleterCodeFunctions );
++				if (!empty( $this-&gt;autocompleterCodeFunctions ))
++					$onload  .= &quot;\t&quot; . implode( &quot;\n\t&quot;, $this-&gt;autocompleterCodeFunctions ) . &quot;\n&quot;;
+ 
+ 			// if there are on load js just export it
+-			if ($onload != '') $html .= &quot;\nwindow.onload = function() {\n\t&quot;. $onload . &quot;\n}&quot;;
++			if ($onload != '') $html .= &quot;window.onload = function() {&quot;. $onload . &quot;}\n&quot;;
+ 
+ 			// send js function to hide waiting message
+-			$html .= $this-&gt;waitingMessageCodeFunction . &quot;\n&quot;;
++			$html .= $this-&gt;waitingMessageCodeFunction;
+ 
+ 			// loop xajax functions created on-the-fly
+ 			foreach($this-&gt;aFunctions as $sFunction =&gt; $bExists)
+@@ -152,22 +153,22 @@
+ 
+ 			// add custom js TOP code
+ 			if (!empty($this-&gt;customjsTop))
+-				$html .= implode( &quot;\n&quot;, $this-&gt;customjsTop ) .&quot;\n&quot;;
++				$html .= implode( &quot;\n&quot;, $this-&gt;customjsTop ) . &quot;\n&quot;;
+ 
+ 			// add YDAjax js variables
+ 			foreach( $this-&gt;customjsVariables as $variable =&gt; $declaration )
+-				$html .= &quot;var &quot;. $variable .&quot; = &quot;. $declaration .&quot;;\n&quot;;
++				$html .= &quot;var &quot;. $variable .&quot; = &quot;. $declaration . &quot;;\n&quot;;
+ 
+ 			// add YDAjax js functions
+ 			foreach( $this-&gt;customjs as $function =&gt; $declaration )
+-				$html .= &quot;function &quot;. $function .&quot;{&quot;. $declaration .&quot;}\n&quot;;
++				$html .= &quot;function &quot;. $function .&quot;{&quot;. $declaration . &quot;}\n&quot;;
+ 
+ 			// add js custom BOTTOM code
+ 			if (!empty($this-&gt;customjsBottom))
+-				$html .= implode( &quot;\n&quot;, $this-&gt;customjsBottom ) .&quot;\n&quot;;
++				$html .= implode( &quot;\n&quot;, $this-&gt;customjsBottom ) . &quot;\n&quot;;
+ 
+ 			// add all code to template html
+-			$this-&gt;template-&gt;addJavascript( $html, true );
++			$this-&gt;template-&gt;addJavascript( trim( $html ), true );
+ 		}
+ 
+ 
+@@ -263,8 +264,8 @@
+ 				$effectHide = new YDAjaxEffect( '', 'hide', '', 0 );
+ 
+ 			// create js functions to show/hide div
+-			$this-&gt;waitingMessageCodeFunction  = &quot;\nfunction &quot;. $this-&gt;wtFunctionShow .&quot;{&quot;. $effectShow-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectShow-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) .&quot;}&quot;;
+-			$this-&gt;waitingMessageCodeFunction .= &quot;\nfunction &quot;. $this-&gt;wtFunctionHide .&quot;{&quot;. $effectHide-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectHide-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) .&quot;}&quot;;
++			$this-&gt;waitingMessageCodeFunction  = &quot;function &quot;. $this-&gt;wtFunctionShow .&quot;{&quot;. $effectShow-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectShow-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) .&quot;}\n&quot;;
++			$this-&gt;waitingMessageCodeFunction .= &quot;function &quot;. $this-&gt;wtFunctionHide .&quot;{&quot;. $effectHide-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectHide-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) .&quot;}\n&quot;;
+ 
+ 			// add script to hide waiting message on response
+ 			$this-&gt;response-&gt;addScript( $this-&gt;wtFunctionHide . &quot;;&quot; );
+@@ -320,7 +321,8 @@
+ 			// serverFunction must be an array with a class and the method (get function name)
+ 			$functionName = $this-&gt;computeFunction( $formElementName, $serverFunction, $arguments, $options, $effects );
+ 
+-			if (!$this-&gt;form-&gt;isElement( $formElementName )) return;
++			// if form is not defined or element is not a form element we must return
++			if ( is_null( $this-&gt;form ) || !$this-&gt;form-&gt;isElement( $formElementName ) ) return;
+ 
+ 			// get element object
+ 			$formElement = &amp; $this-&gt;form-&gt;getElement( $formElementName );
+@@ -435,7 +437,7 @@
+ 			if (is_null($arguments)) return &quot;&quot;;
+ 
+ 			// if is one argument and it's the form name, we want the form values
+-			if (is_string( $arguments ) &amp;&amp; $this-&gt;form-&gt;_name == $arguments) return &quot;xajax.getFormValues('&quot;. $arguments . &quot;')&quot;;
++			if (is_string( $arguments ) &amp;&amp; !is_null( $this-&gt;form ) &amp;&amp; $this-&gt;form-&gt;getName() == $arguments) return &quot;xajax.getFormValues('&quot;. $arguments . &quot;')&quot;;
+ 
+ 			// if there's only one argument or option, create arrays
+ 			if (!is_array( $arguments )) $arguments = array( $arguments );
+@@ -628,41 +630,42 @@
+ 		function processEvents(){
+ 
+ 			// find autocompleters
+-			foreach( $this-&gt;form-&gt;_elements as $formElement){
++			if ( !is_null( $this-&gt;form ))
++				foreach( $this-&gt;form-&gt;_elements as $formElement){
+ 			
+-				if ($formElement-&gt;getType() != 'autocompleter') continue;
++					if ($formElement-&gt;getType() != 'autocompleter') continue;
+ 				
+-				if (empty($this-&gt;autocompleterCodeFunctions)){
++					if (empty($this-&gt;autocompleterCodeFunctions)){
+ 
+-					// load js code
+-					$this-&gt;autocompleterCode = file_get_contents( dirname( __FILE__ ) . '/js/autocompleter.js');
++						// load js code
++						$this-&gt;autocompleterCode = &quot;\n&quot; . file_get_contents( dirname( __FILE__ ) . '/js/autocompleter.js');
+ 
+-					// add css to template
+-					$this-&gt;template-&gt;addCss( file_get_contents( dirname( __FILE__ ) . '/js/autocompleter.css') );
+-				}
++						// add css to template
++						$this-&gt;template-&gt;addCss( file_get_contents( dirname( __FILE__ ) . '/js/autocompleter.css') );
++					}
+ 		
+-				// compute variable name for this autocompleter
+-				$variable = $this-&gt;prefix .&quot;at&quot;.  $formElement-&gt;getName();
++					// compute variable name for this autocompleter
++					$variable = $this-&gt;prefix .&quot;at&quot;.  $formElement-&gt;getName();
+ 
+-				// compute html text id
+-				$textID = $formElement-&gt;getAttribute( 'id' );
++					// compute html text id
++					$textID = $formElement-&gt;getAttribute( 'id' );
+ 			
+-				// compute div id
+-				$divID = $textID .'_div';
++					// compute div id
++					$divID = $textID .'_div';
+ 
+-				// get function call
+-				$serverFunctionName = $formElement-&gt;getAjaxCall();
++					// get function call
++					$serverFunctionName = $formElement-&gt;getAjaxCall();
+ 
+-				// get ajax arguments
+-				$arguments = $formElement-&gt;getAjaxArguments();
++					// get ajax arguments
++					$arguments = $formElement-&gt;getAjaxArguments();
+ 
+-				// get ajax effects
+-				$effects = $formElement-&gt;getAjaxEffects();
++					// get ajax effects
++					$effects = $formElement-&gt;getAjaxEffects();
+ 
+-				// add js code for autocompleter
+-				$this-&gt;autocompleterCodeFunctions[] = $variable . &quot; = new AutoSuggest('&quot; . $textID . &quot;','&quot; . $divID . &quot;', null);&quot;;
+-				$this-&gt;autocompleterCodeFunctions[] = $variable . &quot;.ajax = function(){currentAjaxAutocompleter=this;&quot;.  $this-&gt;computeFunction( $textID, $serverFunctionName, $arguments, $effects ) . &quot;}&quot;;
+-			}
++					// add js code for autocompleter
++					$this-&gt;autocompleterCodeFunctions[] = $variable . &quot; = new AutoSuggest('&quot; . $textID . &quot;','&quot; . $divID . &quot;', null);&quot;;
++					$this-&gt;autocompleterCodeFunctions[] = $variable . &quot;.ajax = function(){currentAjaxAutocompleter=this;&quot;.  $this-&gt;computeFunction( $textID, $serverFunctionName, $arguments, $effects ) . &quot;}&quot;;
++				}
+ 
+ 			// add js code
+ 			$this-&gt;__assignTemplateCode();
+@@ -727,12 +730,12 @@
+ 			// if we want all values and not only the select one
+ 			if (in_array( 'all', $options )){
+ 
+-				$this-&gt;customjs[$jsfunction]  = 'var __ydtmparr = new Array();' . &quot;\n&quot;;
+-				$this-&gt;customjs[$jsfunction] .= 'var __ydtmpsel = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'&quot;);' . &quot;\n&quot;;
+-				$this-&gt;customjs[$jsfunction] .= 'for (i = 0; i &lt; __ydtmpsel.length; i++){' . &quot;\n&quot;;
+-				$this-&gt;customjs[$jsfunction] .= '    __ydtmparr[ __ydtmpsel.options[i].value ] = __ydtmpsel.options[i].text;' . &quot;\n&quot;;
+-				$this-&gt;customjs[$jsfunction] .= '}' . &quot;\n&quot;;
+-				$this-&gt;customjs[$jsfunction] .= 'return __ydtmparr;';
++				$this-&gt;customjs[$jsfunction]  = &quot;\n\t&quot; . 'var __ydtmparr = new Array();';
++				$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var __ydtmpsel = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'&quot;);';
++				$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'for (i = 0; i &lt; __ydtmpsel.length; i++){';
++				$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . '    __ydtmparr[ __ydtmpsel.options[i].value ] = __ydtmpsel.options[i].text;';
++				$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . '}';
++				$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'return __ydtmparr;' . &quot;\n&quot;;
+ 		
+ 				return $jsfunction;
+ 			}
+@@ -794,11 +797,11 @@
+ 			$jsfunction = $this-&gt;prefix .'get'. $element-&gt;getName() .'()';
+ 		
+ 			// add our custom js function
+-			$this-&gt;customjs[$jsfunction]  = 'var day   = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[day]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var month = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[month]&quot;).value - 1;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var year  = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[year]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var mydate = new Date( year, month, day ); ' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'return mydate.getTime() / 1000;';
++			$this-&gt;customjs[$jsfunction]  = &quot;\n\t&quot; . 'var day   = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[day]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var month = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[month]&quot;).value - 1;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var year  = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[year]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var mydate = new Date( year, month, day ); ';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'return mydate.getTime() / 1000;' . &quot;\n&quot;;
+ 
+ 			// return function invocation
+ 			return $jsfunction;
+@@ -812,10 +815,10 @@
+ 			$jsfunction = $this-&gt;prefix .'get'. $element-&gt;getName() .'()';
+ 		
+ 			// add our custom js function
+-			$this-&gt;customjs[$jsfunction]  = 'var hours    = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[hours]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var minutes  = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[minutes]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var mydate = new Date( 1970, 1, 1, hours, minutes ); ' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'return mydate.getTime() / 1000;';
++			$this-&gt;customjs[$jsfunction]  = &quot;\n\t&quot; . 'var hours    = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[hours]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var minutes  = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[minutes]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var mydate = new Date( 1970, 1, 1, hours, minutes ); ';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'return mydate.getTime() / 1000;' . &quot;\n&quot;;
+ 
+ 			// return function invocation
+ 			return $jsfunction;
+@@ -829,13 +832,13 @@
+ 			$jsfunction = $this-&gt;prefix .'get'. $element-&gt;getName() .'()';
+ 		
+ 			// add our custom js function
+-			$this-&gt;customjs[$jsfunction]  = 'var day      = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[day]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var month    = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[month]&quot;).value - 1;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var year     = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[year]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var hours    = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[hours]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var minutes  = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[minutes]&quot;).value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'var mydate = new Date( year, month, day, hours, minutes ); ' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'return mydate.getTime() / 1000;';
++			$this-&gt;customjs[$jsfunction]  = &quot;\n\t&quot; . 'var day      = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[day]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var month    = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[month]&quot;).value - 1;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var year     = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[year]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var hours    = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[hours]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var minutes  = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'[minutes]&quot;).value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'var mydate = new Date( year, month, day, hours, minutes ); ';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'return mydate.getTime() / 1000;' . &quot;\n&quot;;
+ 
+ 			// return function invocation
+ 			return $jsfunction;
+@@ -849,9 +852,9 @@
+ 			$jsfunction = $this-&gt;prefix .'get'. $element-&gt;getName() .'()';
+ 		
+ 			// add our custom js function
+-			$this-&gt;customjs[$jsfunction]  =	'if (document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'&quot;).checked)' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .=	'	return 1;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .=	'return 0;';
++			$this-&gt;customjs[$jsfunction]  =	&quot;\n\t&quot; . 'if (document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'&quot;).checked)';
++			$this-&gt;customjs[$jsfunction] .=	&quot;\n\t&quot; . '	return 1;';
++			$this-&gt;customjs[$jsfunction] .=	&quot;\n\t&quot; . 'return 0;' . &quot;\n&quot;;
+ 
+ 			// return function invocation
+ 			return $jsfunction;
+@@ -865,10 +868,10 @@
+ 			$jsfunction = $this-&gt;prefix .'get'. $element-&gt;getName() .'()';
+ 			
+ 			// add custom js function
+-			$this-&gt;customjs[$jsfunction]  = 'var __ydftmp = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'&quot;);' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'for (counter = 0; counter &lt; __ydftmp.length; counter++)' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= '	if (__ydftmp[counter].checked) return __ydftmp[counter].value;' . &quot;\n&quot;;
+-			$this-&gt;customjs[$jsfunction] .= 'return false;';
++			$this-&gt;customjs[$jsfunction]  = &quot;\n\t&quot; . 'var __ydftmp = document.getElementById(&quot;'. $element-&gt;getAttribute('id') .'&quot;);';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'for (counter = 0; counter &lt; __ydftmp.length; counter++)';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . '	if (__ydftmp[counter].checked) return __ydftmp[counter].value;';
++			$this-&gt;customjs[$jsfunction] .= &quot;\n\t&quot; . 'return false;' . &quot;\n&quot;;
+ 
+ 			// return function invocation
+ 			return $jsfunction;
+@@ -892,11 +895,11 @@
+          *	@param $message			Message to display.
+          */		
+ 		function message( $message ){
+-			
++
+ 			$response = new YDAjaxResponse( YDConfig::get( 'YD_AJAX_ENCODING' ) );
+ 			$response-&gt;addScript( 'try{ waitingmessagehide() }catch(e){}' );
+ 			$response-&gt;addAlert( $message );
+-			
++
+ 			return $response;
+ 		}
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000168.html">[ydf-devel] r1751 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+	<LI>Next message: <A HREF="000170.html">[ydf-devel] r1754 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#169">[ date ]</a>
+              <a href="thread.html#169">[ thread ]</a>
+              <a href="subject.html#169">[ subject ]</a>
+              <a href="author.html#169">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

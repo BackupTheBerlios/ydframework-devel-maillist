@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2440 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2440%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200706081609.l58G9aoG021615%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001035.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2440 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2440%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200706081609.l58G9aoG021615%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2440 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Jun  8 18:09:36 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001035.html">[ydf-devel] r2441 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1034">[ date ]</a>
+              <a href="thread.html#1034">[ thread ]</a>
+              <a href="subject.html#1034">[ subject ]</a>
+              <a href="author.html#1034">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-06-08 18:09:23 +0200 (Fri, 08 Jun 2007)
+New Revision: 2440
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+Log:
+on captcha form element:
+  * new feature: image can be clickable ( to retrieve a new image when the original is difficult to understand ):
+       $captcha-&gt;addRefreshImage();
+
+  * new feature: refresh image and refresh button can be added on captcha creation ( and not only in method ):
+       $captcha = new YDFormElement_Captcha( $form, $name, $label, array(), array( 'refreshimage' =&gt; true ) );
+       or
+       $captcha = new YDFormElement_Captcha( $form, $name, $label, array(), array( 'refreshbutton' =&gt; 'Get another code' ) );
+       or even
+       $captcha = new YDFormElement_Captcha( $form, $name, $label, array(), array( 'refreshimage' =&gt; true, 'refreshbutton' =&gt; 'Get another code' ) );
+
+
+
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-05-27 18:56:43 UTC (rev 2439)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-06-08 16:09:23 UTC (rev 2440)
+@@ -33,6 +33,7 @@
+     // Includes
+     include_once( YD_DIR_HOME_CLS . '/YDForm.php');
+     include_once( YD_DIR_HOME . '/3rdparty/captcha/php-captcha.inc.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDFormElements/YDFormElement_Img.php');
+ 
+     /**
+      *	This is the class that define a captcha form element.
+@@ -61,11 +62,19 @@
+ 			// create default image url
+ 			$this-&gt;_url = YDRequest::getCurrentUrl( true ) . '?do=ShowCaptcha&amp;id=' . md5( microtime() );
+ 
+-			// text box position
+-			$this-&gt;_textPosition_left = false;
+-			
+-			// refresh button. not added by default
+-			$this-&gt;_button = null;
++            // text box position
++            $this-&gt;_textPosition_left = false;
++
++            // refresh button or refresh image. not added by default
++            $this-&gt;_button = null;
++            $this-&gt;_refreshimage = false;
++
++            // add refresh button
++            if ( isset( $options[ 'refreshbutton' ] ) )
++                $this-&gt;addRefreshButton( $options[ 'refreshbutton' ] );
++
++            if ( isset( $options[ 'refreshimage' ] ) )
++                $this-&gt;addRefreshImage();
+         }
+ 
+ 
+@@ -84,12 +93,11 @@
+          */
+         function &amp; addRefreshButton( $caption = null ) {
+ 
+-			if ( ! is_string( $caption ) ) $caption = 'Get another image';
++            if ( empty( $caption ) ) $caption = 'Get another image';
+ 
+ 			include_once( YD_DIR_HOME_CLS . '/YDFormElements/YDFormElement_Button.php');
+ 
+ 			$this-&gt;_button = new YDFormElement_Button( $this-&gt;_form, $this-&gt;_name . '_refreshbutton', $caption );
+-			$this-&gt;_button-&gt;setAttribute( 'onclick', &quot;document.getElementById('&quot; . $this-&gt;getAttribute( 'id' ) . &quot;_captcha').src = document.getElementById('&quot; . $this-&gt;getAttribute( 'id' ) . &quot;_captcha').src.split('&amp;id=')[0] + '&amp;id=' + Math.random();&quot; );
+ 			$this-&gt;_button-&gt;setAttribute( 'style',   &quot;vertical-align: middle&quot; );
+ 
+ 			return $this-&gt;_button;
+@@ -97,6 +105,14 @@
+ 
+ 
+         /**
++         *	This function makes the image clicable to get a new one.
++         */
++        function &amp; addRefreshImage() {
++            $this-&gt;_refreshimage = true;
++        }
++
++
++        /**
+          *	This function will return the element as HTML.
+          *
+          *	@returns	The form element as HTML text.
+@@ -111,18 +127,33 @@
+             );
+             $attribs = array_merge( $this-&gt;_attributes, $attribs );
+ 
+-            // Get the HTML
+-			$img = '&lt;img id=&quot;' . $this-&gt;getAttribute( 'id' ) . '_captcha&quot; width=&quot;200&quot; height=&quot;40&quot; src=&quot;' . $this-&gt;_url . '&quot; style=&quot;vertical-align: middle&quot;/&gt;';
+-			$txt = '&lt;input' . YDForm::_convertToHtmlAttrib( $attribs ) . ' /&gt;';
++            // compute image
++            $img = new YDFormElement_Img( $this-&gt;_form, $attribs[ 'name' ] . 'captcha', $this-&gt;_url, array( 'width' =&gt; 200, 'height' =&gt; 40 ) );
+ 
+-			if ( is_null( $this-&gt;_button ) ) $button = '';
+-			else                             $button = $this-&gt;_button-&gt;toHTML();
++            // add image auto-refresh
++            if ( $this-&gt;_refreshimage == true ){
++                $img-&gt;setAttribute( 'onclick', &quot;document.getElementById('&quot; . $img-&gt;getAttribute( 'id' ) . &quot;').src = document.getElementById('&quot; . $img-&gt;getAttribute( 'id' ) . &quot;').src.split('&amp;id=')[0] + '&amp;id=' + Math.random();&quot; );
++                $img-&gt;setAttribute( 'style',   &quot;vertical-align: middle;cursor:pointer;&quot; );
++            }else{
++                $img-&gt;setAttribute( 'style',   &quot;vertical-align: middle;&quot; );
++            }
+ 
+-			if ( $this-&gt;_textPosition_left ){
+-				return $txt . ' ' . $img . ' ' . $button;
+-			}else{
+-				return $img . ' ' . $txt . ' ' . $button;
+-			}
++            // compute text box html
++            $txt_HTML = '&lt;input' . YDForm::_convertToHtmlAttrib( $attribs ) . ' /&gt;';
++
++            // compute refresh button html
++            if ( is_null( $this-&gt;_button ) ){
++                $button_HTML = '';
++            }else{
++                $this-&gt;_button-&gt;setAttribute( 'onclick', &quot;document.getElementById('&quot; . $img-&gt;getAttribute( 'id' ) . &quot;').src = document.getElementById('&quot; . $img-&gt;getAttribute( 'id' ) . &quot;').src.split('&amp;id=')[0] + '&amp;id=' + Math.random();&quot; );
++                $button_HTML = $this-&gt;_button-&gt;toHTML();
++            }
++
++            if ( $this-&gt;_textPosition_left ){
++                return $txt_HTML . ' ' . $img-&gt;toHTML() . ' ' . $button_HTML;
++            }else{
++                return $img-&gt;toHTML() . ' ' . $txt_HTML . ' ' . $button_HTML;
++            }
+         }
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001035.html">[ydf-devel] r2441 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1034">[ date ]</a>
+              <a href="thread.html#1034">[ thread ]</a>
+              <a href="subject.html#1034">[ subject ]</a>
+              <a href="author.html#1034">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

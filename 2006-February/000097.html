@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1694 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1694%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200602181144.k1IBiM90031535%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000096.html">
+   <LINK REL="Next"  HREF="000098.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1694 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1694%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200602181144.k1IBiM90031535%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1694 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject">david_db at berlios.de
+       </A><BR>
+    <I>Sat Feb 18 12:44:22 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000096.html">[ydf-devel] r1693 - YDFramework2.0/trunk/doc_src
+</A></li>
+        <LI>Next message: <A HREF="000098.html">[ydf-devel] r1695 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#97">[ date ]</a>
+              <a href="thread.html#97">[ thread ]</a>
+              <a href="subject.html#97">[ subject ]</a>
+              <a href="author.html#97">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-02-18 12:44:13 +0100 (Sat, 18 Feb 2006)
+New Revision: 1694
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+Log:
+Removed YDDatabaseObject protection that checks the relations keys and foreign keys so you can use another relations keys to do your queries.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-17 12:31:23 UTC (rev 1693)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-18 11:44:13 UTC (rev 1694)
+@@ -1194,8 +1194,8 @@
+                     $l_key = $l_key-&gt;name;
+                 }
+                 
+-                if ( ! $l_column = $this-&gt;getColumn( $l_key ) ) {
+-                    trigger_error( 'Invalid local key &quot;' . $l_key . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
++                if ( ! $l_column = $this-&gt;getColumn( $l_key, true ) ) {
++                    $l_column = $l_key;
+                 }
+ 
+                 // Foreign table
+@@ -1218,8 +1218,8 @@
+                     $f_key = $f_key-&gt;name;
+                 }
+                 
+-                if ( ! $f_column = $this-&gt;$f_var-&gt;getColumn( $f_key ) ) {
+-                    trigger_error( 'Invalid foreign key &quot;' . $f_key . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
++                if ( ! $f_column = $this-&gt;$f_var-&gt;getColumn( $f_key, true ) ) {
++                    $f_column = $f_key;
+                 }
+                 
+                 // Prepare the query in the foreign object
+@@ -1237,8 +1237,9 @@
+ 
+                     // Join foreign table
+                     $this-&gt;_query-&gt;join( $rel-&gt;getForeignJoin(), $f_table, $f_alias );
+-                    $this-&gt;_query-&gt;on( $r . $l_alias . $r . '.' . $r . $l_column . $r . ' = ' .
+-                                       $r . $f_alias . $r . '.' . $r . $f_column . $r );
++                    //$this-&gt;_query-&gt;on( $r . $l_alias . $r . '.' . $r . $l_column . $r . ' = ' .
++                    //                   $r . $f_alias . $r . '.' . $r . $f_column . $r );
++                    $this-&gt;_query-&gt;on( $l_column . ' = ' . $f_column );
+ 
+                 } else {
+ 
+@@ -1271,13 +1272,13 @@
+                     }
+                     
+                     // Cross foreign field column name
+-                    if ( ! $c_fcolumn = $this-&gt;$c_var-&gt;getColumn( $c_fkey ) ) {
+-                        trigger_error( 'Invalid cross foreign key &quot;' . $c_fkey . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
++                    if ( ! $c_fcolumn = $this-&gt;$c_var-&gt;getColumn( $c_fkey, true ) ) {
++                        $c_fcolumn = $c_fkey;
+                     }
+                     
+                     // Cross local field column name
+-                    if ( ! $c_lcolumn = $this-&gt;$c_var-&gt;getColumn( $c_lkey ) ) {
+-                        trigger_error( 'Invalid cross local key &quot;' . $c_lkey . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
++                    if ( ! $c_lcolumn = $this-&gt;$c_var-&gt;getColumn( $c_lkey, true ) ) {
++                        $c_lcolumn = $c_lkey;
+                     }
+ 
+                     // Prepare the query in the cross object
+@@ -1292,9 +1293,10 @@
+ 
+                     // Join cross table
+                     $this-&gt;_query-&gt;join( $rel-&gt;getCrossJoin(), $c_table, $c_alias );
+-                    $this-&gt;_query-&gt;on( $r . $l_alias . $r . '.' . $r . $l_column  . $r . ' = ' .
+-                                       $r . $c_alias . $r . '.' . $r . $c_lcolumn . $r );
+-
++                    //$this-&gt;_query-&gt;on( $r . $l_alias . $r . '.' . $r . $l_column  . $r . ' = ' .
++                    //                   $r . $c_alias . $r . '.' . $r . $c_lcolumn . $r );
++                    $this-&gt;_query-&gt;on( $l_column . ' = ' . $c_lcolumn );
++                    
+                     // Cross table additional conditions
+                     if ( $where = $rel-&gt;getCrossConditions() ) {
+                         $this-&gt;_query-&gt;on( $where );
+@@ -1305,9 +1307,10 @@
+ 
+                     // Join foreign table
+                     $this-&gt;_query-&gt;join( $rel-&gt;getForeignJoin(), $f_table, $f_alias );
+-                    $this-&gt;_query-&gt;on( $r . $c_alias . $r . '.' . $r . $c_fcolumn . $r . ' = ' .
+-                                       $r . $f_alias . $r . '.' . $r . $f_column  . $r );
+-
++                    //$this-&gt;_query-&gt;on( $r . $c_alias . $r . '.' . $r . $c_fcolumn . $r . ' = ' .
++                    //                   $r . $f_alias . $r . '.' . $r . $f_column  . $r );
++                    $this-&gt;_query-&gt;on( $c_fcolumn . ' = ' . $f_column );
++                    
+                 }
+ 
+                 // Foreign table additional conditions
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000096.html">[ydf-devel] r1693 - YDFramework2.0/trunk/doc_src
+</A></li>
+	<LI>Next message: <A HREF="000098.html">[ydf-devel] r1695 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#97">[ date ]</a>
+              <a href="thread.html#97">[ thread ]</a>
+              <a href="subject.html#97">[ subject ]</a>
+              <a href="author.html#97">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

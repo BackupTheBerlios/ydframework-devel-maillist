@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2500 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2500%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200711021151.lA2BpKLN029655%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001093.html">
+   <LINK REL="Next"  HREF="001095.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2500 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2500%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200711021151.lA2BpKLN029655%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2500 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Nov  2 12:51:20 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001093.html">[ydf-devel] r2499 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+        <LI>Next message: <A HREF="001095.html">[ydf-devel] r2501 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1094">[ date ]</a>
+              <a href="thread.html#1094">[ thread ]</a>
+              <a href="subject.html#1094">[ subject ]</a>
+              <a href="author.html#1094">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-11-02 12:51:08 +0100 (Fri, 02 Nov 2007)
+New Revision: 2500
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+new method YDStringUtil::convertToSafe to help convert a string to a valid url string. Useful on friendly urls.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-01 19:06:24 UTC (rev 2499)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-02 11:51:08 UTC (rev 2500)
+@@ -864,7 +864,61 @@
+ 
+         }
+ 
++
+         /**
++         *  This function will replace a string to a valid url one based on ascii conversion ( by: <A HREF="http://ascii.cl/htmlcodes.htm">http://ascii.cl/htmlcodes.htm</A> )
++         *
++         *  @param  $s		String to convert.
++         *  @param  $utf8 	(Optional) Flag that defines if string should be converted from UTF8 to ISO before conversion.
++         *
++         *  @returns    A converted string.
++         *
++         *  @static
++         */
++        function convertToSafe( $s, $utf8 = false ){
++
++            if( $utf8 ){
++                $s = utf8_decode( $s );
++            }
++
++            $res = '';
++            for( $i = 0; $i &lt; strlen( $s ); $i++ ){
++
++                $ord = ord( $s{$i} );
++                if ($ord==32) { $res .= '_';    continue; }
++                if ($ord&lt;48)  { $res .= '-';    continue; }
++                if ($ord&lt;58)  { $res .= $s{$i}; continue; }
++                if ($ord&lt;65)  { $res .= '-';    continue; }
++                if ($ord&lt;91)  { $res .= $s{$i}; continue; }
++                if ($ord&lt;96)  { $res .= '_';    continue; }
++                if ($ord&lt;97)  { $res .= '-';    continue; }
++                if ($ord&lt;123) { $res .= $s{$i}; continue; }
++                if ($ord&lt;192) { $res .= '-';    continue; }
++                if ($ord&lt;199) { $res .= 'A';    continue; }
++                if ($ord&lt;200) { $res .= 'C';    continue; }
++                if ($ord&lt;204) { $res .= 'E';    continue; }
++                if ($ord&lt;208) { $res .= 'I';    continue; }
++                if ($ord&lt;209) { $res .= 'D';    continue; }
++                if ($ord&lt;210) { $res .= 'N';    continue; }
++                if ($ord&lt;217) { $res .= 'O';    continue; }
++                if ($ord&lt;224) { $res .= 'U';    continue; }
++                if ($ord&lt;231) { $res .= 'a';    continue; }
++                if ($ord&lt;232) { $res .= 'c';    continue; }
++                if ($ord&lt;236) { $res .= 'e';    continue; }
++                if ($ord&lt;240) { $res .= 'i';    continue; }
++                if ($ord&lt;241) { $res .= 'o';    continue; }
++                if ($ord&lt;242) { $res .= 'n';    continue; }
++                if ($ord&lt;249) { $res .= 'o';    continue; }
++                if ($ord&lt;253) { $res .= 'u';    continue; }
++                if ($ord&lt;256) { $res .= 'y';    continue; }
++                $res .= '_';
++            }
++
++            return $res;
++        }
++
++
++        /**
+          *  This function will check if the specified string starts with the indicated text or not. You can specify if
+          *  this needs to happen case-sensitively or not.
+          *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001093.html">[ydf-devel] r2499 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+	<LI>Next message: <A HREF="001095.html">[ydf-devel] r2501 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1094">[ date ]</a>
+              <a href="thread.html#1094">[ thread ]</a>
+              <a href="subject.html#1094">[ subject ]</a>
+              <a href="author.html#1094">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

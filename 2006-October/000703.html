@@ -1,0 +1,874 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2174 - in YDFramework2.0/trunk/examples: . ajax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2174%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20ajax&In-Reply-To=%3C200610032142.k93LgtqK000232%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000702.html">
+   <LINK REL="Next"  HREF="000704.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2174 - in YDFramework2.0/trunk/examples: . ajax</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2174%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20ajax&In-Reply-To=%3C200610032142.k93LgtqK000232%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2174 - in YDFramework2.0/trunk/examples: . ajax">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Oct  3 23:42:55 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000702.html">[ydf-devel] r2173 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000704.html">[ydf-devel] German weblog translation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#703">[ date ]</a>
+              <a href="thread.html#703">[ thread ]</a>
+              <a href="subject.html#703">[ subject ]</a>
+              <a href="author.html#703">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-10-03 23:42:54 +0200 (Tue, 03 Oct 2006)
+New Revision: 2174
+
+Added:
+   YDFramework2.0/trunk/examples/ajax/defaultEvent.php
+   YDFramework2.0/trunk/examples/ajax/defaultEvent.tpl
+Modified:
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+- added an YDAjax example on how to create and handle default events
+
+Added: YDFramework2.0/trunk/examples/ajax/defaultEvent.php
+===================================================================
+--- YDFramework2.0/trunk/examples/ajax/defaultEvent.php	2006-10-02 13:33:01 UTC (rev 2173)
++++ YDFramework2.0/trunk/examples/ajax/defaultEvent.php	2006-10-03 21:42:54 UTC (rev 2174)
+@@ -0,0 +1,72 @@
++&lt;?php
++	// Standard include
++	include_once( dirname( __FILE__ ) . '/../../YDFramework2/YDF2_init.php' );
++
++	// Includes
++	YDInclude( 'YDRequest.php' );
++	YDInclude( 'YDTemplate.php' );
++	YDInclude( 'YDForm.php' );
++	YDInclude( 'YDAjax.php' );
++
++
++	class defaultEvent extends YDRequest {
++
++
++		function defaultEvent() {
++
++			$this-&gt;YDRequest();
++
++			$this-&gt;template = new YDTemplate();
++			$this-&gt;ajax = new YDAjax( &amp; $this-&gt;template );
++		}	
++
++
++		function actionDefault() {
++
++
++			// crete a simple form
++			$form = new YDForm( 'myform' );
++			$form-&gt;addElement( 'button', 'mybutton', 'Standard form button event' );
++
++			// add an event to form button, JS event and default event handling
++			$this-&gt;ajax-&gt;addForm( $form );
++			$this-&gt;ajax-&gt;addEvent( 'mybutton',       array( &amp;$this, 'buttonEvent' ) );
++			$this-&gt;ajax-&gt;addEvent( 'customEvent(x)', array( &amp;$this, 'customEvent' ), 'var x' );
++			$this-&gt;ajax-&gt;addEvent( '*',              array( &amp;$this, 'defaultOne' ) );
++
++			// process all events
++			$this-&gt;ajax-&gt;processEvents();
++
++			$this-&gt;template-&gt;assign( 'form',  $form-&gt;toHTML() );
++			$this-&gt;template-&gt;display();
++		}
++
++
++		// ajax response to button
++		function buttonEvent(){
++
++			return YDAjax::message( 'You have clicked on the form button, right?' );
++		}
++
++
++		// ajax response to custom JS event
++		function customEvent( $x ){
++
++			return YDAjax::message( 'You have clicked on custom button.. and it have send: &quot;' . $x . '&quot;' );
++		}
++
++
++		// ajax response to all other events
++		function defaultOne(){
++
++			// get function name and arguments
++			list( $f_name, $f_args ) = func_get_args();
++
++			return YDAjax::message( &quot;Here goes what i got:\n* Function:  '&quot; . $f_name . &quot;'\n* Arguments:  '&quot; . implode( &quot;'; '&quot;, $f_args ) . &quot;'&quot; );
++		}
++
++}
++
++
++    YDInclude( 'YDF2_process.php' );
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/ajax/defaultEvent.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/ajax/defaultEvent.tpl	2006-10-02 13:33:01 UTC (rev 2173)
++++ YDFramework2.0/trunk/examples/ajax/defaultEvent.tpl	2006-10-03 21:42:54 UTC (rev 2174)
+@@ -0,0 +1,45 @@
++&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
++&lt;head&gt;&lt;title&gt;&lt;/title&gt;&lt;/head&gt;
++&lt;body&gt;
++&lt;p&gt;&lt;br /&gt;
++  This example demonstrates how to create and handle default events (read: events that are not registered by your YDAjax code)&lt;/p&gt;
++&lt;p&gt;{$form}&lt;/p&gt;
++&lt;p&gt;Custom event: 
++  &lt;label&gt;
++  &lt;input type=&quot;submit&quot; name=&quot;Submit&quot; value=&quot;This event is a registered JS event: customEvent('Hello YDF!')&quot; onclick=&quot;customEvent('Hello YDF!')&quot; /&gt;
++  &lt;/label&gt;
++&lt;/p&gt;
++&lt;p&gt;&nbsp;&lt;/p&gt;
++&lt;p&gt;Hardcoded JS function '__someOtherEvent' to simulate some hardcoded ajax call 'someOtherAjaxCall' :&lt;/p&gt;
++{literal}
++&lt;script&gt;
++	function __someOtherEvent(){return xajax.call(&quot;someOtherAjaxCall&quot;, arguments, 1);}  
++&lt;/script&gt;
++&lt;pre id=&quot;line1&quot;&gt;
++function __someOtherEvent(){return xajax.call(&quot;someOtherAjaxCall&quot;, arguments, 1);}  &lt;/pre&gt;
++{/literal}
++
++&lt;p&gt;Event not registered:
++  &lt;label&gt;
++  &lt;input type=&quot;submit&quot; name=&quot;Submit2&quot; value=&quot;This event will be catched as a default event: __someOtherEvent( 'firstArg', 'secondArg', 'allArgsYouwant' )&quot; onclick=&quot;__someOtherEvent( 'firstArg', 'secondArg', 'allArgsYouwant' )&quot; /&gt;
++  &lt;/label&gt;
++&lt;/p&gt;
++
++&lt;p&gt;&nbsp;&lt;/p&gt;
++&lt;p&gt;Another JS function '__hackEvent' to simulate an hardcoded ajax call 'myCall' :&lt;/p&gt;
++{literal}
++&lt;script&gt;
++	function __hackEvent(){return xajax.call(&quot;myCall&quot;, arguments, 1);}  
++&lt;/script&gt;
++&lt;pre id=&quot;line1&quot;&gt;
++function __hackEvent(){return xajax.call(&quot;myCall&quot;, arguments, 1);}  &lt;/pre&gt;
++{/literal}
++
++&lt;p&gt;Event not registered:
++  &lt;label&gt;
++  &lt;input type=&quot;submit&quot; name=&quot;Submit2&quot; value=&quot;This event will be catched as a default event: __hackEvent( 'justOneArgument' )&quot; onclick=&quot;__hackEvent( 'justOneArgument' )&quot; /&gt;
++  &lt;/label&gt;
++&lt;/p&gt;
++
++&lt;/body&gt;
++&lt;/html&gt;
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-10-02 13:33:01 UTC (rev 2173)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-10-03 21:42:54 UTC (rev 2174)
+@@ -69,16 +69,14 @@
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=firstapp/index.php&quot;&gt;firstapp/index.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=firstapp/index.tpl&quot;&gt;firstapp/index.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=firstapp/index.tpl&quot;&gt;firstapp/index.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database/index.php&quot;&gt;Tutorial application using a database&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database/index.php&quot;&gt;database/index.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database/index.tpl&quot;&gt;database/index.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database/index.tpl&quot;&gt;database/index.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;YDBase: the base class&lt;/b&gt;&lt;/td&gt;
+@@ -88,8 +86,7 @@
+             &lt;td valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;base.php&quot;&gt;Using the YDBase object&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=base.php&quot;&gt;base.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=base.php&quot;&gt;base.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;YDConfig: the global configuration&lt;/b&gt;&lt;/td&gt;
+@@ -99,8 +96,7 @@
+             &lt;td valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;config.php&quot;&gt;Using the YDConfig object&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=config.php&quot;&gt;config.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=config.php&quot;&gt;config.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;How requests are processed&lt;/b&gt;&lt;/td&gt;
+@@ -112,20 +108,17 @@
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.php&quot;&gt;sample.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.tpl&quot;&gt;sample.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.tpl&quot;&gt;sample.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;phpinfo.php&quot;&gt;Showing the PHP information&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=phpinfo.php&quot;&gt;phpinfo.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=phpinfo.php&quot;&gt;phpinfo.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;extending.php&quot;&gt;Extending the YDRequest base class&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=extending.php&quot;&gt;extending.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=extending.php&quot;&gt;extending.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;multi_apps/index.php&quot;&gt;Multiple applications&lt;/a&gt;&lt;/td&gt;
+@@ -146,16 +139,14 @@
+                 &lt;br/&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=multi_apps/app2/index.php&quot;&gt;multi_apps/app2/index.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=multi_apps/app2/index.tpl&quot;&gt;multi_apps/app2/index.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=multi_apps/app2/index.tpl&quot;&gt;multi_apps/app2/index.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;callbacks.php&quot;&gt;Using callbacks&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.php&quot;&gt;callbacks.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.tpl&quot;&gt;callbacks.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=sample.tpl&quot;&gt;callbacks.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using templates&lt;/b&gt;&lt;/td&gt;
+@@ -167,8 +158,7 @@
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=template_smarty.php&quot;&gt;template_smarty.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=template_smarty.tpl&quot;&gt;template_smarty.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=template_smarty.tpl&quot;&gt;template_smarty.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;template_php.php&quot;&gt;Using PHP templates with short open tags&lt;/a&gt;&lt;br /&gt;
+@@ -178,8 +168,7 @@
+                 &lt;br/&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=template_php.tpl&quot;&gt;template_php.tpl&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=template_php2.tpl&quot;&gt;template_php2.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=template_php2.tpl&quot;&gt;template_php2.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;cache/index.php&quot;&gt;Smarty caching&lt;/a&gt; &lt;/td&gt;
+@@ -190,8 +179,7 @@
+                 &lt;br/&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=cache/subdir/index.php&quot;&gt;cache/subdir/index.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=cache/subdir/index.tpl&quot;&gt;cache/subdir/index.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=cache/subdir/index.tpl&quot;&gt;cache/subdir/index.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using and validating forms&lt;/b&gt;&lt;/td&gt;
+@@ -205,58 +193,49 @@
+                 &lt;br/&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form.tpl&quot;&gt;form.tpl&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_selector.tpl&quot;&gt;form_selector.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_selector.tpl&quot;&gt;form_selector.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form2.php&quot;&gt;Form handling and validation (new style)&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form2.php&quot;&gt;form2.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form2.php&quot;&gt;form2.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_date.php&quot;&gt;YDForm using a combination of date elements&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_date.php&quot;&gt;form_date.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_date.php&quot;&gt;form_date.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_get.php&quot;&gt;YDForm using GET parameters&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_get.php&quot;&gt;form_get.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_get.php&quot;&gt;form_get.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_rule.php&quot;&gt;YDForm using form rules&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_rule.php&quot;&gt;form_rule.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_rule.php&quot;&gt;form_rule.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_compare.php&quot;&gt;YDForm using compare rules&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_compare.php&quot;&gt;form_compare.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_compare.php&quot;&gt;form_compare.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;fileupload.php&quot;&gt;Handling file uploads&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fileupload.php&quot;&gt;fileupload.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fileupload.tpl&quot;&gt;fileupload.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fileupload.tpl&quot;&gt;fileupload.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_modified.php&quot;&gt;Getting the modified values&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_modified.php&quot;&gt;form_modified.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_modified.php&quot;&gt;form_modified.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;validaterules.php&quot;&gt;Validation rules&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=validaterules.php&quot;&gt;validaterules.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=validaterules.php&quot;&gt;validaterules.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_filters.php&quot;&gt;Form filters&lt;/a&gt; &lt;/td&gt;
+@@ -265,16 +244,14 @@
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_xml2.php&quot;&gt;Rendering and importing using XML&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_xml2.php&quot;&gt;form_xml2.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_xml2.php&quot;&gt;form_xml2.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_checkboxgroup.php&quot;&gt;Using the checkboxgroup element&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_checkboxgroup.php&quot;&gt;form_checkboxgroup.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_checkboxgroup.tpl&quot;&gt;form_checkboxgroup.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_checkboxgroup.tpl&quot;&gt;form_checkboxgroup.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using logfiles&lt;/b&gt;&lt;/td&gt;
+@@ -284,8 +261,7 @@
+             &lt;td valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;logging.php&quot;&gt;Using file logging&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=logging.php&quot;&gt;logging.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=logging.php&quot;&gt;logging.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Handling authentication&lt;/b&gt;&lt;/td&gt;
+@@ -305,16 +281,14 @@
+                 &lt;br/&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=login/userinfo.php&quot;&gt;login/userinfo.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=login/userinfo.tpl&quot;&gt;login/userinfo.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=login/userinfo.tpl&quot;&gt;login/userinfo.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;auth_ipcheck.php&quot;&gt;Authentication based on IP numbers&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=auth_ipcheck.php&quot;&gt;auth_ipcheck.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=auth_ipcheck.tpl&quot;&gt;auth_ipcheck.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=auth_ipcheck.tpl&quot;&gt;auth_ipcheck.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;http_auth/index.php&quot;&gt;Basic HTTP Authentication&lt;/a&gt; &lt;/td&gt;
+@@ -327,8 +301,7 @@
+                 &lt;br/&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=http_auth/userinfo.php&quot;&gt;http_auth/userinfo.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=http_auth/userinfo.tpl&quot;&gt;http_auth/userinfo.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=http_auth/userinfo.tpl&quot;&gt;http_auth/userinfo.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Connecting to and using databases&lt;/b&gt;&lt;/td&gt;
+@@ -341,91 +314,75 @@
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database.php&quot;&gt;database.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database.tpl&quot;&gt;database.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database.tpl&quot;&gt;database.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database1.php&quot;&gt;Database connectivity - YD MySQL library&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database1.php&quot;&gt;database1.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database1.tpl&quot;&gt;database1.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database1.tpl&quot;&gt;database1.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database2.php&quot;&gt;Database connectivity - YD SQLite library&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database2.php&quot;&gt;database2.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database2.php&quot;&gt;database2.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database3.php&quot;&gt;Database connectivity - YD Oracle library&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database3.php&quot;&gt;database3.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database3.php&quot;&gt;database3.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database4.php&quot;&gt;Database connectivity - YD PostgreSQL library&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database4.php&quot;&gt;database4.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database4.php&quot;&gt;database4.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database_paging.php&quot;&gt;Paged recordsets - YD MySQL library&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_paging.php&quot;&gt;database_paging.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_paging.tpl&quot;&gt;database_paging.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_paging.tpl&quot;&gt;database_paging.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;array_paging.php&quot;&gt;Paged arrays&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=array_paging.php&quot;&gt;array_paging.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=array_paging.tpl&quot;&gt;array_paging.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=array_paging.tpl&quot;&gt;array_paging.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;array_paging_with_sorting.php&quot;&gt;Paged arrays with sorting&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=array_paging_with_sorting.php&quot;&gt;array_paging_with_sorting.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=array_paging_with_sorting.tpl&quot;&gt;array_paging_with_sorting.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=array_paging_with_sorting.tpl&quot;&gt;array_paging_with_sorting.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;database_backup.php&quot;&gt;Making MySQL database backups&lt;/a&gt;&lt;br/&gt;
+-                &lt;a href=&quot;database_backup.php?do=restore&quot;&gt;Restoring a database backup&lt;/a&gt;&lt;br/&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;database_backup.php?do=restore&quot;&gt;Restoring a database backup&lt;/a&gt;&lt;br/&gt;            &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_backup.php&quot;&gt;database_backup.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_backup.php&quot;&gt;database_backup.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;database_tree.php&quot;&gt;Database trees&lt;/a&gt;&lt;br/&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;database_tree.php&quot;&gt;Database trees&lt;/a&gt;&lt;br/&gt;            &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_tree.php&quot;&gt;database_tree.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_tree.php&quot;&gt;database_tree.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;db_metadata.php&quot;&gt;Querying database metadata&lt;/a&gt;&lt;br/&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;db_metadata.php&quot;&gt;Querying database metadata&lt;/a&gt;&lt;br/&gt;            &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=db_metadata.php&quot;&gt;db_metadata.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=db_metadata.php&quot;&gt;db_metadata.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;database_named_instances.php&quot;&gt;Using named database instances/a&gt;&lt;br/&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;database_named_instances.php&quot;&gt;Using named database instances/a&gt;&lt;br/&gt;            &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_named_instances.php&quot;&gt;database_named_instances.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_named_instances.php&quot;&gt;database_named_instances.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using files, images and directories&lt;/b&gt;&lt;/td&gt;
+@@ -435,8 +392,7 @@
+             &lt;td rowspan=&quot;5&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;path.php&quot;&gt;YDPath module&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=path.php&quot;&gt;path.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=path.php&quot;&gt;path.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;fsfile.php&quot;&gt;YDFSFile object&lt;/a&gt; &lt;br/&gt;
+@@ -444,20 +400,17 @@
+               &lt;a href=&quot;fsfile.php?do=download2&quot;&gt;YDFSFile object - File download with changed name&lt;/a&gt;&lt;br/&gt;
+               &lt;a href=&quot;fsfile.php?do=downloadinline&quot;&gt;YDFSFile object - Inline File download&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsfile.php&quot;&gt;fsfile.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsfile.php&quot;&gt;fsfile.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;fsdirectory.php&quot;&gt;YDFSDirectory object&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsdirectory.php&quot;&gt;fsdirectory.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsdirectory.php&quot;&gt;fsdirectory.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;fsdirectory2.php&quot;&gt;More examples for the YDFSDirectory object&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsdirectory2.php&quot;&gt;fsdirectory2.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsdirectory2.php&quot;&gt;fsdirectory2.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;fsimage.php&quot;&gt;YDFSImage object&lt;/a&gt; &lt;br/&gt;
+@@ -467,8 +420,7 @@
+               &lt;a href=&quot;fsimage.php?do=thumbnail6&quot;&gt;YDFSImage object - thumbnail cropping&lt;/a&gt; &lt;br/&gt;
+               &lt;a href=&quot;fsimage.php?do=thumbnailsave&quot;&gt;YDFSImage object - thumbnail saving&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsimage.php&quot;&gt;fsimage.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=fsimage.php&quot;&gt;fsimage.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using URLs and downloading data&lt;/b&gt;&lt;/td&gt;
+@@ -483,16 +435,14 @@
+               &lt;a href=&quot;url.php?do=alter&quot;&gt;YDUrl object - Altering URLs&lt;/a&gt; &lt;br/&gt;
+               &lt;a href=&quot;url.php?do=merge&quot;&gt;YDUrl object - Merging URLs&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=url.php&quot;&gt;url.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=url.php&quot;&gt;url.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;pbase.php&quot;&gt;Combining YDUrl and YDArrayUtil&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=pbase.php&quot;&gt;pbase.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=pbase.tpl&quot;&gt;pbase.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=pbase.tpl&quot;&gt;pbase.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using XML/RPC clients and servers&lt;/b&gt;&lt;/td&gt;
+@@ -502,14 +452,12 @@
+             &lt;td rowspan=&quot;2&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;xmlrpcclient.php&quot;&gt;XML/RPC client&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xmlrpcclient.php&quot;&gt;xmlrpcclient.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xmlrpcclient.php&quot;&gt;xmlrpcclient.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;xmlrpcserver.php&quot;&gt;XML/RPC server&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xmlrpcserver.php&quot;&gt;xmlrpcserver.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xmlrpcserver.php&quot;&gt;xmlrpcserver.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Constructing and sending emails&lt;/b&gt;&lt;/td&gt;
+@@ -523,8 +471,7 @@
+                 &lt;br/&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=email.tpl&quot;&gt;email.tpl&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=email_template.tpl&quot;&gt;email_template.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=email_template.tpl&quot;&gt;email_template.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Creating RSS and ATOM feeds&lt;/b&gt;&lt;/td&gt;
+@@ -538,8 +485,7 @@
+               &lt;a href=&quot;feedcreator.php?do=rss20&quot;&gt;YDFeedCreator object - RSS 2.0 output&lt;/a&gt; &lt;br/&gt;
+               &lt;a href=&quot;feedcreator.php?do=atom&quot;&gt;YDFeedCreator object - Atom output&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=feedcreator.php&quot;&gt;feedcreator.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=feedcreator.php&quot;&gt;feedcreator.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;YDCart: a shopping cart&lt;/b&gt;&lt;/td&gt;
+@@ -551,8 +497,7 @@
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=cart.php&quot;&gt;cart.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=cart.tpl&quot;&gt;cart.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=cart.tpl&quot;&gt;cart.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;YDLocale: internationalization&lt;/b&gt;&lt;/td&gt;
+@@ -562,8 +507,7 @@
+             &lt;td valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;locale.php&quot;&gt;Using the YDLocale object&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=locale.php&quot;&gt;locale.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=locale.php&quot;&gt;locale.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;YDDatabaseObject&lt;/b&gt;&lt;/td&gt;
+@@ -598,8 +542,7 @@
+               &lt;a href=&quot;timer.php?YD_DEBUG=2&quot;&gt;Using timers/markers (debug 2)&lt;/a&gt; &lt;br/&gt;
+               &lt;a href=&quot;timer.php?do=standaloneTimer&quot;&gt;Using a standalone timers&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=timer.php&quot;&gt;timer.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=timer.php&quot;&gt;timer.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;YDGraph&lt;/b&gt;&lt;/td&gt;
+@@ -621,11 +564,9 @@
+                 &lt;a href=&quot;graph.php?do=demo10&quot;&gt;Impuls chart&lt;/a&gt; &lt;br/&gt;
+                 &lt;a href=&quot;graph.php?do=demo11&quot;&gt;Impuls and dots chart&lt;/a&gt; &lt;br/&gt;
+                 &lt;a href=&quot;graph.php?do=demo12&quot;&gt;Impuls, dots and lines chart&lt;/a&gt; &lt;br/&gt;
+-                &lt;a href=&quot;graph.php?do=demo13&quot;&gt;Pie chart&lt;/a&gt; &lt;br/&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;graph.php?do=demo13&quot;&gt;Pie chart&lt;/a&gt; &lt;br/&gt;            &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=graph.php&quot;&gt;graph.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=graph.php&quot;&gt;graph.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+           &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;
+@@ -633,44 +574,36 @@
+           &lt;td&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot; rowspan=&quot;18&quot;&gt;&nbsp;&lt;/td&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/version.php&quot;&gt;Simple ajax example&lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot; rowspan=&quot;19&quot;&gt;&nbsp;&lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/version.php&quot;&gt;Simple ajax example&lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/version.php&quot;&gt;ajax/version.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/two_buttons.php&quot;&gt;Two buttons with different events &lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/two_buttons.php&quot;&gt;Two buttons with different events &lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/two_buttons.php&quot;&gt;ajax/two_buttons.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/calculator.php&quot;&gt;Sum calculator &lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/calculator.php&quot;&gt;Sum calculator &lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/calculator.php&quot;&gt;ajax/calculator.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/calculator_dynamic.php&quot;&gt;Four operations calculator &lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/calculator_dynamic.php&quot;&gt;Four operations calculator &lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/calculator_dynamic.php&quot;&gt;ajax/calculator_dynamic.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/cars.php&quot;&gt;Dependency between select elements&lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/cars.php&quot;&gt;Dependency between select elements&lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/cars.php&quot;&gt;ajax/cars.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/date_calculator.php&quot;&gt;Date calculator using a datetimeselect&lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/date_calculator.php&quot;&gt;Date calculator using a datetimeselect&lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/date_calculator.php&quot;&gt;ajax/date_calculator.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/form.php&quot;&gt;Form submission and validation&lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/form.php&quot;&gt;Form submission and validation&lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/form.php&quot;&gt;ajax/form.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/two_forms.php&quot;&gt;Two forms in same template&lt;/a&gt;&lt;br/&gt;
+-          &lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/two_forms.php&quot;&gt;Two forms in same template&lt;/a&gt;&lt;br/&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/two_forms.php&quot;&gt;ajax/two_forms.php&lt;/a&gt; &lt;/td&gt;
+           &lt;/tr&gt;
+         &lt;tr&gt;
+@@ -710,9 +643,13 @@
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/autocompleter.php&quot;&gt;ajax/autocompleter.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/defaultEvent.php&quot;&gt;How to handle default events &lt;/a&gt;&lt;br/&gt;&lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/defaultEvent.php&quot;&gt;ajax/defaultEvent.php&lt;/a&gt;&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/functions.php&quot;&gt;Without a YDForm &lt;/a&gt;&lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/functions.php&quot;&gt;ajax/functions.php&lt;/a&gt; &lt;/td&gt;
+-        &lt;/tr&gt;
++          &lt;/tr&gt;
+         &lt;tr&gt;
+           &lt;td colspan=&quot;3&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;
+             YDCMComponent: Content Management&lt;/b&gt;&lt;b&gt;&nbsp;components&lt;/b&gt;&lt;/td&gt;
+@@ -749,8 +686,7 @@
+         &lt;tr&gt;
+           &lt;td valign=&quot;top&quot;&gt;&nbsp;&nbsp;&nbsp;&lt;a href=&quot;cm/backend/permissions.php&quot;&gt;Permissions ( register, check, add, delete )&lt;/a&gt;&lt;br&gt;
+             &nbsp;&nbsp;&nbsp;&lt;a href=&quot;cm/backend/permissions.php?do=alias&quot;&gt;Permissions ( using alias )&lt;/a&gt;&lt;br&gt;
+-            &nbsp;&nbsp;&nbsp;&lt;a href=&quot;cm/backend/permissions.php?do=alwaysRegistered&quot;&gt;Permissions ( always registered actions )&lt;/a&gt;&lt;br&gt;
+-          &lt;/td&gt;
++            &nbsp;&nbsp;&nbsp;&lt;a href=&quot;cm/backend/permissions.php?do=alwaysRegistered&quot;&gt;Permissions ( always registered actions )&lt;/a&gt;&lt;br&gt;          &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=cm/backend/permissions.php&quot;&gt;cm/backend/permissions.php&lt;/a&gt; &lt;/td&gt;
+           &lt;/tr&gt;
+         &lt;tr&gt;
+@@ -765,8 +701,7 @@
+               &lt;a href=&quot;xml_example.php?do=array&quot;&gt;YDXml - working with XML arrays&lt;/a&gt; &lt;br/&gt;
+               &lt;a href=&quot;xml_example.php?do=save&quot;&gt;YDXml - saving XML files&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xml_example.php&quot;&gt;xml_example.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xml_example.php&quot;&gt;xml_example.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+           &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;
+@@ -794,34 +729,29 @@
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=constants.php&quot;&gt;constants.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=constants.tpl&quot;&gt;constants.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=constants.tpl&quot;&gt;constants.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;browserinfo.php&quot;&gt;Showing the browser information&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=browserinfo.php&quot;&gt;browserinfo.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=browserinfo.php&quot;&gt;browserinfo.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;arrayutil.php&quot;&gt;Array utilities&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=arrayutil.php&quot;&gt;arrayutil.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=arrayutil.php&quot;&gt;arrayutil.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;bbcode.php&quot;&gt;BBCode conversion&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=bbcode.php&quot;&gt;bbcode.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=bbcode.txt&quot;&gt;bbcode.txt&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=bbcode.txt&quot;&gt;bbcode.txt&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;stacktrace.php&quot;&gt;Using the YDStacktrace function&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=stacktrace.php&quot;&gt;stacktrace.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=stacktrace.php&quot;&gt;stacktrace.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;stringutil.php&quot;&gt;StringUtil class&lt;/a&gt; &lt;/td&gt;
+@@ -832,40 +762,34 @@
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax.php&quot;&gt;ajax.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax.tpl&quot;&gt;ajax.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax.tpl&quot;&gt;ajax.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;encryption.php&quot;&gt;Encryption and decryption&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=encryption.php&quot;&gt;encryption.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=encryption.php&quot;&gt;encryption.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;persistent.php&quot;&gt;Using persistent data&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=persistent.php&quot;&gt;persistent.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=persistent.php&quot;&gt;persistent.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;pdfreport.php&quot;&gt;Using PDF reports&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=pdfreport.php&quot;&gt;pdfreport.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=pdfreport.php&quot;&gt;pdfreport.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;guidutil.php&quot;&gt;Using the YDGuidUtil class&lt;/a&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=guidutil.php&quot;&gt;guidutil.php&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=guidutil.php&quot;&gt;guidutil.php&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;xul.php&quot;&gt;Using XUL&lt;/a&gt; (FireFox and Mozilla only)&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xul.php&quot;&gt;xul.php&lt;/a&gt;
+                 &lt;br/&gt;
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xul.tpl&quot;&gt;xul.tpl&lt;/a&gt;
+-            &lt;/td&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=xul.tpl&quot;&gt;xul.tpl&lt;/a&gt;            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;/table&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000702.html">[ydf-devel] r2173 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000704.html">[ydf-devel] German weblog translation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#703">[ date ]</a>
+              <a href="thread.html#703">[ thread ]</a>
+              <a href="subject.html#703">[ subject ]</a>
+              <a href="author.html#703">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

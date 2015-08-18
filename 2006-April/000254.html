@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1823 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1823%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump&In-Reply-To=%3C200604011431.k31EVjoM003809%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000253.html">
+   <LINK REL="Next"  HREF="000255.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1823 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1823%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump&In-Reply-To=%3C200604011431.k31EVjoM003809%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1823 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump">ximian at berlios.de
+       </A><BR>
+    <I>Sat Apr  1 16:31:45 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000253.html">[ydf-devel] r1822 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDMysqlDump
+</A></li>
+        <LI>Next message: <A HREF="000255.html">[ydf-devel] r1824 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#254">[ date ]</a>
+              <a href="thread.html#254">[ thread ]</a>
+              <a href="subject.html#254">[ subject ]</a>
+              <a href="author.html#254">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-01 16:31:29 +0200 (Sat, 01 Apr 2006)
+New Revision: 1823
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+Log:
+by default YDMysqlDump should not export any data. We should use all methods to define what we want (in older versions we could get strange results, but not now).
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-04-01 14:23:25 UTC (rev 1822)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-04-01 14:31:29 UTC (rev 1823)
+@@ -43,7 +43,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '1.2';
++            $this-&gt;_version = '1.3';
+             $this-&gt;_copyright = '(c) 2005 Francisco Azevedo, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>';
+             $this-&gt;_description = 'This class defines a mysql backup/restore system.';
+ 
+@@ -54,10 +54,10 @@
+             $this-&gt;filepath = YD_DIR_TEMP . '/backup.sql';
+ 
+             // defaults
+-            $this-&gt;useComments = false;
+-            $this-&gt;useDrops = true;
+-            $this-&gt;useStructure = true;
+-            $this-&gt;useData = true;
++            $this-&gt;useComments  = false;
++            $this-&gt;useDrops     = false;
++            $this-&gt;useStructure = false;
++            $this-&gt;useData      = false;
+ 
+             // custom tables
+             $this-&gt;tables_to_use = null;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000253.html">[ydf-devel] r1822 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDMysqlDump
+</A></li>
+	<LI>Next message: <A HREF="000255.html">[ydf-devel] r1824 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#254">[ date ]</a>
+              <a href="thread.html#254">[ thread ]</a>
+              <a href="subject.html#254">[ subject ]</a>
+              <a href="author.html#254">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1815 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1815%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200603241037.k2OAboMu018931%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000243.html">
+   <LINK REL="Next"  HREF="000245.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1815 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1815%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200603241037.k2OAboMu018931%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1815 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at berlios.de
+       </A><BR>
+    <I>Fri Mar 24 11:37:50 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000243.html">[ydf-devel] r1814 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000245.html">[ydf-devel] YDDatabaseObject extra arguments
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#244">[ date ]</a>
+              <a href="thread.html#244">[ thread ]</a>
+              <a href="subject.html#244">[ subject ]</a>
+              <a href="author.html#244">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-03-24 11:37:39 +0100 (Fri, 24 Mar 2006)
+New Revision: 1815
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+- FIX: parse new lines when adding results
+
+- NEW FEATURE: default events can be created now.
+  eg, $ajax-&gt;addEvent( '*', array( &amp;$this, 'default_php_function' ) );
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-03-23 13:39:08 UTC (rev 1814)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-03-24 10:37:39 UTC (rev 1815)
+@@ -68,7 +68,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '2.6';
++            $this-&gt;_version = '2.62';
+             $this-&gt;_copyright = '(c) Copyright 2002-2006 Francisco Azevedo';
+             $this-&gt;_description = 'This class makes ajax easy for YDF developers';
+ 
+@@ -343,6 +343,10 @@
+          */		
+ 		 function addEvent( $formElementName, $serverFunction, $arguments = null, $event = null, $options = null, $effects = null ){ 
+ 		 
++			// if formElementName is &quot;*&quot; we want to define a default event
++			if ( $formElementName === &quot;*&quot; )
++				return $this-&gt;registerCatchAllFunction( array( $serverFunction[1], $serverFunction[0], $serverFunction[1] ) );
++
+ 		 	if( !is_array( $options ) ) $options = array( $options );
+ 		 
+ 			// serverFunction must be an array with a class and the method (get function name)
+@@ -729,6 +733,15 @@
+ 			// if is not a form element, assign result to a html id
+ 			$form = $this-&gt;__getForm( $formElementName );
+ 
++			// if result is a string we must parse it. Javascript strings cannot contain new lines
++			if ( is_string( $result ) ){
++
++				// escape string
++				$result = addslashes( $result );
++				$result = str_replace( &quot;\n&quot;, &quot; &quot;, $result );
++				$result = str_replace( &quot;\r&quot;, &quot; &quot;, $result );
++			}
++
+ 			// if $formElementName is really an form element
+ 			if ( !is_null( $form ) ){
+ 
+@@ -745,9 +758,6 @@
+ 
+ 			// if result is an array we should export to a valid js string
+ 			if (is_array( $result )) $result = str_replace( &quot;\n&quot;, &quot;&lt;br&gt;&quot;, var_export( $result, true ) );
+-		
+-			// escape string
+-			$result = addslashes( $result );
+ 			
+ 			// assign result to form element using the id
+ 			return $this-&gt;response-&gt;addScript( 'document.getElementById(&quot;' . $formElementName . '&quot;).' . $attribute . ' = &quot;' . $result . '&quot;;' );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000243.html">[ydf-devel] r1814 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000245.html">[ydf-devel] YDDatabaseObject extra arguments
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#244">[ date ]</a>
+              <a href="thread.html#244">[ thread ]</a>
+              <a href="subject.html#244">[ subject ]</a>
+              <a href="author.html#244">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

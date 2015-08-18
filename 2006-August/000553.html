@@ -1,0 +1,321 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2043 - in YDFramework2.0/trunk/examples/weblog:	include manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2043%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200608250943.k7P9hPek025050%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000552.html">
+   <LINK REL="Next"  HREF="000554.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2043 - in YDFramework2.0/trunk/examples/weblog:	include manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2043%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200608250943.k7P9hPek025050%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2043 - in YDFramework2.0/trunk/examples/weblog:	include manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Aug 25 11:43:25 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000552.html">[ydf-devel] r2042 - YDFramework2.0/trunk/examples
+</A></li>
+        <LI>Next message: <A HREF="000554.html">[ydf-devel] r2044 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include/languages	examples/weblog/skins/default	examples/weblog/skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#553">[ date ]</a>
+              <a href="thread.html#553">[ thread ]</a>
+              <a href="subject.html#553">[ subject ]</a>
+              <a href="author.html#553">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-25 11:43:24 +0200 (Fri, 25 Aug 2006)
+New Revision: 2043
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+   YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/categories.php
+   YDFramework2.0/trunk/examples/weblog/manage/categories.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/comments.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items.php
+   YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/links.php
+   YDFramework2.0/trunk/examples/weblog/manage/links.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/pages.php
+   YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+Log:
+Added delete buttons to the different edit screens.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -51,6 +51,7 @@
+     YDInclude( dirname( __FILE__ ) . '/YDWeblogAPI.php' );
+     YDInclude( dirname( __FILE__ ) . '/YDWeblogRequest.php' );
+     YDInclude( dirname( __FILE__ ) . '/exifer/exif.php' );
++    YDInclude( YD_DIR_HOME . '/3rdparty/smarty/libs/plugins/modifier.truncate.php' );
+ 
+     // Check if the user wanted to use caching
+     if ( YDConfig::get( 'use_cache', false ) ) {
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/__mng_header.tpl	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -15,6 +15,15 @@
+             return confirm( '{t w=&quot;confirm_delete&quot;}\n\n&quot;' + name + '&quot;?');
+         {literal}}{/literal}
+ 
++        {literal}function YDConfirmDeleteAndRedirect( name, url ) {{/literal}
++            if ( confirm( '{t w=&quot;confirm_delete&quot;}\n\n&quot;' + name + '&quot;?') ) {literal}{{/literal}
++                window.navigate( url );
++                return true;
++            {literal}}{/literal} else {literal}{{/literal}
++                return false;
++            {literal}}{/literal}
++        {literal}}{/literal}
++
+         {literal}function YDConfirmAction( name ) {{/literal}
+             return confirm( '{t w=&quot;confirm_action&quot;}\n\n&quot;' + name + '&quot;' );
+         {literal}}{/literal}
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/categories.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/categories.php	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/categories.php	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -61,6 +61,15 @@
+                 // Get the category by ID
+                 $defaults = $this-&gt;weblog-&gt;getCategoryById( $id );
+ 
++                // Add delete button with existing items
++                $this-&gt;form-&gt;addElement(
++                    'button', '_cmdDelete', t('delete'),
++                    array(
++                        'class' =&gt; 'button',
++                        'onClick' =&gt; 'return YDConfirmDeleteAndRedirect( \'' . addslashes( $defaults['title'] ) . '\', \'' . YD_SELF_SCRIPT . '?do=delete&amp;id=' . $defaults['id'] . '\' );'
++                    )
++                );
++
+                 // Set the defaults
+                 $this-&gt;form-&gt;setDefaults( $defaults );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/categories.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/categories.tpl	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/categories.tpl	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -112,9 +112,14 @@
+                 &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{$form.title.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowC&quot; width=&quot;400&quot;&gt;{$form.title.html}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
++                    {$form._cmdSubmit.html}
++                    {$form._cmdDelete.html}
++                &lt;/td&gt;
++            &lt;/tr&gt;
+         &lt;/table&gt;
+         {$form.id.html}
+-        &lt;p&gt;{$form._cmdSubmit.html}&lt;/p&gt;
+     {$form.endtag}
+ {/if}
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -86,6 +86,15 @@
+                 $defaults = $this-&gt;weblog-&gt;getCommentById( $id );
+                 $defaults['comment'] = YDTemplate_modifier_bbcode( $defaults['comment'] );
+ 
++                // Add delete button with existing items
++                $form-&gt;addElement(
++                    'button', '_cmdDelete', t('delete'),
++                    array(
++                        'class' =&gt; 'button',
++                        'onClick' =&gt; 'return YDConfirmDeleteAndRedirect( \'' . addslashes( smarty_modifier_truncate( trim( strip_tags( $defaults['comment'] ) ) ) ) . '\', \'' . YD_SELF_SCRIPT . '?do=delete&amp;id=' . $defaults['id'] . '\' );'
++                    )
++                );
++
+                 // Set the defaults
+                 $form-&gt;setDefaults( $defaults );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -176,9 +176,14 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.html}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
++                    {$form._cmdSubmit.html}
++                    {$form._cmdDelete.html}
++                &lt;/td&gt;
++            &lt;/tr&gt;
+         &lt;/table&gt;
+         {$form.id.html}
+-        &lt;p&gt;{$form._cmdSubmit.html}&lt;/p&gt;
+     {$form.endtag}
+ {/if}
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -90,6 +90,15 @@
+                 $defaults['body_more'] = YDTemplate_modifier_bbcode( $defaults['body_more'] );
+                 $defaults['modified'] = gmmktime();
+ 
++                // Add delete button with existing items
++                $form-&gt;addElement(
++                    'button', '_cmdDelete', t('delete'),
++                    array(
++                        'class' =&gt; 'button',
++                        'onClick' =&gt; 'return YDConfirmDeleteAndRedirect( \'' . addslashes( $defaults['title'] ) . '\', \'' . YD_SELF_SCRIPT . '?do=delete&amp;id=' . $defaults['id'] . '\' );'
++                    )
++                );
++
+                 // Assign the values to the template
+                 $this-&gt;tpl-&gt;assign( 'item', $defaults );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -189,7 +189,10 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_draft.html}&lt;/td&gt; 
+             &lt;/tr&gt;
+             &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;{$form._cmdSubmit.html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
++                    {$form._cmdSubmit.html}
++                    {$form._cmdDelete.html}
++                &lt;/td&gt;
+             &lt;/tr&gt;
+             {if $form.title.value != ''}
+                 &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/links.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/links.php	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/links.php	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -60,6 +60,15 @@
+                 // Get the link by ID
+                 $defaults = $this-&gt;weblog-&gt;getLinkById( $id );
+ 
++                // Add delete button with existing items
++                $this-&gt;form-&gt;addElement(
++                    'button', '_cmdDelete', t('delete'),
++                    array(
++                        'class' =&gt; 'button',
++                        'onClick' =&gt; 'return YDConfirmDeleteAndRedirect( \'' . addslashes( $defaults['title'] ) . '\', \'' . YD_SELF_SCRIPT . '?do=delete&amp;id=' . $defaults['id'] . '\' );'
++                    )
++                );
++
+                 // Set the defaults
+                 $this-&gt;form-&gt;setDefaults( $defaults );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/links.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/links.tpl	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/links.tpl	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -111,9 +111,14 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.url.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowC&quot;&gt;{$form.url.html}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
++                    {$form._cmdSubmit.html}
++                    {$form._cmdDelete.html}
++                &lt;/td&gt;
++            &lt;/tr&gt;
+         &lt;/table&gt;
+         {$form.id.html}
+-        &lt;p&gt;{$form._cmdSubmit.html}&lt;/p&gt;
+     {$form.endtag}
+ {/if}
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/pages.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/pages.php	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/pages.php	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -69,6 +69,15 @@
+                 // Get the current date/time
+                 $defaults['modified'] = gmmktime();
+ 
++                // Add delete button with existing items
++                $this-&gt;form-&gt;addElement(
++                    'button', '_cmdDelete', t('delete'),
++                    array(
++                        'class' =&gt; 'button',
++                        'onClick' =&gt; 'return YDConfirmDeleteAndRedirect( \'' . addslashes( $defaults['title'] ) . '\', \'' . YD_SELF_SCRIPT . '?do=delete&amp;id=' . $defaults['id'] . '\' );'
++                    )
++                );
++
+                 // Assign the values to the template
+                 $this-&gt;tpl-&gt;assign( 'page', $defaults );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-08-23 15:46:37 UTC (rev 2042)
++++ YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-08-25 09:43:24 UTC (rev 2043)
+@@ -143,9 +143,14 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.modified.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.modified.html}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
++                    {$form._cmdSubmit.html}
++                    {$form._cmdDelete.html}
++                &lt;/td&gt;
++            &lt;/tr&gt;
+         &lt;/table&gt;
+         {$form.id.html}
+-        &lt;p&gt;{$form._cmdSubmit.html}&lt;/p&gt;
+     {$form.endtag}
+ {/if}
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000552.html">[ydf-devel] r2042 - YDFramework2.0/trunk/examples
+</A></li>
+	<LI>Next message: <A HREF="000554.html">[ydf-devel] r2044 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include/languages	examples/weblog/skins/default	examples/weblog/skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#553">[ date ]</a>
+              <a href="thread.html#553">[ thread ]</a>
+              <a href="subject.html#553">[ subject ]</a>
+              <a href="author.html#553">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

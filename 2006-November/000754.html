@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061116124418.22599.qmail%40web54008.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000753.html">
+   <LINK REL="Next"  HREF="000759.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061116124418.22599.qmail%40web54008.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Thu Nov 16 13:44:18 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000753.html">[ydf-devel] r2203 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000759.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#754">[ date ]</a>
+              <a href="thread.html#754">[ thread ]</a>
+              <a href="subject.html#754">[ subject ]</a>
+              <a href="author.html#754">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Hi,
+
+The new YDDatabaseTree2 is a cool8-)  new implementation of database trees! 
+
+There is a bug in the select statement for YDDatabaseTree2::getNode. Ithink the code needs to include appropriate quote characters so thatstring fields can be used in addition to numeric id fields. Stringfields cause the db instance to raise an error.
+
+This is what I think the line that builds the select statement shouldbe to enable use of string fields:
+
+            $query = 'SELECT ' . $this-&gt;_getFieldsAsString() . 'FROM ' . $this-&gt;table . ' WHERE ' . $this-&gt;fields[ $field ] . &quot; = '&quot; . $id . &quot;'&quot;;
+
+
+Alternatively:
+
+if ( !is_string( $id ) ) {
+
+	$query = 'SELECT ' . $this-&gt;_getFieldsAsString() . ' FROM ' . $this-&gt;table . ' WHERE ' . $this-&gt;fields[ $field ] . ' = ' . $id ;
+} else {
+    $query = 'SELECT ' .$this-&gt;_getFieldsAsString() . ' FROM ' . $this-&gt;table . ' WHERE '. $this-&gt;fields[ $field ] . &quot; = '&quot; . $id .&quot;'&quot;;
+}
+
+I have also written a findNode method which allows for the tree to besearch based on a number of equality criteria ( field / value pairs).
+
+        /**
+         *  Find the node data for the node matching the criteria.
+         *
+         *  @param $criteria      Array of field/value pairs.
+         *
+         *  @returns An object containing the node's data, or false ifnode not found
+         */
+        function findNode( $criteria ) {
+        
+            // critera should be an array of field/value pairs
+            if ( ! is_array( $criteria ) ) trigger_error('YDDatabaseTree::findNode, Criteria should be an array!', YD_ERROR );
+        
+            $fields = array_keys( $criteria );
+            
+            $where = '';
+            foreach ( $criteria as $field =&gt; $value ) {
+                        
+                // Check the name of the field
+                if ( ! isset( $this-&gt;fields[ $field ] ) )trigger_error( 'YDDatabaseTree::getNode, Field ' . $field . ' is notset!', YD_ERROR );
+                
+                if ( !is_string( $criteria[$field] ) ) {
+                    $condition = $this-&gt;fields[ $field ] . ' = ' .$value ;
+                } else {
+                    $condition = $this-&gt;fields[ $field ] . &quot; = '&quot; .$value . &quot;'&quot;;
+                }
+                
+                if ( $where == '' ) {
+                    $where .= $condition ;
+                } else {
+                    $where .= $where . ' AND ' . $condition;
+                }
+            }
+            
+            $query = 'SELECT ' . $this-&gt;_getFieldsAsString() . 'FROM ' . $this-&gt;table . ' WHERE ' . $where ;
+                        
+            // Execute the query and return the record
+            return $this-&gt;db-&gt;getRecord( $query );
+        }
+
+
+This is sample usage:
+
+$url_tree_root = $this-&gt;_tree-&gt;findNode( array( 'realm' =&gt;'abc', 'url' =&gt; '/index.php' ) );
+
+Also another simple method which gives more control of the where clause:
+
+        /**
+         *  Find the node data by applying a custom where clause.
+         *
+         *  @param $where      Where clause.
+         *
+         *  @returns An object containing the node's data, or false ifnode not found
+         */
+
+        function findNodeWhere( $where ) {
+        
+            $query = 'SELECT ' . $this-&gt;_getFieldsAsString() . 'FROM ' . $this-&gt;table . ' WHERE ' . $where;
+                        
+            // Execute the query and return the record
+            return $this-&gt;db-&gt;getRecord( $query );
+        }
+
+
+Regards,
+
+Graeme
+
+
+ 
+---------------------------------
+Sponsored Link
+
+Mortgage rates near 39yr lows. $420,000 Mortgage for $1,399/mo - Calculate new house payment
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061116/3d38eac5/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061116/3d38eac5/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000753.html">[ydf-devel] r2203 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000759.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#754">[ date ]</a>
+              <a href="thread.html#754">[ thread ]</a>
+              <a href="subject.html#754">[ subject ]</a>
+              <a href="author.html#754">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

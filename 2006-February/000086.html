@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1687 - in YDFramework2.0/trunk/examples/weblog: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1687%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%20include&In-Reply-To=%3C200602142058.k1EKwZIJ009457%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000085.html">
+   <LINK REL="Next"  HREF="000087.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1687 - in YDFramework2.0/trunk/examples/weblog: . include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1687%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%20include&In-Reply-To=%3C200602142058.k1EKwZIJ009457%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1687 - in YDFramework2.0/trunk/examples/weblog: . include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 21:58:35 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000085.html">[ydf-devel] r1686 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+        <LI>Next message: <A HREF="000087.html">[ydf-devel] Some typos in weblog french language file
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#86">[ date ]</a>
+              <a href="thread.html#86">[ thread ]</a>
+              <a href="subject.html#86">[ subject ]</a>
+              <a href="author.html#86">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-14 21:58:35 +0100 (Tue, 14 Feb 2006)
+New Revision: 1687
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/page.php
+Log:
+Made sure only public pages can be seen.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 20:56:43 UTC (rev 1686)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 20:58:35 UTC (rev 1687)
+@@ -423,7 +423,7 @@
+         }
+ 
+         // Get the public pages
+-        function getPublicPages( $order='title', $where=' AND is_draft=0' ) {
++        function getPublicPages( $order='title', $where=' AND p.is_draft=0' ) {
+             return $this-&gt;getPages( $order, $where );
+         }
+ 
+@@ -439,12 +439,20 @@
+             return $this-&gt;db-&gt;getRecords( $sql );
+         }
+ 
++        // Get a public page by it's ID
++        function getPublicPageByID( $page_id, $where=' AND p.is_draft=0' ) {
++            return $this-&gt;getPageByID( $page_id, $where );
++        }
++
+         // Get a page by it's ID
+-        function getPageByID( $page_id ) {
++        function getPageByID( $page_id, $where='' ) {
+             $sql = $this-&gt;_prepareQuery(
+                 'SELECT p.id, p.title, p.body, p.is_draft, p.created, p.modified, u.email as user_email, u.name as user_name FROM '
+                 . '#_pages p, #_users u WHERE p.user_id = u.id AND p.id = ' . $this-&gt;str( $page_id )
+             );
++            if ( ! empty( $where ) ) {
++                $sql .= ' ' . $where;
++            }
+             return $this-&gt;db-&gt;getRecord( $sql );
+         }
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/page.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/page.php	2006-02-14 20:56:43 UTC (rev 1686)
++++ YDFramework2.0/trunk/examples/weblog/page.php	2006-02-14 20:58:35 UTC (rev 1687)
+@@ -18,7 +18,7 @@
+             $id = $this-&gt;getIdFromQS();
+ 
+             // Get the page details
+-            $page  = $this-&gt;weblog-&gt;getPageById( $id );
++            $page  = $this-&gt;weblog-&gt;getPublicPageById( $id );
+             $this-&gt;redirectIfMissing( $page );
+ 
+             // Add them to the template
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000085.html">[ydf-devel] r1686 - YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+	<LI>Next message: <A HREF="000087.html">[ydf-devel] Some typos in weblog french language file
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#86">[ date ]</a>
+              <a href="thread.html#86">[ thread ]</a>
+              <a href="subject.html#86">[ subject ]</a>
+              <a href="author.html#86">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

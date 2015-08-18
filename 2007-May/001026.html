@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2432 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2432%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses&In-Reply-To=%3C200705191854.l4JIsTRE008838%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001025.html">
+   <LINK REL="Next"  HREF="001027.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2432 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2432%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses&In-Reply-To=%3C200705191854.l4JIsTRE008838%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2432 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat May 19 20:54:29 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001025.html">[ydf-devel] r2431 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="001027.html">[ydf-devel] r2433 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1026">[ date ]</a>
+              <a href="thread.html#1026">[ thread ]</a>
+              <a href="subject.html#1026">[ subject ]</a>
+              <a href="author.html#1026">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-05-19 20:54:20 +0200 (Sat, 19 May 2007)
+New Revision: 2432
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+new feature: on setRequiresAuthentication it's now possible to define exceptions 
+             ( actions that don't require authentication even when authentication check is set to true )
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-05-19 18:26:05 UTC (rev 2431)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-05-19 18:54:20 UTC (rev 2432)
+@@ -56,6 +56,7 @@
+             // Set up the request class
+             $this-&gt;__isInitialized = true;
+             $this-&gt;__requiresAuthentication = false;
++            $this-&gt;__requiresAuthenticationExceptions = array();
+ 
+             // setup the callbacks object
+             $this-&gt;_callbacks = new YDBase();
+@@ -395,19 +396,23 @@
+          *	This function indicates that this request needs authentication. If you change this to true, it will cause
+          *	the Yellow Duck Framework to check the isAuthenticated function to see if you are authenticated or not.
+          *
+-         *	@param $bool	Boolean indicating if this request requires authentication or not.
++         *	@param $bool		Boolean indicating if this request requires authentication or not.
++         *	@param $exceptions	(Optional) Array of actions to be ignored even if authentication check is true.
+          */
+-        function setRequiresAuthentication( $bool ) {
++        function setRequiresAuthentication( $bool, $exceptions = array() ) {
+             $this-&gt;__requiresAuthentication = ( $bool == true ) ? true : false;
++            $this-&gt;__requiresAuthenticationExceptions = array_map( 'strtolower', $exceptions );
+         }
+ 
+         /**
+          *	This function will return true or false to indicate whether this class needs authentication or not.
+          *
++         *  @param  $action  (Optional) Check authentication for a specific action name.
++         *
+          *	@returns	This function returns true or false to indicate if this requires authentication or not.
+          */
+-        function getRequiresAuthentication() {
+-            return ( $this-&gt;__requiresAuthentication == false ) ? false : true;
++        function getRequiresAuthentication( $action = '' ) {
++            return ( $this-&gt;__requiresAuthentication == true &amp;&amp; ! in_array( $action, $this-&gt;__requiresAuthenticationExceptions ) );
+         }
+ 
+         /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-05-19 18:26:05 UTC (rev 2431)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-05-19 18:54:20 UTC (rev 2432)
+@@ -669,8 +669,11 @@
+                 );
+             }
+ 
++            // Get the action name
++            $action = 'action' . $this-&gt;clsInst-&gt;getActionName();
++
+             // Only if authentication is required
+-            if ( $this-&gt;clsInst-&gt;getRequiresAuthentication() ) {
++            if ( $this-&gt;clsInst-&gt;getRequiresAuthentication( $action ) ) {
+                 $result = $this-&gt;clsInst-&gt;isAuthenticated();
+                 if ( $result ) {
+                     $this-&gt;clsInst-&gt;authenticationSucceeded();
+@@ -680,9 +683,6 @@
+                 }
+             }
+ 
+-            // Get the action name
+-            $action = 'action' . $this-&gt;clsInst-&gt;getActionName();
+-
+             // Check if the action exists
+             if ( ! $this-&gt;clsInst-&gt;hasMethod( $action ) ) {
+                 $this-&gt;clsInst-&gt;errorMissingAction( $action );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001025.html">[ydf-devel] r2431 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="001027.html">[ydf-devel] r2433 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1026">[ date ]</a>
+              <a href="thread.html#1026">[ thread ]</a>
+              <a href="subject.html#1026">[ subject ]</a>
+              <a href="author.html#1026">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

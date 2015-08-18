@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2450 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2450%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200707102134.l6ALYllB027115%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001045.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2450 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2450%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200707102134.l6ALYllB027115%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2450 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Jul 10 23:34:47 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001045.html">[ydf-devel] r2451 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1044">[ date ]</a>
+              <a href="thread.html#1044">[ thread ]</a>
+              <a href="subject.html#1044">[ subject ]</a>
+              <a href="author.html#1044">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-07-10 23:34:32 +0200 (Tue, 10 Jul 2007)
+New Revision: 2450
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+- added UTF-8 support for YDDatabase
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-06-25 15:33:37 UTC (rev 2449)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-07-10 21:34:32 UTC (rev 2450)
+@@ -45,6 +45,7 @@
+     YDConfig::set( 'YD_DB_TABLEPREFIX', '', false );
+     YDConfig::set( 'YD_DB_ALLOW_PERSISTENT_SORT', false, false );
+     YDConfig::set( 'YD_DB_LANGUAGE_INDEX', null, false );
++    YDConfig::set( 'YD_DB_UTF8_SUPPORT', false, false );
+ 
+     YDConfig::set( 'YD_DB_RS_CYCLENAVIGATION', false, false );
+ 
+@@ -1649,6 +1650,9 @@
+                 if ( ! @mysql_select_db( $this-&gt;_db, $conn ) ) {
+                     return false;
+                 }
++                if ( YDConfig::get( 'YD_DB_UTF8_SUPPORT' ) ){
++                    @mysql_query( &quot;SET NAMES 'utf8'&quot;, $conn );
++                }
+                 $this-&gt;_conn = $conn;
+             }
+             return true;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001045.html">[ydf-devel] r2451 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1044">[ date ]</a>
+              <a href="thread.html#1044">[ thread ]</a>
+              <a href="subject.html#1044">[ subject ]</a>
+              <a href="author.html#1044">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2046 - in YDFramework2.0/trunk/examples/weblog: .	include/languages skins/default skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2046%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include/languages%20skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200608281850.k7SIoTOM013107%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000555.html">
+   <LINK REL="Next"  HREF="000557.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2046 - in YDFramework2.0/trunk/examples/weblog: .	include/languages skins/default skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2046%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include/languages%20skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200608281850.k7SIoTOM013107%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2046 - in YDFramework2.0/trunk/examples/weblog: .	include/languages skins/default skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 28 20:50:29 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000555.html">[ydf-devel] r2045 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000557.html">[ydf-devel] r2047 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#556">[ date ]</a>
+              <a href="thread.html#556">[ thread ]</a>
+              <a href="subject.html#556">[ subject ]</a>
+              <a href="author.html#556">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-28 20:50:23 +0200 (Mon, 28 Aug 2006)
+New Revision: 2046
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+Log:
+Changed the spam trick to a javascript version which works in the background.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-28 14:57:34 UTC (rev 2045)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-08-28 18:50:23 UTC (rev 2046)
+@@ -95,7 +95,7 @@
+ $GLOBALS['t']['spam'] = 'Spam';
+ $GLOBALS['t']['no_spam'] = 'No spam';
+ $GLOBALS['t']['choose_no_spam'] = 'Choose &quot;no spam&quot; here';
+-$GLOBALS['t']['err_userspam'] = 'You didn\'t select &quot;no spam&quot;';
++$GLOBALS['t']['err_userspam'] = 'Detected a spam attack';
+ 
+ // comment_email.tpl
+ $GLOBALS['t']['new_comment'] = 'New comment';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-28 14:57:34 UTC (rev 2045)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-08-28 18:50:23 UTC (rev 2046)
+@@ -95,7 +95,7 @@
+ $GLOBALS['t']['spam'] = 'Spam';
+ $GLOBALS['t']['no_spam'] = 'Geen spam';
+ $GLOBALS['t']['choose_no_spam'] = 'Kies hier &quot;geen spam&quot;';
+-$GLOBALS['t']['err_userspam'] = 'Je selecteerde niet &quot;geen spam&quot;';
++$GLOBALS['t']['err_userspam'] = 'Detecteerde een spam aanval';
+ 
+ // comment_email.tpl
+ $GLOBALS['t']['new_comment'] = 'Nieuw commentaar';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-08-28 14:57:34 UTC (rev 2045)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-08-28 18:50:23 UTC (rev 2046)
+@@ -55,16 +55,19 @@
+                     'comments', 'POST', YDTplModLinkItemRespond( $item ), '_self', array( 'id' =&gt; 'commentform' )
+                 );
+ 
+-                // The SPAM options
+-                $spam_options = array( 1 =&gt; t('spam'), 2 =&gt; t('spam'), 3 =&gt; t('no_spam'), 4 =&gt; t('spam') );
+-
+                 // Add the fields
+                 $form-&gt;addElement( 'text', 'username', t( 'name' ) );
+                 $form-&gt;addElement( 'text', 'useremail', t( 'mail_not_published' ) );
+                 $form-&gt;addElement( 'text', 'userwebsite', t( 'website' ) );
+-                $form-&gt;addElement( 'select', '_userspam', t('choose_no_spam'), array(), $spam_options );
++                $form-&gt;addElement( 'hidden', '_userspam', t('choose_no_spam'), array() );
+                 $form-&gt;addElement( 'textarea', 'comment', '' );
+-                $form-&gt;addElement( 'submit', 'cmdSubmit', t( 'submit_comment' ), array( 'id' =&gt; 'submit' ) );
++                $form-&gt;addElement(
++                    'submit', 'cmdSubmit', t( 'submit_comment' ),
++                    array(
++                        'id' =&gt; 'submit',
++                        'onClick' =&gt; 'this.document.getElementById(\'comments__userspam\').value = 3; return true;'
++                    )
++                );
+                 $form-&gt;addElement( 'hidden', 'item_id' );
+ 
+                 // Set the defaults
+@@ -73,6 +76,7 @@
+                 $defaults['username']    = empty( $_COOKIE['YD_USER_NAME'] ) ? '' : $_COOKIE['YD_USER_NAME'];
+                 $defaults['useremail']   = empty( $_COOKIE['YD_USER_EMAIL'] ) ? '' : $_COOKIE['YD_USER_EMAIL'];
+                 $defaults['userwebsite'] = empty( $_COOKIE['YD_USER_WEBSITE'] ) ? '' : $_COOKIE['YD_USER_WEBSITE'];
++                $defaults['_userspam']   = 1;
+                 $form-&gt;setDefaults( $defaults );
+ 
+                 // Set the rules
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-08-28 14:57:34 UTC (rev 2045)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-08-28 18:50:23 UTC (rev 2046)
+@@ -129,6 +129,8 @@
+ 
+         {$comments_form.tag}
+ 
++            {$comments_form._userspam.html}
++
+             {if $comments_form.errors_unique_messages}
+                 &lt;p class=&quot;postmetadata alt&quot; style=&quot;color: red; text-align: left;&quot;&gt;
+                     &lt;b&gt;{t w=&quot;error_comment&quot;}&lt;br/&gt;&lt;/b&gt;
+@@ -143,7 +145,6 @@
+             &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
+-            &lt;p&gt;{$comments_form._userspam.html} &lt;small&gt;{$comments_form._userspam.label_html}&lt;/small&gt;&lt;/p&gt;
+ 
+             &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-08-28 14:57:34 UTC (rev 2045)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-08-28 18:50:23 UTC (rev 2046)
+@@ -133,6 +133,8 @@
+ 
+         {$comments_form.tag}
+ 
++            {$comments_form._userspam.html}
++
+             {if $comments_form.errors_unique_messages}
+                 &lt;p class=&quot;postmetadata alt&quot; style=&quot;color: red; text-align: left;&quot;&gt;
+                     &lt;b&gt;{t w=&quot;error_comment&quot;}&lt;br/&gt;&lt;/b&gt;
+@@ -147,7 +149,6 @@
+             &lt;p&gt;{$comments_form.username.html} &lt;small&gt;{$comments_form.username.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.useremail.html} &lt;small&gt;{$comments_form.useremail.label_html}&lt;/small&gt;&lt;/p&gt;
+             &lt;p&gt;{$comments_form.userwebsite.html} &lt;small&gt;{$comments_form.userwebsite.label_html}&lt;/small&gt;&lt;/p&gt;
+-            &lt;p&gt;{$comments_form._userspam.html} &lt;small&gt;{$comments_form._userspam.label_html}&lt;/small&gt;&lt;/p&gt;
+ 
+             &lt;p&gt;{$comments_form.comment.html}&lt;/p&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000555.html">[ydf-devel] r2045 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000557.html">[ydf-devel] r2047 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#556">[ date ]</a>
+              <a href="thread.html#556">[ thread ]</a>
+              <a href="subject.html#556">[ subject ]</a>
+              <a href="author.html#556">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

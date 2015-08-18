@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2304 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2304%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701131752.l0DHqQ5l008914%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000895.html">
+   <LINK REL="Next"  HREF="000897.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2304 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2304%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701131752.l0DHqQ5l008914%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2304 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 13 18:52:26 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000895.html">[ydf-devel] r2303 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000897.html">[ydf-devel] r2305 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#896">[ date ]</a>
+              <a href="thread.html#896">[ thread ]</a>
+              <a href="subject.html#896">[ subject ]</a>
+              <a href="author.html#896">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-13 18:51:54 +0100 (Sat, 13 Jan 2007)
+New Revision: 2304
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+Log:
+on YDDatabaseTree3:
+ - all internal finds will now use possible relations defined in classes that extend YDDatabaseTree3
+ - all ambiguity fixed: column names are exported with table name too ( 'YDDatabaseTree3.id' instead of just 'id' )
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-13 17:47:14 UTC (rev 2303)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-13 17:51:54 UTC (rev 2304)
+@@ -92,8 +92,15 @@
+ 			$this-&gt;__level    = $levelField;
+ 			$this-&gt;__position = $positionField;
+ 
++			$this-&gt;__table_id       = $table . '.' . $idField;
++			$this-&gt;__table_parent   = $table . '.' . $parentField;
++			$this-&gt;__table_lineage  = $table . '.' . $lineageField;
++			$this-&gt;__table_level    = $table . '.' . $levelField;
++			$this-&gt;__table_position = $table . '.' . $positionField;
++
++
+ 			// define a generic tree order
+-			$this-&gt;setOrder( $this-&gt;__parent . ' ASC, ' . $this-&gt;__position . ' ASC' );
++			$this-&gt;setOrder( $this-&gt;__table_parent . ' ASC, ' . $this-&gt;__table_position . ' ASC' );
+ 		}
+ 
+ 
+@@ -111,8 +118,8 @@
+         /**
+          *  This function will overide the YDDatabaseObject to reset object but init order
+          */
+-		function reset(){
+-			parent::reset();
++		function resetAll(){
++			parent::resetAll();
+ 			$this-&gt;order( $this-&gt;_tree_order );
+ 		}
+ 
+@@ -138,7 +145,7 @@
+          */
+         function getNode( $id, $field = null ) {
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			// if field not defined, field is id
+ 			if ( is_null( $field ) ) $field = $this-&gt;__id;
+@@ -159,7 +166,7 @@
+         function _getNode() {
+ 
+ 			// check results
+-			if ( $this-&gt;find() == 0 ) return false;
++			if ( $this-&gt;findAll() == 0 ) return false;
+ 
+             // Execute the query and return the record
+             return $this-&gt;getValues();
+@@ -171,17 +178,19 @@
+          *
+          *  @param $id              The ID of the node to fetch descendant data for. 
+          *  @param $includeSelf     (optional) Whether or not to include the passed node in results. 
++         *  @param $maxLevel        (optional) Max level to retrieve. Eg: 10 returns all descendants with level smaller than 10; NULL retrieve all descendants.
++         *  @param $prefix          (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+          *  @returns The descendants of the passed now
+          */
+-        function getDescendants( $id, $includeSelf = false ) {
++        function getDescendants( $id, $includeSelf = false, $maxLevel = null, $prefix = false ) {
+ 
+ 			// check if we want an invalid id (like 0 or 1)
+ 			if ( $id &lt; 2 ) return $this-&gt;getTreeElements();
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+-			return $this-&gt;_getDescendants( $id, $includeSelf );
++			return $this-&gt;_getDescendants( $id, $includeSelf, $maxLevel, $prefix );
+ 		}
+ 
+ 
+@@ -190,20 +199,25 @@
+          *
+          *  @param $id              The ID of the node to fetch descendant data for. 
+          *  @param $includeSelf     (optional) Whether or not to include the passed node in results. 
++         *  @param $maxLevel        (optional) Max level to retrieve. Eg: 10 returns all descendants with level smaller than 10; NULL retrieve all descendants.
++         *  @param $prefix          (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+          *  @returns The descendants of id
+          */
+-        function _getDescendants( $id, $includeSelf = false ) {
++        function _getDescendants( $id, $includeSelf = false, $maxLevel = null, $prefix = false ) {
+ 
+             // get just children
+-			if ( $includeSelf == false ) $this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
+-			else                         $this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot; OR ' . $this-&gt;__id . ' = ' . intval( $id ) );
++			if ( $includeSelf == false ) $this-&gt;where(       $this-&gt;__table_lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
++			else                         $this-&gt;where( '(' . $this-&gt;__table_lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot; OR ' . $this-&gt;__table_id . ' = ' . intval( $id ) . ')' );
+ 
++			// check max level to retrieve
++			if ( is_numeric( $maxLevel ) ) $this-&gt;where( $this-&gt;__table_level . '&lt;' . intval( $maxLevel ) );
++
+ 			// find nodes
+-			$this-&gt;find();
++			$this-&gt;findAll();
+ 
+ 			// return all nodes
+-			return $this-&gt;getResults();
++			return $this-&gt;getResults( false, false, false, $prefix );
+ 		}
+ 
+ 
+@@ -214,7 +228,7 @@
+          */
+         function getTreeElements() {
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			return $this-&gt;_getTreeElements();
+ 		}
+@@ -228,10 +242,10 @@
+         function _getTreeElements() {
+ 
+ 			// get all elements except root
+-			$this-&gt;where( $this-&gt;__id . ' &gt; 1' );
++			$this-&gt;where( $this-&gt;__table_id . ' &gt; 1' );
+ 
+ 			// find elements
+-			$this-&gt;find();
++			$this-&gt;findAll();
+ 
+ 			// return all nodes
+ 			return $this-&gt;getResults();
+@@ -249,10 +263,10 @@
+         function _getTreeElementsAsAssocArray( $columns = array(), $key = null ) {
+ 
+ 			// get all elements except root
+-			$this-&gt;where( $this-&gt;__id . ' &gt; 1' );
++			$this-&gt;where( $this-&gt;__table_id . ' &gt; 1' );
+ 
+ 			// find elements
+-			$this-&gt;find();
++			$this-&gt;findAll();
+ 
+ 			// compute key
+ 			if ( is_null( $key ) ) $key = $this-&gt;__id;
+@@ -271,7 +285,7 @@
+          */
+         function getChildren( $id, $includeSelf = false ){
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 			
+ 			return $this-&gt;_getChildren( $id, $includeSelf );
+         }
+@@ -287,10 +301,10 @@
+         function _getChildren( $id, $includeSelf = false ){
+ 
+             // get just children
+-			if ( $includeSelf == false ) $this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) );
+-			else                         $this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) . ' OR ' . $this-&gt;__parent . ' = ' . intval( $id ) );
++			if ( $includeSelf == false ) $this-&gt;where(       $this-&gt;__table_parent . ' = ' . intval( $id ) );
++			else                         $this-&gt;where( '(' . $this-&gt;__table_parent . ' = ' . intval( $id ) . ' OR ' . $this-&gt;__table_parent . ' = ' . intval( $id ) . ')' );
+ 
+-			$this-&gt;find();
++			$this-&gt;findAll();
+ 
+ 			return $this-&gt;getResults();
+         }
+@@ -308,7 +322,7 @@
+          */
+         function getPath( $id, $includeSelf=false ) {
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			return $this-&gt;_getPath( $id, $includeSelf );
+         }
+@@ -325,10 +339,10 @@
+         function _getPath( $id, $includeSelf = false ) {
+ 
+             // Get the node
+-            $node = $this-&gt;getNode( $id ) ;
++            $node = $this-&gt;getNode( intval($id) ) ;
+ 
+ 			// reset values of previous getNode()
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+             // No node, return empty array
+             if ( ! $node ) return array();
+@@ -336,10 +350,10 @@
+ 			// compute parents of this node. Read lineage, delete first '//', last '/', apply 'intval' to all elements and implode
+ 			$nodes = array_map( 'intval', explode( '/', substr( substr( $node[ $this-&gt;__lineage ], 2 ), 0, -1 ) ) );
+ 
+-            if ( $includeSelf == false ) $this-&gt;where( $this-&gt;getTable() . '.' . $this-&gt;__id . ' IN (' . $this-&gt;escapeSqlArray( $nodes ) . ')' );
+-			else                         $this-&gt;where( $this-&gt;getTable() . '.' . $this-&gt;__id . ' IN (' . $this-&gt;escapeSqlArray( $nodes ) . ') OR ' . $this-&gt;__id . ' = ' . intval( $id ) );
++            if ( $includeSelf == false ) $this-&gt;where(       $this-&gt;__table_id . ' IN (' . $this-&gt;escapeSqlArray( $nodes ) . ')' );
++			else                         $this-&gt;where( '(' . $this-&gt;__table_id . ' IN (' . $this-&gt;escapeSqlArray( $nodes ) . ') OR ' . $this-&gt;__table_id . ' = ' . intval( $id ) . ')' );
+ 
+-			$this-&gt;find();
++			$this-&gt;findAll();
+ 
+ 			return $this-&gt;getResults();
+         }
+@@ -358,7 +372,7 @@
+ 			// if ancertor is root, element is descendant if exist
+ 			if ( $ancestor_id == 1 ) return ( $this-&gt;getNode( $descendant_id ) != false );
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 			
+ 			return $this-&gt;_isDescendantOf( $descendant_id, $ancestor_id );
+         }
+@@ -378,10 +392,10 @@
+ 			$this-&gt;set( $this-&gt;__id, intval( $descendant_id ) );
+ 
+ 			// check if descendant has the ancestor in lineage ;)
+-			$this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $ancestor_id ) . '/%&quot;' );
++			$this-&gt;where( $this-&gt;__table_lineage . ' LIKE &quot;%/' . intval( $ancestor_id ) . '/%&quot;' );
+ 		
+ 			// get total of rows
+-			return ( $this-&gt;find() == 1 );
++			return ( $this-&gt;findAll() == 1 );
+         }
+ 
+ 
+@@ -395,16 +409,16 @@
+          */
+         function isChildOf( $child_id, $parent_id ) {
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			// check if there is a id that equals $child_id
+ 			$this-&gt;set( $this-&gt;__id, intval( $child_id ) );
+ 
+ 			// check if there is a parent that equals $parent_id
+-			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $parent_id ) );
++			$this-&gt;where( $this-&gt;__table_parent . ' = ' . intval( $parent_id ) );
+ 
+ 			// get total of rows
+-			return ( $this-&gt;find() == 1 );
++			return ( $this-&gt;findAll() == 1 );
+         }
+ 
+ 
+@@ -417,7 +431,7 @@
+          */
+         function numDescendants( $id ) {
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			return $this-&gt;_numDescendants( $id );
+         }
+@@ -433,10 +447,10 @@
+         function _numDescendants( $id ) {
+ 
+ 			// search all nodes that contains this id in lineage. if node is root, count all nodes
+-			if ( $id &gt; 1 ) $this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
++			if ( $id &gt; 1 ) $this-&gt;where( $this-&gt;__table_lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
+ 
+ 			// find them
+-			return $this-&gt;find();
++			return $this-&gt;findAll();
+         }
+ 
+ 
+@@ -449,13 +463,13 @@
+          */
+         function numChildren( $id ) {
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			// search all nodes that contains this id in lineage
+-			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) );
++			$this-&gt;where( $this-&gt;__table_parent . ' = ' . intval( $id ) );
+ 
+ 			// find them
+-			return $this-&gt;find();
++			return $this-&gt;findAll();
+         }
+ 
+ 
+@@ -474,12 +488,12 @@
+             // No node, return empty array
+             if ( ! $node ) return array();
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			// get elements that have parent $parent (this returns current element and brothers), that have id $parent (returns parent), and that have lineage like /$id/ (returns all children)
+-			$this-&gt;where( $this-&gt;__parent . '=' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__id . ' = ' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
++			$this-&gt;where( '(' . $this-&gt;__table_parent . '=' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__table_id . ' = ' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__table_lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' . ')' );
+ 
+-			$this-&gt;find();
++			$this-&gt;findAll();
+ 
+             // Execute the query and get the record
+             return $this-&gt;getResults();
+@@ -519,20 +533,20 @@
+ 			// create an empty position. To do this, if node is not added in the end, we must increment position of nodes that have the same parent and equal or bigger position 
+ 			if ( $position != $total_brothers + 1 ){
+ 	
+-				$this-&gt;reset();
++				$this-&gt;resetAll();
+ 
+ 				// position field must increment
+-				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__table_position . ' + 1' );
+ 
+ 				// only on new brothers with higher or equal position
+-				$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $parent_id ) . ' AND ' .  $this-&gt;__position . ' &gt;= ' . intval( $position ) );
++				$this-&gt;where( '(' . $this-&gt;__table_parent . ' = ' . intval( $parent_id ) . ' AND ' .  $this-&gt;__table_position . ' &gt;= ' . intval( $position ) . ')' );
+ 
+ 				// lets update.
+ 				$this-&gt;update( array(), $this-&gt;__position );
+ 			}
+ 
+ 			// reset any previous value to create insert
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			// apply custom values
+ 			$this-&gt;setValues( $values );
+@@ -557,14 +571,8 @@
+          */
+         function updateNode( $values, $id ) {
+ 
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+-			// get reserved field names
+-			$parent   = $this-&gt;__parent;
+-			$lineage  = $this-&gt;__lineage;
+-			$level    = $this-&gt;__level;
+-			$position = $this-&gt;__position;
+-
+ 			// apply custom values
+ 			$this-&gt;setValues( $values );
+ 			
+@@ -572,10 +580,10 @@
+ 			$this-&gt;set( $this-&gt;__id, intval( $id ) );
+ 
+ 			// unset reserved fields
+-			unset( $this-&gt;$parent );
+-			unset( $this-&gt;$lineage );
+-			unset( $this-&gt;$level );
+-			unset( $this-&gt;$position );
++			$this-&gt;unsetVar( $this-&gt;__parent );
++			$this-&gt;unsetVar( $this-&gt;__lineage );
++			$this-&gt;unsetVar( $this-&gt;__level );
++			$this-&gt;unsetVar( $this-&gt;__position );
+ 
+ 			return $this-&gt;update();
+         }
+@@ -597,7 +605,7 @@
+ 	            // get node details before delete. we must know the position
+ 	            $node = $this-&gt;getNode( $id );
+ 
+-				$this-&gt;reset();
++				$this-&gt;resetAll();
+ 
+ 				$this-&gt;set( $this-&gt;__id, intval( $id ) );
+ 
+@@ -606,13 +614,13 @@
+ 				
+ 				if ( $total == 0 ) return 0;
+ 
+-				$this-&gt;reset();
++				$this-&gt;resetAll();
+ 
+ 				// decrease positions
+-				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__table_position . ' - 1' );
+ 
+ 				// in all elements with same parent AND position bigger than our
+-				$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $node[ $this-&gt;__parent ] ) . ' AND ' . $this-&gt;__position . ' &gt; ' . intval( $node[ $this-&gt;__position ] ) );
++				$this-&gt;where( '(' . $this-&gt;__table_parent . ' = ' . intval( $node[ $this-&gt;__parent ] ) . ' AND ' . $this-&gt;__table_position . ' &gt; ' . intval( $node[ $this-&gt;__position ] ) . ')' );
+ 
+ 				$this-&gt;update( array(), $this-&gt;__position );
+ 				
+@@ -620,10 +628,10 @@
+ 			}
+ 
+ 			// here we want do delete child only
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 
+ 			// we only need to delete children. Children of children will be deleted when mysql is InnoDB
+-			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) );
++			$this-&gt;where( $this-&gt;__table_parent . ' = ' . intval( $id ) );
+ 
+ 			return $this-&gt;delete();
+         }
+@@ -666,15 +674,15 @@
+ 			if ( $new_parent_id != $old_parent_id || $new_position != $old_position ){
+ 
+ 				// decrease positions of old brothers that have position bigger than this node position
+-				$this-&gt;reset();
+-				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
+-				$this-&gt;where( $this-&gt;__parent . ' = ' . $old_parent_id . ' AND ' . $this-&gt;__position . ' &gt; ' . $old_position );
++				$this-&gt;resetAll();
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__table_position . ' - 1' );
++				$this-&gt;where( '(' . $this-&gt;__table_parent . ' = ' . $old_parent_id . ' AND ' . $this-&gt;__table_position . ' &gt; ' . $old_position . ')' );
+ 				$this-&gt;update( array(), $this-&gt;__position );
+ 
+ 				// add position space for this node in new parent: increase positions of new brothers that have position bigger than this node position
+-				$this-&gt;reset();
+-				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
+-				$this-&gt;where( $this-&gt;__parent . ' = ' . $new_parent_id . ' AND ' . $this-&gt;__position . ' &gt;= ' . $new_position );
++				$this-&gt;resetAll();
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__table_position . ' + 1' );
++				$this-&gt;where( '(' . $this-&gt;__table_parent . ' = ' . $new_parent_id . ' AND ' . $this-&gt;__table_position . ' &gt;= ' . $new_position . ')' );
+ 				$this-&gt;update( array(), $this-&gt;__position );
+ 			}
+ 
+@@ -683,7 +691,7 @@
+ 			else                       $new_lineage = $new_parent_node[ $this-&gt;__lineage ] . $new_parent_id . '/';
+ 
+ 			// update node
+-			$this-&gt;reset();
++			$this-&gt;resetAll();
+ 			$this-&gt;set( $this-&gt;__id,       intval( $id ) );
+ 			$this-&gt;set( $this-&gt;__parent,   intval( $new_parent_id ) );
+ 			$this-&gt;set( $this-&gt;__lineage,  $new_lineage );
+@@ -693,9 +701,9 @@
+ 			
+ 			// update lineages of node descendants ;)
+ 			if ( $new_parent_id != $old_parent_id ){
+-				$this-&gt;reset();
+-				$this-&gt;set( $this-&gt;__lineage, 'REPLACE(' . $this-&gt;__lineage . ',&quot;' . $old_lineage . $id . '/&quot;,&quot;' . $new_lineage . $id . '/&quot;)' );
+-				$this-&gt;where( $this-&gt;__id . ' &gt; 1 ' );
++				$this-&gt;resetAll();
++				$this-&gt;set( $this-&gt;__lineage, 'REPLACE(' . $this-&gt;__table_lineage . ',&quot;' . $old_lineage . $id . '/&quot;,&quot;' . $new_lineage . $id . '/&quot;)' );
++				$this-&gt;where( $this-&gt;__table_id . ' &gt; 1 ' );
+ 				$this-&gt;update( array(), $this-&gt;__lineage );
+ 			}
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000895.html">[ydf-devel] r2303 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000897.html">[ydf-devel] r2305 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#896">[ date ]</a>
+              <a href="thread.html#896">[ thread ]</a>
+              <a href="subject.html#896">[ subject ]</a>
+              <a href="author.html#896">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

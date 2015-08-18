@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1991 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1991%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608081407.k78E7NJM026523%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000497.html">
+   <LINK REL="Next"  HREF="000499.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1991 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1991%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608081407.k78E7NJM026523%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1991 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  8 16:07:23 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000497.html">[ydf-devel] r1990 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000499.html">[ydf-devel] r1992 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#498">[ date ]</a>
+              <a href="thread.html#498">[ thread ]</a>
+              <a href="subject.html#498">[ subject ]</a>
+              <a href="author.html#498">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-08 16:07:10 +0200 (Tue, 08 Aug 2006)
+New Revision: 1991
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+Log:
+small changes in YDCM user management permission system
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-08 14:05:23 UTC (rev 1990)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-08 14:07:10 UTC (rev 1991)
+@@ -70,7 +70,7 @@
+ 		
+ 			$this-&gt;resetValues();
+ 			$this-&gt;user_id = intval( $user_id );
+-
++			$this-&gt;orderby( 'object DESC, object_action DESC' );
+ 			$this-&gt;find();
+ 
+ 			return $this-&gt;getResultsAsAssocArray( array( 'object', 'object_action' ) );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-08 14:05:23 UTC (rev 1990)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-08 14:07:10 UTC (rev 1991)
+@@ -120,10 +120,6 @@
+          */
+ 		function getPermissions( $user_id = null ){
+ 		
+-//			require_once( dirname( __FILE__ ) . '/YDCMPermissions.php' );
+-
+-//			$permissions = new YDCMPermissions();
+-		
+ 			if ( is_null( $user_id ) ) $user_id = $this-&gt;id;
+ 		
+ 			return $this-&gt;perm-&gt;getPermissions( $user_id );
+@@ -161,7 +157,7 @@
+ 
+ 
+         /**
+-         *  This function returns all sub users
++         *  This function checks if a user is descendant of another user
+          *
+          *  @param      $id          User id to test if id descendant
+          *  @param      $parent_id   Parent id
+@@ -391,13 +387,17 @@
+ 
+         /**
+          *  This function adds checkbox groups about permissions and gets all translations.
+-         *  It generates 2 private variables 
+-         *    - $this-&gt;permissions as db permissions 
+-         *    - $this-&gt;permissions_html as associative array with checkboxgroup html code
++         *  It generates 3 private variables 
++         *    - $this-&gt;permissions         user permissions 
++         *    - $this-&gt;permissions_panret  parent permissions 
++         *    - $this-&gt;permissions_html    associative array with checkboxgroup html code
+          *
+-         *  @returns  Associative array of objects and correspondent chechboxgoup
++         *  @param    $userParentPermissions   (Optional) Boolean to compute avaiable parent permissions or user permissions
++         *                                      This will be used to create permissions for editing or when creating a subuser
++         *  
++         *  @returns  Associative array of objects and correspondent chechboxgoup html
+          */
+-		function addFormPermissions(){
++		function addFormPermissions( $useParentPermissions = true ){
+ 
+ 			// get permissions from parent;
+ 			$node = $this-&gt;getUser( $this-&gt;id );
+@@ -406,11 +406,16 @@
+ 			$this-&gt;permissions      = $this-&gt;getPermissions();
+ 			$this-&gt;permissions_html = array();
+ 
+-			// init parent permissions
+-			$this-&gt;permissions_parent = $this-&gt;getPermissions( $node['parent_id'] );
++			// check if we are editing or creating
++			if ( $useParentPermissions ){
++				$permissions_avaiable = $this-&gt;getPermissions( $node['parent_id'] );
++				$this-&gt;permissions_parent = $permissions_avaiable;
++			}else{
++				$permissions_avaiable = $this-&gt;permissions;
++			}
+ 
+ 			// cycle parent permissions to create form checkboxgroup of this user
+-			foreach( $this-&gt;permissions_parent as $obj =&gt; $perm ){
++			foreach( $permissions_avaiable as $obj =&gt; $perm ){
+ 
+ 				// get permission translations of this component
+ 				YDLocale::addDirectory( YD_DIR_HOME_ADD . '/' . $obj . '/languages/' );
+@@ -424,7 +429,7 @@
+ 					$options[ $p['object_action' ] ] = t( $obj . '_' . $p['object_action' ] );
+ 
+ 					// check if this parent action belongs to the child too ( to select it )
+-					if ( isset( $this-&gt;permissions[ $obj ] ) &amp;&amp; in_array( $p['object_action' ], array_keys( $this-&gt;permissions[ $obj ] ) )){
++					if ( $useParentPermissions &amp;&amp; isset( $this-&gt;permissions[ $obj ] ) &amp;&amp; in_array( $p['object_action' ], array_keys( $this-&gt;permissions[ $obj ] ) )){
+ 						$selected[ $p['object_action' ] ] = 1;
+ 					}
+ 				}
+@@ -433,7 +438,7 @@
+ 				$this-&gt;form-&gt;addElement( 'checkboxgroup', $obj, $obj, array(), $options );
+ 				
+ 				// add default for this checkboxgroup
+-				$this-&gt;form-&gt;setDefault( $obj, $selected );
++				if ( $useParentPermissions ) $this-&gt;form-&gt;setDefault( $obj, $selected );
+ 
+ 				// get element html
+ 				$el = &amp; $this-&gt;form-&gt;getElement( $obj );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000497.html">[ydf-devel] r1990 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000499.html">[ydf-devel] r1992 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#498">[ date ]</a>
+              <a href="thread.html#498">[ thread ]</a>
+              <a href="subject.html#498">[ subject ]</a>
+              <a href="author.html#498">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

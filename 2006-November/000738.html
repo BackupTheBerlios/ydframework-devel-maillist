@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Query builder
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Query%20builder&In-Reply-To=%3C20061101042950.7294.qmail%40web54002.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000737.html">
+   <LINK REL="Next"  HREF="000739.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Query builder</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Query%20builder&In-Reply-To=%3C20061101042950.7294.qmail%40web54002.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Query builder">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Wed Nov  1 05:29:50 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000737.html">[ydf-devel] r2196 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000739.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#738">[ date ]</a>
+              <a href="thread.html#738">[ thread ]</a>
+              <a href="subject.html#738">[ subject ]</a>
+              <a href="author.html#738">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Francisco,
+
+The filter is useful for inserts if you want to set
+default values for 
+fields where this is no defined by the SQL schema.
+This is the 
+implementation I have put into the updated version of
+YDDatabaseTree 
+(see attachment to previous e-mail in
+YDDatabaseTree2::addNode method).  
+This is useful in the absence of views. An &quot;equals&quot;
+filter is all that 
+would be used for an insert so I suppose it is really
+a default rather 
+than a filter. YDDatabaseObject doesn't seem to
+explicitly provide 
+defaults that wouldn't be cleared by a reset. Perhaps
+some default 
+method like the YDDatabaseTree2::setAddDefaults method
+I created would 
+be useful in YDDatabaseObject.
+&gt;<i> My primary intention was for selects and to be used
+</I>with YDDatabaseObject
+&gt;<i> only.
+</I>&gt;<i>
+</I>&gt;<i> so, filters can be:
+</I>&gt;<i>
+</I>&gt;<i> - a &quot;is&quot; value in range.  eg,  COLOR  is   &lt;select&gt;
+</I>&gt;<i>   some value in a pre-defined select box
+</I>&gt;<i>
+</I>&gt;<i> - a &quot;is one or more&quot;.  eg,  COLOR  is  &lt;multi
+</I>select&gt;
+&gt;<i>   some value(s) in a pre-defined &quot;multiple select&quot;
+</I>or &quot;checkboxgroup&quot;
+&gt;<i>
+</I>&gt;<i> - a &quot;like&quot; value.  eg,  COLOR  contains  &lt;text&gt;
+</I>&gt;<i>   a value that is like some string inserted in a
+</I>text box
+&gt;<i>
+</I>&gt;<i> - a &quot;is&quot; value.  eg,  PRICE  is  &lt;text&gt;
+</I>&gt;<i>   a value that is equal to some &quot;text&quot;
+</I>&gt;<i>
+</I>&gt;<i> - a &quot;between&quot;.  eg,  PRICE is between  &lt;text1&gt; and
+</I>&lt;text2&gt;
+&gt;<i>  a value that is between 2 text box values
+</I>&gt;<i>   
+</I>Another nice feature would be to filter a field based
+on a regular 
+expression to form an advanced &quot;like&quot;.
+
+Regards,
+
+Graeme
+
+
+
+ 
+____________________________________________________________________________________
+Want to start your own business? Learn how on Yahoo! Small Business 
+(<A HREF="http://smallbusiness.yahoo.com">http://smallbusiness.yahoo.com</A>) 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000737.html">[ydf-devel] r2196 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000739.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#738">[ date ]</a>
+              <a href="thread.html#738">[ thread ]</a>
+              <a href="subject.html#738">[ subject ]</a>
+              <a href="author.html#738">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

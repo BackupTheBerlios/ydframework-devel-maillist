@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1838 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1838%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604052148.k35LmNpm002497%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000268.html">
+   <LINK REL="Next"  HREF="000270.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1838 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1838%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604052148.k35LmNpm002497%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1838 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Wed Apr  5 23:48:23 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000268.html">[ydf-devel] r1837 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000270.html">[ydf-devel] r1839 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#269">[ date ]</a>
+              <a href="thread.html#269">[ thread ]</a>
+              <a href="subject.html#269">[ subject ]</a>
+              <a href="author.html#269">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-05 23:48:22 +0200 (Wed, 05 Apr 2006)
+New Revision: 1838
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+Log:
+new YDFSFile::getFreeSpace and YDFSDirectory::getFreeSpace that returns the free disk space on the file path or directory path
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-04-05 21:42:24 UTC (rev 1837)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-04-05 21:48:22 UTC (rev 1838)
+@@ -570,6 +570,18 @@
+         }
+ 
+         /**
++         *	@param $format	 (Optional) Boolean that defines if free space should be returned as bytes or formated
++         *	@param $decimals (Optional) Decimals to use when free space is formated
++         *
++         *	@returns	The number of bytes available
++         *
++         *	@static
++         */
++        function getFreeSpace( $format = false, $decimals = 1 ) {
++            return YDPath::getFreeSpace( $this-&gt;_path, $format, $decimals );
++        }
++
++        /**
+          *	Function to get the contents of the file. Depending on the file contents, this will be returned as binary or
+          *	textual data.
+          *
+@@ -1329,6 +1341,18 @@
+         }
+ 
+         /**
++         *	@param $format	 (Optional) Boolean that defines if free space should be returned as bytes or formated
++         *	@param $decimals (Optional) Decimals to use when free space is formated
++         *
++         *	@returns	The number of bytes available
++         *
++         *	@static
++         */
++        function getFreeSpace( $format = false, $decimals = 1 ) {
++            return YDPath::getFreeSpace( $this-&gt;_path, $format, $decimals );
++        }
++
++        /**
+          *	This function will get a file list using a pattern. You can compare this function with the dir command from
+          *	DOS or the ls command from Unix. The pattern syntax is the same as well.
+          *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000268.html">[ydf-devel] r1837 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000270.html">[ydf-devel] r1839 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#269">[ date ]</a>
+              <a href="thread.html#269">[ thread ]</a>
+              <a href="subject.html#269">[ subject ]</a>
+              <a href="author.html#269">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

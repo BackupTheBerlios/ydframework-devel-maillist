@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2226 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2226%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611201911.kAKJBwiv015522%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000788.html">
+   <LINK REL="Next"  HREF="000790.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2226 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2226%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611201911.kAKJBwiv015522%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2226 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 20 20:11:58 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000788.html">[ydf-devel] r2225 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000790.html">[ydf-devel] r2227 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#789">[ date ]</a>
+              <a href="thread.html#789">[ thread ]</a>
+              <a href="subject.html#789">[ subject ]</a>
+              <a href="author.html#789">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-20 20:11:35 +0100 (Mon, 20 Nov 2006)
+New Revision: 2226
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+Log:
+- initial port of YDCMUserobject to be a YDDatabaseTree3 extension
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2006-11-20 19:10:14 UTC (rev 2225)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2006-11-20 19:11:35 UTC (rev 2226)
+@@ -28,133 +28,27 @@
+ 
+ 
+ 	// add YD libs
+-//	YDInclude( 'YDForm.php' );
+-	YDInclude( 'YDDatabaseTree2.php' );
+-//	YDInclude( 'YDDatabaseObject.php' );
+-	// add YDCM libs
+-//	YDInclude( 'YDCMPermissions.php' );
++	YDInclude( 'YDDatabaseTree3.php' );
+ 
+-	// add local translation directory
+-//	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUsers/' );
+-
+-
+-    class YDCMUserobject extends YDDatabaseObject {
++	// userobject class
++    class YDCMUserobject extends YDDatabaseTree3 {
+     
+         function YDCMUserobject() {
+-        
+-			// init DB object
+-            $this-&gt;YDDatabaseObject();
+ 
+-			// register database as default
+-            $this-&gt;registerDatabase();
++			// init parent object
++			$this-&gt;YDDatabaseTree3( 'YDCMUserobject', 'default', 'userobject_id', 'parent_id', 'lineage', 'level', 'position' );
+ 
+-			// register table for this component
+-            $this-&gt;registerTable( 'YDCMUserobject' );
+-
+-            // register custom key
+-            $this-&gt;registerKey( 'userobject_id', true );
+-
+-			// register custom fields
+-			$this-&gt;registerField( 'parent_id' );
+-//			$this-&gt;registerField( 'nleft' );
+-//			$this-&gt;registerField( 'nright' );
+-//			$this-&gt;registerField( 'nlevel' );
+-			$this-&gt;registerField( 'lineage' );
+-			$this-&gt;registerField( 'position' );
+-			$this-&gt;registerField( 'type' );			
++			// add custom tree fields
++			$this-&gt;registerField( 'type' );
+ 			$this-&gt;registerField( 'reference' );			
+ 			$this-&gt;registerField( 'state' );
+ 
+-			// create tree object
+-			$this-&gt;tree = new YDDatabaseTree2( 'YDCMUserobject', 'default', 'userobject_id', 'parent_id' );
+-
+-			// add tree fields
+-//			$this-&gt;tree-&gt;addField( 'parent_id' );
+-			$this-&gt;tree-&gt;addField( 'type' );
+-			$this-&gt;tree-&gt;addField( 'reference' );			
+-			$this-&gt;tree-&gt;addField( 'state' );			
++			// define tree order
++			$this-&gt;order( 'parent_id ASC, position ASC' );
+ 		}
+ 
+ 
+         /**
+-         *  This method returns all sub users of a userobject
+-         *
+-         *  @param  $parent_id      Parent id
+-         *  @param  $includeNode    (optional) Includes the node or not. Defaults to true.
+-         *
+-         *  @returns    Array with user and children nodes
+-         */
+-		function getTreeElements( $parent_id, $includeNode = true ){
+-
+-//			return $this-&gt;tree-&gt;getDescendants( $parent_id, $includeNode );
+-			return $this-&gt;tree-&gt;getTreeElements();
+-		}
+-
+-
+-        /**
+-         *  This method checks if a userobject is descendant of another
+-         *
+-         *  @param      $userobject_id User id to test if id descendant
+-         *  @param      $parent_id     Parent id
+-         *
+-         *  @returns    boolean. TRUE if is descendant, FALSE if not descendant
+-         */
+-		function isDescendantOf( $userobject_id, $parent_id ){
+-
+-			return $this-&gt;tree-&gt;isDescendantOf( intval( $userobject_id ), intval( $parent_id ) );
+-		}
+-
+-
+-        /**
+-         *  This method deletes a userobject (and all children) or just the children
+-         *
+-         *  @param $userobject_id  Userobject id
+-         *  @param $mode           (Optional) 0: delete userobject_id and ALL children
+-         *                                    1: delete ALL children of userobject_id only
+-         *
+-         *  @returns    total of lines affected
+-         */
+-		function deleteNode( $userobject_id, $mode = 0 ){
+-		
+-			// delete userobject_id an children
+-			if ( $mode == 0 ) return $this-&gt;tree-&gt;deleteNode( $userobject_id, true );
+-
+-			// delete userobject_id children
+-			return $this-&gt;tree-&gt;deleteNode( $userobject_id, false );
+-		}
+-
+-
+-        /**
+-         *  This method adds a userobject
+-         *
+-         *  @param $values     Array with values
+-         *  @param $parent_id  Parent id
+-         *
+-         *  @returns    node id
+-         */
+-		function addNode( $values, $parent_id ){
+-		
+-			// add node
+-			return $this-&gt;tree-&gt;addNode( $values, $parent_id );
+-		}
+-
+-
+-        /**
+-         *  This method updates a userobject
+-         *
+-         *  @param $values  Array with values
+-         *  @param $id      Userobject id
+-         *
+-         *  @returns    $values
+-         */
+-		function updateNode( $values, $id ){
+-		
+-			// update node
+-			return $this-&gt;tree-&gt;updateNode( $values, $id );
+-		}
+-
+-
+-        /**
+          *  This method moves all direct children of a node up
+          *
+          *  @param $userobject_id  Userobject id
+@@ -164,7 +58,7 @@
+ 		function moveChildrenUp( $userobject_id ){
+ 		
+ 			// reset possible old stuff
+-			$this-&gt;resetAll();
++			$this-&gt;resetValues();
+ 
+ 			// get parent_id of this userobject
+ 			$this-&gt;set( 'userobject_id', intval( $userobject_id ) );
+@@ -176,7 +70,7 @@
+ 			$parent_id = $this-&gt;get( 'parent_id ' );
+ 
+ 			// reset all previous class values
+-			$this-&gt;resetAll();
++			$this-&gt;resetValues();
+ 
+ 			// update all children to new parent_id
+ 			$this-&gt;set( 'parent_id', intval( $parent_id ) );
+@@ -188,7 +82,7 @@
+ 
+ 
+         /**
+-         *  This method returns an associative array 
++         *  This method returns an associative array of nodes that belogs to a specific type
+          *
+          *  @param $type       Node type (or array of types)
+          *  @param $attribute  (Optional) Attribute name or (array of attributes) to get only
+@@ -197,15 +91,16 @@
+          */
+ 		function getElements( $type, $attributes = array() ){
+ 
+-			$this-&gt;resetAll();
++			// reset previous settings
++			$this-&gt;resetValues();
+ 
+ 			// set user id
+-			$this-&gt;where( 'type IN (&quot;' . implode( '&quot;,&quot;', $type ) . '&quot;)' );
++			$this-&gt;where( 'type IN (' . $this-&gt;_db-&gt;escapeSqlArray( $type ) . ')' );
+ 
+ 			// get all attributes
+ 			$this-&gt;find();
+ 
+-			return $this-&gt;getResultsAsAssocArray( 'userobject_id', $attributes );
++			return $this-&gt;_getTreeElementsAsAssocArray( $attributes );
+ 		}
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000788.html">[ydf-devel] r2225 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000790.html">[ydf-devel] r2227 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#789">[ date ]</a>
+              <a href="thread.html#789">[ thread ]</a>
+              <a href="subject.html#789">[ subject ]</a>
+              <a href="author.html#789">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

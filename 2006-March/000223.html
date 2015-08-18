@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1796 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1796%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200603142343.k2ENh1sB027855%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000222.html">
+   <LINK REL="Next"  HREF="000224.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1796 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1796%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200603142343.k2ENh1sB027855%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1796 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at berlios.de
+       </A><BR>
+    <I>Wed Mar 15 00:43:01 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000222.html">[ydf-devel] r1795 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000224.html">[ydf-devel] r1797 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#223">[ date ]</a>
+              <a href="thread.html#223">[ thread ]</a>
+              <a href="subject.html#223">[ subject ]</a>
+              <a href="author.html#223">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-03-15 00:42:29 +0100 (Wed, 15 Mar 2006)
+New Revision: 1796
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+Log:
+added Javascript methods
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2006-03-14 23:39:00 UTC (rev 1795)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2006-03-14 23:42:29 UTC (rev 1796)
+@@ -82,6 +82,73 @@
+ 
+         }
+ 
++
++        /**
++         *	This function returns the default javascript event of this element
++         */
++        function getJSEvent(){ 
++
++            return 'onchange';
++        }
++
++
++        /**
++         *	This function gets an element value using javascript
++         *
++         *	@param $options		(optional) The options for the elment.
++         */
++        function getJS( $options = null ){ 
++
++            // if we want all values and not only the select one
++            if (in_array( 'all', $options )){
++
++                $js  = &quot;\n\t&quot; . 'var __ydtmparr = new Array();';
++                $js .= &quot;\n\t&quot; . 'var __ydtmpsel = document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;);';
++                $js .= &quot;\n\t&quot; . 'for (i = 0; i &lt; __ydtmpsel.length; i++){';
++                $js .= &quot;\n\t&quot; . '    __ydtmparr[ __ydtmpsel.options[i].value ] = __ydtmpsel.options[i].text;';
++                $js .= &quot;\n\t&quot; . '}';
++                $js .= &quot;\n\t&quot; . 'return __ydtmparr;' . &quot;\n&quot;;
++
++                return $js;
++            }
++
++            // return just the value 
++            return 'return document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;).value;';
++        }
++
++
++        /**
++         *	This function sets an element value using javascript
++         *
++         *	@param $result		The result value
++         *	@param $attribute	(optional) Element attribute
++         *	@param $options		(optional) The options for the elment.
++         */
++        function setJS( $result, $attribute = null, $options = null ){ 
++
++            // if atribute event is not defined we must create a default one
++            if ( is_null( $attribute ) ) $attribute = 'value';
++
++            // create select variable
++            $js = 'var __ydfselect = document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;);';
++
++            // if we want to define the selected option
++            if ( !is_array( $result ) )
++                return $js . 'for (counter = 0; counter &lt; __ydfselect.length; counter++){
++                                 if (__ydfselect[counter].value == &quot;' . addslashes( $result ) . '&quot;){
++                                     __ydfselect.selectedIndex = counter;
++                                 }
++                              }';
++
++            // if we want to replace all select options
++            $js .= '__ydfselect.options.length = 0;';
++            foreach( $result as $key =&gt; $value )
++                $js .= '    __ydfselect.options[ __ydfselect.options.length  ] = new Option(&quot;' . addslashes( $value ) . '&quot;,&quot;' . addslashes( $key ) . '&quot;); ';
++
++            return $js;
++        }
++
++
+     }
+ 
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000222.html">[ydf-devel] r1795 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000224.html">[ydf-devel] r1797 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#223">[ date ]</a>
+              <a href="thread.html#223">[ thread ]</a>
+              <a href="subject.html#223">[ subject ]</a>
+              <a href="author.html#223">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

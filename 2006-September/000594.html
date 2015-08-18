@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2078 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2078%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200609051835.k85IZSdw002415%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000596.html">
+   <LINK REL="Next"  HREF="000595.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2078 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2078%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200609051835.k85IZSdw002415%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2078 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Sep  5 20:35:28 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000596.html">[ydf-devel] YDForm::addFilter with __ALL__
+</A></li>
+        <LI>Next message: <A HREF="000595.html">[ydf-devel] r2079 - in YDFramework2.0/trunk/examples: . flags
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-05 20:34:46 +0200 (Tue, 05 Sep 2006)
+New Revision: 2078
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+- added new YDForm element: selectimage
+  This is a select box with a built-in image on right that reflects the selected box value.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-04 21:11:08 UTC (rev 2077)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-09-05 18:34:46 UTC (rev 2078)
+@@ -119,6 +119,7 @@
+             $this-&gt;registerElement( 'radio', 'YDFormElement_Radio', 'YDFormElement_Radio.php' );
+             $this-&gt;registerElement( 'reset', 'YDFormElement_Reset', 'YDFormElement_Reset.php' );
+             $this-&gt;registerElement( 'select', 'YDFormElement_Select', 'YDFormElement_Select.php' );
++            $this-&gt;registerElement( 'selectimage', 'YDFormElement_SelectImage', 'YDFormElement_SelectImage.php' );
+             $this-&gt;registerElement( 'submit', 'YDFormElement_Submit', 'YDFormElement_Submit.php' );
+             $this-&gt;registerElement( 'text', 'YDFormElement_Text', 'YDFormElement_Text.php' );
+             $this-&gt;registerElement( 'textarea', 'YDFormElement_TextArea', 'YDFormElement_TextArea.php' );
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2006-09-04 21:11:08 UTC (rev 2077)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2006-09-05 18:34:46 UTC (rev 2078)
+@@ -0,0 +1,213 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
++
++    /**
++     *	This is the class that define a select button form element.
++     */
++    class YDFormElement_SelectImage extends YDFormElement {
++
++        /**
++         *	This is the class constructor for the YDFormElement_SelectImage class.
++         *
++         *	@param $form		The name of the form to which this element is connected.
++         *	@param $name		The name of the form element.
++         *	@param $label		(optional) The label for the form element.
++         *	@param $attributes	(optional) The attributes for the form element.
++         *	@param $options		(optional) Associative array with the values to show in the select box.
++         */
++        function YDFormElement_SelectImage( $form, $name, $label='', $attributes=array(), $options=array() ) {
++
++			// compute image parameters
++			$this-&gt;_image_parameters = array();
++
++			// check if src exist
++			if ( isset( $attributes['src'] ) ){
++				$this-&gt;_img_src = $attributes['src'] . '/';
++				unset( $attributes['src'] );
++			}
++
++			// create default extension
++			$this-&gt;_img_ext = &quot;&quot;;
++
++			// check if ext exist
++			if ( isset( $attributes['ext'] ) ){
++				$this-&gt;_img_ext = &quot;.&quot; . $attributes['ext'];
++				unset( $attributes['ext'] );
++			}
++
++			// check if width exist
++			if ( isset( $attributes['width'] ) ){
++				$this-&gt;_image_parameters['width'] = $attributes['width'];
++				unset( $attributes['width'] );
++			}
++
++			// check if height exist
++			if ( isset( $attributes['height'] ) ){
++				$this-&gt;_image_parameters['height'] = $attributes['height'];
++				unset( $attributes['height'] );
++			}
++
++            // Initialize the parent
++            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
++
++            // Set the type
++            $this-&gt;_type = 'selectimage';
++
++            // Indicate if filters need to be applied
++            $this-&gt;_applyFilters = false;
++
++            // If options is just an element we should add create an array with it
++            if( !is_array( $options ) ) $this-&gt;_options = array( $options );
++        }
++
++
++        /**
++         *	This function will return the element as HTML.
++         *
++         *	@returns	The form element as HTML text.
++         */
++        function toHtml() {
++
++            // Create the list of attributes
++            $attribs = array( 'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name, 'onchange' =&gt; &quot;document.getElementById('&quot; . $this-&gt;getAttribute( 'id' ) . &quot;_image').src='&quot; . $this-&gt;_img_src . &quot;' + document.getElementById('&quot; . $this-&gt;getAttribute( 'id' ) . &quot;').options[this.selectedIndex].value + '&quot; . $this-&gt;_img_ext . &quot;';&quot; );
++            $attribs = array_merge( $this-&gt;_attributes, $attribs );
++
++            // Start html table and insert select in left column
++            $html = '&lt;table border=&quot;0&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;';
++
++			// add select
++            $html .= '&lt;select' . YDForm::_convertToHtmlAttrib( $attribs ) . '&gt;';
++            foreach ( $this-&gt;_options as $val=&gt;$label ) {
++                if ( strval( $this-&gt;_value ) == strval( $val ) ) {
++                    $html .= '&lt;option value=&quot;' . $val . '&quot; selected=&quot;selected&quot;&gt;' . $label . '&lt;/option&gt;';
++                } else {
++                    $html .= '&lt;option value=&quot;' . $val . '&quot;&gt;' . $label . '&lt;/option&gt;';
++                }
++            }
++
++			// end select and left column
++            $html .= '&lt;/select&gt;&lt;/td&gt;';
++
++			// compute image source
++			$source = $this-&gt;_img_src;
++
++			// compute selected option. If default value was set, use it. Otherwise use 1st option
++			if ( ! empty( $this-&gt;_value ) ){
++				$source .= $this-&gt;_value;
++			}else{
++				$values  = array_keys( $this-&gt;_options );
++				$source .= $values[0];
++			}
++
++			// add extension
++			$source .= $this-&gt;_img_ext;
++
++            // Create the list of attributes for image
++            $attribs = array( 'id' =&gt; $this-&gt;getAttribute( 'id' ) . '_image', 'src' =&gt; $source );
++            $attribs = array_merge( $this-&gt;_image_parameters, $attribs );
++
++			// add image html to right column and close table row
++			$html .= '&lt;td&gt;&nbsp;&nbsp;&nbsp;&lt;img' . YDForm::_convertToHtmlAttrib( $attribs ) . '&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
++
++            return $html;
++
++        }
++
++
++        /**
++         *	This function returns the default javascript event of this element
++         */
++        function getJSEvent(){ 
++
++            return 'onchange';
++        }
++
++
++        /**
++         *	This function gets an element value using javascript
++         *
++         *	@param $options		(optional) The options for the elment.
++         */
++        function getJS( $options = null ){ 
++
++            // if we want all values and not only the select one
++            if (in_array( 'all', $options )){
++
++                $js  = &quot;\n\t&quot; . 'var __ydtmparr = new Array();';
++                $js .= &quot;\n\t&quot; . 'var __ydtmpsel = document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;);';
++                $js .= &quot;\n\t&quot; . 'for (i = 0; i &lt; __ydtmpsel.length; i++){';
++                $js .= &quot;\n\t&quot; . '    __ydtmparr[ __ydtmpsel.options[i].value ] = __ydtmpsel.options[i].text;';
++                $js .= &quot;\n\t&quot; . '}';
++                $js .= &quot;\n\t&quot; . 'return __ydtmparr;' . &quot;\n&quot;;
++
++                return $js;
++            }
++
++            // return just the value 
++            return 'return document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;).value;';
++        }
++
++
++        /**
++         *	This function sets an element value using javascript
++         *
++         *	@param $result		The result value
++         *	@param $attribute	(optional) Element attribute
++         *	@param $options		(optional) The options for the elment.
++         */
++        function setJS( $result, $attribute = null, $options = null ){ 
++
++            // if atribute event is not defined we must create a default one
++            if ( is_null( $attribute ) ) $attribute = 'value';
++
++            // create select variable
++            $js = 'var __ydfselect = document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;);';
++
++            // if we want to define the selected option
++            if ( !is_array( $result ) )
++                return $js . 'for (counter = 0; counter &lt; __ydfselect.length; counter++){
++                                 if (__ydfselect[counter].value == &quot;' . addslashes( $result ) . '&quot;){
++                                     __ydfselect.selectedIndex = counter;
++                                 }
++                              }';
++
++            // if we want to replace all select options
++            $js .= '__ydfselect.options.length = 0;';
++            foreach( $result as $key =&gt; $value )
++                $js .= '    __ydfselect.options[ __ydfselect.options.length  ] = new Option(&quot;' . addslashes( $value ) . '&quot;,&quot;' . addslashes( $key ) . '&quot;); ';
++
++            return $js;
++        }
++
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000596.html">[ydf-devel] YDForm::addFilter with __ALL__
+</A></li>
+	<LI>Next message: <A HREF="000595.html">[ydf-devel] r2079 - in YDFramework2.0/trunk/examples: . flags
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

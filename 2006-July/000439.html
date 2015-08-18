@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1956 - in YDFramework2.0/trunk/examples/weblog: . include skins/default
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1956%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%20include%20skins/default&In-Reply-To=%3C200607061829.k66IT1LO015555%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000438.html">
+   <LINK REL="Next"  HREF="000440.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1956 - in YDFramework2.0/trunk/examples/weblog: . include skins/default</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1956%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%20include%20skins/default&In-Reply-To=%3C200607061829.k66IT1LO015555%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1956 - in YDFramework2.0/trunk/examples/weblog: . include skins/default">pclaerhout at berlios.de
+       </A><BR>
+    <I>Thu Jul  6 20:29:01 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000438.html">[ydf-devel] r1955 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000440.html">[ydf-devel] r1957 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#439">[ date ]</a>
+              <a href="thread.html#439">[ thread ]</a>
+              <a href="subject.html#439">[ subject ]</a>
+              <a href="author.html#439">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-07-06 20:28:52 +0200 (Thu, 06 Jul 2006)
+New Revision: 1956
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/archive.php
+   YDFramework2.0/trunk/examples/weblog/archive_gallery.php
+   YDFramework2.0/trunk/examples/weblog/category.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/item_gallery.php
+   YDFramework2.0/trunk/examples/weblog/page.php
+   YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl
+Log:
+Added support for real titles.
+
+Modified: YDFramework2.0/trunk/examples/weblog/archive.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/archive.php	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/archive.php	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -26,6 +26,9 @@
+             // Add them to the template
+             $this-&gt;tpl-&gt;assign( 'items', $items );
+ 
++            // Set the title
++            $this-&gt;tpl-&gt;assign( 'title', t('archives') );
++
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/archive_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/archive_gallery.php	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/archive_gallery.php	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -32,6 +32,9 @@
+             // Add them to the template
+             $this-&gt;tpl-&gt;assign( 'items', $items );
+ 
++            // Set the title
++            $this-&gt;tpl-&gt;assign( 'title', t('archives_gallery') );
++
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/category.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/category.php	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/category.php	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -28,6 +28,11 @@
+             $this-&gt;tpl-&gt;assign( 'category', $category );
+             $this-&gt;tpl-&gt;assign( 'items',    $items );
+ 
++            // Set the title
++            $this-&gt;tpl-&gt;assign(
++                'title', t('archive_for_the') . '\'' . $category['title'] . '\' ' .  strtolower( t('category') )
++            );
++
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -138,7 +138,15 @@
+             $this-&gt;tpl-&gt;assign( 'links',      $links );
+ 
+             // Assign the weblog details
+-            $this-&gt;tpl-&gt;assign( 'weblog_title',                YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
++            $title = $this-&gt;tpl-&gt;get_template_vars( 'title' );
++            $wltitle = YDConfig::get( 'weblog_title', 'Untitled Weblog' );
++            if ( $title != null ) {
++                $title = $wltitle . ' &raquo; ' . $title;
++            } else {
++                $title = $wltitle;
++            }
++            $this-&gt;tpl-&gt;assign( 'title',                       $title );
++            $this-&gt;tpl-&gt;assign( 'weblog_title',                $wltitle );
+             $this-&gt;tpl-&gt;assign( 'weblog_description',          YDConfig::get( 'weblog_description', 'Untitled Weblog Description' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_dir',                  YDUrl::makeLinkAbsolute( '.' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_current_url',          YDUrl::makeLinkAbsolute( YD_SELF_URI ) );
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -30,6 +30,9 @@
+             $item  = @ $this-&gt;weblog-&gt;getPublicItemById( $id );
+             $this-&gt;redirectIfMissing( $item );
+ 
++            // Set the title
++            $this-&gt;tpl-&gt;assign( 'title', $item['title'] );
++
+             // Get the related items
+             $related_items = $this-&gt;weblog-&gt;getRelatedItemsByItem( YDConfig::get( 'weblog_entries_fp', 5 ), $item );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/item_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -61,6 +61,9 @@
+             $this-&gt;tpl-&gt;assign( 'item',  $item );
+             $this-&gt;tpl-&gt;assign( 'image', $image );
+ 
++            // Set the title
++            $this-&gt;tpl-&gt;assign( 'title', $item['title'] . ' &raquo; ' . $image-&gt;getBasenameNoExt() );
++
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/page.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/page.php	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/page.php	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -21,6 +21,9 @@
+             $page  = $this-&gt;weblog-&gt;getPublicPageById( $id );
+             $this-&gt;redirectIfMissing( $page );
+ 
++            // Set the title
++            $this-&gt;tpl-&gt;assign( 'title', $page['title'] );
++
+             // Add them to the template
+             $this-&gt;tpl-&gt;assign( 'page', $page );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl	2006-07-06 18:06:23 UTC (rev 1955)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl	2006-07-06 18:28:52 UTC (rev 1956)
+@@ -4,7 +4,7 @@
+ 
+ &lt;head profile=&quot;<A HREF="http://gmpg.org/xfn/1">http://gmpg.org/xfn/1</A>&quot;&gt;
+ 
+-    &lt;title&gt;{$weblog_title}&lt;/title&gt;
++    &lt;title&gt;{$title}&lt;/title&gt;
+ 
+     &lt;meta name=&quot;generator&quot; content=&quot;{$YD_FW_NAMEVERS}&quot; /&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000438.html">[ydf-devel] r1955 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000440.html">[ydf-devel] r1957 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#439">[ date ]</a>
+              <a href="thread.html#439">[ thread ]</a>
+              <a href="subject.html#439">[ subject ]</a>
+              <a href="author.html#439">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

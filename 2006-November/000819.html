@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseTree3::moveNode fixed	and	YDDatabaseTree3::getTraversedTree
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree3%3A%3AmoveNode%20fixed%0A%09and%09YDDatabaseTree3%3A%3AgetTraversedTree&In-Reply-To=%3C456494FE.2060603%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000803.html">
+   <LINK REL="Next"  HREF="000805.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseTree3::moveNode fixed	and	YDDatabaseTree3::getTraversedTree</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree3%3A%3AmoveNode%20fixed%0A%09and%09YDDatabaseTree3%3A%3AgetTraversedTree&In-Reply-To=%3C456494FE.2060603%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDDatabaseTree3::moveNode fixed	and	YDDatabaseTree3::getTraversedTree">francisco at fusemail.com
+       </A><BR>
+    <I>Wed Nov 22 19:20:46 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000803.html">[ydf-devel] YDDatabaseTree3::moveNode fixed and	YDDatabaseTree3::getTraversedTree
+</A></li>
+        <LI>Next message: <A HREF="000805.html">[ydf-devel] YDDatabaseObject changes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#819">[ date ]</a>
+              <a href="thread.html#819">[ thread ]</a>
+              <a href="subject.html#819">[ subject ]</a>
+              <a href="author.html#819">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Graeme
+
+&gt;<i> I have found the cause of some of the problems with moveNode. The 
+</I>&gt;<i> YDDatabaseObject::set method does not work for expressions . This was 
+</I>&gt;<i> causing the  positions to  be updated  to the value 0. In moveNode, I 
+</I>&gt;<i> have changed the queries so that they are hand-coded SQL executed via 
+</I>&gt;<i> the YDDatabaseObject::executeSQL() method. moveNode works for moving 
+</I>&gt;<i> nodes within the current parent.
+</I>&gt;<i> 
+</I>&gt;<i> There is a remaining problem with nodes moved to another parent. The 
+</I>&gt;<i> child nodes of the moved node are not updated with the correct lineage 
+</I>
+Can you check b2239? I hope all bugs are fixed now.
+
+
+Francisco A
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000803.html">[ydf-devel] YDDatabaseTree3::moveNode fixed and	YDDatabaseTree3::getTraversedTree
+</A></li>
+	<LI>Next message: <A HREF="000805.html">[ydf-devel] YDDatabaseObject changes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#819">[ date ]</a>
+              <a href="thread.html#819">[ thread ]</a>
+              <a href="subject.html#819">[ subject ]</a>
+              <a href="author.html#819">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

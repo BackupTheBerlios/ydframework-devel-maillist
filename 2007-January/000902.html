@@ -1,0 +1,838 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2310 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2310%20-%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext&In-Reply-To=%3C200701132235.l0DMZ36N032330%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000901.html">
+   <LINK REL="Next"  HREF="000903.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2310 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2310%20-%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext&In-Reply-To=%3C200701132235.l0DMZ36N032330%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2310 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 13 23:35:03 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000901.html">[ydf-devel] r2309 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000903.html">[ydf-devel] r2311 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#902">[ date ]</a>
+              <a href="thread.html#902">[ thread ]</a>
+              <a href="subject.html#902">[ subject ]</a>
+              <a href="author.html#902">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-13 23:34:34 +0100 (Sat, 13 Jan 2007)
+New Revision: 2310
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php
+Log:
+added some comments on upgrade/ext/gettext.php to ignore notices
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php	2007-01-13 22:32:07 UTC (rev 2309)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php	2007-01-13 22:34:34 UTC (rev 2310)
+@@ -1,381 +1,381 @@
+-&lt;?php
+-/*
+-   This include script simulates gettext() functionality.
+-    - It could read translation data from .mo and .po files.
+-    - Lookup of plural forms mostly work (but not 100% compliant,
+-      no real interpreter for Plural-Forms: expression).
+-    - Categories/codesets are ignored.
+-
+-   Besides using setlocale() you should change the $_ENV[&quot;LANG&quot;] var
+-   to the desired language manually. Additionally all your scripts
+-   could contain following (may also work with standard gettext):
+-     $_ENV[&quot;LANGUAGE&quot;] = $_SERVER[&quot;HTTP_ACCEPT_LANGUAGE&quot;];
+-   What's often more user-friendly than hardwired server-side values.
+-*/
+-
+-
+-#-- emulate only if not present in current PHP interpreter
+-if (!function_exists(&quot;gettext&quot;)) {
+-
+-
+-   #-- all-in-one combined implementation
+-   #   (in original API only the first parameter is present)
+-   function gettext($msg, $msg2=NULL, $domain=NULL, $category=NULL, $plural=NULL) {
+-      global $_GETTEXT;
+-
+-      #-- get default params if corresponding args are empty
+-      if (!isset($domain)) {
+-         $domain = $_GETTEXT[&quot;%domain&quot;];
+-      }
+-      if (empty($_GETTEXT[$domain])) {
+-         bindtextdomain($domain);  // auto load from system dirs
+-      }
+-
+-      #-- plural array position
+-      if (!isset($plural)) {
+-         $pli = 0;
+-      }
+-      elseif ($ph = $_GETTEXT[$domain][&quot;%plural-c&quot;]) {
+-         $pli = gettext___plural_guess($ph, $plural);
+-      }
+-      else {
+-         $pli = ($plural != 1) ? 1 : 0;   // English
+-      }
+-
+-      #-- look up string
+-      if (($trans = $_GETTEXT[$domain][$msg])
+-      or ($pli) and ($trans = $_GETTEXT[$domain][$msg2]))
+-      {
+-         // handle plural entries
+-         if (is_array($trans)) {
+-            if (!isset($trans[$pli])) {
+-               $pli = 0;   // missing translation
+-            }
+-            $trans = $trans[$pli];
+-         }
+-         // only return, if something found
+-         if (strlen($trans)) {
+-            $msg = $trans;
+-         }
+-      }
+-
+-      #-- handle $category (???)
+-      // recode() ...
+-
+-      #-- give out whatever we have
+-      return($msg);
+-   }
+-   
+-
+-   #-- return plural form array index for algorithm type
+-   #   (compacted from C expression string beforehand)
+-   function gettext___plural_guess(&amp;$type, $n) {
+-   
+-      #-- guess from string with C expression and set integer shorthand
+-      if (is_string($type)) {
+-         if (($type == &quot;nplurals=1;plural=0;&quot;) || !strlen($type)) {
+-            $type = -1; // no plurals
+-         }
+-         elseif ($type == &quot;nplurals=2;plural=n!=1;&quot;) {
+-            $type = 1;  // English
+-         }
+-         elseif ($type == &quot;nplurals=2;plural=n&gt;1;&quot;) {
+-            $type = 2;  // French
+-         }
+-         // special cases
+-         elseif (strpos($type, &quot;n%100!=11&quot;)) {
+-            if (strpos($type, &quot;n!=0&quot;)) {
+-               $type == 21;  // Latvian
+-            }
+-            if (strpos($type, &quot;n%10&lt;=4&quot;)) {
+-               $type = 22;   // a few Slavic langs (code similar to Polish below)
+-            }
+-            if (strpos($type, &quot;n%10&gt;=2&quot;)) {  // Lithuanian
+-               $type = 23;
+-            }
+-            $type = 0;
+-         }
+-         // specials, group 2
+-         elseif (strpos($type, &quot;n&lt;=4&quot;)) {   // Slovak
+-            $type = 25;
+-         }
+-         elseif (strpos($type, &quot;n==2&quot;)) {   // Irish
+-            $type = 31;
+-         }
+-         elseif (strpos($type, &quot;n%10&gt;=2&quot;)) {   // Polish
+-            $type = 26;
+-         }
+-         elseif (strpos($type, &quot;n%100==3&quot;)) {   // Slovenian
+-            $type = 28;
+-         }
+-         // fallbacks
+-         elseif (strpos($type, &quot;;plural=n;&quot;)) {
+-            $type = 7;  // unused
+-         }
+-         // first at this point a tokenizer/parser/interpreter would have made sense
+-         else {
+-            $type = 0;  // no plurals
+-         }
+-      }
+-
+-      #-- return plural index value from pre-set formulas
+-      switch ($type) {
+-         case -1:  // no plural forms
+-            return(0);
+-         case 1:   // English, and lots of others...
+-            return($n != 1 ? 1 : 0);
+-         case 2:   // French, Brazilian Protuguese
+-            return($n &gt; 1 ? 1 : 0);
+-         case 7:   // unused
+-            return($n);
+-
+-         case 21:  // Latvian
+-            return  (($n%10==1) &amp;&amp; ($n%100!=11)) ? (0) :  ($n!=0 ? 1 : 2)  ;
+-         case 22:  // Slavic langs
+-            return  ($n%10==1) &amp;&amp; ($n%100!=11) ? 0 :
+-               ( ($n%10&gt;=2) &amp;&amp; ($n%10&lt;=4) &amp;&amp; ($n%100&lt;10 || $n%100&gt;=20) ? 1 : 2  )  ;
+-         case 23:  // Lithuanian
+-            return  ($n%10==1) &amp;&amp; ($n%100!=11) ? 0 :
+-               ( ($n%10&gt;=2) &amp;&amp; ($n%100&lt;10 || $n%100&gt;=20) ? 1 : 2  )  ;
+-         case 25:  // Slovak
+-            return  $n==1 ? 0 : ($n&gt;=2 &amp;&amp; $n&lt;=4 ? 1 : 2)  ;
+-         case 26:  // Polish
+-             return  $n==1 ? 0 : ( $n%10&gt;=2 &amp;&amp; $n%10&lt;=4 &amp;&amp; ($n%100&lt;10 || $n%100&gt;=20) ? 1 : 2 )  ;
+-         case 28:  // Slovenian
+-            return  $n%100==1 ? 0 : ($n%100==2 || $n%100==3 || $n%100==4 ? 2 : 3)  ;
+-         case 31:  // Irish
+-            return  ($n == 1) ? (0) : (($n == 2) ? 1 : 2)  ;
+-
+-         default:
+-            $type = -1;
+-      }   // unsupported, always return non-plural index [0]
+-      return(0);
+-   }
+-
+-
+-   #-- wrappers around monster function above
+-   function ngettext($msg1, $msg2, $plural) {
+-      return gettext($msg1, $msg2, NULL, NULL, $plural);
+-   }
+-   function dngettext($domain, $msg1, $msg2, $plural) {
+-      return gettext($msg1, $msg2, $domain, NULL, $plural);
+-   }
+-   function dcngettext($domain, $msg1, $msg2, $plural, $category) {
+-      return gettext($msg1, $msg2, $domain, $category, $plural);
+-   }
+-   function dcgettext($domain, $msg, $category) {
+-      return gettext($msg, NULL, $domain, $category);
+-   }
+-   function dgettext($domain, $msg) {
+-      return gettext($msg, NULL, $domain);
+-   }
+-
+-
+-   #-- sets current translation data source
+-   #   (must have been loaded beforehand)
+-   function textdomain($default=&quot;NULL&quot;) {
+-      global $_GETTEXT;
+-      $prev = $_GETTEXT[&quot;%domain&quot;];
+-      if (isset($default)) {
+-         $_GETTEXT[&quot;%domain&quot;] = $default;
+-      }
+-      return $prev;
+-   }
+-
+-
+-   #-- loads data files
+-   function bindtextdomain($domain, $directory=&quot;/usr/share/locale:/usr/local/share/locale:./locale&quot;) {
+-      global $_GETTEXT;
+-      if (isset($_GETTEXT[&quot;domain&quot;]) &amp;&amp; (count($_GETTEXT[&quot;domain&quot;]) &gt; 3)) {
+-         return;  // don't load twice
+-      }
+-      $_GETTEXT[$domain][&quot;%dir&quot;] = $directory;
+-      $_GETTEXT[&quot;%locale&quot;] = setlocale(LC_CTYPE, 0);
+-
+-      #-- allowed languages
+-      $langs = &quot;$_ENV[LANGUAGE],$_ENV[LC_ALL],$_ENV[LC_MESSAGE],$_ENV[LANG],&quot;
+-             . $_GETTEXT[&quot;%locale&quot;] . &quot;,$_SERVER[HTTP_ACCEPT_LANGUAGE],C,en&quot;;
+-          
+-      #-- add shortened language codes (en_UK.UTF-8 -&gt; + en_UK, en)
+-      foreach (explode(&quot;,&quot;,$langs) as $d) {
+-         $d = trim($d);
+-         // $dir2[] = $d;
+-         $d = strtok($d, &quot;@.-+=%:; &quot;);
+-         if (strlen($d)) {
+-            $dir2[] = $d;
+-         }
+-         if (strpos($d, &quot;_&quot;)) {
+-            $dir2[] = strtok($d, &quot;_&quot;);
+-         }
+-      }
+-      
+-      #-- search for matching directory and load data file
+-      foreach (explode(&quot;:&quot;, $directory) as $directory) {
+-         foreach ($dir2 as $lang) {
+-            $base_fn = &quot;$directory/$lang/LC_MESSAGES/$domain&quot;;
+-
+-            #-- binary format
+-            if (file_exists($fn = &quot;$base_fn.mo&quot;) &amp;&amp; ($f = fopen($fn, &quot;rb&quot;)))
+-            {
+-               gettext___load_mo($f, $domain);
+-               break 2;
+-            }
+-
+-            #-- text file
+-            elseif (function_exists(&quot;gettext___load_po&quot;)
+-            and file_exists($fn = &quot;$base_fn.po&quot;) &amp;&amp; ($f = fopen($fn, &quot;r&quot;)))
+-            {
+-               gettext___load_po($f, $domain);
+-               break 2;
+-            }
+-         }
+-      }//foreach
+-      
+-      #-- extract headers
+-      if ($head = $_GETTEXT[$domain][&quot;&quot;]) {
+-         foreach (explode(&quot;\n&quot;, $head) as $line) {
+-            $header = strtok(&quot;:&quot;, $line);
+-            $line = trim(strtok(&quot;\n&quot;));
+-            $_GETTEXT[$domain][&quot;%po-header&quot;][strtolower($header)] = $line;
+-         }
+-      
+-         #-- plural-forms header
+-         if (function_exists(&quot;gettext___plural_guess&quot;)
+-         and ($h = $_GETTEXT[$domain][&quot;%po-header&quot;][&quot;plural-forms&quot;]))
+-         {
+-            $h = preg_replace(&quot;/[(){}\[\]^\s*\\]+/&quot;, &quot;&quot;, $h);  // rm whitespace
+-            gettext___plural_guess($h, 0);  // pre-decode into algorithm type integer
+-            $_GETTEXT[$domain][&quot;%plural-c&quot;] = $h;
+-         }
+-      }
+-
+-      #-- set as default textdomain
+-      if (empty($_GETTEXT[&quot;%domain&quot;])) {
+-         textdomain($domain);
+-      }
+-      return($domain);
+-   }
+-
+-
+-   #-- load string data from binary .mo files (ign checksums)
+-   function gettext___load_mo($f, $domain) {
+-      global $_GETTEXT;
+-
+-      #-- read in data file completely
+-      $data = fread($f, 1&lt;&lt;20);
+-      fclose($f);
+-
+-      #-- extract header fields and check file magic
+-      if ($data) {
+-         $header = substr($data, 0, 20);
+-         $header = unpack(&quot;L1magic/L1version/L1count/L1o_msg/L1o_trn&quot;, $header);
+-         extract($header);
+-         if ((dechex($magic) == &quot;950412de&quot;) &amp;&amp; ($version == 0)) {
+-
+-            #-- fetch all entries
+-            for ($n=0; $n&lt;$count; $n++) {
+-
+-               #-- msgid
+-               $r = unpack(&quot;L1len/L1offs&quot;, substr($data, $o_msg + $n * 8, 8));
+-               $msgid = substr($data, $r[&quot;offs&quot;], $r[&quot;len&quot;]);
+-               unset($msgid_plural);
+-               if (strpos($msgid, &quot;\000&quot;)) {
+-                  list($msgid, $msgid_plural) = explode(&quot;\000&quot;, $msgid);
+-               }
+-
+-               #-- translation(s)
+-               $r = unpack(&quot;L1len/L1offs&quot;, substr($data, $o_trn + $n * 8, 8));
+-               $msgstr = substr($data, $r[&quot;offs&quot;], $r[&quot;len&quot;]);
+-               if (strpos($msgstr, &quot;\000&quot;)) {
+-                  $msgstr = explode(&quot;\000&quot;, $msgstr);
+-               }
+-
+-               #-- add
+-               $_GETTEXT[$domain][$msgid] = $msgstr;
+-               if (isset($msgid_plural)) {
+-                  $_GETTEXT[$domain][$msgid_plural] = &amp;$_GETTEXT[$domain][$msgid];
+-               }
+-            }
+-
+-         }
+-      }
+-   }
+-
+-
+-   #-- read from textual .po source file (not fully correct, and redundant
+-   #   because the original gettext/libintl doesn't support this at all)
+-   function gettext___load_po($f, $domain) {
+-      global $_GETTEXT;
+-      $c_esc = array(&quot;\\n&quot;=&gt;&quot;\n&quot;, &quot;\\r&quot;=&gt;&quot;\r&quot;, &quot;\\\\&quot;=&gt;&quot;\\&quot;, &quot;\\f&quot;=&gt;&quot;\f&quot;, &quot;\\t&quot;=&gt;&quot;\t&quot;, &quot;\\&quot;=&gt;&quot;&quot;);
+-
+-      #-- read line-wise from text file   
+-      do {
+-         $line = trim(fgets($f));
+-
+-         #-- check what's in the current line
+-         $space = strpos($line, &quot; &quot;);
+-         // comment
+-         if ($line[0] == &quot;#&quot;) {
+-            //continue;
+-         }
+-         // msgid
+-         elseif (strncmp($line, &quot;msgid&quot;, 5)==0) {
+-            $msgid[] = trim(substr($line, $space+1), '&quot;');
+-         }
+-         // translation
+-         elseif (strncmp($line, &quot;msgstr&quot;, 6)==0) {
+-            $msgstr[] = trim(substr($line, $space+1), '&quot;');
+-         }
+-         // continued (could be _id or _str)
+-         elseif ($line[0] == '&quot;') {
+-            $line = trim($line, '&quot;');
+-            if (isset($msggstr)) {
+-               $msgstr[count($msgstr)] .= $line;
+-            }
+-            else {
+-               $msgid[count($msgid)] .= $line;
+-            }
+-         }
+-
+-         #-- append to global $_GETTEXT hash as soon as we have a complete dataset
+-         if (isset($msgid) &amp;&amp; isset($msgstr) &amp;&amp; (empty($line) || ($line[0]==&quot;#&quot;) || feof($f)) )
+-         {
+-            $msgid[0] = strtr($msgid[0], $c_esc);
+-            foreach ($msgstr as $v) {
+-               $_GETTEXT[$domain][$msgid[0]] = strtr($v, $c_esc);
+-            }
+-            if ($msgid[1]) {
+-               $msgid[1] = strtr($msgid[1], $c_esc);
+-               $_GETTEXT[$domain][$msgid[1]] = &amp;$_GETTEXT[$domain][$msgid[0]];
+-            }
+-
+-            $msgid = array();
+-            $msgstr = array();
+-         }
+-
+-      } while (!feof($f));
+-      fclose($f);
+-   }
+-
+-
+-   #-- ignored setting (no idea what it really should do)
+-   function bind_textdomain_codeset($domain, $codeset) {
+-      global $_GETTEXT;
+-      $_GETTEXT[$domain][&quot;%codeset&quot;] = $codeset;
+-      return($domain);
+-   }
+-
+-
+-}
+-
+-
+-#-- define gettexts preferred function name _ separately
+-if (!function_exists(&quot;_&quot;)) {
+-   function _($str) {
+-      return gettext($str);
+-   }
+-}
+-
+-
+-
++&lt;?php
++/*
++   This include script simulates gettext() functionality.
++    - It could read translation data from .mo and .po files.
++    - Lookup of plural forms mostly work (but not 100% compliant,
++      no real interpreter for Plural-Forms: expression).
++    - Categories/codesets are ignored.
++
++   Besides using setlocale() you should change the $_ENV[&quot;LANG&quot;] var
++   to the desired language manually. Additionally all your scripts
++   could contain following (may also work with standard gettext):
++     $_ENV[&quot;LANGUAGE&quot;] = $_SERVER[&quot;HTTP_ACCEPT_LANGUAGE&quot;];
++   What's often more user-friendly than hardwired server-side values.
++*/
++
++
++#-- emulate only if not present in current PHP interpreter
++if (!function_exists(&quot;gettext&quot;)) {
++
++
++   #-- all-in-one combined implementation
++   #   (in original API only the first parameter is present)
++   function gettext($msg, $msg2=NULL, $domain=NULL, $category=NULL, $plural=NULL) {
++      global $_GETTEXT;
++
++      #-- get default params if corresponding args are empty
++      if (!isset($domain)) {
++         $domain = $_GETTEXT[&quot;%domain&quot;];
++      }
++      if (empty($_GETTEXT[$domain])) {
++         bindtextdomain($domain);  // auto load from system dirs
++      }
++
++      #-- plural array position
++      if (!isset($plural)) {
++         $pli = 0;
++      }
++      elseif ($ph = $_GETTEXT[$domain][&quot;%plural-c&quot;]) {
++         $pli = gettext___plural_guess($ph, $plural);
++      }
++      else {
++         $pli = ($plural != 1) ? 1 : 0;   // English
++      }
++
++      #-- look up string
++      if (($trans = $_GETTEXT[$domain][$msg])
++      or ($pli) and ($trans = $_GETTEXT[$domain][$msg2]))
++      {
++         // handle plural entries
++         if (is_array($trans)) {
++            if (!isset($trans[$pli])) {
++               $pli = 0;   // missing translation
++            }
++            $trans = $trans[$pli];
++         }
++         // only return, if something found
++         if (strlen($trans)) {
++            $msg = $trans;
++         }
++      }
++
++      #-- handle $category (???)
++      // recode() ...
++
++      #-- give out whatever we have
++      return($msg);
++   }
++   
++
++   #-- return plural form array index for algorithm type
++   #   (compacted from C expression string beforehand)
++   function gettext___plural_guess(&amp;$type, $n) {
++   
++      #-- guess from string with C expression and set integer shorthand
++      if (is_string($type)) {
++         if (($type == &quot;nplurals=1;plural=0;&quot;) || !strlen($type)) {
++            $type = -1; // no plurals
++         }
++         elseif ($type == &quot;nplurals=2;plural=n!=1;&quot;) {
++            $type = 1;  // English
++         }
++         elseif ($type == &quot;nplurals=2;plural=n&gt;1;&quot;) {
++            $type = 2;  // French
++         }
++         // special cases
++         elseif (strpos($type, &quot;n%100!=11&quot;)) {
++            if (strpos($type, &quot;n!=0&quot;)) {
++               $type == 21;  // Latvian
++            }
++            if (strpos($type, &quot;n%10&lt;=4&quot;)) {
++               $type = 22;   // a few Slavic langs (code similar to Polish below)
++            }
++            if (strpos($type, &quot;n%10&gt;=2&quot;)) {  // Lithuanian
++               $type = 23;
++            }
++            $type = 0;
++         }
++         // specials, group 2
++         elseif (strpos($type, &quot;n&lt;=4&quot;)) {   // Slovak
++            $type = 25;
++         }
++         elseif (strpos($type, &quot;n==2&quot;)) {   // Irish
++            $type = 31;
++         }
++         elseif (strpos($type, &quot;n%10&gt;=2&quot;)) {   // Polish
++            $type = 26;
++         }
++         elseif (strpos($type, &quot;n%100==3&quot;)) {   // Slovenian
++            $type = 28;
++         }
++         // fallbacks
++         elseif (strpos($type, &quot;;plural=n;&quot;)) {
++            $type = 7;  // unused
++         }
++         // first at this point a tokenizer/parser/interpreter would have made sense
++         else {
++            $type = 0;  // no plurals
++         }
++      }
++
++      #-- return plural index value from pre-set formulas
++      switch ($type) {
++         case -1:  // no plural forms
++            return(0);
++         case 1:   // English, and lots of others...
++            return($n != 1 ? 1 : 0);
++         case 2:   // French, Brazilian Protuguese
++            return($n &gt; 1 ? 1 : 0);
++         case 7:   // unused
++            return($n);
++
++         case 21:  // Latvian
++            return  (($n%10==1) &amp;&amp; ($n%100!=11)) ? (0) :  ($n!=0 ? 1 : 2)  ;
++         case 22:  // Slavic langs
++            return  ($n%10==1) &amp;&amp; ($n%100!=11) ? 0 :
++               ( ($n%10&gt;=2) &amp;&amp; ($n%10&lt;=4) &amp;&amp; ($n%100&lt;10 || $n%100&gt;=20) ? 1 : 2  )  ;
++         case 23:  // Lithuanian
++            return  ($n%10==1) &amp;&amp; ($n%100!=11) ? 0 :
++               ( ($n%10&gt;=2) &amp;&amp; ($n%100&lt;10 || $n%100&gt;=20) ? 1 : 2  )  ;
++         case 25:  // Slovak
++            return  $n==1 ? 0 : ($n&gt;=2 &amp;&amp; $n&lt;=4 ? 1 : 2)  ;
++         case 26:  // Polish
++             return  $n==1 ? 0 : ( $n%10&gt;=2 &amp;&amp; $n%10&lt;=4 &amp;&amp; ($n%100&lt;10 || $n%100&gt;=20) ? 1 : 2 )  ;
++         case 28:  // Slovenian
++            return  $n%100==1 ? 0 : ($n%100==2 || $n%100==3 || $n%100==4 ? 2 : 3)  ;
++         case 31:  // Irish
++            return  ($n == 1) ? (0) : (($n == 2) ? 1 : 2)  ;
++
++         default:
++            $type = -1;
++      }   // unsupported, always return non-plural index [0]
++      return(0);
++   }
++
++
++   #-- wrappers around monster function above
++   function ngettext($msg1, $msg2, $plural) {
++      return gettext($msg1, $msg2, NULL, NULL, $plural);
++   }
++   function dngettext($domain, $msg1, $msg2, $plural) {
++      return gettext($msg1, $msg2, $domain, NULL, $plural);
++   }
++   function dcngettext($domain, $msg1, $msg2, $plural, $category) {
++      return gettext($msg1, $msg2, $domain, $category, $plural);
++   }
++   function dcgettext($domain, $msg, $category) {
++      return gettext($msg, NULL, $domain, $category);
++   }
++   function dgettext($domain, $msg) {
++      return gettext($msg, NULL, $domain);
++   }
++
++
++   #-- sets current translation data source
++   #   (must have been loaded beforehand)
++   function textdomain($default=&quot;NULL&quot;) {
++      global $_GETTEXT;
++      $prev = @$_GETTEXT[&quot;%domain&quot;];
++      if (isset($default)) {
++         $_GETTEXT[&quot;%domain&quot;] = $default;
++      }
++      return $prev;
++   }
++
++
++   #-- loads data files
++   function bindtextdomain($domain, $directory=&quot;/usr/share/locale:/usr/local/share/locale:./locale&quot;) {
++      global $_GETTEXT;
++      if (isset($_GETTEXT[&quot;domain&quot;]) &amp;&amp; (count($_GETTEXT[&quot;domain&quot;]) &gt; 3)) {
++         return;  // don't load twice
++      }
++      $_GETTEXT[$domain][&quot;%dir&quot;] = $directory;
++      $_GETTEXT[&quot;%locale&quot;] = setlocale(LC_CTYPE, 0);
++
++      #-- allowed languages
++      $langs = &quot;$_ENV[LANGUAGE],$_ENV[LC_ALL],$_ENV[LC_MESSAGE],$_ENV[LANG],&quot;
++             . $_GETTEXT[&quot;%locale&quot;] . &quot;,$_SERVER[HTTP_ACCEPT_LANGUAGE],C,en&quot;;
++          
++      #-- add shortened language codes (en_UK.UTF-8 -&gt; + en_UK, en)
++      foreach (explode(&quot;,&quot;,$langs) as $d) {
++         $d = trim($d);
++         // $dir2[] = $d;
++         $d = strtok($d, &quot;@.-+=%:; &quot;);
++         if (strlen($d)) {
++            $dir2[] = $d;
++         }
++         if (strpos($d, &quot;_&quot;)) {
++            $dir2[] = strtok($d, &quot;_&quot;);
++         }
++      }
++      
++      #-- search for matching directory and load data file
++      foreach (explode(&quot;:&quot;, $directory) as $directory) {
++         foreach ($dir2 as $lang) {
++            $base_fn = &quot;$directory/$lang/LC_MESSAGES/$domain&quot;;
++
++            #-- binary format
++            if (file_exists($fn = &quot;$base_fn.mo&quot;) &amp;&amp; ($f = fopen($fn, &quot;rb&quot;)))
++            {
++               gettext___load_mo($f, $domain);
++               break 2;
++            }
++
++            #-- text file
++            elseif (function_exists(&quot;gettext___load_po&quot;)
++            and file_exists($fn = &quot;$base_fn.po&quot;) &amp;&amp; ($f = fopen($fn, &quot;r&quot;)))
++            {
++               gettext___load_po($f, $domain);
++               break 2;
++            }
++         }
++      }//foreach
++      
++      #-- extract headers
++      if ($head = $_GETTEXT[$domain][&quot;&quot;]) {
++         foreach (explode(&quot;\n&quot;, $head) as $line) {
++            $header = strtok(&quot;:&quot;, $line);
++            $line = trim(strtok(&quot;\n&quot;));
++            $_GETTEXT[$domain][&quot;%po-header&quot;][strtolower($header)] = $line;
++         }
++      
++         #-- plural-forms header
++         if (function_exists(&quot;gettext___plural_guess&quot;)
++         and ($h = @$_GETTEXT[$domain][&quot;%po-header&quot;][&quot;plural-forms&quot;]))
++         {
++            $h = preg_replace(&quot;/[(){}\[\]^\s*\\]+/&quot;, &quot;&quot;, $h);  // rm whitespace
++            gettext___plural_guess($h, 0);  // pre-decode into algorithm type integer
++            $_GETTEXT[$domain][&quot;%plural-c&quot;] = $h;
++         }
++      }
++
++      #-- set as default textdomain
++      if (empty($_GETTEXT[&quot;%domain&quot;])) {
++         textdomain($domain);
++      }
++      return($domain);
++   }
++
++
++   #-- load string data from binary .mo files (ign checksums)
++   function gettext___load_mo($f, $domain) {
++      global $_GETTEXT;
++
++      #-- read in data file completely
++      $data = fread($f, 1&lt;&lt;20);
++      fclose($f);
++
++      #-- extract header fields and check file magic
++      if ($data) {
++         $header = substr($data, 0, 20);
++         $header = unpack(&quot;L1magic/L1version/L1count/L1o_msg/L1o_trn&quot;, $header);
++         extract($header);
++         if ((dechex($magic) == &quot;950412de&quot;) &amp;&amp; ($version == 0)) {
++
++            #-- fetch all entries
++            for ($n=0; $n&lt;$count; $n++) {
++
++               #-- msgid
++               $r = unpack(&quot;L1len/L1offs&quot;, substr($data, $o_msg + $n * 8, 8));
++               $msgid = substr($data, $r[&quot;offs&quot;], $r[&quot;len&quot;]);
++               unset($msgid_plural);
++               if (strpos($msgid, &quot;\000&quot;)) {
++                  list($msgid, $msgid_plural) = explode(&quot;\000&quot;, $msgid);
++               }
++
++               #-- translation(s)
++               $r = unpack(&quot;L1len/L1offs&quot;, substr($data, $o_trn + $n * 8, 8));
++               $msgstr = substr($data, $r[&quot;offs&quot;], $r[&quot;len&quot;]);
++               if (strpos($msgstr, &quot;\000&quot;)) {
++                  $msgstr = explode(&quot;\000&quot;, $msgstr);
++               }
++
++               #-- add
++               $_GETTEXT[$domain][$msgid] = $msgstr;
++               if (isset($msgid_plural)) {
++                  $_GETTEXT[$domain][$msgid_plural] = &amp;$_GETTEXT[$domain][$msgid];
++               }
++            }
++
++         }
++      }
++   }
++
++
++   #-- read from textual .po source file (not fully correct, and redundant
++   #   because the original gettext/libintl doesn't support this at all)
++   function gettext___load_po($f, $domain) {
++      global $_GETTEXT;
++      $c_esc = array(&quot;\\n&quot;=&gt;&quot;\n&quot;, &quot;\\r&quot;=&gt;&quot;\r&quot;, &quot;\\\\&quot;=&gt;&quot;\\&quot;, &quot;\\f&quot;=&gt;&quot;\f&quot;, &quot;\\t&quot;=&gt;&quot;\t&quot;, &quot;\\&quot;=&gt;&quot;&quot;);
++
++      #-- read line-wise from text file   
++      do {
++         $line = trim(fgets($f));
++
++         #-- check what's in the current line
++         $space = strpos($line, &quot; &quot;);
++         // comment
++         if ($line[0] == &quot;#&quot;) {
++            //continue;
++         }
++         // msgid
++         elseif (strncmp($line, &quot;msgid&quot;, 5)==0) {
++            $msgid[] = trim(substr($line, $space+1), '&quot;');
++         }
++         // translation
++         elseif (strncmp($line, &quot;msgstr&quot;, 6)==0) {
++            $msgstr[] = trim(substr($line, $space+1), '&quot;');
++         }
++         // continued (could be _id or _str)
++         elseif ($line[0] == '&quot;') {
++            $line = trim($line, '&quot;');
++            if (isset($msggstr)) {
++               $msgstr[count($msgstr)] .= $line;
++            }
++            else {
++               $msgid[count($msgid)] .= $line;
++            }
++         }
++
++         #-- append to global $_GETTEXT hash as soon as we have a complete dataset
++         if (isset($msgid) &amp;&amp; isset($msgstr) &amp;&amp; (empty($line) || ($line[0]==&quot;#&quot;) || feof($f)) )
++         {
++            $msgid[0] = strtr($msgid[0], $c_esc);
++            foreach ($msgstr as $v) {
++               $_GETTEXT[$domain][$msgid[0]] = strtr($v, $c_esc);
++            }
++            if ($msgid[1]) {
++               $msgid[1] = strtr($msgid[1], $c_esc);
++               $_GETTEXT[$domain][$msgid[1]] = &amp;$_GETTEXT[$domain][$msgid[0]];
++            }
++
++            $msgid = array();
++            $msgstr = array();
++         }
++
++      } while (!feof($f));
++      fclose($f);
++   }
++
++
++   #-- ignored setting (no idea what it really should do)
++   function bind_textdomain_codeset($domain, $codeset) {
++      global $_GETTEXT;
++      $_GETTEXT[$domain][&quot;%codeset&quot;] = $codeset;
++      return($domain);
++   }
++
++
++}
++
++
++#-- define gettexts preferred function name _ separately
++if (!function_exists(&quot;_&quot;)) {
++   function _($str) {
++      return gettext($str);
++   }
++}
++
++
++
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000901.html">[ydf-devel] r2309 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000903.html">[ydf-devel] r2311 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#902">[ date ]</a>
+              <a href="thread.html#902">[ thread ]</a>
+              <a href="subject.html#902">[ subject ]</a>
+              <a href="author.html#902">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

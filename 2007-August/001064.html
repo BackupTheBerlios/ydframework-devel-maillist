@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2470 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2470%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708140855.l7E8tweF021540%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001063.html">
+   <LINK REL="Next"  HREF="001065.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2470 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2470%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708140855.l7E8tweF021540%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2470 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug 14 10:55:58 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001063.html">[ydf-devel] r2469 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001065.html">[ydf-devel] r2471 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1064">[ date ]</a>
+              <a href="thread.html#1064">[ thread ]</a>
+              <a href="subject.html#1064">[ subject ]</a>
+              <a href="author.html#1064">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-08-14 10:55:50 +0200 (Tue, 14 Aug 2007)
+New Revision: 2470
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+Log:
+on YDUrl:
+ - NEW: YDConfig 'YD_URL_SEPARATOR_EXTENSION' for custom url extensions (used in rewrite operations). By default: ''
+ - NEW: YDConfig 'YD_URL_ENCODE_KEYS' boolean to enable/disable key string encoding. By default: true
+ - NEW: YDConfig 'YD_URL_ENCODE_VALUES' boolean to enable/disable value string encoding. By default: true
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-08-13 22:11:11 UTC (rev 2469)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-08-14 08:55:50 UTC (rev 2470)
+@@ -39,8 +39,10 @@
+     YDConfig::set( 'YD_URL_SEPARATOR_QUERIES', '&amp;', false );
+     YDConfig::set( 'YD_URL_SEPARATOR_VARIABLES', '=', false );
+     YDConfig::set( 'YD_URL_SEPARATOR_PATH', '?', false );
++    YDConfig::set( 'YD_URL_SEPARATOR_EXTENSION', '', false );
++    YDConfig::set( 'YD_URL_ENCODE_KEYS', true, false );
++    YDConfig::set( 'YD_URL_ENCODE_VALUES', true, false );
+ 
+-
+     // Includes
+     include_once( YD_DIR_HOME_CLS . '/YDRequest.php' );
+ 
+@@ -348,6 +350,9 @@
+             $sep_queries   = YDConfig::get( 'YD_URL_SEPARATOR_QUERIES' );
+             $sep_variables = YDConfig::get( 'YD_URL_SEPARATOR_VARIABLES' );
+             $sep_path      = YDConfig::get( 'YD_URL_SEPARATOR_PATH' );
++            $sep_extension = YDConfig::get( 'YD_URL_SEPARATOR_EXTENSION' );
++            $encode_keys   = YDConfig::get( 'YD_URL_ENCODE_KEYS' );
++            $encode_values = YDConfig::get( 'YD_URL_ENCODE_VALUES' );
+ 
+             // Build the query string
+             $querystr = '';
+@@ -358,17 +363,22 @@
+                 if ( is_array( $value ) ) {
+                     foreach ( $value as $key1=&gt;$val ) {
+                         $querystr .= ( strlen( $querystr ) &lt; 1 ) ? '' : $sep_queries;
+-                        $querystr .= rawurlencode( $key  . '[' . $key1 . ']' ) . $sep_variables . rawurlencode( $val );
++                        $querystr .= $encode_keys ? rawurlencode( $key  . '[' . $key1 . ']' ) : $key  . '[' . $key1 . ']';
++                        $querystr .= $sep_variables;
++                        $querystr .= $encode_values ? rawurlencode( $val ) : $val;
+                     }
+                 } else {
+                     $querystr .= ( strlen( $querystr ) &lt; 1 ) ? '' : $sep_queries;
+-                    $querystr .= rawurlencode( $key ) . $sep_variables . rawurlencode( $value );
++                    $querystr .= $encode_keys ? rawurlencode( $key ) : $key;
++                    $querystr .= $sep_variables;
++                    $querystr .= $encode_values ? rawurlencode( $value ) : $value;
+                 }
+             }
+ 
+             // Build the URI
+             $uri = $this-&gt;getNamedPart( 'path' ) ? $this-&gt;getNamedPart( 'path' ) : '';
+             $uri .= $querystr ? $sep_path . $querystr : '';
++            $uri .= $sep_extension;
+             $uri .= $this-&gt;getNamedPart( 'fragment' ) ? '#' . $this-&gt;getNamedPart( 'fragment' ) : '';
+ 
+             // Return the URI
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001063.html">[ydf-devel] r2469 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001065.html">[ydf-devel] r2471 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1064">[ date ]</a>
+              <a href="thread.html#1064">[ thread ]</a>
+              <a href="subject.html#1064">[ subject ]</a>
+              <a href="author.html#1064">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

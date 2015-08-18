@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2029 - in YDFramework2.0/trunk/examples/weblog:	include manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2029%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200608211543.k7LFhd9t019021%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000535.html">
+   <LINK REL="Next"  HREF="000537.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2029 - in YDFramework2.0/trunk/examples/weblog:	include manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2029%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200608211543.k7LFhd9t019021%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2029 - in YDFramework2.0/trunk/examples/weblog:	include manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 21 17:43:39 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000535.html">[ydf-devel] r2028 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers
+</A></li>
+        <LI>Next message: <A HREF="000537.html">[ydf-devel] r2030 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#536">[ date ]</a>
+              <a href="thread.html#536">[ thread ]</a>
+              <a href="subject.html#536">[ subject ]</a>
+              <a href="author.html#536">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-21 17:43:38 +0200 (Mon, 21 Aug 2006)
+New Revision: 2029
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+Cleaned up the way the comments view is looking.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-16 16:27:15 UTC (rev 2028)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-21 15:43:38 UTC (rev 2029)
+@@ -389,6 +389,7 @@
+ 
+         // Get the comments for an item
+         function getComments( $item_id=null, $order='created', $limit=-1, $offset=-1, $public_only=false ) {
++            /*
+             if ( $item_id ) {
+                 $query = 'SELECT * FROM #_comments WHERE item_id = ' . $this-&gt;str( $item_id );
+             } else {
+@@ -397,6 +398,14 @@
+                     $query .= ' and i.is_draft = 0';
+                 }
+             }
++            */
++            $query = 'SELECT c.id as id, c.item_id as item_id, c.username as username, c.useremail as useremail, c.userwebsite as userwebsite, c.userip as userip, c.comment as comment, c.created as created, c.modified as modified, i.title as item_title, i.is_draft as item_is_draft FROM #_comments c, #_items i WHERE c.item_id = i.id';
++            if ( $item_id ) {
++                $query .= ' and item_id = ' . $this-&gt;str( $item_id );
++            }
++            if ( $public_only == true ) {
++                $query .= ' and i.is_draft = 0';
++            }
+             $records = $this-&gt;db-&gt;getRecords( $this-&gt;_prepareQuery( $query, $order ), $limit, $offset );
+             foreach ( $records as $key=&gt;$record ) {
+                 $records[$key]['comment'] = trim( strip_tags( $record['comment'] ) );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-08-16 16:27:15 UTC (rev 2028)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-08-21 15:43:38 UTC (rev 2029)
+@@ -90,12 +90,17 @@
+                     {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+                 &lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;
+-                    {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                    {*{if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+                     &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.comment|bbcode|strip_tags|truncate}&lt;/a&gt;
+                     {if $comment.item_title}
+                         &lt;br/&gt;
+                         {t w=&quot;item&quot;}: {$comment.item_title}
+                     {/if}
++                    {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}*}
++                    {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                    &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.item_title}&lt;/a&gt;
++                    &lt;br/&gt;
++                    {$comment.comment|bbcode|strip_tags|truncate}
+                     {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+                 &lt;/td&gt;
+                 &lt;td class=&quot;adminRowR&quot;&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000535.html">[ydf-devel] r2028 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers
+</A></li>
+	<LI>Next message: <A HREF="000537.html">[ydf-devel] r2030 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#536">[ date ]</a>
+              <a href="thread.html#536">[ thread ]</a>
+              <a href="subject.html#536">[ subject ]</a>
+              <a href="author.html#536">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2104 -	YDFramework2.0/trunk/YDFramework2/addons/YDAkismet
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2104%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDAkismet&In-Reply-To=%3C200609080859.k888x5LE017626%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000620.html">
+   <LINK REL="Next"  HREF="000622.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2104 -	YDFramework2.0/trunk/YDFramework2/addons/YDAkismet</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2104%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDAkismet&In-Reply-To=%3C200609080859.k888x5LE017626%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2104 -	YDFramework2.0/trunk/YDFramework2/addons/YDAkismet">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep  8 10:59:05 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000620.html">[ydf-devel] r2103 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000622.html">[ydf-devel] r2105 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#621">[ date ]</a>
+              <a href="thread.html#621">[ thread ]</a>
+              <a href="subject.html#621">[ subject ]</a>
+              <a href="author.html#621">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-08 10:59:05 +0200 (Fri, 08 Sep 2006)
+New Revision: 2104
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+Log:
+YDAkismet now by default doesn't show debugging messages.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2006-09-07 18:41:48 UTC (rev 2103)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2006-09-08 08:59:05 UTC (rev 2104)
+@@ -121,6 +121,7 @@
+          */
+         function doRequest( $host, $url, $data ) {
+             $client = new YDHttpClient( $host, 80 );
++            $client-&gt;setDebug( false );
+             $client-&gt;user_agent = YD_FW_NAME . '/' . YD_FW_VERSION . ' | ' . $this-&gt;getClassName() . '/' . $this-&gt;_version;
+             $result = @ $client-&gt;post( $url, $data );
+             if ( $result == false ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000620.html">[ydf-devel] r2103 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000622.html">[ydf-devel] r2105 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#621">[ date ]</a>
+              <a href="thread.html#621">[ thread ]</a>
+              <a href="subject.html#621">[ subject ]</a>
+              <a href="author.html#621">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

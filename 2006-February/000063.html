@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Remove session_start from YDF2_init() ?
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Remove%20session_start%20from%20YDF2_init%28%29%20%3F&In-Reply-To=%3C4aef63030602140216j3c9d95cw7c11ee25894e3a6c%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000058.html">
+   <LINK REL="Next"  HREF="000066.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Remove session_start from YDF2_init() ?</H1>
+    <B>Pieter Claerhout</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Remove%20session_start%20from%20YDF2_init%28%29%20%3F&In-Reply-To=%3C4aef63030602140216j3c9d95cw7c11ee25894e3a6c%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] Remove session_start from YDF2_init() ?">pieter at yellowduck.be
+       </A><BR>
+    <I>Tue Feb 14 11:16:43 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000058.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+        <LI>Next message: <A HREF="000066.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#63">[ date ]</a>
+              <a href="thread.html#63">[ thread ]</a>
+              <a href="subject.html#63">[ subject ]</a>
+              <a href="author.html#63">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I will fix this in a future version.
+
+pieter
+
+On 2/13/06, maximus meridius &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">maximus_meridius79 at yahoo.com</A>&gt; wrote:
+&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> I have been working on setting up the session
+</I>&gt;<i> management for an
+</I>&gt;<i> application I am building.
+</I>&gt;<i>
+</I>&gt;<i> YDF2 currently has the call to &quot;session_start()&quot; in
+</I>&gt;<i> YDF2_init.php
+</I>&gt;<i>
+</I>&gt;<i> To provide for more flexibility in configuring the
+</I>&gt;<i> session and php
+</I>&gt;<i> settings, it would make sense for this call to be made
+</I>&gt;<i> within
+</I>&gt;<i> YDrequest.php or YDF2_process.php .
+</I>&gt;<i>
+</I>&gt;<i> The svn trunk of YDF2_process.php contains the
+</I>&gt;<i> following code:
+</I>&gt;<i>
+</I>&gt;<i>     if ( YDConfig::get( 'YD_AUTO_EXECUTE', true ) ==
+</I>&gt;<i> true ) {
+</I>&gt;<i>
+</I>&gt;<i>         // Instantiate the executor class
+</I>&gt;<i>         $clsInst = new YDExecutor( YD_SELF_FILE );
+</I>&gt;<i>
+</I>&gt;<i>         // Execute the execute function
+</I>&gt;<i>         $clsInst-&gt;execute();
+</I>&gt;<i>
+</I>&gt;<i>     }
+</I>&gt;<i>
+</I>&gt;<i> If session_start was removed from YDF2_init.php,
+</I>&gt;<i> session_start() could
+</I>&gt;<i> be called just before the class is executed:
+</I>&gt;<i>
+</I>&gt;<i>     if ( YDConfig::get( 'YD_AUTO_EXECUTE', true ) ==
+</I>&gt;<i> true ) {
+</I>&gt;<i>
+</I>&gt;<i>         // Instantiate the executor class
+</I>&gt;<i>         $clsInst = new YDExecutor( YD_SELF_FILE );
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>         @session_start();
+</I>&gt;<i>
+</I>&gt;<i>         // Execute the execute function
+</I>&gt;<i>         $clsInst-&gt;execute();
+</I>&gt;<i>
+</I>&gt;<i>     }
+</I>&gt;<i>
+</I>&gt;<i> This would then allow custome php configuration to be
+</I>&gt;<i> defined before the
+</I>&gt;<i> session is started by placing it in the main script
+</I>&gt;<i> file, e.g:
+</I>&gt;<i>
+</I>&gt;<i>     // custom php config and session setup goes here
+</I>&gt;<i>        .
+</I>&gt;<i>        .
+</I>&gt;<i>
+</I>&gt;<i>     class index extends YDRequest() {
+</I>&gt;<i>        .
+</I>&gt;<i>        .
+</I>&gt;<i>     }
+</I>&gt;<i>
+</I>&gt;<i>     // Process the request
+</I>&gt;<i>     YDInclude( 'YDF2_process.php' );
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> This of course could otherwise be achieved by
+</I>&gt;<i> providing the custom
+</I>&gt;<i> config before YDF2_init.php is included, but then what
+</I>&gt;<i> happens if Has
+</I>&gt;<i> anyone else been working with sessions or you want to
+</I>&gt;<i> use some of the
+</I>&gt;<i> nice YDF2 utility clasess such as YDConfig and YDUrl ?
+</I>&gt;<i>
+</I>&gt;<i> Did you find that session_start is called too early?
+</I>&gt;<i> Is so did you just
+</I>&gt;<i> comment it out?
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> Graeme
+</I>&gt;<i>
+</I>&gt;<i> __________________________________________________
+</I>&gt;<i> Do You Yahoo!?
+</I>&gt;<i> Tired of spam?  Yahoo! Mail has the best spam protection around
+</I>&gt;<i> <A HREF="http://mail.yahoo.com">http://mail.yahoo.com</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>
+
+--
+pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000058.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+	<LI>Next message: <A HREF="000066.html">[ydf-devel] Remove session_start from YDF2_init() ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#63">[ date ]</a>
+              <a href="thread.html#63">[ thread ]</a>
+              <a href="subject.html#63">[ subject ]</a>
+              <a href="author.html#63">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

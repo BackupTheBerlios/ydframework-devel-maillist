@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1761 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery YDDatabaseQuery/YDDatabaseQueryDrivers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1761%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20YDDatabaseObject%20YDDatabaseQuery%20YDDatabaseQuery/YDDatabaseQueryDrivers&In-Reply-To=%3C200603030545.k235jWFt019008%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000181.html">
+   <LINK REL="Next"  HREF="000183.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1761 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery YDDatabaseQuery/YDDatabaseQueryDrivers</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1761%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20YDDatabaseObject%20YDDatabaseQuery%20YDDatabaseQuery/YDDatabaseQueryDrivers&In-Reply-To=%3C200603030545.k235jWFt019008%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1761 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery YDDatabaseQuery/YDDatabaseQueryDrivers">david_db at berlios.de
+       </A><BR>
+    <I>Fri Mar  3 06:45:32 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000181.html">[ydf-devel] r1760 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000183.html">[ydf-devel] r1762 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#182">[ date ]</a>
+              <a href="thread.html#182">[ thread ]</a>
+              <a href="subject.html#182">[ subject ]</a>
+              <a href="author.html#182">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-03-03 06:44:42 +0100 (Fri, 03 Mar 2006)
+New Revision: 1761
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php
+Log:
+Updated YDDatabaseObject and YDDatabaseQuery classes to be able to use YDDatabase named instances.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-03-02 19:23:47 UTC (rev 1760)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-03-03 05:44:42 UTC (rev 1761)
+@@ -104,7 +104,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'David Bittencourt';
+-            $this-&gt;_version = '4.26';
++            $this-&gt;_version = '4.27';
+             $this-&gt;_copyright = '(c) 2005 David Bittencourt, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">muitocomplicado at hotmail.com</A>';
+             $this-&gt;_description = 'This class defines a YDDatabaseObject object.';
+ 
+@@ -171,14 +171,23 @@
+         /**
+          *  This function register the database connection.
+          *
+-         *  @param $db  Reference to the database abstraction layer.
++         *  @param $db  The YDDatabase object pointing to the database or the named instance.
+          *
+-         *  @returns    A reference to the database abstraction layer.
++         *  @returns    A reference to the YDDatabase object.
+          */
+-        function &amp; registerDatabase( &amp; $db ) {
+-            $this-&gt;_db = &amp; $db;
++        function &amp; registerDatabase( $db=null ) {
++        
++            if ( is_null( $db ) ) {
++                $this-&gt;_db = YDDatabase::getNamedInstance();
++            } else if ( is_string( $db ) ) {
++                $this-&gt;_db = YDDatabase::getNamedInstance( $db );
++            } else {
++                $this-&gt;_db = $db;
++            }
++            
+             $this-&gt;_query = YDDatabaseQuery::getInstance( $this-&gt;_db );
+             return $this-&gt;_db;
++            
+         }
+ 
+         /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-03-02 19:23:47 UTC (rev 1760)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-03-03 05:44:42 UTC (rev 1761)
+@@ -41,7 +41,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'David Bittencourt';
+-            $this-&gt;_version = '2.6';
++            $this-&gt;_version = '2.7';
+             $this-&gt;_copyright = '(c) 2005 David Bittencourt, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">muitocomplicado at hotmail.com</A>';
+             $this-&gt;_description = 'This class defines a YDDatabaseQuery object.';
+             
+@@ -50,12 +50,18 @@
+         /**
+          *  This function creates a new YDDatabaseQuery class for the specified database engine.
+          *
+-         *  @param  $db The YDDatabaseDriver object to use.
++         *  @param  $db The YDDatabase object pointing to the database or the named instance.
+          *
+          *  @returns    Returns a new YDDatabaseQuery class.
+          */
+-        function getInstance( &amp; $db ) {
++        function getInstance( $db=null ) {
+ 
++            if ( is_null( $db ) ) {
++                $db = YDDatabase::getNamedInstance();
++            } else if ( is_string( $db ) ) {
++                $db = YDDatabase::getNamedInstance( $db );
++            }
++            
+             // Get the driver name
+             $driver = $db-&gt;getDriver();
+             
+@@ -121,13 +127,21 @@
+         var $filter   = true;
+         
+         /**
+-         *  The class constructor can be used to set the action and optional options.
++         *  The class constructor.
++         *
++         *  @param $db  The YDDatabase object pointing to the database or the named instance.
+          */
+-         function YDDatabaseQueryDriver( &amp; $db ) {
++         function YDDatabaseQueryDriver( $db=null ) {
+             
+             $this-&gt;YDBase();
+             
+-            $this-&gt;db = &amp; $db;
++            if ( is_null( $db ) ) {
++                $this-&gt;db = YDDatabase::getNamedInstance();
++            } else if ( is_string( $db ) ) {
++                $this-&gt;db = YDDatabase::getNamedInstance( $db );
++            } else {
++                $this-&gt;db = $db;
++            }
+             
+             $this-&gt;reset();
+             $this-&gt;action();
+@@ -1051,7 +1065,7 @@
+         /**
+          *  The class constructor can be used to set the action and optional options.
+          */
+-        function YDDatabaseQueryDriver_mysql( &amp; $db ) {
++        function YDDatabaseQueryDriver_mysql( $db=null ) {
+             
+             $this-&gt;YDDatabaseQueryDriver( $db );
+             
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php	2006-03-02 19:23:47 UTC (rev 1760)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php	2006-03-03 05:44:42 UTC (rev 1761)
+@@ -37,7 +37,7 @@
+         /**
+          *  The class constructor can be used to set the action and optional options.
+          */
+-        function YDDatabaseQueryDriver_oracle( &amp; $db ) {
++        function YDDatabaseQueryDriver_oracle( $db=null ) {
+             
+             $this-&gt;YDDatabaseQueryDriver( $db );
+             $this-&gt;reserved = '&quot;';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php	2006-03-02 19:23:47 UTC (rev 1760)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php	2006-03-03 05:44:42 UTC (rev 1761)
+@@ -37,7 +37,7 @@
+         /**
+          *  The class constructor can be used to set the action and optional options.
+          */
+-        function YDDatabaseQueryDriver_postgres( &amp; $db ) {
++        function YDDatabaseQueryDriver_postgres( $db=null ) {
+             $this-&gt;YDDatabaseQueryDriver( $db );
+             $this-&gt;reserved = '&quot;';
+         }
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php	2006-03-02 19:23:47 UTC (rev 1760)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php	2006-03-03 05:44:42 UTC (rev 1761)
+@@ -37,7 +37,7 @@
+         /**
+          *  The class constructor can be used to set the action and optional options.
+          */
+-        function YDDatabaseQueryDriver_sqlite( &amp; $db ) {
++        function YDDatabaseQueryDriver_sqlite( $db=null ) {
+             $this-&gt;YDDatabaseQueryDriver( $db );
+             $this-&gt;reserved = '&quot;';
+         }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000181.html">[ydf-devel] r1760 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000183.html">[ydf-devel] r1762 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#182">[ date ]</a>
+              <a href="thread.html#182">[ thread ]</a>
+              <a href="subject.html#182">[ subject ]</a>
+              <a href="author.html#182">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

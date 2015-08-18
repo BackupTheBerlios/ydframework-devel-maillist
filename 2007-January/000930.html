@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2337 - in YDFramework2.0/trunk/examples: . translation	translation/locale translation/locale/en	translation/locale/en/LC_MESSAGES translation/locale/fr	translation/locale/fr/LC_MESSAGES translation/locale/pt	translation/locale/pt/LC_MESSAGES
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2337%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20translation%0A%09translation/locale%20translation/locale/en%0A%09translation/locale/en/LC_MESSAGES%20translation/locale/fr%0A%09translation/locale/fr/LC_MESSAGES%20translation/locale/pt%0A%09translation/locale/pt/LC_MESSAGES&In-Reply-To=%3C200701222157.l0MLv1cw014997%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000929.html">
+   <LINK REL="Next"  HREF="000931.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2337 - in YDFramework2.0/trunk/examples: . translation	translation/locale translation/locale/en	translation/locale/en/LC_MESSAGES translation/locale/fr	translation/locale/fr/LC_MESSAGES translation/locale/pt	translation/locale/pt/LC_MESSAGES</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2337%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20translation%0A%09translation/locale%20translation/locale/en%0A%09translation/locale/en/LC_MESSAGES%20translation/locale/fr%0A%09translation/locale/fr/LC_MESSAGES%20translation/locale/pt%0A%09translation/locale/pt/LC_MESSAGES&In-Reply-To=%3C200701222157.l0MLv1cw014997%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2337 - in YDFramework2.0/trunk/examples: . translation	translation/locale translation/locale/en	translation/locale/en/LC_MESSAGES translation/locale/fr	translation/locale/fr/LC_MESSAGES translation/locale/pt	translation/locale/pt/LC_MESSAGES">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Jan 22 22:57:01 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000929.html">[ydf-devel] r2336 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000931.html">[ydf-devel] r2338 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#930">[ date ]</a>
+              <a href="thread.html#930">[ thread ]</a>
+              <a href="subject.html#930">[ subject ]</a>
+              <a href="author.html#930">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-22 22:56:36 +0100 (Mon, 22 Jan 2007)
+New Revision: 2337
+
+Added:
+   YDFramework2.0/trunk/examples/translation/
+   YDFramework2.0/trunk/examples/translation/index.php
+   YDFramework2.0/trunk/examples/translation/index.tpl
+   YDFramework2.0/trunk/examples/translation/locale/
+   YDFramework2.0/trunk/examples/translation/locale/en/
+   YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/
+   YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/test.mo
+   YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/test.po
+   YDFramework2.0/trunk/examples/translation/locale/fr/
+   YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/
+   YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/test.mo
+   YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/test.po
+   YDFramework2.0/trunk/examples/translation/locale/pt/
+   YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/
+   YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/test.mo
+   YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/test.po
+Log:
+- added example on how to use the gettext engine in YDF
+
+Added: YDFramework2.0/trunk/examples/translation/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/translation/index.php	2007-01-22 21:55:09 UTC (rev 2336)
++++ YDFramework2.0/trunk/examples/translation/index.php	2007-01-22 21:56:36 UTC (rev 2337)
+@@ -0,0 +1,41 @@
++&lt;?php
++
++	// Standard include
++	include_once( dirname( __FILE__ ) . '/../../YDFramework2/YDF2_init.php' );
++
++	// Include server compatibility support (useful if this server don't support gettext)
++	YDIncludeCompatibility();
++
++	// Includes
++	YDInclude( 'YDRequest.php' );
++	YDInclude( 'YDTemplate.php' );
++
++	// set locale: you can use 'en', 'pt' and 'fr'
++	YDLocale::set( 'pt' );
++
++	// use gettext engine. use 'test' filenames, language directories are in 'locale' sub directory
++	YDLocale::useGettext( 'test', dirname( __FILE__ ) . '/locale/' );
++
++
++	// Class definition
++	class index extends YDRequest {
++
++		function index() {
++
++			$this-&gt;YDRequest();
++			$this-&gt;tpl = new YDTemplate();
++		}
++
++
++		// Default action
++		function actionDefault() {
++
++			$this-&gt;tpl-&gt;assign( 'var',  'variable' );
++			$this-&gt;tpl-&gt;display();
++		}
++
++	}
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/translation/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/translation/index.tpl	2007-01-22 21:55:09 UTC (rev 2336)
++++ YDFramework2.0/trunk/examples/translation/index.tpl	2007-01-22 21:56:36 UTC (rev 2337)
+@@ -0,0 +1,3 @@
++&lt;p&gt;This is a text with a smarty variable: {$var}&lt;/p&gt;
++
++&lt;p&gt;This is a text with &quot;car&quot; in current language: {t w=_(&quot;car&quot;)}&lt;/p&gt;
+
+Added: YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/test.mo
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/test.mo
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/test.po
+===================================================================
+--- YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/test.po	2007-01-22 21:55:09 UTC (rev 2336)
++++ YDFramework2.0/trunk/examples/translation/locale/en/LC_MESSAGES/test.po	2007-01-22 21:56:36 UTC (rev 2337)
+@@ -0,0 +1,20 @@
++msgid &quot;&quot;
++msgstr &quot;&quot;
++&quot;Project-Id-Version: Yellow Duck Framework test\n&quot;
++&quot;POT-Creation-Date: \n&quot;
++&quot;PO-Revision-Date: 2007-01-22 21:37-0000\n&quot;
++&quot;Last-Translator: Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;\n&quot;
++&quot;Language-Team: \n&quot;
++&quot;MIME-Version: 1.0\n&quot;
++&quot;Content-Type: text/plain; charset=iso-8859-15\n&quot;
++&quot;Content-Transfer-Encoding: 8bit\n&quot;
++&quot;X-Poedit-Language: Portuguese\n&quot;
++&quot;X-Poedit-Country: PORTUGAL\n&quot;
++&quot;X-Poedit-SourceCharset: iso-8859-15\n&quot;
++&quot;X-Poedit-Basepath: D:\\www\\main\\examples\\\n&quot;
++&quot;X-Poedit-SearchPath-0: translation\n&quot;
++
++#: translation/index.tpl:3
++msgid &quot;car&quot;
++msgstr &quot;super Car&quot;
++
+
+Added: YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/test.mo
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/test.mo
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/test.po
+===================================================================
+--- YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/test.po	2007-01-22 21:55:09 UTC (rev 2336)
++++ YDFramework2.0/trunk/examples/translation/locale/fr/LC_MESSAGES/test.po	2007-01-22 21:56:36 UTC (rev 2337)
+@@ -0,0 +1,20 @@
++msgid &quot;&quot;
++msgstr &quot;&quot;
++&quot;Project-Id-Version: Yellow Duck Framework test\n&quot;
++&quot;POT-Creation-Date: \n&quot;
++&quot;PO-Revision-Date: 2007-01-22 21:38-0000\n&quot;
++&quot;Last-Translator: Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;\n&quot;
++&quot;Language-Team: \n&quot;
++&quot;MIME-Version: 1.0\n&quot;
++&quot;Content-Type: text/plain; charset=iso-8859-15\n&quot;
++&quot;Content-Transfer-Encoding: 8bit\n&quot;
++&quot;X-Poedit-Language: French\n&quot;
++&quot;X-Poedit-Country: FRANCE\n&quot;
++&quot;X-Poedit-SourceCharset: iso-8859-15\n&quot;
++&quot;X-Poedit-Basepath: D:\\www\\main\\examples\\\n&quot;
++&quot;X-Poedit-SearchPath-0: translation\n&quot;
++
++#: translation/index.tpl:3
++msgid &quot;car&quot;
++msgstr &quot;voiture&quot;
++
+
+Added: YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/test.mo
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/test.mo
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/test.po
+===================================================================
+--- YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/test.po	2007-01-22 21:55:09 UTC (rev 2336)
++++ YDFramework2.0/trunk/examples/translation/locale/pt/LC_MESSAGES/test.po	2007-01-22 21:56:36 UTC (rev 2337)
+@@ -0,0 +1,20 @@
++msgid &quot;&quot;
++msgstr &quot;&quot;
++&quot;Project-Id-Version: Yellow Duck Framework\n&quot;
++&quot;POT-Creation-Date: \n&quot;
++&quot;PO-Revision-Date: 2007-01-22 21:36-0000\n&quot;
++&quot;Last-Translator: Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;\n&quot;
++&quot;Language-Team: \n&quot;
++&quot;MIME-Version: 1.0\n&quot;
++&quot;Content-Type: text/plain; charset=iso-8859-15\n&quot;
++&quot;Content-Transfer-Encoding: 8bit\n&quot;
++&quot;X-Poedit-Language: Portuguese\n&quot;
++&quot;X-Poedit-Country: PORTUGAL\n&quot;
++&quot;X-Poedit-SourceCharset: iso-8859-15\n&quot;
++&quot;X-Poedit-Basepath: D:\\www\\main\\examples\\\n&quot;
++&quot;X-Poedit-SearchPath-0: translation\n&quot;
++
++#: translation/index.tpl:3
++msgid &quot;car&quot;
++msgstr &quot;carro&quot;
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000929.html">[ydf-devel] r2336 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000931.html">[ydf-devel] r2338 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#930">[ date ]</a>
+              <a href="thread.html#930">[ thread ]</a>
+              <a href="subject.html#930">[ subject ]</a>
+              <a href="author.html#930">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

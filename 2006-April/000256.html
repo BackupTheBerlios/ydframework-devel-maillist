@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1825 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1825%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604030804.k3384WZs004371%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000255.html">
+   <LINK REL="Next"  HREF="000257.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1825 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1825%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604030804.k3384WZs004371%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1825 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Apr  3 10:04:32 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000255.html">[ydf-devel] r1824 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000257.html">[ydf-devel] r1826 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#256">[ date ]</a>
+              <a href="thread.html#256">[ thread ]</a>
+              <a href="subject.html#256">[ subject ]</a>
+              <a href="author.html#256">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-04-03 10:04:25 +0200 (Mon, 03 Apr 2006)
+New Revision: 1825
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+Added a function to get the list of supported drivers.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-04-02 17:14:16 UTC (rev 1824)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-04-03 08:04:25 UTC (rev 1825)
+@@ -537,19 +537,8 @@
+ 
+             } else {
+ 
+-                // Register the standard drivers
+-                $regDrivers[ strtolower( 'mysql' ) ] = array(
+-                    'class' =&gt; 'YDDatabaseDriver_mysql', 'file' =&gt; ''
+-                );
+-                $regDrivers[ strtolower( 'oracle' ) ] = array(
+-                    'class' =&gt; 'YDDatabaseDriver_oracle', 'file' =&gt; 'YDDatabaseDriver_oracle.php'
+-                );
+-                $regDrivers[ strtolower( 'postgres' ) ] = array(
+-                    'class' =&gt; 'YDDatabaseDriver_postgres', 'file' =&gt; 'YDDatabaseDriver_postgres.php'
+-                );
+-                $regDrivers[ strtolower( 'sqlite' ) ] = array(
+-                    'class' =&gt; 'YDDatabaseDriver_sqlite', 'file' =&gt; 'YDDatabaseDriver_sqlite.php'
+-                );
++                // Get the standard driver list
++                $regDrivers = YDDatabase::getSupportedDrivers();
+ 
+                 // Check if the driver exists
+                 if ( ! array_key_exists( strtolower( $driver ), $regDrivers ) ) {
+@@ -563,7 +552,7 @@
+                 if ( is_file( $regDrivers[ strtolower( $driver ) ]['file'] ) ) {
+                     include_once( $regDrivers[ strtolower( $driver ) ]['file'] );
+                 } else {
+-                    include_once( YD_DIR_HOME_CLS . '/YDDatabaseDrivers/' . $regDrivers[ strtolower( $driver ) ]['file'] );
++                    include_once( dirname( __FILE__ ) . '/YDDatabaseDrivers/' . $regDrivers[ strtolower( $driver ) ]['file'] );
+                 }
+             }
+ 
+@@ -578,6 +567,35 @@
+ 
+         }
+ 
++        /**
++         *  This function returns the list of supported drivers.
++         *
++         *  @returns    An array with the list of supported drivers.
++         */
++        function getSupportedDrivers() {
++
++            // The list of known drivers
++            $regDrivers = array();
++
++            // Register the standard drivers
++            $regDrivers[ strtolower( 'mysql' ) ] = array(
++                'class' =&gt; 'YDDatabaseDriver_mysql', 'file' =&gt; ''
++            );
++            $regDrivers[ strtolower( 'oracle' ) ] = array(
++                'class' =&gt; 'YDDatabaseDriver_oracle', 'file' =&gt; 'YDDatabaseDriver_oracle.php'
++            );
++            $regDrivers[ strtolower( 'postgres' ) ] = array(
++                'class' =&gt; 'YDDatabaseDriver_postgres', 'file' =&gt; 'YDDatabaseDriver_postgres.php'
++            );
++            $regDrivers[ strtolower( 'sqlite' ) ] = array(
++                'class' =&gt; 'YDDatabaseDriver_sqlite', 'file' =&gt; 'YDDatabaseDriver_sqlite.php'
++            );
++
++            // Return the list
++            return $regDrivers;
++
++        }
++
+     }
+ 
+     /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000255.html">[ydf-devel] r1824 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000257.html">[ydf-devel] r1826 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#256">[ date ]</a>
+              <a href="thread.html#256">[ thread ]</a>
+              <a href="subject.html#256">[ subject ]</a>
+              <a href="author.html#256">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

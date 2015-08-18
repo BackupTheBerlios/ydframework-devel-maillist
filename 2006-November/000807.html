@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2237 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2237%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611212251.kALMp4l3026411%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000806.html">
+   <LINK REL="Next"  HREF="000810.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2237 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2237%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611212251.kALMp4l3026411%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2237 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 21 23:51:04 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000806.html">[ydf-devel] r2236 - in YDFramework2.0/trunk/YDFramework2/addons:	YDDatabaseObject YDDatabaseQuery
+</A></li>
+        <LI>Next message: <A HREF="000810.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#807">[ date ]</a>
+              <a href="thread.html#807">[ thread ]</a>
+              <a href="subject.html#807">[ subject ]</a>
+              <a href="author.html#807">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-21 23:50:45 +0100 (Tue, 21 Nov 2006)
+New Revision: 2237
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+Log:
+on YDDatabaseTree3:
+ - FIXED: moveNode, deleteNode and addNode.. Now it's really fixed! I think :)
+ - added YDDatabaseTree3::getTraversedTree (by Graeme)
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-21 22:45:41 UTC (rev 2236)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-21 22:50:45 UTC (rev 2237)
+@@ -80,7 +80,7 @@
+ 
+ 			// register reserved fields
+ 			$this-&gt;registerKey( $idField, true );
+-			$this-&gt;registerKey( $parentField );
++			$this-&gt;registerField( $parentField );
+ 			$this-&gt;registerField( $lineageField );
+ 			$this-&gt;registerField( $levelField );
+ 			$this-&gt;registerField( $positionField );
+@@ -401,7 +401,7 @@
+ 			$this-&gt;set( $this-&gt;__id, intval( $child_id ) );
+ 
+ 			// check if there is a parent that equals $parent_id
+-			$this-&gt;set( $this-&gt;__parent, intval( $parent_id ) );
++			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $parent_id ) );
+ 
+ 			// get total of rows
+ 			return ( $this-&gt;find() == 1 );
+@@ -452,7 +452,7 @@
+ 			$this-&gt;reset();
+ 
+ 			// search all nodes that contains this id in lineage
+-			$this-&gt;set( $this-&gt;__parent, intval( $id ) );
++			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) );
+ 
+ 			// find them
+ 			return $this-&gt;find();
+@@ -516,17 +516,20 @@
+ 			if ( !is_numeric( $position ) || intval( $position ) &lt; 1 || intval( $position ) &gt; $total_brothers + 1 )
+ 				$position = $total_brothers + 1;
+ 
+-			// create an empty position. To do this we must increment position of nodes that have the same parent AND have position equal or bigger than $position
+-			$this-&gt;reset();
++			// create an empty position. To do this, if node is not added in the end, we must increment position of nodes that have the same parent and equal or bigger position 
++			if ( $position != $total_brothers + 1 ){
++	
++				$this-&gt;reset();
+ 
+-			// position field must increment
+-			$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
++				// position field must increment
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
+ 
+-			// only on new brothers with higher or equal position
+-			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $parent_id ) . ' AND ' .  $this-&gt;__position . ' &gt;= ' . intval( $position ) );
++				// only on new brothers with higher or equal position
++				$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $parent_id ) . ' AND ' .  $this-&gt;__position . ' &gt;= ' . intval( $position ) );
+ 
+-			// lets update.
+-			$this-&gt;update();
++				// lets update.
++				$this-&gt;update( array(), $this-&gt;__position );
++			}
+ 
+ 			// reset any previous value to create insert
+ 			$this-&gt;reset();
+@@ -611,7 +614,7 @@
+ 				// in all elements with same parent AND position bigger than our
+ 				$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $node[ $this-&gt;__parent ] ) . ' AND ' . $this-&gt;__position . ' &gt; ' . intval( $node[ $this-&gt;__position ] ) );
+ 
+-				$this-&gt;update();
++				$this-&gt;update( array(), $this-&gt;__position );
+ 				
+ 				return $total;
+ 			}
+@@ -619,7 +622,8 @@
+ 			// here we want do delete child only
+ 			$this-&gt;reset();
+ 
+-			$this-&gt;set( $this-&gt;__parent, intval( $id ) );
++			// we only need to delete children. Children of children will be deleted when mysql is InnoDB
++			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) );
+ 
+ 			return $this-&gt;delete();
+         }
+@@ -661,24 +665,28 @@
+ 			// only update positions if new parent and old parent are not the same OR if (they are same but) positions are not changed
+ 			if ( $new_parent_id != $old_parent_id || $new_position != $old_position ){
+ 
++				// decrease positions of old brothers that have position bigger than this node position
++				$this-&gt;reset();
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
++				$this-&gt;where( $this-&gt;__parent . ' = ' . $old_parent_id . ' AND ' . $this-&gt;__position . ' &gt; ' . $old_position );
++				$this-&gt;update( array(), $this-&gt;__position );
++
+ 				// add position space for this node in new parent: increase positions of new brothers that have position bigger than this node position
+ 				$this-&gt;reset();
+ 				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
+ 				$this-&gt;where( $this-&gt;__parent . ' = ' . $new_parent_id . ' AND ' . $this-&gt;__position . ' &gt;= ' . $new_position );
+-				$this-&gt;update();
+-
+-				// decrease positions of old brothers that have position bigger than this node position
+-				$this-&gt;reset();
+-				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
+-				$this-&gt;where( $this-&gt;__parent . ' = ' . $old_parent_id . ' AND ' . $this-&gt;__position . ' &gt; ' . $old_position );
+-				$this-&gt;update();
++				$this-&gt;update( array(), $this-&gt;__position );
+ 			}
+ 
++			// compute lineage
++			if ( $new_parent_id == 1 ) $new_lineage = '//';
++			else                       $new_lineage = $new_parent_node[ $this-&gt;__lineage ] . $new_parent_id . '/';
++
+ 			// update node
+ 			$this-&gt;reset();
+ 			$this-&gt;set( $this-&gt;__id,       intval( $id ) );
+ 			$this-&gt;set( $this-&gt;__parent,   intval( $new_parent_id ) );
+-			$this-&gt;set( $this-&gt;__lineage,  $new_parent_node[ $this-&gt;__lineage ] . $new_parent_id . '/' );
++			$this-&gt;set( $this-&gt;__lineage,  $new_lineage );
+ 			$this-&gt;set( $this-&gt;__level,    $this-&gt;_getLevel( $new_lineage ) );
+ 			$this-&gt;set( $this-&gt;__position, intval( $new_position ) );
+ 			$res = $this-&gt;update();
+@@ -686,14 +694,66 @@
+ 			// update lineages of node descendants ;)
+ 			if ( $new_parent_id != $old_parent_id ){
+ 				$this-&gt;reset();
+-				$this-&gt;set( $this-&gt;__lineage, 'REPLACE(' . $this-&gt;__lineage . ',&quot;' . $old_lineage . '/' . $id . '/&quot;,&quot;' . $new_lineage . '/' . $id . '/&quot;)' );
+-				$this-&gt;update();
++				$this-&gt;set( $this-&gt;__lineage, 'REPLACE(' . $this-&gt;__lineage . ',&quot;' . $old_lineage . $id . '/&quot;,&quot;' . $new_lineage . $id . '/&quot;)' );
++				$this-&gt;where( $this-&gt;__id . ' &gt; 1 ' );
++				$this-&gt;update( array(), $this-&gt;__lineage );
+ 			}
+ 
+ 			return $res;
+         }
+ 
+ 
++        /**
++         *  Fetch an array of tree nodes containing a traversal of the tree. 
++         *
++         * @param $id   (optional) The ID of the node to fetch child data for.
++         *
++         * @returns An array of each node in the tree
++         */
++		function getTraversedTree( $id = 1 ) {
++		
++			$this-&gt;_tree_data = $this-&gt;getTreeElements();
++			$this-&gt;_tree_data_keys = array_keys( $this-&gt;_tree_data );
++		
++			return $this-&gt;_getTraversedTree( $id );
++		}
+ 
++
++        /**
++         *  Helper function to get traversal of tree. 
++         *
++         * @param $id   (optional) The ID of the node to fetch child data for.
++         *
++         * @returns An array of each node in the tree
++         */
++		function _getTraversedTree( $id = 1 ) {
++		
++			$key_match = false;
++			
++			foreach ( $this-&gt;_tree_data_keys as $key ) {
++				if ( $this-&gt;_tree_data[$key]['id'] == $id ) {
++					$key_match = true;
++					$ref = &amp; $this-&gt;_tree_data[$key];
++					break;
++				}
++			}
++			
++			if ( $key_match ) {
++				$result = array( $ref );
++			} else {
++				$result = array();
++			}
++			
++			$children = $this-&gt;getChildren ( $id, true );
++			
++			foreach ( $children as $child ) {			
++				$child_ids = $this-&gt;getTraversedTree( $child['id'] );				
++				$result = array_merge( $result, $child_ids );
++			}
++						
++			return $result;
++		}
++		
++
+     }
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000806.html">[ydf-devel] r2236 - in YDFramework2.0/trunk/YDFramework2/addons:	YDDatabaseObject YDDatabaseQuery
+</A></li>
+	<LI>Next message: <A HREF="000810.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#807">[ date ]</a>
+              <a href="thread.html#807">[ thread ]</a>
+              <a href="subject.html#807">[ subject ]</a>
+              <a href="author.html#807">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

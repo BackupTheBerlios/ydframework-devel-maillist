@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2189 - YDFramework2.0/trunk/examples/cm/backend
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2189%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200610262212.k9QMCX50020095%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000725.html">
+   <LINK REL="Next"  HREF="000727.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2189 - YDFramework2.0/trunk/examples/cm/backend</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2189%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200610262212.k9QMCX50020095%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2189 - YDFramework2.0/trunk/examples/cm/backend">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Oct 27 00:12:33 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000725.html">[ydf-devel] r2188 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000727.html">[ydf-devel] r2190 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#726">[ date ]</a>
+              <a href="thread.html#726">[ thread ]</a>
+              <a href="subject.html#726">[ subject ]</a>
+              <a href="author.html#726">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-10-27 00:12:32 +0200 (Fri, 27 Oct 2006)
+New Revision: 2189
+
+Modified:
+   YDFramework2.0/trunk/examples/cm/backend/permissions.php
+Log:
+updated YDCM permissions example for permission editing
+
+Modified: YDFramework2.0/trunk/examples/cm/backend/permissions.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/backend/permissions.php	2006-10-26 22:10:31 UTC (rev 2188)
++++ YDFramework2.0/trunk/examples/cm/backend/permissions.php	2006-10-26 22:12:32 UTC (rev 2189)
+@@ -26,19 +26,9 @@
+ 			$this-&gt;perms-&gt;registerAction( 'YDCMGroup', 'add' );
+ 			$this-&gt;perms-&gt;registerAction( 'YDCMGroup', 'edit' );
+ 
+-            print(&quot; We have registered the next permissions :                        &lt;br&gt;
+-                    'YDCMPage',  'create'                                            &lt;br&gt;
+-                    'YDCMPage',  'delete'                                            &lt;br&gt;
+-                    'YDCMGroup', 'add'                                               &lt;br&gt;
+-                    'YDCMGroup', 'edit'                                              &lt;br&gt;&lt;br&gt;&quot;);
++			YDDebugUtil::dump(&quot;\n'YDCMPage',  'create' \n'YDCMPage',  'delete'\n'YDCMGroup', 'add'\n'YDCMGroup', 'edit'&quot;, 'We have registered the next permissions:' );
+ 
+-
+-            print(&quot; In our database we have the next permission system:              &lt;br&gt;
+-                    INSERT INTO `ydcmpermission` VALUES (2,'YDCMRootmenu','delete'); &lt;br&gt;
+-                    INSERT INTO `ydcmpermission` VALUES (2,'YDCMPage','delete');     &lt;br&gt;
+-                    INSERT INTO `ydcmpermission` VALUES (2,'YDCMPage','create');     &lt;br&gt;
+-                    INSERT INTO `ydcmpermission` VALUES (5,'YDCMPage','delete');     &lt;br&gt;
+-                    INSERT INTO `ydcmpermission` VALUES (5,'YDCMPage','create');     &lt;br&gt;&lt;br&gt;&quot;);
++			YDDebugUtil::dump( $this-&gt;perms-&gt;getAllPermissions( true ), 'In our database we have the next permission system:' );
+         }
+ 
+ 
+@@ -52,10 +42,10 @@
+ 			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 5, 'YDCMPage', 'add' ), '$this-&gt;perms-&gt;can( 5, &quot;YDCMPage&quot;, &quot;add&quot; );  // check if userobject 5 can &quot;YDCMPage&quot;+&quot;add&quot;' );
+ 
+ 			// check if userobject 2 can 'YDCMRootmenu'+'delete'
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMRootmenu', 'delete' ), '$this-&gt;perms-&gt;can( 2, &quot;YDCMRootmenu&quot;, &quot;delete&quot; );  // action is in DB but its NOT registered' );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMRootmenu', 'delete' ), '$this-&gt;perms-&gt;can( 2, &quot;YDCMRootmenu&quot;, &quot;delete&quot; );  // action is in DB but it is NOT registered' );
+ 
+ 			// get permissions of userobject 2
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;getPermissions( 2 ), '$this-&gt;perms-&gt;getPermissions( 2 );' );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;getPermissions( 2 ), '$this-&gt;perms-&gt;getPermissions( 2 );  // get permissions of group Administrators' );
+ 
+ 			// get translated permissions of userobject 5
+ 			YDDebugUtil::dump( $this-&gt;perms-&gt;getPermissions( 5, true ), '$this-&gt;perms-&gt;getPermissions( 5, true );  // translated permissions' );
+@@ -120,6 +110,32 @@
+ 
+ 		}
+ 
++
++		function actionEdit(){
++		
++			// get permissions form of group id 2
++			print &quot;Edit group 2 permissions: \n&quot;;
++			
++			$form = &amp; $this-&gt;perms-&gt;addFormEdit( 2 );
++
++			// if form is not submitted just show it
++			if ( ! $form-&gt;isSubmitted() ) return $form-&gt;display();
++
++			// update user with submitted information, magic isn't it ;)
++			$result = $this-&gt;perms-&gt;saveFormEdit();
++
++			// print result message
++			if ( $result-&gt;ok ) print( 'OK: '    . $result-&gt;message );
++			else               print( 'Error: ' . $result-&gt;message );
++
++			// display form again
++			$form-&gt;display();
++			
++			// display db state after updating
++			YDDebugUtil::dump( $this-&gt;perms-&gt;getAllPermissions( true ), 'Now, we have the next permission system in our db:' );
++		}		
++		
++
+     }
+ 
+     // Process the request
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000725.html">[ydf-devel] r2188 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000727.html">[ydf-devel] r2190 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#726">[ date ]</a>
+              <a href="thread.html#726">[ thread ]</a>
+              <a href="subject.html#726">[ subject ]</a>
+              <a href="author.html#726">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

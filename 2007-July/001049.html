@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2455 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2455%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200707161137.l6GBb29T000491%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001048.html">
+   <LINK REL="Next"  HREF="001050.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2455 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2455%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200707161137.l6GBb29T000491%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2455 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Jul 16 13:37:02 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001048.html">[ydf-devel] r2454 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="001050.html">[ydf-devel] r2456 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1049">[ date ]</a>
+              <a href="thread.html#1049">[ thread ]</a>
+              <a href="subject.html#1049">[ subject ]</a>
+              <a href="author.html#1049">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-07-16 13:36:54 +0200 (Mon, 16 Jul 2007)
+New Revision: 2455
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+added new method YDStringUtil::generatePassword( $length )
+  * Creates a password
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-07-16 11:33:26 UTC (rev 2454)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-07-16 11:36:54 UTC (rev 2455)
+@@ -1011,6 +1011,30 @@
+ 
+         }
+ 
++        /**
++         *  Creates a random password string
++         *
++         *  @param  $length   Password length. By default 6
++         *
++         *  @returns    String
++         */
++        function generatePassword( $length = 6 ) {
++
++            $chrs = &quot;abcdefg12345hijklmnpABCDEFGHIJKLMNPqrstuvwxyzQRSTUVWXYZ6789&quot;;
++
++            // init generator ( used when php version is smaller than 4.2.0 )
++            srand( (double) microtime() * 1000000 );
++
++            $pass = &quot;&quot;;
++
++            // add chars
++            while( $length-- ){
++                $pass .= $chrs[ rand( 0, 58 ) ];
++            }
++
++            return $pass;
++        }
++
+     }
+ 
+     /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001048.html">[ydf-devel] r2454 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="001050.html">[ydf-devel] r2456 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1049">[ date ]</a>
+              <a href="thread.html#1049">[ thread ]</a>
+              <a href="subject.html#1049">[ subject ]</a>
+              <a href="author.html#1049">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

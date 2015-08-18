@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1715 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1715%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602221238.k1MCcRXm005080%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000127.html">
+   <LINK REL="Next"  HREF="000129.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1715 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1715%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602221238.k1MCcRXm005080%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1715 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Feb 22 13:38:27 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000127.html">[ydf-devel] r1714 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000129.html">[ydf-devel] r1716 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/zip examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#128">[ date ]</a>
+              <a href="thread.html#128">[ thread ]</a>
+              <a href="subject.html#128">[ subject ]</a>
+              <a href="author.html#128">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-22 13:38:16 +0100 (Wed, 22 Feb 2006)
+New Revision: 1715
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+Log:
+When you save the config, a .htaccess file is now created if you enable friendly urls and the .htacess file is not there.
+
+If there is a .htaccess file already, it will not get modified.
+
+Bug #6537
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-22 12:30:21 UTC (rev 1714)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-22 12:38:16 UTC (rev 1715)
+@@ -64,6 +64,29 @@
+         // Set the right permissions
+         @chmod( dirname( __FILE__ ) . '/config.php', 0700 );
+ 
++        // Create a .htaccess file if needed
++        $htaccessPath = dirname( dirname( __FILE__ ) ) . '/.htaccess';
++        if ( ! is_file( $htaccessPath ) ) {
++
++            // The htaccess data
++            $data = 'RewriteEngine on' . YD_CRLF;
++            $data .= 'Options +FollowSymlinks' . YD_CRLF;
++            $data .= 'RewriteRule ^item_([0-9]+).php?$ item.php?id=$1 [L]' . YD_CRLF;
++            $data .= 'RewriteRule ^page_([0-9]+).php?$ page.php?id=$1 [L]' . YD_CRLF;
++            $data .= 'RewriteRule ^category_([0-9]+).php?$ category.php?id=$1 [L]' . YD_CRLF;
++            $data .= 'RewriteRule ^link_([0-9]+).php?$ link.php?id=$1 [L]' . YD_CRLF;
++            $data .= 'RewriteRule ^image/(.*) item_gallery.php?id=$1 [L]' . YD_CRLF;
++
++            // Open the config file
++            $f = fopen( $htaccessPath, 'w' );
++            fwrite( $f, $data );
++            fclose( $f );
++
++            // Set the right permissions
++            @chmod( $htaccessPath, 0700 );
++
++        }
++
+     }
+ 
+     // Class defining our weblog API
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000127.html">[ydf-devel] r1714 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000129.html">[ydf-devel] r1716 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/zip examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#128">[ date ]</a>
+              <a href="thread.html#128">[ thread ]</a>
+              <a href="subject.html#128">[ subject ]</a>
+              <a href="author.html#128">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

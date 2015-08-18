@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2001 - in	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent: .	languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2001%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent%3A%20.%0A%09languages&In-Reply-To=%3C200608111622.k7BGMUGB031443%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000507.html">
+   <LINK REL="Next"  HREF="000509.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2001 - in	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent: .	languages</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2001%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent%3A%20.%0A%09languages&In-Reply-To=%3C200608111622.k7BGMUGB031443%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2001 - in	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent: .	languages">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Aug 11 18:22:30 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000507.html">[ydf-devel] r2000 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000509.html">[ydf-devel] r2002 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage skins/default	skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#508">[ date ]</a>
+              <a href="thread.html#508">[ thread ]</a>
+              <a href="subject.html#508">[ subject ]</a>
+              <a href="author.html#508">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-11 18:22:15 +0200 (Fri, 11 Aug 2006)
+New Revision: 2001
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php
+Log:
+- YDCMUser management has a mode modular form construction
+- new generic translation strings added
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-11 16:21:05 UTC (rev 2000)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-11 16:22:15 UTC (rev 2001)
+@@ -62,18 +62,37 @@
+         /**
+          *  This function return an array of permissions
+          *
+-         *  @param     $user_id   User id to get permissions
++         *  @param     $user_id    User id to get permissions
++         *  @param     $translate  (Optional) Translate permissions
+ 		 *
+          *  @returns    An array with all permission groupby object
+          */
+-		function getPermissions( $user_id ){
++		function getPermissions( $user_id, $translate = false ){
+ 		
+ 			$this-&gt;resetValues();
+ 			$this-&gt;user_id = intval( $user_id );
+ 			$this-&gt;orderby( 'object DESC, object_action DESC' );
+ 			$this-&gt;find();
+ 
+-			return $this-&gt;getResultsAsAssocArray( array( 'object', 'object_action' ) );
++			$permissions = $this-&gt;getResultsAsAssocArray( array( 'object', 'object_action' ) );
++			
++			if ( !$translate ) return $permissions;
++
++			$arr_translated = array();
++
++			// cycle objects and compute translated actions
++			foreach( $permissions as $obj =&gt; $perms ){
++
++				// get permission translations of this component
++				YDLocale::addDirectory( YD_DIR_HOME_ADD . '/' . $obj . '/languages/' );
++
++				if (!isset( $arr_translated[ $obj ] ) ) $arr_translated[] = $obj;
++
++				foreach( $perms as $p )
++					$arr_translated[ $obj ][] = t( $p );
++			}
++			
++			return $arr_translated;
+ 		}
+ 
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-11 16:21:05 UTC (rev 2000)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-11 16:22:15 UTC (rev 2001)
+@@ -250,7 +250,7 @@
+ 
+ 			// get form values
+ 			$values = $this-&gt;form-&gt;getValues();
+-
++//return array_reverse( $values );
+ 			// we need parent fot setting user permissions
+ 			$details = $this-&gt;getUser( $id );
+ 
+@@ -339,10 +339,13 @@
+ 		 * @param $password     (Optional) Flag that defines if we want to include the password box
+ 		 *                                 TRUE: include password box; FALSE: don't include
+ 		 * 
+-		 * @param $logindetails (Optional) Flag that defines if we login details are editable (eg: login schedule dates)
++		 * @param $logindetails (Optional) Flag that defines if login details are editable (eg: login schedule dates)
++		 *                                 TRUE: login details are editable; FALSE: login details are just information
++		 * 
++		 * @param $userdetails  (Optional) Flag that defines if user details are editable (eg: name, email, other info, template, language)
+ 		 *                                 TRUE: user details are editable; FALSE: user details are just information
+          */
+-		function addFormDetails( $username = false, $password = false, $logindetails = false ){
++		function addFormDetails( $username = false, $password = false, $logindetails = false, $userdetails = true ){
+ 
+ 			// add username
+ 			if ( $username ) $this-&gt;form-&gt;addElement( 'text', 'username', t('user_username') );
+@@ -351,29 +354,7 @@
+ 			// add password
+ 			if ( $password ) $this-&gt;form-&gt;addElement( 'password', 'password', t('user_password') );
+ 
+-			// add name
+-            $this-&gt;form-&gt;addElement( 'text',      'name',         t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
+-			$this-&gt;form-&gt;addRule(    'name',      'maxlength',    t('name too big'),  255 );
+-
+-			// add email
+-            $this-&gt;form-&gt;addElement( 'text',      'email',        t('user_email') );
+-			$this-&gt;form-&gt;addRule(    'email',     'email',        t('email not valid') );
+-
+-			// add other info textare
+-            $this-&gt;form-&gt;addElement( 'textarea',  'other',        t('user_other'),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
+-			$this-&gt;form-&gt;addRule(    'other',     'maxlength',    t('other too big'), 5000 );
+-
+-			// add languages select box
+-			$languages = YDCMComponent::module( 'YDCMLanguages' );
+-			$this-&gt;form-&gt;addElement( 'select',      'language_id',  t('user_language'),      array(), $languages-&gt;active() );
+-			$this-&gt;form-&gt;addRule(    'language_id', 'in_array',     t('language not valid'), array_keys( $languages-&gt;active() ) );
+-
+-			// add template select box
+-			$templates = YDCMComponent::module( 'YDCMTemplates' );
+-            $this-&gt;form-&gt;addElement( 'select',    'template',     t('user_template'),      array(), $templates-&gt;admin_templates() );
+-			$this-&gt;form-&gt;addRule(    'template',  'in_array',     t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
+-
+-			// add user details
++			// add login details
+ 			if ( $logindetails ){
+ 				$this-&gt;form-&gt;addElement( 'select',         'state',       t('login_state'), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+ 				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
+@@ -384,6 +365,32 @@
+ 				$this-&gt;form-&gt;addElement( 'span',           'login_end',   t('login_end') );
+ 			}
+ 
++			// add common user details
++            if ( $userdetails ){
++				$this-&gt;form-&gt;addElement( 'text',      'name',          t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
++				$this-&gt;form-&gt;addElement( 'text',      'email',         t('user_email') );
++				$this-&gt;form-&gt;addElement( 'textarea',  'other',         t('user_other'),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
++
++				$languages = YDCMComponent::module( 'YDCMLanguages' );
++				$this-&gt;form-&gt;addElement( 'select',      'language_id', t('user_language'),      array(), $languages-&gt;active() );
++
++				$templates = YDCMComponent::module( 'YDCMTemplates' );
++    	        $this-&gt;form-&gt;addElement( 'select',    'template',      t('user_template'),      array(), $templates-&gt;admin_templates() );
++
++				$this-&gt;form-&gt;addRule( 'name',        'maxlength',      t('name too big'),  255 );
++				$this-&gt;form-&gt;addRule( 'email',       'email',          t('email not valid') );
++				$this-&gt;form-&gt;addRule( 'other',       'maxlength',      t('other too big'), 5000 );
++				$this-&gt;form-&gt;addRule( 'language_id', 'in_array',       t('language not valid'), array_keys( $languages-&gt;active() ) );
++				$this-&gt;form-&gt;addRule( 'template',    'in_array',       t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
++
++			}else{
++				$this-&gt;form-&gt;addElement( 'span',      'name',          t('user_name') );
++				$this-&gt;form-&gt;addElement( 'span',      'email',         t('user_email') );
++				$this-&gt;form-&gt;addElement( 'span',      'other',         t('user_other') );
++				$this-&gt;form-&gt;addElement( 'span',      'language_id',   t('user_language') );
++				$this-&gt;form-&gt;addElement( 'span',      'template',      t('user_template') );
++			}
++
+ 			$this-&gt;form-&gt;addElement( 'span', 'login_counter', t('login_counter') );
+             $this-&gt;form-&gt;addElement( 'span', 'login_last',    t('login_last') );
+             $this-&gt;form-&gt;addElement( 'span', 'login_current', t('login_current') );
+@@ -584,17 +591,17 @@
+         /**
+          *  This function returns user attributes
+          *
+-         *  @param      $id          User id to use (instead of internal)
++         *  @param      $user_id     User id to use (instead of internal)
+          *  @param      $translate   (Optional) Boolean that defines if result must be translated
+          *
+          *  @returns    User details
+          */
+-		function getUser( $id, $translate = false ){
++		function getUser( $user_id, $translate = false ){
+ 
+ 			$this-&gt;resetValues();
+ 
+ 			// set user id
+-			$this-&gt;user_id = intval( $id );
++			$this-&gt;user_id = intval( $user_id );
+ 
+ 			// get all attributes
+ 			if ( $this-&gt;find() != 1 ) return false;
+@@ -611,6 +618,10 @@
+ 					$this-&gt;login_end   = t('not applicable');
+ 				}
+ 
++				if ( $this-&gt;state == 0 )      $this-&gt;state = t('blocked');
++				else if ( $this-&gt;state == 1 ) $this-&gt;state = t('active');
++				else                          $this-&gt;state = t('schedule');
++
+ 				// check if user is root
+ 				if ( $this-&gt;created_user == 0 ){
+ 					$this-&gt;created_user = t('not applicable');
+@@ -618,8 +629,11 @@
+ 				}
+ 			}
+ 
+-			// return values
+-			return $this-&gt;getValues();
++			// add permissions
++			$values = $this-&gt;getValues();
++			$values[ 'permissions' ] = $this-&gt;getPermissions( intval( $user_id ) );
++			
++			return $values;
+ 		}
+ 
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php	2006-08-11 16:21:05 UTC (rev 2000)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php	2006-08-11 16:22:15 UTC (rev 2001)
+@@ -14,7 +14,10 @@
+ $GLOBALS['t']['not applicable'] = 'Not applicable';
+ $GLOBALS['t']['yes'] = 'Yes';
+ $GLOBALS['t']['no'] = 'No';
++$GLOBALS['t']['active'] = 'Active';
++$GLOBALS['t']['blocked'] = 'Blocked';
+ $GLOBALS['t']['schedule'] = 'Schedule';
++$GLOBALS['t']['permissions'] = 'Permissions';
+ $GLOBALS['t']['delete'] = 'Delete';
+ $GLOBALS['t']['toggle state'] = 'Toggle state';
+ $GLOBALS['t']['public'] = 'Public';
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php	2006-08-11 16:21:05 UTC (rev 2000)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php	2006-08-11 16:22:15 UTC (rev 2001)
+@@ -14,7 +14,10 @@
+ $GLOBALS['t']['not applicable'] = 'N&atilde;o aplic&aacute;vel';
+ $GLOBALS['t']['yes'] = 'Sim';
+ $GLOBALS['t']['no'] = 'N&atilde;o';
++$GLOBALS['t']['active'] = 'Activo';
++$GLOBALS['t']['blocked'] = 'Bloqueado';
+ $GLOBALS['t']['schedule'] = 'Calend&aacute;rio';
++$GLOBALS['t']['permissions'] = 'Permiss&otilde;es';
+ $GLOBALS['t']['delete'] = 'Eliminar';
+ $GLOBALS['t']['toggle state'] = 'Inverter estado';
+ $GLOBALS['t']['public'] = 'P&uacute;blico';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000507.html">[ydf-devel] r2000 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000509.html">[ydf-devel] r2002 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage skins/default	skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#508">[ date ]</a>
+              <a href="thread.html#508">[ thread ]</a>
+              <a href="subject.html#508">[ subject ]</a>
+              <a href="author.html#508">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

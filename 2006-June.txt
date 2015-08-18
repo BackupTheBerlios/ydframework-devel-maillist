@@ -1,0 +1,1068 @@
+From araviski at free.fr  Sun Jun  4 14:40:37 2006
+From: araviski at free.fr (Erwan P.)
+Date: Sun, 04 Jun 2006 14:40:37 +0200
+Subject: [ydf-devel] YDCMFeedback
+In-Reply-To: <200605291720.k4THKCJd030434@sheep.berlios.de>
+References: <200605291720.k4THKCJd030434@sheep.berlios.de>
+Message-ID: <4482D4C5.8080206@free.fr>
+
+Hi everybody, hi Francisco,
+
+Francisco Azevedo wrote:
+
+> I saw that you are creating some modules extending a sqlclass (that has 
+> only a simple contructor about a connection).. and this doesn't seems 
+> the best approach because almost all forum logic implements what 
+> YDDatabaseObject already does (updates/deletes/inserts...).. all we need 
+> is a YDDatabaseObject extension and 80% of the job about the forum is 
+> done ;)
+I'm one of those who wrote the "forum" example (more than one year ago).
+You're totaly right, the reason we didn't used the YDDatabaseObject in
+our application is that due to short delais we didn't have time to go
+through it.
+I recently took the time to look deeper at it and it definitively rocks
+! I still have to learn few things about its behavior, in such a way to
+preserve performances, and then I'll try to refactor the forum data
+access layer.
+Anyhow, I'm happy to see the YDCM becoming a reality and I would be very
+pleased to try and contribute to it, perhaps the forum could extend
+YDCMComponent, I'll watch for.
+
+Kind regards,
+
+Erwan.
+
+
+From pclaerhout at berlios.de  Mon Jun 19 15:23:24 2006
+From: pclaerhout at berlios.de (pclaerhout at BerliOS)
+Date: Mon, 19 Jun 2006 15:23:24 +0200
+Subject: [ydf-devel] r1947 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+Message-ID: <200606191323.k5JDNOnn010580@sheep.berlios.de>
+
+Author: pclaerhout
+Date: 2006-06-19 15:23:21 +0200 (Mon, 19 Jun 2006)
+New Revision: 1947
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+Log:
+Replaced fnmatch with glob.
+Added YDArrayUtil::createIfNeeded
+Minor code cleanup
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -220,9 +220,6 @@
+             return YDStringUtil::formatFilesize( $space, $decimals );
+         }
+ 
+-
+-
+-
+         /**
+          *	@param $path	Path of the file or directory.
+          *
+@@ -379,7 +376,7 @@
+                 if ( ! strlen( $arg ) ) {
+                     continue;
+                 }
+-                
++
+                 // Normalize the path elements
+                 $arg = str_replace( '/', YDPath::getDirectorySeparator(), $arg );
+                 $arg = str_replace( '\\', YDPath::getDirectorySeparator(), $arg );
+@@ -1382,43 +1379,28 @@
+             // Start with an empty list
+             $fileList = array();
+ 
+-            // Get a handle to the directory
+-            $dirHandle = opendir( $this->getPath() );
+-
+-            // Get the list of files
+-            while ( false !== ( $file = readdir( $dirHandle ) ) ) {
+-                if ( $file != '.' && $file != '..' ) {
+-                    $fileList[ strtolower( $file ) ] = $file;
+-                }
+-            }
+-
+             // Get the list of patterns
+             if ( ! is_array( $pattern ) ) {
+                 $pattern = array( $pattern );
+             }
+ 
+-            // Apply the pattern to match
+-            $fileListMatch = array();
+-            foreach ( $fileList as $file ) {
+-                foreach ( $pattern as $patternitem ) {
+-                    if ( ! empty( $patternitem ) && substr( $patternitem, 0, 1 ) != '!' ) {
+-                        if ( YDFSDirectory::_match( $patternitem, $file ) ) {
+-                            $fileListMatch[ $file ] = $file;
+-                        }
+-                    } else {
++            // Get the files that match
++            foreach ( $pattern as $patternitem ) {
++                if ( ! empty( $patternitem ) && substr( $patternitem, 0, 1 ) != '!' ) {
++                    foreach ( glob( $this->getAbsolutePath() . '/' . $patternitem ) as $file ) {
++                        $file = basename( $file );
+                         $fileListMatch[ $file ] = $file;
+                     }
+                 }
+             }
+             $fileList = & $fileListMatch;
+ 
+-            // Apply the patterns to not match
+-            foreach ( $fileList as $file ) {
+-                foreach ( $pattern as $patternitem ) {
+-                    if ( ! empty( $patternitem ) && substr( $patternitem, 0, 1 ) == '!' ) {
+-                        if ( YDFSDirectory::_match( substr( $patternitem, 1 ), $file ) ) {
+-                            unset( $fileList[ $file ] );
+-                        }
++            // Remove the files that don't match
++            foreach ( $pattern as $patternitem ) {
++                if ( ! empty( $patternitem ) && substr( $patternitem, 0, 1 ) == '!' ) {
++                    foreach ( glob( $this->getAbsolutePath() . '/' . substr( $patternitem, 1 ) ) as $file ) {
++                        $file = basename( $file );
++                        unset( $fileList[ $file ] );
+                     }
+                 }
+             }
+@@ -1681,7 +1663,30 @@
+             }
+         }
+ 
++
+         /**
++         *  This function will recursively create the directories
++         *	@param $directory	Directory to create.
++         *	@param $mode		(optional) The mode for the directory. By default, this is 0700.
++         *
++         *	@returns	False on failure, otherwise, it will return a YDFSDirectory object for the new directory.
++         *
++         *  @static
++         */
++        function createDirectories( $directory, $mode=0700 ) {
++            if ( is_null( $directory ) || $directory === '' ) {
++                return false;
++            }
++            if ( is_dir( $directory ) || $directory === '/' ) {
++                return true;
++            }
++            if ( YDFSDirectory::createDirectories( dirname( $directory ), $mode ) ) {
++                return mkdir( $directory, $mode );
++            }
++            return false;
++        }
++
++        /**
+          *	This function will recursively delete a directory. It will delete the directory and the complete
+          *	contents of that directory! Be careful I would say!
+          *
+@@ -1753,78 +1758,6 @@
+         }
+ 
+         /**
+-         *	Function to emulate the fnmatch function from UNIX which is not available on all servers.
+-         *
+-         *	@remark
+-         *		This function is a reformatted version of the function found on:
+-         *		http://www.php.net/manual/en/function.fnmatch.php#31353
+-         *
+-         *	@param $pattern	Pattern to match the file against.
+-         *	@param $file	File name that needs to be checked.
+-         *
+-         *	@return	Boolean indicating if the file matched the pattern or not.
+-         *
+-         *	@internal
+-         */
+-        function _match( $pattern, $file ) {
+-
+-            // Use the native fnmatch function if it is there
+-            if ( function_exists( 'fnmatch' ) ) {
+-
+-                // Match the pattern
+-                return fnmatch( $pattern, $file );
+-
+-            }
+-
+-            // Loop over the characters of the pattern
+-            for ( $i=0; $i < strlen( $pattern ); $i++ ) {
+-
+-                // Character is a *
+-                if ( $pattern[$i] == '*' ) {
+-                    for ( $c = $i; $c < max( strlen( $pattern ), strlen( $file ) ); $c++ ) {
+-                        if ( YDFSDirectory::_match( substr( $pattern, $i+1 ), substr( $file, $c ) ) ) {
+-                            return true;
+-                        }
+-                    }
+-                    return false;
+-                }
+-
+-                // Pattern is a [
+-                if ( $pattern[$i] == '[' ) {
+-                    $letter_set = array();
+-                    for( $c=$i+1; $c < strlen( $pattern ); $c++ ) {
+-                        if ( $pattern[$c] != ']' ) {
+-                            array_push( $letter_set, $pattern[$c] );
+-                        } else {
+-                            break;
+-                        }
+-                    }
+-                    foreach ( $letter_set as $letter ) {
+-                        if ( YDFSDirectory::_match( $letter . substr( $pattern, $c+1 ), substr( $file, $i ) ) ) {
+-                            return true;
+-                        }
+-                    }
+-                    return false;
+-                }
+-
+-                // Pattern is a ?
+-                if ( $pattern[$i] == '?' ) {
+-                    continue;
+-                }
+-
+-                // Pattern not the same as the file character
+-                if ( $pattern[$i] != $file[$i] ) {
+-                    return false;
+-                }
+-
+-            }
+-
+-            // All the rest returns positive
+-            return true;
+-
+-        }
+-
+-        /**
+          *	Function to recursively delete a directory.
+          *
+          *	@param $dirname	Directory to be removed.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -252,6 +252,22 @@
+             return substr( $return, 1 ); 
+         }
+ 
++        /**
++         *  This function will initialize the indicated array if it doesn't exist yet.
++         *
++         *  @param  $where  Where to instantiate the array in.
++         *  @param  $name   The name of the array to create.
++         *
++         *  @static
++         */
++        function createIfNeeded( & $where, $name ) {
++            if ( ! isset( $where[$name] ) ) {
++                $where[$name] = array();
++            }
++
++
++        }
++
+     }
+ 
+     /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -121,9 +121,6 @@
+     $GLOBALS['YD_INCLUDE_PATH'] = explode( YD_PATHDELIM, $includePath );
+     @ini_set( 'include_path', $includePath );
+ 
+-//    // Include the standard functions
+-//    include_once( YD_DIR_HOME . '/YDF2_core.php' );
+-
+     // Constants
+     define( 'YD_CONFIG_VAR', 'YDF2_GLOBAL_CONFIG' );
+     define( 'YD_LOCALE_KEY', 'YD_LOCALE' );
+@@ -194,19 +191,33 @@
+      *	@param $file	File to be included.
+      */
+     function YDInclude( $file ) {
++
++        // Check if the file is an absolute path
+         if ( is_file( $file ) ) {
+             include_once( $file );
+             return;
+         }
++
++        // Check for known classes in known paths
++
++        // For YDTemplate, check which one needs to be included (optimize the file includes)
++        // If Smarty: include YDTemplate_smarty.php
++        // If PHP: include YDTemplate_php.php
++        // If not defined: include YDTemplate.php
++
++        // Search the include path
+         foreach ( $GLOBALS['YD_INCLUDE_PATH'] as $include ) {
+             if ( $include != false && is_file( $include . '/' . $file ) ) {
+                 include_once( $include . '/' . $file );
+                 return;
+             }
+         }
++
++        // Raise an error
+         trigger_error(
+             'Failed to include the file: ' . $file . ' The file was not found in the include path.', YD_ERROR
+         );
++
+     }
+ 
+     /**
+@@ -252,16 +263,11 @@
+      *  @returns    The translated string.
+      */
+     function t( $t ) {
+-
+-        // Return empty string when param is missing
+         if ( empty( $t ) ) {
+             return '';
+         }
+-
+-        // Return the right translation
+         $t = strtolower( $t );
+         return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : "%$t%" );
+-
+     }
+ 
+     /**
+@@ -500,19 +506,13 @@
+          *	@param	$dir       Directory to add
+          */
+         function addDirectory( $dir ){
+-
+-            // check if directories array exists
+-            if ( !isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
++            if ( !isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) ) {
+                 $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] = array();
+-
+-            // add directory to array. Needed when changing locale
++            }
+             $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ][] = $dir;
+-
+-            // check if translations array exists
+-            if ( !isset( $GLOBALS['t'] ) )
++            if ( !isset( $GLOBALS['t'] ) ) {
+                 $GLOBALS['t'] = array();
+-
+-            // include directory
++            }
+             include_once( $dir . '/' . YDLocale::get() . '.php' );
+         }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -191,28 +191,17 @@
+             }
+ 
+             // Add the elapsed time
+-            $elapsed = $GLOBALS['timer']->getElapsed();
+-            echo( YD_CRLF . '<!-- ' . $elapsed . ' ms -->' );
++            die( YD_CRLF . '<!-- ' . $GLOBALS['timer']->getElapsed() . ' ms -->' );
+ 
+-            // Stop the execution of the request
+-            die();
+-
+         }
+ 
+     }
+ 
+     // Check if we need to auto execute
+     if ( YDConfig::get( 'YD_AUTO_EXECUTE', true ) == true ) { 
+-
+-        // Instantiate the executor class
+         $clsInst = new YDExecutor( YD_SELF_FILE );
+-
+-        // Start the session
+         @session_start();
+-
+-        // Execute the execute function
+         $clsInst->execute();
+-
+     }
+-    
+-?>
++
++?>
+\ No newline at end of file
+
+
+
+From david_db at berlios.de  Tue Jun 20 21:01:33 2006
+From: david_db at berlios.de (david_db at berlios.de)
+Date: Tue, 20 Jun 2006 21:01:33 +0200
+Subject: [ydf-devel] r1948 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+Message-ID: <200606201901.k5KJ1XXd020388@sheep.berlios.de>
+
+Author: david_db
+Date: 2006-06-20 21:01:28 +0200 (Tue, 20 Jun 2006)
+New Revision: 1948
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php
+Log:
+Fixed the <script> tag of YDFormElement_TextAreaCounter.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php	2006-06-19 13:23:21 UTC (rev 1947)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php	2006-06-20 19:01:28 UTC (rev 1948)
+@@ -92,7 +92,7 @@
+             $out = '';
+         
+             if ( ! defined( 'YD_CTTA_MAINSCRIPT' ) ) {
+-                $out .= '<script language="JavaScript">';
++                $out .= '<script type="text/javascript">';
+                 $out .= 'function textCounter( field, maxlimit ) {';
+                 $out .= "  var f = document.getElementById( field );";
+                 $out .= "  var c = document.getElementById( field + '_counter' );";
+
+
+
+From david_db at berlios.de  Tue Jun 20 21:03:11 2006
+From: david_db at berlios.de (david_db at berlios.de)
+Date: Tue, 20 Jun 2006 21:03:11 +0200
+Subject: [ydf-devel] r1949 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+Message-ID: <200606201903.k5KJ3BQ0020824@sheep.berlios.de>
+
+Author: david_db
+Date: 2006-06-20 21:03:07 +0200 (Tue, 20 Jun 2006)
+New Revision: 1949
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+Log:
+Fixed the <script> tag of YDFormElement_BBTextArea.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2006-06-20 19:01:28 UTC (rev 1948)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2006-06-20 19:03:07 UTC (rev 1949)
+@@ -149,7 +149,7 @@
+             $out = '';
+             if ( sizeof( $this->_buttons ) > 0 ) {
+                 if ( ! defined( 'YD_BBTA_MAINSCRIPT' ) ) {
+-                    $out .= '<script language="JavaScript">';
++                    $out .= '<script type="text/javascript">';
+                     $out .= '	function AddText( element, startTag, defaultText, endTag ) {';
+                     $out .= '		objElement = document.getElementById( element );';
+                     $out .= '		if ( objElement.createTextRange ) {';
+@@ -172,7 +172,7 @@
+                     $out .= '</script>';
+                     define( 'YD_BBTA_MAINSCRIPT', 1 );
+                 }
+-                $out .= '<script language="JavaScript">';
++                $out .= '<script type="text/javascript">';
+                 $out .= '	function doButton( element, name ) {';
+                 foreach ( $this->_buttons as $button ) {
+                     if ( $button['type'] == 'modifier' )  {
+
+
+
+From david_db at berlios.de  Fri Jun 23 09:59:39 2006
+From: david_db at berlios.de (david_db at berlios.de)
+Date: Fri, 23 Jun 2006 09:59:39 +0200
+Subject: [ydf-devel] r1950 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200606230759.k5N7xdB7013587@sheep.berlios.de>
+
+Author: david_db
+Date: 2006-06-23 09:59:25 +0200 (Fri, 23 Jun 2006)
+New Revision: 1950
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+Log:
+Fixed YDFSDirectory::getContents when the pattern has no matches.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-06-20 19:03:07 UTC (rev 1949)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-06-23 07:59:25 UTC (rev 1950)
+@@ -1378,6 +1378,7 @@
+ 
+             // Start with an empty list
+             $fileList = array();
++            $fileListMatch = array();
+ 
+             // Get the list of patterns
+             if ( ! is_array( $pattern ) ) {
+
+
+
+From david_db at berlios.de  Fri Jun 23 10:13:28 2006
+From: david_db at berlios.de (david_db at berlios.de)
+Date: Fri, 23 Jun 2006 10:13:28 +0200
+Subject: [ydf-devel] r1951 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200606230813.k5N8DSjt015328@sheep.berlios.de>
+
+Author: david_db
+Date: 2006-06-23 10:13:24 +0200 (Fri, 23 Jun 2006)
+New Revision: 1951
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+Log:
+Fixed YDFSDirectory::getContents when the pattern is empty.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-06-23 07:59:25 UTC (rev 1950)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-06-23 08:13:24 UTC (rev 1951)
+@@ -28,15 +28,15 @@
+ 
+     // Includes
+     include_once( YD_DIR_HOME_CLS . '/YDUtil.php');
+-    
++
+     // YDFSImage cropping specific constants
+     define( 'YD_FS_CROP_UNCHANGED', 1 );
+     define( 'YD_FS_CROP_ENLARGED',  2 );
+     define( 'YD_FS_CROP_BORDERED',  3 );
+-    
++
+     // Config when cropping smaller images
+     YDConfig::set( 'YD_FS_CROP', YD_FS_CROP_ENLARGED, false );
+-    
++
+     // The mime types mapping
+     $GLOBALS['YD_FS_MIME_MAPPING'] = array(
+         'ez' => 'application/andrew-inset',
+@@ -380,7 +380,7 @@
+                 // Normalize the path elements
+                 $arg = str_replace( '/', YDPath::getDirectorySeparator(), $arg );
+                 $arg = str_replace( '\\', YDPath::getDirectorySeparator(), $arg );
+-                
++
+                 // Check for an absolute path
+                 if ( YDPath::isAbsolute( $arg ) ) {
+                     $path = $arg;
+@@ -458,7 +458,7 @@
+     class YDFSFile extends YDBase {
+ 
+         /**
+-         *  The class constructor of the YDFSFile class takes the path to the file as it's first argument. 
++         *  The class constructor of the YDFSFile class takes the path to the file as it's first argument.
+          *  It will then provide you with a number of functions to get the properties of the file.
+          *
+          *  @param $path    Path of the file.
+@@ -471,13 +471,13 @@
+ 
+             // Check if the path if the file exists
+             if ( ! is_file( $path ) ) {
+-                
++
+                 // Check if the file should be created
+                 if ( $create ) {
+ 
+                     // Create a new YDFSDirectory object
+                     $dir = new YDFSDirectory( dirname( $path ) );
+-                    
++
+                     // Create the file
+                     $dir->createFile( basename( $path ), ' ' );
+ 
+@@ -548,7 +548,7 @@
+             if ( $format == 'timestamp' ) {
+                 return filemtime( $this->getAbsolutePath() );
+             }
+-            return YDStringUtil::formatDate( filemtime( $this->getAbsolutePath() ), $format, $locale ); 
++            return YDStringUtil::formatDate( filemtime( $this->getAbsolutePath() ), $format, $locale );
+         }
+ 
+         /**
+@@ -878,7 +878,7 @@
+          *  @internal
+          */
+         function _initImageSize() {
+-        
++
+             // Check for the getimagesize function
+             if ( ! function_exists( 'getimagesize' ) ) {
+                 trigger_error(
+@@ -886,7 +886,7 @@
+                     . 'using the YDFSImage::getImageSize function.', YD_ERROR
+                 );
+             }
+-        
++
+             if ( is_null( $this->image_size ) ) {
+                 $this->image_size = getimagesize( $this->getAbsolutePath() );
+             }
+@@ -950,10 +950,10 @@
+          *				the second element is the height in pixels.
+          */
+         function getImageSize() {
+-        
++
+             // Init image_size
+             $this->_initImageSize();
+-            
++
+             // Get the first two elements
+             $imgSize = array_slice( $this->image_size, 0, 2 );
+ 
+@@ -1084,21 +1084,21 @@
+             // Get the current image size
+             $ori_width  = imageSX( $src_img );
+             $ori_height = imageSY( $src_img );
+-            
++
+             // Calculate the new image size
+             if ( $crop ) {
+-            
++
+                 if ( $ori_width > $ori_height ) {
+                     $thumb_w = ceil( $ori_width * ( $height / $ori_height ) );
+                     $thumb_h = $height;
+-                } 
++                }
+                 if ( $ori_width < $ori_height ) {
+                     $thumb_w = $width;
+                     $thumb_h = ceil( $ori_height * ( $width / $ori_width ) );
+                 }
+-            
++
+             } else {
+-            
++
+                 if ( $ori_width > $ori_height ) {
+                     $thumb_w = $width;
+                     $thumb_h = ceil( $ori_height * ( $width / $ori_width ) );
+@@ -1107,16 +1107,16 @@
+                     $thumb_w = ceil( $ori_width * ( $height / $ori_height ) );
+                     $thumb_h = $height;
+                 }
+-            
++
+             }
+-            
++
+             if ( $ori_width == $ori_height ) {
+                 $thumb_w = $width;
+                 $thumb_h = $height;
+             }
+-            
++
+             if ( ( $width >= $ori_width || $height >= $ori_height ) && ( ! $crop || ( $crop && YDConfig::get( 'YD_FS_CROP' ) != YD_FS_CROP_ENLARGED ) ) ) {
+-                
++
+                 if ( $width >= $ori_width && $height < $ori_height ) {
+                     $thumb_w = ceil( $ori_width * ( $height / $ori_height ) );
+                     $thumb_h = $height;
+@@ -1127,30 +1127,30 @@
+                     $thumb_w = $ori_width;
+                     $thumb_h = $ori_height;
+                 }
+-                
++
+             }
+ 
+             // Resample the image
+-            $dst_img = imagecreatetruecolor( $thumb_w, $thumb_h ); 
++            $dst_img = imagecreatetruecolor( $thumb_w, $thumb_h );
+             if ( $img_type == 'png' ) {
+                 imagecopyresized( $dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $ori_width, $ori_height );
+             } else {
+                 imagecopyresampled( $dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $ori_width, $ori_height );
+             }
+-            
++
+             if ( $crop && ( $width != $thumb_w || $height != $thumb_h ) ) {
+-            
++
+                 $x = ceil( abs( $thumb_w-$width  ) / 2 );
+                 $y = ceil( abs( $thumb_h-$height ) / 2 );
+-                
++
+                 $default = true;
+-                
++
+                 if ( $ori_width < $width || $ori_height < $height ) {
+-                
++
+                     switch ( YDConfig::get( 'YD_FS_CROP', YD_FS_CROP_ENLARGED ) ) {
+-                    
++
+                         case YD_FS_CROP_UNCHANGED:
+-                        
++
+                             if ( $ori_width < $width && $ori_height < $height ) {
+                                 $crp_img = $dst_img;
+                                 $default = false;
+@@ -1162,31 +1162,31 @@
+                                 $height = $ori_height;
+                             }
+                             break;
+-                        
++
+                         case YD_FS_CROP_ENLARGED:
+                         case YD_FS_CROP_BORDERED:
+                             break;
+-                            
++
+                     }
+-                    
++
+                 }
+-                
++
+                 if ( $default ) {
+-                
+-                    $crp_img = imagecreatetruecolor( $width, $height ); 
+-                    
++
++                    $crp_img = imagecreatetruecolor( $width, $height );
++
+                     if ( $img_type == 'png' ) {
+                         imagecopyresized( $crp_img, $dst_img, 0, 0, $x, $y, $width, $height, $width, $height );
+                     } else {
+                         imagecopyresampled( $crp_img, $dst_img, 0, 0, $x, $y, $width, $height, $width, $height );
+                     }
+-                    
++
+                 }
+-                
++
+                 $dst_img = $crp_img;
+-                
++
+             }
+-            
++
+             // Get the resulting image
+             ob_start();
+             if ( $img_type == 'gif' ) {
+@@ -1204,8 +1204,8 @@
+             ob_end_clean();
+ 
+             // Destroy the images
+-            imagedestroy( $dst_img ); 
+-            imagedestroy( $src_img ); 
++            imagedestroy( $dst_img );
++            imagedestroy( $src_img );
+ 
+             // Save the cache if needed
+             if ( $cache == true ) {
+@@ -1280,7 +1280,7 @@
+          *
+          *  @returns    The number of files in the directory.
+          */
+-        function getFileCount(){ 
++        function getFileCount(){
+             $total = 0;
+             $dirHandle = opendir( $this->getPath() );
+             while ( false !== ( $file = readdir( $dirHandle ) ) ) {
+@@ -1297,7 +1297,7 @@
+          *
+          *  @returns    The number of directories in the directory.
+          */
+-        function getDirectoryCount(){ 
++        function getDirectoryCount(){
+             $total = 0;
+             $dirHandle = opendir( $this->getPath() );
+             while ( false !== ( $file = readdir( $dirHandle ) ) ) {
+@@ -1318,8 +1318,8 @@
+          *
+          *  @returns    The total size of the directory.
+          */
+-        function getSize( $recursive = false, $formatted = false, $decimals = 1 ) { 
+-            $total = 0; 
++        function getSize( $recursive = false, $formatted = false, $decimals = 1 ) {
++            $total = 0;
+             $dirHandle = opendir( $this->getPath() );
+             while ( false !== ( $file = readdir( $dirHandle ) ) ) {
+                 if ( $file == '.' || $file == '..') {
+@@ -1328,8 +1328,8 @@
+                 if ( is_file( $this->getPath() .'/'. $file ) ) {
+                     $total += filesize( $this->getPath() .'/'. $file );
+                 } else if ( $recursive && is_dir( $this->getPath() .'/'. $file ) ) {
+-                    $subdir = new YDFSDirectory( $this->getPath() .'/'. $file ); 
+-                    $total += $subdir->getSize(true, false, $decimals); 
++                    $subdir = new YDFSDirectory( $this->getPath() .'/'. $file );
++                    $total += $subdir->getSize(true, false, $decimals);
+                 }
+             }
+             closedir( $dirHandle );
+@@ -1392,6 +1392,11 @@
+                         $file = basename( $file );
+                         $fileListMatch[ $file ] = $file;
+                     }
++                } else if ( empty( $patternitem ) ) {
++                    foreach ( glob( $this->getAbsolutePath() . '/*' ) as $file ) {
++                        $file = basename( $file );
++                        $fileListMatch[ $file ] = $file;
++                    }
+                 }
+             }
+             $fileList = & $fileListMatch;
+
+
+
+From muitocomplicado at gmail.com  Fri Jun 23 10:36:56 2006
+From: muitocomplicado at gmail.com (David Bittencourt)
+Date: Fri, 23 Jun 2006 05:36:56 -0300
+Subject: [ydf-devel] YDDatabaseObject
+Message-ID: <12260be20606230136m52f1ae43i3d67423ef0817315@mail.gmail.com>
+
+Hi guys,
+
+For a long time I'm thinking of fixing YDDatabaseObject to be smarter when
+working with multiple joins. Like when we want to load a relation, and load
+another relation in those objects that were loaded, and so on. Then we can
+search in all of them. We can't do that now. Today the class works fine only
+with 3 objects in a relation and if you want to add more you have to tweak
+it a little bit and it's not good.
+
+The problem is that to fix it I have to change the class behavior. We'll
+have to check for the relations that were loaded and not the relations
+passed to the find() function. This could break a lot of existing code.
+
+In my analysis this change will only affect find actions. For example, now
+we can do this:
+
+$user = YDDatabaseObject::getInstance( 'user' );
+$user->id = 123;
+$user->find( 'group' );
+
+This code will find a user with id = 123 and will join the "group" relation
+to the query. After the changes are implemented we'll have to do this:
+
+$user = YDDatabaseObject::getInstance( 'user' );
+$user->load( 'group' );
+$user->id = 123;
+$user->find();
+
+So the query will include only the loaded relations. Doesn't look that
+complicated in this example, but if you use the same $user object after that
+and doesn't reset() it you could have problems. For example:
+
+$user = YDDatabaseObject::getInstance( 'user' );
+$user->load( 'group' );
+$user->id = 123;
+$user->find();
+
+// do something
+
+$user->id = 2344;
+$user->load( 'event' );
+$user->find();
+
+The last query will join the "event" AND "group" relations because both of
+them are loaded. The solution is to add a reset() between them or get
+another instance of the class.
+
+So my options are:
+
+1. Change it and we'll manage to fix our current codes
+2. Create a new class (YDDatabaseObject2 for example)
+3. Another suggestion.
+
+I'm looking forward for your input.
+
+Thanks,
+
+-db
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060623/157b978f/attachment.html>
+
+From francisco at fusemail.com  Fri Jun 23 18:08:44 2006
+From: francisco at fusemail.com (Francisco Azevedo)
+Date: Fri, 23 Jun 2006 17:08:44 +0100
+Subject: [ydf-devel] YDDatabaseObject
+In-Reply-To: <12260be20606230136m52f1ae43i3d67423ef0817315@mail.gmail.com>
+References: <12260be20606230136m52f1ae43i3d67423ef0817315@mail.gmail.com>
+Message-ID: <449C120C.8010506@fusemail.com>
+
+Hi David
+
+The first solution seems the best approach to me. It makes sense that 
+when loading a class it would be used after loaded in all finds.
+
+.. and i think it's easy to port all previous implementations.
+
+just my 0.02
+
+regards
+Francisco A
+
+
+> 
+> For a long time I'm thinking of fixing YDDatabaseObject to be smarter 
+> when working with multiple joins. Like when we want to load a relation, 
+> and load another relation in those objects that were loaded, and so on. 
+> Then we can search in all of them. We can't do that now. Today the class 
+> works fine only with 3 objects in a relation and if you want to add more 
+> you have to tweak it a little bit and it's not good.
+> 
+> The problem is that to fix it I have to change the class behavior. We'll 
+> have to check for the relations that were loaded and not the relations 
+> passed to the find() function. This could break a lot of existing code.
+> 
+> In my analysis this change will only affect find actions. For example, 
+> now we can do this:
+> 
+> $user = YDDatabaseObject::getInstance( 'user' );
+> $user->id = 123;
+> $user->find( 'group' );
+> 
+> This code will find a user with id = 123 and will join the "group" 
+> relation to the query. After the changes are implemented we'll have to 
+> do this:
+> 
+> $user = YDDatabaseObject::getInstance( 'user' );
+> $user->load( 'group' );
+> $user->id = 123;
+> $user->find();
+> 
+> So the query will include only the loaded relations. Doesn't look that 
+> complicated in this example, but if you use the same $user object after 
+> that and doesn't reset() it you could have problems. For example:
+> 
+> $user = YDDatabaseObject::getInstance( 'user' );
+> $user->load( 'group' );
+> $user->id = 123;
+> $user->find();
+> 
+> // do something
+> 
+> $user->id = 2344;
+> $user->load( 'event' );
+> $user->find();
+> 
+> The last query will join the "event" AND "group" relations because both 
+> of them are loaded. The solution is to add a reset() between them or get 
+> another instance of the class.
+> 
+> So my options are:
+> 
+> 1. Change it and we'll manage to fix our current codes
+> 2. Create a new class (YDDatabaseObject2 for example)
+> 3. Another suggestion.
+> 
+> I'm looking forward for your input.
+> 
+> Thanks,
+> 
+> -db
+> 
+> 
+
+
+
+From ydfpoi at gmail.com  Sat Jun 24 12:11:18 2006
+From: ydfpoi at gmail.com (ydf poi)
+Date: Sat, 24 Jun 2006 12:11:18 +0200
+Subject: [ydf-devel] YDDatabaseObject
+In-Reply-To: <12260be20606230136m52f1ae43i3d67423ef0817315@mail.gmail.com>
+References: <12260be20606230136m52f1ae43i3d67423ef0817315@mail.gmail.com>
+Message-ID: <306340e00606240311y41829750s8e2088ce066773b8@mail.gmail.com>
+
+Hi db,
+
+What do you think about a solution implementing the new behavior, but
+keeping the old one?
+I know this is not good practice in general, but it could be not so
+bad if both behaviour are interesting for the end user.
+
+You may have find() and reset() methods (find with no argument) as you
+stated in your first post.
+Then you can say that find($relation) performes an automatic reset()
+before loading.
+Perhaps, you can even have a reset($relation) to throw precisely this
+relation away (and not the others) from your next finding?
+
+In summary:
+ - reset() : reset all relations
+ - reset($relation) : reset just this one
+ - load($relation) : add this relation to the next find operation
+ - find() : find data following preceding load operations
+ - find($relation) : find data only for this relation
+Maybe, you can rename reset with unload?
+
+I am not sure i have a good understanding of the problem, but anyway
+this is also my 2 cents.
+
+Kind regards
+
+2006/6/23, David Bittencourt <muitocomplicado at gmail.com>:
+> Hi guys,
+>
+> For a long time I'm thinking of fixing YDDatabaseObject to be smarter when
+> working with multiple joins. Like when we want to load a relation, and load
+> another relation in those objects that were loaded, and so on. Then we can
+> search in all of them. We can't do that now. Today the class works fine only
+> with 3 objects in a relation and if you want to add more you have to tweak
+> it a little bit and it's not good.
+>
+> The problem is that to fix it I have to change the class behavior. We'll
+> have to check for the relations that were loaded and not the relations
+> passed to the find() function. This could break a lot of existing code.
+>
+> In my analysis this change will only affect find actions. For example, now
+> we can do this:
+>
+> $user = YDDatabaseObject::getInstance( 'user' );
+> $user->id = 123;
+> $user->find( 'group' );
+>
+> This code will find a user with id = 123 and will join the "group" relation
+> to the query. After the changes are implemented we'll have to do this:
+>
+> $user = YDDatabaseObject::getInstance( 'user' );
+> $user->load( 'group' );
+>  $user->id = 123;
+>  $user->find();
+>
+> So the query will include only the loaded relations. Doesn't look that
+> complicated in this example, but if you use the same $user object after that
+> and doesn't reset() it you could have problems. For example:
+>
+>
+> $user = YDDatabaseObject::getInstance( 'user' );
+>  $user->load( 'group' );
+>  $user->id = 123;
+>  $user->find();
+>
+> // do something
+>
+> $user->id = 2344;
+> $user->load( 'event' );
+> $user->find();
+>
+> The last query will join the "event" AND "group" relations because both of
+> them are loaded. The solution is to add a reset() between them or get
+> another instance of the class.
+>
+> So my options are:
+>
+> 1. Change it and we'll manage to fix our current codes
+> 2. Create a new class (YDDatabaseObject2 for example)
+> 3. Another suggestion.
+>
+> I'm looking forward for your input.
+>
+>  Thanks,
+>
+> -db
+>
+>
+>
+
+
+-- 
+po?
+
+

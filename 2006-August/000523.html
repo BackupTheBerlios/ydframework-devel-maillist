@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2016 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2016%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608152133.k7FLXefs019010%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000522.html">
+   <LINK REL="Next"  HREF="000524.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2016 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2016%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608152133.k7FLXefs019010%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2016 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug 15 23:33:40 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000522.html">[ydf-devel] r2015 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000524.html">[ydf-devel] r2017 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#523">[ date ]</a>
+              <a href="thread.html#523">[ thread ]</a>
+              <a href="subject.html#523">[ subject ]</a>
+              <a href="author.html#523">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-15 23:33:29 +0200 (Tue, 15 Aug 2006)
+New Revision: 2016
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+Log:
+when adding users on YDCMUsers password is checked and added if element was created
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-15 21:31:18 UTC (rev 2015)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-15 21:33:29 UTC (rev 2016)
+@@ -215,19 +215,24 @@
+ 
+ 			// parse values
+ 			$values = array();
+-			$values['name']         = $this-&gt;form-&gt;getValue( 'name' );
+-			$values['email']        = $this-&gt;form-&gt;getValue( 'email' );
+-			$values['username']     = $this-&gt;form-&gt;getValue( 'username' );
+-			$values['other']        = $this-&gt;form-&gt;getValue( 'other' );
+-			$values['state']        = $this-&gt;form-&gt;getValue( 'state' );
+-			$values['type']         = 'YDCMUseradministrator';
+-			$values['nlevel']       = 1;
+-			$values['created_user'] = $this-&gt;currentID();
+-			$values['created_date'] = YDStringUtil::formatDate( time(), 'datetimesql' );
+-			$values['language_id']  = $this-&gt;form-&gt;getValue( 'language_id' );
+-			$values['login_start']  = YDStringUtil::formatDate( $this-&gt;form-&gt;getValue( 'login_start' ), 'datetimesql' );
+-			$values['login_end']    = YDStringUtil::formatDate( $this-&gt;form-&gt;getValue( 'login_end' ),   'datetimesql' );
++			$values['name']          = $this-&gt;form-&gt;getValue( 'name' );
++			$values['email']         = $this-&gt;form-&gt;getValue( 'email' );
++			$values['username']      = $this-&gt;form-&gt;getValue( 'username' );
++			$values['other']         = $this-&gt;form-&gt;getValue( 'other' );
++			$values['state']         = $this-&gt;form-&gt;getValue( 'state' );
++			$values['type']          = 'YDCMUseradministrator';
++			$values['nlevel']        = 1;
++			$values['created_user']  = $this-&gt;currentID();
++			$values['created_date']  = YDStringUtil::formatDate( time(), 'datetimesql' );
++			$values['language_id']   = $this-&gt;form-&gt;getValue( 'language_id' );
++			$values['login_start']   = YDStringUtil::formatDate( $this-&gt;form-&gt;getValue( 'login_start' ), 'datetimesql' );
++			$values['login_end']     = YDStringUtil::formatDate( $this-&gt;form-&gt;getValue( 'login_end' ),   'datetimesql' );
++			$values['login_counter'] = 0;
+ 
++			// check password
++			if ( $this-&gt;form-&gt;isElement( 'password' ) )
++				$values['password'] = md5( $this-&gt;form-&gt;getValue( 'password' ) );
++
+ 			// add user to YDUsers table
+ 			$newID = $this-&gt;tree-&gt;addNode( $values, $parent_id );
+ 
+@@ -359,7 +364,7 @@
+ 			// add login details
+ 			if ( $logindetails ){
+ 				$this-&gt;form-&gt;addElement( 'select',         'state',       t('login_state'), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+-				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
++				$this-&gt;form-&gt;addElement( 'dateselect', 'login_start', t('login_start') );
+ 				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_end',   t('login_end'));
+ 			}else{
+ 				$this-&gt;form-&gt;addElement( 'span',           'state',       t('login_state') );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000522.html">[ydf-devel] r2015 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000524.html">[ydf-devel] r2017 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#523">[ date ]</a>
+              <a href="thread.html#523">[ thread ]</a>
+              <a href="subject.html#523">[ subject ]</a>
+              <a href="author.html#523">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

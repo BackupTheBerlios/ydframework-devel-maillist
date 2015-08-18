@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2249 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2249%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200612091808.kB9I8Nne029650%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000839.html">
+   <LINK REL="Next"  HREF="000841.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2249 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2249%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200612091808.kB9I8Nne029650%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2249 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Dec  9 19:08:23 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000839.html">[ydf-devel] r2248 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000841.html">[ydf-devel] r2250 - in YDFramework2.0/trunk/YDFramework2: .	3rdparty 3rdparty/upgrade 3rdparty/upgrade/contrib	3rdparty/upgrade/dtools 3rdparty/upgrade/ext 3rdparty/upgrade/tests
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#840">[ date ]</a>
+              <a href="thread.html#840">[ thread ]</a>
+              <a href="subject.html#840">[ subject ]</a>
+              <a href="author.html#840">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-12-09 19:08:01 +0100 (Sat, 09 Dec 2006)
+New Revision: 2249
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php
+Log:
+- added new option to YDFormElement Text: dynamic 
+  $elem-&gt;setDynamic();
+
+  This will make text value disappear when user clicks the element. 
+  Useful when text is a search box that has a string value like &quot;Search here ...&quot;.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php	2006-12-09 18:02:10 UTC (rev 2248)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php	2006-12-09 18:08:01 UTC (rev 2249)
+@@ -51,6 +51,8 @@
+             // Set the type
+             $this-&gt;_type = 'text';
+ 
++            // Set dynamic
++            $this-&gt;_dynamic = false;
+         }
+ 
+         /**
+@@ -66,6 +68,12 @@
+             );
+             $attribs = array_merge( $this-&gt;_attributes, $attribs );
+ 
++            // check dynamic
++            if ( $this-&gt;_dynamic ){
++                $attribs[ 'onfocus' ] = &quot;if(this.value=='&quot; . $this-&gt;_value . &quot;'){this.value=''};&quot;;
++                $attribs[ 'onblur' ]  = &quot;if(this.value==''){this.value='&quot; . $this-&gt;_value . &quot;'};&quot;;
++            }
++
+             // Get the HTML
+             return '&lt;input' . YDForm::_convertToHtmlAttrib( $attribs ) . ' /&gt;';
+ 
+@@ -73,6 +81,13 @@
+ 
+ 
+         /**
++         *	This function will set dynamic content
++         */
++        function setDynamic() {
++            $this-&gt;_dynamic = true;
++        }
++
++        /**
+          *	This function returns the default javascript event of this element
+          */
+         function getJSEvent(){ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000839.html">[ydf-devel] r2248 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000841.html">[ydf-devel] r2250 - in YDFramework2.0/trunk/YDFramework2: .	3rdparty 3rdparty/upgrade 3rdparty/upgrade/contrib	3rdparty/upgrade/dtools 3rdparty/upgrade/ext 3rdparty/upgrade/tests
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#840">[ date ]</a>
+              <a href="thread.html#840">[ thread ]</a>
+              <a href="subject.html#840">[ subject ]</a>
+              <a href="author.html#840">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

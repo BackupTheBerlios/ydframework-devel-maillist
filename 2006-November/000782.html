@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2220 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2220%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200611201007.kAKA7GRe009361%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000781.html">
+   <LINK REL="Next"  HREF="000783.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2220 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2220%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200611201007.kAKA7GRe009361%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2220 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 20 11:07:16 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000781.html">[ydf-devel] r2219 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+        <LI>Next message: <A HREF="000783.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#782">[ date ]</a>
+              <a href="thread.html#782">[ thread ]</a>
+              <a href="subject.html#782">[ subject ]</a>
+              <a href="author.html#782">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-20 11:07:15 +0100 (Mon, 20 Nov 2006)
+New Revision: 2220
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+Log:
+Spam comments are now deleted after 7 instead of 15 days.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-19 20:52:37 UTC (rev 2219)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-20 10:07:15 UTC (rev 2220)
+@@ -128,8 +128,8 @@
+             // The array that will hold the image metadata
+             $this-&gt;imagemetadata = null;
+ 
+-            // Delete spam comments older than 15 days
+-            $sql = 'DELETE FROM #_comments WHERE is_spam = 1 AND created &lt; (unix_timestamp()-1296000)';
++            // Delete spam comments older than 7 days
++            $sql = 'DELETE FROM #_comments WHERE is_spam = 1 AND created &lt; (unix_timestamp()-604800)';
+             $this-&gt;db-&gt;executeSql( $sql );
+ 
+         }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000781.html">[ydf-devel] r2219 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+	<LI>Next message: <A HREF="000783.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#782">[ date ]</a>
+              <a href="thread.html#782">[ thread ]</a>
+              <a href="subject.html#782">[ subject ]</a>
+              <a href="author.html#782">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2003 - in YDFramework2.0/trunk:	YDFramework2/addons/YDFeedCreator examples/weblog
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2003%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDFeedCreator%20examples/weblog&In-Reply-To=%3C200608131052.k7DAqmPB023262%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000509.html">
+   <LINK REL="Next"  HREF="000511.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2003 - in YDFramework2.0/trunk:	YDFramework2/addons/YDFeedCreator examples/weblog</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2003%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDFeedCreator%20examples/weblog&In-Reply-To=%3C200608131052.k7DAqmPB023262%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2003 - in YDFramework2.0/trunk:	YDFramework2/addons/YDFeedCreator examples/weblog">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Aug 13 12:52:48 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000509.html">[ydf-devel] r2002 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage skins/default	skins/default_with_lightbox
+</A></li>
+        <LI>Next message: <A HREF="000511.html">[ydf-devel] r2004 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#510">[ date ]</a>
+              <a href="thread.html#510">[ thread ]</a>
+              <a href="subject.html#510">[ subject ]</a>
+              <a href="author.html#510">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-13 12:52:46 +0200 (Sun, 13 Aug 2006)
+New Revision: 2003
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+   YDFramework2.0/trunk/examples/weblog/xml.php
+Log:
+Added support for the RSS comments tags.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2006-08-13 10:23:21 UTC (rev 2002)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2006-08-13 10:52:46 UTC (rev 2003)
+@@ -103,6 +103,15 @@
+         }
+ 
+         /**
++         *  Function to set the generator of the feed
++         *
++         *  @param $generator   The name of the application that generates the feed.
++         */
++        function setGenerator( $generator ) {
++            $this-&gt;_generator = $generator;
++        }
++
++        /**
+          *	This function will add a new item to the feed. You need to at least give in a title, link. A description is
+          *	advised but optional. Also a GUID is optional. If no GUID is given, an automatic one will be created which
+          *	is the md5 checksum of the different elememts.
+@@ -118,7 +127,7 @@
+          *  @remark
+          *      Enclosures are only supported for ATOM and RSS 2.0 feeds.
+          */
+-        function addItem( $title, $link, $desc=null, $guid=null, $enclosure=null, $enclosure_size=null, $enclosure_type=null ) {
++        function addItem( $title, $link, $desc=null, $guid=null, $enclosure=null, $enclosure_size=null, $enclosure_type=null, $commentlink=null ) {
+ 
+             $link = YDUrl::makeLinkAbsolute( $link, $this-&gt;_link );
+             $desc = YDUrl::makeLinksAbsolute( $desc, $this-&gt;_link );
+@@ -137,7 +146,7 @@
+                 'title' =&gt; YDStringUtil::encodeString( $title ), 'link' =&gt; $link,
+                 'description' =&gt; $desc, 'guid' =&gt; $guid,
+                 'enclosure' =&gt; $enclosure, 'enclosure_size' =&gt; $enclosure_size,
+-                'enclosure_type' =&gt; $enclosure_type
++                'enclosure_type' =&gt; $enclosure_type, 'comments' =&gt; $commentlink
+             );
+ 
+             $this-&gt;_items[ $guid ] = $item;
+@@ -209,7 +218,11 @@
+                     $item['link'][0]['#'] = $arr['link'];
+                     $item['guid'][0]['#'] = $arr['guid'];
+                     $item['guid'][0]['@']['isPermanlink'] = 'false';
+-                    
++
++                    if ( ! is_null( $arr['comments'] ) ) {
++                        $item['comments'] = $arr['comments'];
++                    }
++
+                     if ( ! empty( $arr['description'] ) ) {
+                         $item['description'] = $arr['description'];
+                     }
+@@ -222,7 +235,7 @@
+                         
+                     }
+                     $i++;
+-                    
++
+                 }
+                 
+             }
+
+Modified: YDFramework2.0/trunk/examples/weblog/xml.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/xml.php	2006-08-13 10:23:21 UTC (rev 2002)
++++ YDFramework2.0/trunk/examples/weblog/xml.php	2006-08-13 10:52:46 UTC (rev 2003)
+@@ -76,6 +76,7 @@
+             $this-&gt;feed-&gt;setTitle( YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+             $this-&gt;feed-&gt;setDescription( YDConfig::get( 'weblog_description', 'Untitled Weblog Description' ) );
+             $this-&gt;feed-&gt;setLink( YDUrl::makeLinkAbsolute( 'index.php' ) );
++            $this-&gt;feed-&gt;setGenerator( YD_FW_NAMEVERS );
+ 
+             // Add the items
+             foreach ( $items as $item ) {
+@@ -95,7 +96,8 @@
+                 // Add it to the feed
+                 $this-&gt;feed-&gt;addItem(
+                     $item['title'], YDTplModLinkItem( $item ),
+-                    YDTemplate_modifier_bbcode( $body ), YDTplModLinkItem( $item )
++                    YDTemplate_modifier_bbcode( $body ), YDTplModLinkItem( $item ),
++                    null, null, null, YDTplModLinkItem( $item ) . '#comments'
+                 );
+ 
+             }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000509.html">[ydf-devel] r2002 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage skins/default	skins/default_with_lightbox
+</A></li>
+	<LI>Next message: <A HREF="000511.html">[ydf-devel] r2004 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#510">[ date ]</a>
+              <a href="thread.html#510">[ thread ]</a>
+              <a href="subject.html#510">[ subject ]</a>
+              <a href="author.html#510">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

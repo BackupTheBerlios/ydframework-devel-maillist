@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1754 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1754%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDFormElements&In-Reply-To=%3C200602281913.k1SJDkvJ012998%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000169.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1754 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1754%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDFormElements&In-Reply-To=%3C200602281913.k1SJDkvJ012998%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1754 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormElements">ximian at berlios.de
+       </A><BR>
+    <I>Tue Feb 28 20:13:46 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000169.html">[ydf-devel] r1752 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#170">[ date ]</a>
+              <a href="thread.html#170">[ thread ]</a>
+              <a href="subject.html#170">[ subject ]</a>
+              <a href="author.html#170">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-02-28 20:13:14 +0100 (Tue, 28 Feb 2006)
+New Revision: 1754
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+new form element: Switch Menu
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-28 15:19:04 UTC (rev 1753)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-28 19:13:14 UTC (rev 1754)
+@@ -122,6 +122,7 @@
+             $this-&gt;registerElement( 'link', 'YDFormElement_Link', 'YDFormElement_Link.php' );
+             $this-&gt;registerElement( 'div', 'YDFormElement_Div', 'YDFormElement_Div.php' );
+             $this-&gt;registerElement( 'autocompleter', 'YDFormElement_Autocompleter', 'YDFormElement_Autocompleter.php' );
++            $this-&gt;registerElement( 'switchmenu', 'YDFormElement_SwitchMenu', 'YDFormElement_SwitchMenu.php' );
+ 
+             // Add the rules
+             $this-&gt;registerRule( 'required', array( 'YDValidateRules', 'required' ), 'YDValidateRules.php' );
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2006-02-28 15:19:04 UTC (rev 1753)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2006-02-28 19:13:14 UTC (rev 1754)
+@@ -0,0 +1,157 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
++
++    /**
++     *	This is the class that define a switch menu form element
++     */
++    class YDFormElement_SwitchMenu extends YDFormElement {
++
++        /**
++         *	This is the class constructor for the YDFormElement_SwitchMenu class.
++         *
++         *	@param $form		The name of the form to which this element is connected.
++         *	@param $name		The name of the form element.
++         *	@param $label		(optional) The label for the form element.
++         *	@param $attributes	(optional) The attributes for the form element.
++         *	@param $options		(optional) The menu elements.
++         */
++        function YDFormElement_SwitchMenu( $form, $name, $label='', $attributes=array(), $options=array() ) {
++
++            // Initialize the parent
++            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
++
++            // Set the type
++            $this-&gt;_type = 'switchmenu';
++			
++			// Get elements
++			$this-&gt;_elements = $options;
++        }
++
++
++        /**
++         *	This function will return the element as HTML.
++         *
++         *	@returns	The form element as HTML text.
++         */
++        function toHtml() {
++
++            // Create the list of attributes
++            $attribs = array(
++                'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name
++            );
++
++            $attribs = array_merge( $this-&gt;_attributes, $attribs );
++            
++            // Get the HTML
++            $out = '';
++
++			// if js code was not loaded we must load
++            if ( ! defined( 'YD_SWMENU_MAINSCRIPT' ) ) {
++            	$out .= trim( '&lt;script type=&quot;text/javascript&quot;&gt;' );
++            	$out .= trim( 'function hideSMenu( menudiv, obj ){' );
++            	$out .= trim( '	var ar = document.getElementById( menudiv ).getElementsByTagName( &quot;span&quot; );' );
++            	$out .= trim( '		if( document.getElementById( obj ).style.display != &quot;block&quot; ){' );
++            	$out .= trim( '			for ( var i = 0; i &lt; ar.length; i++ ){' );
++            	$out .= trim( '				if ( ar[i].className == &quot;submenu&quot; )' );
++            	$out .= trim( '					ar[i].style.display = &quot;none&quot;;' );
++            	$out .= trim( '			}' );
++            	$out .= trim( '			document.getElementById( obj ).style.display = &quot;block&quot;;' );
++            	$out .= trim( '		}else{' );
++            	$out .= trim( '			document.getElementById( obj ).style.display = &quot;none&quot;;' );
++            	$out .= trim( '		}' );
++            	$out .= trim( '}' );
++            	$out .= trim( '&lt;/script&gt;' );
++                define( 'YD_SWMENU_MAINSCRIPT', 1 );
++            }
++
++			// create menu div
++			$out .= '&lt;div'. YDForm::_convertToHtmlAttrib( $attribs ) . '&gt;';
++			
++			// create menu id
++			$IDmenu = $this-&gt;getAttribute('id');
++			$i = 1;
++			
++			// cycle menus
++			foreach ( $this-&gt;_elements as $_title =&gt; $_elements ){
++
++				// create submenu id
++				$IDsubmenu = $IDmenu . '_' . $i++;
++							
++				// create menu div
++				$out .= &quot;&lt;div class=\&quot;menutitle\&quot; onclick=\&quot;hideSMenu('&quot; . $IDmenu . &quot;', '&quot; . $IDsubmenu . &quot;')\&quot;&gt;&quot; . $_title . &quot;&lt;/div&gt;&quot;;
++
++				// create span that includes all menu subitems
++				$out .= '&lt;span class=&quot;submenu&quot; id=&quot;' . $IDsubmenu . '&quot; style=&quot;display:none&quot;&gt;';
++				$out .= implode( '&lt;br&gt;', $_elements );
++				$out .= '&lt;/span&gt;';
++        	}
++			
++			// add final menu div tag
++			$out .= '&lt;/div&gt;';
++
++			return $out;
++		}
++
++
++        /**
++         *	This function adds a new menu item
++         *
++         *	@param $menu		The name of the menu
++         */
++		function addMenu( $name ){
++
++			// add menu to elements
++			$this-&gt;_elements[ $name ] = array();
++		}
++
++
++        /**
++         *	This function adds a new element to a menu item
++         *
++         *	@param $menu		The name of the menu to assign the element
++         *	@param $obj			The element form element object (or a simple string)
++         */
++		function addElement( $menu, $obj ){
++		
++			// if menu don't exist we should create one
++			if ( !isset( $this-&gt;_elements[ $menu ] ) ) $this-&gt;_elements[ $menu ] = array();
++
++			// if element is a form object we must get its html code
++			if ( !is_string( $obj )) $obj = $obj-&gt;toHtml();
++
++			// add this element to menu
++			array_push( $this-&gt;_elements[ $menu ], $obj );		
++		}
++
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000169.html">[ydf-devel] r1752 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#170">[ date ]</a>
+              <a href="thread.html#170">[ thread ]</a>
+              <a href="subject.html#170">[ subject ]</a>
+              <a href="author.html#170">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

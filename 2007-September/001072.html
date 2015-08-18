@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2478 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2478%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200709101631.l8AGVXqt017629%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001071.html">
+   <LINK REL="Next"  HREF="001073.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2478 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2478%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200709101631.l8AGVXqt017629%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2478 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Sep 10 18:31:33 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001071.html">[ydf-devel] r2477 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001073.html">[ydf-devel] r2479 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1072">[ date ]</a>
+              <a href="thread.html#1072">[ thread ]</a>
+              <a href="subject.html#1072">[ subject ]</a>
+              <a href="author.html#1072">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-09-10 18:31:12 +0200 (Mon, 10 Sep 2007)
+New Revision: 2478
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+on validate rules:
+ - FIXED: required for checkboxes
+ - NEW: rule alphanumericstrict [a-zA-Z0-9]
+ - NEW: rule checkboxgroupvalues to be used in checkboxgroups (to check is elements are valid)
+ - NEW: rule not that returns true if elements are not equal
+ - NEW: rule isarray to check is a variable is an array
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-09-10 16:23:31 UTC (rev 2477)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-09-10 16:31:12 UTC (rev 2478)
+@@ -71,6 +71,11 @@
+                 return false;
+             }
+ 
++            // check if is int
++            if ( is_int( $val ) &amp;&amp; $val == 0 ){
++                return false;
++            }
++
+             // value is ok
+             return true;
+         }
+@@ -256,17 +261,39 @@
+             return $result;
+         }
+ 
++
+         /**
++         *	This function returns true if the variable contains only letters and numbers
++         *  Strict version - special characters are invalid.
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	(not required)
++         */
++        function alphanumericstrict( $val, $opts='' ) {
++            return YDValidateRules::regex( $val, '/^([a-zA-Z0-9]+)$/' );
++        }
++
++        /**
+          *	This function returns true if the variable contains only numbers.
+          *
+          *	@param $val		The value to test.
+          *	@param $opts	(not required)
+          */
+         function numeric( $val, $opts='' ) {
+-            return YDValidateRules::regex( $val, '/(^-?\d\d*\.\d*$)|(^-?\d\d*$)|(^-?\.\d\d*$)/' );
++            return YDValidateRules::regex( strval( $val ), '/(^-?\d\d*\.\d*$)|(^-?\d\d*$)|(^-?\.\d\d*$)/' );
+         }
+ 
+         /**
++         *	This function returns true if the variable is an array.
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	(not required)
++         */
++        function isarray( $val, $opts='' ) {
++            return is_array( $val );
++        }
++
++        /**
+          *	This function returns true if the variable contains only contains one digit (0-9).
+          *
+          *	@param $val		The value to test.
+@@ -313,7 +340,19 @@
+             return $val === $opts;
+         }
+ 
++
+         /**
++         *	This function returns true if the variable is not exactly as specified in the options.
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	The value to compare with.
++         */
++        function not( $val, $opts ) {
++            return strval( $val ) != strval( $opts );
++        }
++
++
++        /**
+          *	This function returns true if the variable is in the array specified in the options.
+          *
+          *	@param $val		The value to test.
+@@ -815,6 +854,27 @@
+         }
+ 
+ 
++        /**
++         *	This function returns true if the variable is an array and each element is in opts.
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	The array in which the value should be.
++         */
++        function checkboxgroupvalues( $val, $opts ) {
++
++            if( ! is_array( $val ) || ! is_array( $opts ) ){
++                return false;
++            }
++
++            foreach( $val as $value =&gt; $enable ){
++                if( ! in_array( $value, $opts ) || $enable != 'on' ){
++                    return false;
++                }
++            }
++
++            return true;
++        }
++
+     }
+ 
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001071.html">[ydf-devel] r2477 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001073.html">[ydf-devel] r2479 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1072">[ date ]</a>
+              <a href="thread.html#1072">[ thread ]</a>
+              <a href="subject.html#1072">[ subject ]</a>
+              <a href="author.html#1072">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

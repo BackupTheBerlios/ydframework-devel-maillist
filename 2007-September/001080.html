@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2486 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2486%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200709282228.l8SMSEqi029860%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001079.html">
+   <LINK REL="Next"  HREF="001081.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2486 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2486%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200709282228.l8SMSEqi029860%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2486 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep 29 00:28:14 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001079.html">[ydf-devel] r2485 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="001081.html">[ydf-devel] r2487 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1080">[ date ]</a>
+              <a href="thread.html#1080">[ thread ]</a>
+              <a href="subject.html#1080">[ subject ]</a>
+              <a href="author.html#1080">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-09-29 00:27:56 +0200 (Sat, 29 Sep 2007)
+New Revision: 2486
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+Log:
+- FIX: getFreeSpace should use a directory as argument ( on some php env files can throw errors ).
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-09-28 22:25:13 UTC (rev 2485)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-09-28 22:27:56 UTC (rev 2486)
+@@ -215,7 +215,7 @@
+         function getFreeSpace( $path, $format = false, $decimals = 1 ) {
+ 
+             // get free disk space on the path
+-            $space = disk_free_space( $path );
++            $space = disk_free_space( dirname( $path ) );
+ 
+             // return number of bytes if we don't want to format
+             if ( $format == false ) return $space;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001079.html">[ydf-devel] r2485 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="001081.html">[ydf-devel] r2487 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1080">[ date ]</a>
+              <a href="thread.html#1080">[ thread ]</a>
+              <a href="subject.html#1080">[ subject ]</a>
+              <a href="author.html#1080">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

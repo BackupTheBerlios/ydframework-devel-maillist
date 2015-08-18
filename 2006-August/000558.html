@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Callbacks%20in%20YDRequest%20based%20on%20YDDatabaseObject&In-Reply-To=%3C4aef63030608281242r6eaee6a5q50f96f43d1a79f84%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000548.html">
+   <LINK REL="Next"  HREF="000549.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject</H1>
+    <B>Pieter Claerhout</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Callbacks%20in%20YDRequest%20based%20on%20YDDatabaseObject&In-Reply-To=%3C4aef63030608281242r6eaee6a5q50f96f43d1a79f84%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject">pieter at yellowduck.be
+       </A><BR>
+    <I>Mon Aug 28 21:42:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000548.html">[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000549.html">[ydf-devel] r2039 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#558">[ date ]</a>
+              <a href="thread.html#558">[ thread ]</a>
+              <a href="subject.html#558">[ subject ]</a>
+              <a href="author.html#558">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Added it in build 2047 and cleaned it up a little.
+
+pieter
+
+On 8/23/06, maximus meridius &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">maximus_meridius79 at yahoo.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i>  Hi,
+</I>&gt;<i>
+</I>&gt;<i> I decided it would be nice to have 'before' and 'after' action callbacks
+</I>&gt;<i> in the YDRequest class after seeing the functionality in YDDatabaseObject.
+</I>&gt;<i> The original intention was to provide a way to have common processing before
+</I>&gt;<i> and after actions are processed (e.g. automatically set a smarty variable
+</I>&gt;<i> or call $this-&gt;tpl-&gt;display() before or after every action). I then decided
+</I>&gt;<i> to extend it so that callbacks could be specified for specific actions.
+</I>&gt;<i> There is potential for duplicate processing when the forward method is used
+</I>&gt;<i> and so I disabled callbacks for this type of processing. See also the
+</I>&gt;<i> comments below.
+</I>&gt;<i>
+</I>&gt;<i> I have added methods to YDRequest.php and provided example usage in
+</I>&gt;<i> examples/callbacks.php. The code is attached as a tarball.
+</I>&gt;<i>
+</I>&gt;<i> The methods have been adapted for YDRequest and there is a modification to
+</I>&gt;<i> process(). There is a new internal method _processAction.
+</I>&gt;<i>
+</I>&gt;<i> This is the comment for registerCallback:
+</I>&gt;<i>
+</I>&gt;<i>        /**
+</I>&gt;<i>          *  This function registers an action callback method.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  'before' and 'after' callbacks can be registered for
+</I>&gt;<i>          *  'action' (all actions) or for a specific YDRequest action.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  By default no YDRequest action callbacks are defined.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  Callbacks are disabled when an action forwards to another
+</I>&gt;<i>          *  action. This is to prevent duplicated processing of callbacks.
+</I>&gt;<i>          *  &quot;redirectToAction&quot; is a more compatible with callbacks.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  Processing of callbacks and actions in the context of a
+</I>&gt;<i> request
+</I>&gt;<i>          *  is executed in this order:
+</I>&gt;<i>          *
+</I>&gt;<i>          *    1. (optional) before 'action' callbacks - apply to all
+</I>&gt;<i> actions
+</I>&gt;<i>          *    2. (optional) before callback for the current action
+</I>&gt;<i>          *      3. Current action
+</I>&gt;<i>          *    4. (optional) after callback for the current action
+</I>&gt;<i>          *    5. (optional) after 'action' callbacks - apply to all
+</I>&gt;<i> actions
+</I>&gt;<i>          *
+</I>&gt;<i>          *    example 1: will execute my_before_callback() before each
+</I>&gt;<i> action
+</I>&gt;<i>          *        $this-&gt;registerCallback( 'my_before_callback', 'action',
+</I>&gt;<i> true );
+</I>&gt;<i>          *
+</I>&gt;<i>          *    example 2: will execute my_after_callback() after each
+</I>&gt;<i> action
+</I>&gt;<i>          *        $this-&gt;registerCallback( 'my_after_callback', 'action',
+</I>&gt;<i> false );
+</I>&gt;<i>          *
+</I>&gt;<i>          *    example 3: will execute my_deafult_after_callback() after
+</I>&gt;<i> actionDefault
+</I>&gt;<i>          *        $this-&gt;registerCallback( 'my_deafult_after_callback',
+</I>&gt;<i> 'actionDefault', false );
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $method  The method name.
+</I>&gt;<i>          *  @param $action  The action or array of actions that trigger
+</I>&gt;<i> the call.
+</I>&gt;<i>          *  @param $before  (optional) Execute callback before the action.
+</I>&gt;<i> Default: false.
+</I>&gt;<i>          */
+</I>&gt;<i>
+</I>&gt;<i> I have changed YDRequest-&gt;process() so that it returns results from
+</I>&gt;<i> processing of actions and any associated callbacks. There is potential for
+</I>&gt;<i> adding error/results processing to YDProcess::execute()
+</I>&gt;<i>
+</I>&gt;<i> Let me know what you think about the changes I made.
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> Graeme
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>    ------------------------------
+</I>&gt;<i> Stay in the know. Pulse on the new Yahoo.com &lt;<A HREF="http://yahoo.com/">http://yahoo.com/</A>&gt;. Check it
+</I>&gt;<i> out. &lt;<A HREF="http://us.rd.yahoo.com/evt=42974/*http://www.yahoo.com/preview">http://us.rd.yahoo.com/evt=42974/*http://www.yahoo.com/preview</A>&gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">https://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060828/79e8eace/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060828/79e8eace/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000548.html">[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000549.html">[ydf-devel] r2039 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#558">[ date ]</a>
+              <a href="thread.html#558">[ thread ]</a>
+              <a href="subject.html#558">[ subject ]</a>
+              <a href="author.html#558">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

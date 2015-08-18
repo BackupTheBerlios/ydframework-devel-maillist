@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2129 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2129%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200609140844.k8E8iB1Y031802%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000647.html">
+   <LINK REL="Next"  HREF="000649.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2129 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2129%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200609140844.k8E8iB1Y031802%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2129 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep 14 10:44:11 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000647.html">[ydf-devel] r2128 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers
+</A></li>
+        <LI>Next message: <A HREF="000649.html">[ydf-devel] r2130 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#648">[ date ]</a>
+              <a href="thread.html#648">[ thread ]</a>
+              <a href="subject.html#648">[ subject ]</a>
+              <a href="author.html#648">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-14 10:43:52 +0200 (Thu, 14 Sep 2006)
+New Revision: 2129
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+Log:
+added alias support to YDCMPermission
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-09-13 16:15:23 UTC (rev 2128)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-09-14 08:43:52 UTC (rev 2129)
+@@ -59,6 +59,9 @@
+ 
+ 			// init valid actions
+ 			$this-&gt;_actions = array();
++			
++			// init alias
++			$this-&gt;_actions_alias = array();
+ 		}
+ 
+ 
+@@ -103,7 +106,7 @@
+ 
+ 				// cycle actions to compute translated string
+ 				foreach( $actions as $action =&gt; $info )
+-					$arr_translated[ $class ][ t( &quot;permission $class $action&quot; ) ] = $info;
++					$arr_translated[ $class ][ t( &quot;$class perm $action&quot; ) ] = $info;
+ 			}
+ 			
+ 			return $arr_translated;
+@@ -125,7 +128,7 @@
+ 			$this-&gt;resetAll();
+ 
+ 			// delete all permissions of correspondent userobjects
+-			$this-&gt;where( 'permission_id IN (&quot;' . implode( '&quot;,&quot;', $userobject_id ) . '&quot;)' );
++			$this-&gt;where( 'permission_id IN (&quot;' . implode( '&quot;,&quot;', array_map( &quot;intval&quot;, $userobject_id ) ) . '&quot;)' );
+ 
+ 			return ( $this-&gt;delete() &gt; 0 );
+ 		}
+@@ -168,6 +171,10 @@
+          */
+ 		function registerAction( $class, $action ){
+ 
++			// check if class and action are registed
++			if ( $this-&gt;actionIsRegistered( $class, $action ) ) return false;
++
++			// add action to class
+ 			$this-&gt;_actions[ $class ][] = $action;
+ 
+ 			return true;
+@@ -175,17 +182,104 @@
+ 
+ 
+         /**
+-         *  This function checks if a class+action is registered
++         *  This function registers a alias to a action
+          *
++         *  @param     $alias    Action alias
+          *  @param     $class    Class name
+-         *  @param     $action   Action name
++         *  @param     $action   Action name (or another alias name)
+          *
++         *  @returns   TRUE if added, FALSE if original class or action not valid
++         */
++		function registerAlias( $alias, $class, $action ){
++
++			// check if class exists
++			if ( ! isset( $this-&gt;_actions[ $class ] ) ) return false;
++
++			// check if action really exists and belong to the specified class
++			if ( in_array( $action, $this-&gt;_actions[ $class ] ) ){
++
++				// check if class is already created in alias array
++				if ( ! isset( $this-&gt;_actions_alias[ $class ] ) ) $this-&gt;_actions_alias[ $class ] = array();
++
++				// add alias
++				$this-&gt;_actions_alias[ $class ][ $action ][] = $alias;
++			
++				return true;
++
++			}else{
++
++				// check if $action is another alias. if yes, replace $action with original name
++				foreach( $this-&gt;_actions_alias[ $class ] as $_originalAction =&gt; $_alias )
++					if ( in_array( $action, $_alias ) ){
++				
++						// check if class is already created in alias array
++						if ( ! isset( $this-&gt;_actions_alias[ $class ] ) ) $this-&gt;_actions_alias[ $class ] = array();
++				
++						// add alias
++						$this-&gt;_actions_alias[ $class ][ $_originalAction ][] = $alias;
++					
++						return true;
++					}
++
++				return false;
++				}
++		}
++
++
++        /**
++         *  This function returns all registered alias
++         *
++         *  @param     $class    (Optional) Class name. default NULL to get alias from all classes
++         *
++         *  @returns   Associative array:  array( CLASS =&gt; array( ACTION =&gt; array( ALIAS, ALIAS, .. ) ), or array with actions and correspondent alias when class argument is defined
++         */
++		function getRegisteredAlias( $class = null ){
++
++			// check if we want actions from all classes
++			if ( is_null( $class ) ) return $this-&gt;_actions_alias;
++			
++			// check if class exists
++			if ( isset( $this-&gt;_actions_alias[ $class ] ) ) return $this-&gt;_actions_alias[ $class ];
++
++			return array();
++		}
++
++
++        /**
++         *  This function checks if a class+action is registered (searching alias too)
++         *
++         *  @param     $class    Class name
++         *  @param     $action   Action name ( or alias name)
++         *
+          *  @returns   TRUE if registered, FALSE otherwise
+          */
+ 		function actionIsRegistered( $class, $action ){
+ 
+-			if ( isset( $this-&gt;_actions[ $class ] ) &amp;&amp; in_array( $action, $this-&gt;_actions[ $class ] ) ) return true;
++			// check original action
++			if ( $this-&gt;getOriginalAction( $class, $action ) == false ) return false;
++			
++			return true;
++		}
+ 
++
++        /**
++         *  This function checks if a class+action is registered and returns the original action
++         *
++         *  @param     $class    Class name
++         *  @param     $action   Action name ( or alias name)
++         *
++         *  @returns   STRING name of real action, FALSE otherwise
++         */
++		function getOriginalAction( $class, $action ){
++
++			// check if is a registered action
++			if ( isset( $this-&gt;_actions[ $class ] ) &amp;&amp; in_array( $action, $this-&gt;_actions[ $class ] ) ) return $action;
++
++			// check if is a registered alias
++			if ( isset( $this-&gt;_actions_alias[ $class ] ) )
++				foreach( $this-&gt;_actions_alias[ $class ] as $originalAction =&gt; $alias )
++					if ( in_array( $action, $alias ) ) return $originalAction;
++
+ 			return false;
+ 		}
+ 
+@@ -202,7 +296,7 @@
+ 			// check if we want actions from all classes
+ 			if ( is_null( $class ) ) return $this-&gt;_actions;
+ 			
+-			// check if action exists
++			// check if class exists
+ 			if ( isset( $this-&gt;_actions[ $class ] ) ) return $this-&gt;_actions[ $class ];
+ 
+ 			return array();
+@@ -221,16 +315,18 @@
+ 		function can( $userobject_id, $class, $action ){
+ 
+ 			// check if class and action are registed
+-			if ( ! isset( $this-&gt;_actions[ $class ] ) || ! in_array( $action, $this-&gt;_actions[ $class ] ) ) return false;
++			$action = $this-&gt;getOriginalAction( $class, $action );
+ 
++			if ( $action == false ) return false;
++
+ 			$this-&gt;resetAll();
+-			
++
+ 			// try to get a row joined with userobject
+ 			$this-&gt;set( 'permission_id', $userobject_id );
+ 			$this-&gt;set( 'class', $class );
+ 			$this-&gt;set( 'action', $action );
+ 
+-			return ( $this-&gt;find( 'ydcmuserobject' ) == 1 );
++			return ( $this-&gt;find( 'ydcmuserobject' ) &gt;= 1 );
+ 		}
+ 
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000647.html">[ydf-devel] r2128 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers
+</A></li>
+	<LI>Next message: <A HREF="000649.html">[ydf-devel] r2130 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#648">[ date ]</a>
+              <a href="thread.html#648">[ thread ]</a>
+              <a href="subject.html#648">[ subject ]</a>
+              <a href="author.html#648">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

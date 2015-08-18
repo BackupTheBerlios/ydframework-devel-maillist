@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] simplify YDDatabase usage even more
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20simplify%20YDDatabase%20usage%20even%20more&In-Reply-To=%3C12260be20602090308i51b68eage081d61787fa6c04%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000014.html">
+   <LINK REL="Next"  HREF="000016.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] simplify YDDatabase usage even more</H1>
+    <B>David Bittencourt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20simplify%20YDDatabase%20usage%20even%20more&In-Reply-To=%3C12260be20602090308i51b68eage081d61787fa6c04%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] simplify YDDatabase usage even more">muitocomplicado at gmail.com
+       </A><BR>
+    <I>Thu Feb  9 12:08:29 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000014.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+        <LI>Next message: <A HREF="000016.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#15">[ date ]</a>
+              <a href="thread.html#15">[ thread ]</a>
+              <a href="subject.html#15">[ subject ]</a>
+              <a href="author.html#15">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>It's ok by me... actually I already do this on my own and have another
+config for the database instance:
+
+$db = YDConfig::get( 'ydb' );
+
+But your way is more clear and will simplify YDDatabaseObject too, making
+optional the registerDatabase function.
+
+-db
+
+
+But I'm not sure that
+
+On 2/9/06, Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Hi all
+</I>&gt;<i>
+</I>&gt;<i> I propose a new YDDatabase feature to better handle db connections. On
+</I>&gt;<i> some (medium/big) projects we need to initializate db connections on lots
+</I>&gt;<i> of classes and pass the same arguments to YDDatabase::getInstance.
+</I>&gt;<i>
+</I>&gt;<i> I propose to make a new YDConfig variable (like YD_DB_TABLEPREFIX) but for
+</I>&gt;<i> all parameters of YDDatabase::getInstance.
+</I>&gt;<i>
+</I>&gt;<i> Then we could define the general db parameters in a master class:
+</I>&gt;<i>
+</I>&gt;<i> YDConfig::set( 'YD_DB_TYPE', 'mysql' );
+</I>&gt;<i> YDConfig::set( 'YD_DB_TABLE', 'table' );
+</I>&gt;<i> YDConfig::set( 'YD_DB_USERNAME', 'user' );
+</I>&gt;<i> YDConfig::set( 'YD_DB_PASSWORD', 'pass' );
+</I>&gt;<i> YDConfig::set( 'YD_DB_HOST', 'localhost' );
+</I>&gt;<i>
+</I>&gt;<i> This way, in the other dozens places, we just need to invoke
+</I>&gt;<i> YDDatabase::getInstance() and that's it:
+</I>&gt;<i>
+</I>&gt;<i> $db = YDDatabase::getInstance();
+</I>&gt;<i>
+</I>&gt;<i> Btw, this could be used by YDDatabaseObject too.
+</I>&gt;<i>
+</I>&gt;<i> What do you think?
+</I>&gt;<i>
+</I>&gt;<i> Francisco Azevedo
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060209/7a6b98a8/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060209/7a6b98a8/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000014.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+	<LI>Next message: <A HREF="000016.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#15">[ date ]</a>
+              <a href="thread.html#15">[ thread ]</a>
+              <a href="subject.html#15">[ subject ]</a>
+              <a href="author.html#15">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

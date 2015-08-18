@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1937 - in YDFramework2.0/trunk/examples/weblog: include skins/default
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1937%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20skins/default&In-Reply-To=%3C200605191143.k4JBhl4c004391%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000409.html">
+   <LINK REL="Next"  HREF="000411.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1937 - in YDFramework2.0/trunk/examples/weblog: include skins/default</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1937%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20skins/default&In-Reply-To=%3C200605191143.k4JBhl4c004391%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1937 - in YDFramework2.0/trunk/examples/weblog: include skins/default">pclaerhout at berlios.de
+       </A><BR>
+    <I>Fri May 19 13:43:47 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000409.html">[ydf-devel] r1936 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000411.html">[ydf-devel] r1938 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#410">[ date ]</a>
+              <a href="thread.html#410">[ thread ]</a>
+              <a href="subject.html#410">[ subject ]</a>
+              <a href="author.html#410">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-05-19 13:43:46 +0200 (Fri, 19 May 2006)
+New Revision: 1937
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+Log:
+Cleaned up the printed versions of the pages (cleaned up the stylesheets).
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-05-19 11:16:42 UTC (rev 1936)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-05-19 11:43:46 UTC (rev 1937)
+@@ -141,6 +141,7 @@
+             $this-&gt;tpl-&gt;assign( 'weblog_title',                YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_description',          YDConfig::get( 'weblog_description', 'Untitled Weblog Description' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_dir',                  YDUrl::makeLinkAbsolute( '.' ) );
++            $this-&gt;tpl-&gt;assign( 'weblog_current_url',          YDUrl::makeLinkAbsolute( YD_SELF_URI ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_link',                 YDUrl::makeLinkAbsolute( 'index.php' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_link_rss',             YDUrl::makeLinkAbsolute( 'xml.php?do=rss' ) );
+             $this-&gt;tpl-&gt;assign( 'weblog_link_atom',            YDUrl::makeLinkAbsolute( 'xml.php?do=atom' ) );
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl	2006-05-19 11:16:42 UTC (rev 1936)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/__std_header.tpl	2006-05-19 11:43:46 UTC (rev 1937)
+@@ -18,8 +18,16 @@
+         #header     {literal}{{/literal} margin: 0 !important; margin: 0 0 0 1px; padding: 1px; height: 198px; width: 758px;    {literal}}{/literal}
+         #headerimg  {literal}{{/literal} margin: 7px 9px 0; height: 192px; width: 740px;                                        {literal}}{/literal}
+         .bbtextarea {literal}{{/literal} width: 650px; height: 160px;                                                           {literal}}{/literal}
++        .printonly  {literal}{{/literal} display: none; {literal}}{/literal}
++        .screenonly {literal}{{/literal} display: inline; {literal}}{/literal}
+     &lt;/style&gt;
+ 
++    &lt;style type=&quot;text/css&quot; media=&quot;print&quot;&gt;
++        #sidebar    {literal}{{/literal} display: none;  {literal}}{/literal}
++        .printonly  {literal}{{/literal} display: inline; {literal}}{/literal}
++        .screenonly {literal}{{/literal} display: none; {literal}}{/literal}
++    &lt;/style&gt;
++
+     &lt;link rel=&quot;alternate&quot; type=&quot;application/rss+xml&quot;  title=&quot;RSS 2.0&quot;  href=&quot;{$weblog_link_rss}&quot;  /&gt;
+     &lt;link rel=&quot;alternate&quot; type=&quot;text/xml&quot;             title=&quot;RSS 0.92&quot;  href=&quot;{$weblog_link_rss}&quot;  /&gt;
+     &lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Atom 0.3&quot; href=&quot;{$weblog_link_atom}&quot; /&gt;
+@@ -48,6 +56,9 @@
+                 &lt;div class=&quot;description&quot;&gt;
+                     {if $weblog_description}{$weblog_description}{else}{t w=&quot;another_powered_by&quot;}{/if}
+                 &lt;/div&gt;
++                &lt;div class=&quot;printonly&quot;&gt;
++                    &lt;p&gt;&lt;a href=&quot;{$weblog_current_url}&quot;&gt;{$weblog_current_url}&lt;/a&gt;&lt;/p&gt;
++                &lt;/div&gt;
+             &lt;/div&gt;
+         &lt;/div&gt;
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-05-19 11:16:42 UTC (rev 1936)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item.tpl	2006-05-19 11:43:46 UTC (rev 1937)
+@@ -3,13 +3,15 @@
+ &lt;div id=&quot;content&quot; class=&quot;narrowcolumn&quot;&gt;
+ 
+     {if $item.older_id or $item.newer_id}
+-        &lt;div class=&quot;navigation&quot;&gt;
+-            {if $item.older_id}
+-                &lt;div class=&quot;alignleft&quot;&gt;&laquo; &lt;a href=&quot;{$item.older_id|link_item}&quot;&gt;{t w=&quot;older_post&quot;}&lt;/a&gt;&lt;/div&gt;
+-            {/if}
+-            {if $item.newer_id}
+-                &lt;div class=&quot;alignright&quot;&gt;&lt;a href=&quot;{$item.newer_id|link_item}&quot;&gt;{t w=&quot;newer_post&quot;}&lt;/a&gt; &raquo;&lt;/div&gt;
+-            {/if}
++        &lt;div class=&quot;screenonly&quot;&gt;
++            &lt;div class=&quot;navigation&quot;&gt;
++                {if $item.older_id}
++                    &lt;div class=&quot;alignleft&quot;&gt;&laquo; &lt;a href=&quot;{$item.older_id|link_item}&quot;&gt;{t w=&quot;older_post&quot;}&lt;/a&gt;&lt;/div&gt;
++                {/if}
++                {if $item.newer_id}
++                    &lt;div class=&quot;alignright&quot;&gt;&lt;a href=&quot;{$item.newer_id|link_item}&quot;&gt;{t w=&quot;newer_post&quot;}&lt;/a&gt; &raquo;&lt;/div&gt;
++                {/if}
++            &lt;/div&gt;
+         &lt;/div&gt;
+     {/if}
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000409.html">[ydf-devel] r1936 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000411.html">[ydf-devel] r1938 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#410">[ date ]</a>
+              <a href="thread.html#410">[ thread ]</a>
+              <a href="subject.html#410">[ subject ]</a>
+              <a href="author.html#410">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

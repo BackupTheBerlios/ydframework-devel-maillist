@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseTree3::moveNode fixed and	YDDatabaseTree3::getTraversedTree
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree3%3A%3AmoveNode%20fixed%20and%0A%09YDDatabaseTree3%3A%3AgetTraversedTree&In-Reply-To=%3C20061121160008.92482.qmail%40web54010.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000821.html">
+   <LINK REL="Next"  HREF="000819.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseTree3::moveNode fixed and	YDDatabaseTree3::getTraversedTree</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree3%3A%3AmoveNode%20fixed%20and%0A%09YDDatabaseTree3%3A%3AgetTraversedTree&In-Reply-To=%3C20061121160008.92482.qmail%40web54010.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] YDDatabaseTree3::moveNode fixed and	YDDatabaseTree3::getTraversedTree">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Tue Nov 21 17:00:08 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000821.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+        <LI>Next message: <A HREF="000819.html">[ydf-devel] YDDatabaseTree3::moveNode fixed	and	YDDatabaseTree3::getTraversedTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#803">[ date ]</a>
+              <a href="thread.html#803">[ thread ]</a>
+              <a href="subject.html#803">[ subject ]</a>
+              <a href="author.html#803">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Hi Francisco,
+
+I have found the cause of some of the problems with moveNode. TheYDDatabaseObject::set method does not work for expressions . This wascausing the  positions to  be updated  to the value 0. In moveNode, Ihave changed the queries so that they are hand-coded SQL executed viathe YDDatabaseObject::executeSQL() method. moveNode works for movingnodes within the current parent.
+
+There is a remaining problem withnodesmoved to another parent. The child nodes of the moved node are notupdated with the correct lineage ... but is that the way it is supposedto work or should the leaf nodes be moved one by one?
+
+I have modified the test harness toinclude the sitemap method that displays the complete tree. I had toturn off debug so that the redirects would work.
+
+Updated code is attached.
+
+Regards,
+
+Graeme
+
+
+
+ 
+---------------------------------
+Sponsored Link
+
+Want a degree but can't afford to quit? Online degrees from top schools - in as fast as 1 year
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/49c9bd8d/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/49c9bd8d/attachment.html</A>&gt;
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/49c9bd8d/attachment-0001.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/49c9bd8d/attachment-0001.html</A>&gt;
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/49c9bd8d/attachment-0002.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061121/49c9bd8d/attachment-0002.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000821.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+	<LI>Next message: <A HREF="000819.html">[ydf-devel] YDDatabaseTree3::moveNode fixed	and	YDDatabaseTree3::getTraversedTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#803">[ date ]</a>
+              <a href="thread.html#803">[ thread ]</a>
+              <a href="subject.html#803">[ subject ]</a>
+              <a href="author.html#803">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

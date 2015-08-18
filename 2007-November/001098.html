@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2504 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2504%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200711101959.lAAJxMG0006544%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001097.html">
+   <LINK REL="Next"  HREF="001099.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2504 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2504%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200711101959.lAAJxMG0006544%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2504 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Nov 10 20:59:22 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001097.html">[ydf-devel] r2503 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001099.html">[ydf-devel] r2505 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-11-10 20:59:06 +0100 (Sat, 10 Nov 2007)
+New Revision: 2504
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+ENH: YDStringUtil::formatDate will not parse empty strings now
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-10 19:58:03 UTC (rev 2503)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-10 19:59:06 UTC (rev 2504)
+@@ -636,7 +636,7 @@
+             }
+ 
+             // If text, convert to number
+-            if ( is_string( $timestamp ) ) {
++            if ( is_string( $timestamp ) &amp;&amp; ! empty( $timestamp ) ) {
+                 $timestamp = strtotime( $timestamp );
+             }
+ 
+@@ -671,7 +671,7 @@
+             }
+ 
+             // Return the formatted date
+-            $timestamp = strftime( $format, $timestamp );
++            $timestamp = strftime( $format, intval( $timestamp ) );
+ 
+             // Reset the old locale
+             if ( ! is_null( $locale ) ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001097.html">[ydf-devel] r2503 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001099.html">[ydf-devel] r2505 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

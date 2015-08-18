@@ -1,0 +1,391 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1745 - in YDFramework2.0/trunk: YDFramework2 YDFramework2/YDClasses examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1745%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2%20YDFramework2/YDClasses%20examples/weblog/include&In-Reply-To=%3C200602271542.k1RFgiPg027870%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000166.html">
+   <LINK REL="Next"  HREF="000162.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1745 - in YDFramework2.0/trunk: YDFramework2 YDFramework2/YDClasses examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1745%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2%20YDFramework2/YDClasses%20examples/weblog/include&In-Reply-To=%3C200602271542.k1RFgiPg027870%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1745 - in YDFramework2.0/trunk: YDFramework2 YDFramework2/YDClasses examples/weblog/include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 27 16:42:44 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000166.html">[ydf-devel] Typos in french translations of YDF Weblog
+</A></li>
+        <LI>Next message: <A HREF="000162.html">[ydf-devel] r1746 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#161">[ date ]</a>
+              <a href="thread.html#161">[ thread ]</a>
+              <a href="subject.html#161">[ subject ]</a>
+              <a href="author.html#161">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-27 16:42:43 +0100 (Mon, 27 Feb 2006)
+New Revision: 1745
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+Log:
+Made the t template modifier available in the complete framework.
+
+I also moved the template modifier definitions to the root so that they are always available.
+
+Feature Request #1752
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-02-27 13:57:04 UTC (rev 1744)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-02-27 15:42:43 UTC (rev 1745)
+@@ -79,7 +79,11 @@
+                 $this-&gt;register_modifier( 'fmtfilesize', 'YDTemplate_modifier_fmtfileize' );
+                 $this-&gt;register_modifier( 'date_format', 'YDTemplate_modifier_date_format' );
+                 $this-&gt;register_modifier( 'dump', 'YDTemplate_modifier_dump' );
++                $this-&gt;register_modifier( 'bbcode', 'YDTemplate_modifier_bbcode' );
+ 
++                // Register the custom functions
++                $this-&gt;register_function( 't', 'YDTemplate_function_t' );
++
+                 // custom javascript code
+                 $this-&gt;customJavascript = null;
+ 
+@@ -301,67 +305,6 @@
+ 
+         }
+ 
+-        /**
+-         *	@internal
+-         */
+-        function YDTemplate_modifier_fmtfileize( $size ) {
+-            return YDStringUtil::formatFileSize( $size );
+-        }
+-
+-        /**
+-         *	@internal
+-         */
+-        function YDTemplate_modifier_implode( $array, $separator=', ' ) {
+-            return implode( $separator, $array );
+-        }
+-
+-        /**
+-         *	@internal
+-         */
+-        function YDTemplate_make_timestamp( $string ) {
+-            if ( empty( $string ) ) {
+-                $string = &quot;now&quot;;
+-            }
+-            $time = strtotime( $string );
+-            if ( is_numeric( $time ) &amp;&amp; $time != -1 ) {
+-                return $time;
+-            }
+-            if ( preg_match( '/^\d{14}$/', $string ) ) {
+-                $time = mktime(
+-                    substr( $string, 8, 2 ), substr( $string, 10, 2 ), substr( $string, 12, 2 ),
+-                    substr( $string, 4, 2 ), substr( $string, 6, 2 ), substr( $string,0 ,4 )
+-                );
+-                return $time;
+-            }
+-            $time = ( int ) $string;
+-            if ( $time &gt; 0 ) {
+-                return $time;
+-            } else {
+-                return time();
+-            }
+-        }
+-
+-        /**
+-         *	@internal
+-         */
+-        function YDTemplate_modifier_date_format( $string, $format='%b %d, %Y', $default_date=null ) {
+-            if( $string != '' ) {
+-                return strftime( $format, YDTemplate_make_timestamp( $string ) );
+-            } elseif ( isset( $default_date ) &amp;&amp; $default_date != '' ) {
+-                return strftime( $format, YDTemplate_make_timestamp( $default_date ) );
+-            } else {
+-                return;
+-            }
+-        }
+-
+-        /**
+-         *	@internal
+-         */
+-        function YDTemplate_modifier_dump( $obj ) {
+-            var_dump( $obj );
+-            return;
+-        }
+-
+     // Use PHP templates
+     } else {
+ 
+@@ -537,4 +480,115 @@
+ 
+     }
+ 
++    /**
++     *	This template function loads a translation from a global variables $_GLOBALS['t'] with specified name.
++     *
++     *  @param  $params   The parameters for the modifier. The parameter &quot;w&quot; gives the name of the translation. The
++     *                    parameter lower indicates if the translation needs to be returned as lowercase or not.
++     *
++     *  @returns    The named translation.
++     */
++    function YDTemplate_function_t( $params ) {
++        if ( @ $params['lower'] == 'yes' ) {
++            return isset( $params['w'] ) ? strtolower( t( $params['w'] ) ) : '';
++        } else {
++            return isset( $params['w'] ) ? t( $params['w'] ) : '';
++        }
++    }
++
++    /**
++     *	This template modifier converts a piece of text to BBCode.
++     *
++     *  @param  $text   The text to convert
++     *
++     *  @returns    The text formatted as HTML.
++     */
++    function YDTemplate_modifier_bbcode( $text ) {
++        YDInclude( 'YDBBCode.php' );
++        $cls = new YDBBCode();
++        return $cls-&gt;toHtml( $text, true, false, false, YDRequest::getCurrentUrl() );
++    }
++
++    /**
++     *	This template modifier formats a numeric value to a human readable file size.
++     *
++     *  @param  $size   The numeric value to format.
++     *
++     *  @returns    The filesize in a human readable format.
++     */
++    function YDTemplate_modifier_fmtfileize( $size ) {
++        return YDStringUtil::formatFileSize( $size );
++    }
++
++    /**
++     *	This template modifier converst an array to a string using the specified separator.
++     *
++     *  @param  $array      The array to convert.
++     *  @param  $separator  (optional) The separator to use. Default is &quot;, &quot;.
++     *
++     *  @returns    The array as a string.
++     */
++    function YDTemplate_modifier_implode( $array, $separator=', ' ) {
++        return implode( $separator, $array );
++    }
++
++    /**
++     *	This template modifier generates a timestamp.
++     *
++     *  @param  $string     The string to convert to a timestamp.
++     *
++     *  @returns    The timestamp as a numeric value.
++     */
++    function YDTemplate_make_timestamp( $string ) {
++        if ( empty( $string ) ) {
++            $string = &quot;now&quot;;
++        }
++        $time = strtotime( $string );
++        if ( is_numeric( $time ) &amp;&amp; $time != -1 ) {
++            return $time;
++        }
++        if ( preg_match( '/^\d{14}$/', $string ) ) {
++            $time = mktime(
++                substr( $string, 8, 2 ), substr( $string, 10, 2 ), substr( $string, 12, 2 ),
++                substr( $string, 4, 2 ), substr( $string, 6, 2 ), substr( $string,0 ,4 )
++            );
++            return $time;
++        }
++        $time = ( int ) $string;
++        if ( $time &gt; 0 ) {
++            return $time;
++        } else {
++            return time();
++        }
++    }
++
++    /**
++     *	This template modifier formats a timestamp as a string using the strftime function.
++     *
++     *  @param  $string     The timestamp to format.
++     *  @param  $format     (optional) The format to use. Default is '%b %d, %Y'.
++     *  @param  $default_date   (optional) If null and no string is given, the current time will be used.
++     *
++     *  @returns    The formatted date.
++     */
++    function YDTemplate_modifier_date_format( $string, $format='%b %d, %Y', $default_date=null ) {
++        if( $string != '' ) {
++            return strftime( $format, YDTemplate_make_timestamp( $string ) );
++        } elseif ( isset( $default_date ) &amp;&amp; $default_date != '' ) {
++            return strftime( $format, YDTemplate_make_timestamp( $default_date ) );
++        } else {
++            return;
++        }
++    }
++
++    /*
++     *	This template modifier will dump the contents of the variable using var_dump.
++     *
++     *  @param  $obj    The object to dump.
++     */
++    function YDTemplate_modifier_dump( $obj ) {
++        var_dump( $obj );
++        return;
++    }
++
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-02-27 13:57:04 UTC (rev 1744)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-02-27 15:42:43 UTC (rev 1745)
+@@ -147,6 +147,35 @@
+     }
+ 
+     /**
++     *	This function loads a translation from a global variables $_GLOBALS['t'] with specified name.
++     *
++     *  @param  $params   The parameters for the modifier. The parameter &quot;w&quot; gives the name of the translation. The
++     *                    parameter lower indicates if the translation needs to be returned as lowercase or not.
++     *
++     *  @returns    The named translation.
++     */
++    function t( $t ) {
++
++        // Return empty string when param is missing
++        if ( empty( $t ) ) {
++            return '';
++        }
++
++        // Load the language file
++        @include_once( dirname( __FILE__ ) . '/languages/language_' . strtolower( YDLocale::get() ) . '.php' );
++
++        // Initialize the language array
++        if ( ! isset( $GLOBALS['t'] ) ) {
++            $GLOBALS['t'] = array();
++        }
++
++        // Return the right translation
++        $t = strtolower( $t );
++        return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
++
++    }
++
++    /**
+      *  This is the base class for all other YD classes.
+      */
+     class YDBase {
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-02-27 13:57:04 UTC (rev 1744)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-02-27 15:42:43 UTC (rev 1745)
+@@ -41,8 +41,6 @@
+             $this-&gt;tpl-&gt;template_dir = dirname( __FILE__ ) . '/../' . $this-&gt;dir_skins . $this-&gt;skin . '/';
+ 
+             // Register the modifiers
+-            $this-&gt;tpl-&gt;register_function( 't', 'YDTplModT' );
+-            $this-&gt;tpl-&gt;register_modifier( 'bbcode', 'YDTplModBBCode' );
+             $this-&gt;tpl-&gt;register_modifier( 'date', 'YDTplModDate' );
+             $this-&gt;tpl-&gt;register_modifier( 'link_item', 'YDTplModLinkItem' );
+             $this-&gt;tpl-&gt;register_modifier( 'link_item_gallery', 'YDTplModLinkItemGallery' );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-02-27 13:57:04 UTC (rev 1744)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-02-27 15:42:43 UTC (rev 1745)
+@@ -71,7 +71,6 @@
+     YDInclude( 'YDUrl.php' );
+     YDInclude( 'YDUtil.php' );
+     YDInclude( 'YDForm.php' );
+-    YDInclude( 'YDBBCode.php' );
+     YDInclude( 'YDTemplate.php' );
+     YDInclude( 'YDDatabase.php' );
+     YDInclude( 'YDDatabaseMetaData.php' );
+@@ -101,43 +100,6 @@
+     $language = empty( $language ) ? 'en' : $language;
+     YDLocale::set( $language );
+ 
+-    // The t function used for translations
+-    function t( $t ) {
+-
+-        // Return empty string when param is missing
+-        if ( empty( $t ) ) {
+-            return '';
+-        }
+-
+-        // Load the language file
+-        @include_once( dirname( __FILE__ ) . '/languages/language_' . strtolower( YDLocale::get() ) . '.php' );
+-
+-        // Initialize the language array
+-        if ( ! isset( $GLOBALS['t'] ) ) {
+-            $GLOBALS['t'] = array();
+-        }
+-
+-        // Return the right translation
+-        $t = strtolower( $t );
+-        return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
+-
+-    }
+-
+-    // Template BBCode modifier
+-    function YDTplModBBCode( $text ) {
+-        $cls = new YDBBCode();
+-        return $cls-&gt;toHtml( $text, true, false, false, YDRequest::getCurrentUrl() );
+-    }
+-
+-    // Template t modifier
+-    function YDTplModT( $params ) {
+-        if ( @ $params['lower'] == 'yes' ) {
+-            return isset( $params['w'] ) ? strtolower( t( $params['w'] ) ) : '';
+-        } else {
+-            return isset( $params['w'] ) ? t( $params['w'] ) : '';
+-        }
+-    }
+-
+     // Template Date modifier
+     function YDTplModDate( $text, $format=null ) {
+         if ( is_null( $format ) ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000166.html">[ydf-devel] Typos in french translations of YDF Weblog
+</A></li>
+	<LI>Next message: <A HREF="000162.html">[ydf-devel] r1746 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#161">[ date ]</a>
+              <a href="thread.html#161">[ thread ]</a>
+              <a href="subject.html#161">[ subject ]</a>
+              <a href="author.html#161">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

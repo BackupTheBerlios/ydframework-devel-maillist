@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2240 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include	examples/weblog/include/languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2240%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples/weblog%20examples/weblog/include%0A%09examples/weblog/include/languages&In-Reply-To=%3C200611232004.kANK4sCO001901%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000824.html">
+   <LINK REL="Next"  HREF="000826.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2240 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include	examples/weblog/include/languages</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2240%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples/weblog%20examples/weblog/include%0A%09examples/weblog/include/languages&In-Reply-To=%3C200611232004.kANK4sCO001901%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2240 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples/weblog examples/weblog/include	examples/weblog/include/languages">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Nov 23 21:04:54 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000824.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000826.html">[ydf-devel] Small bug in YDUrl
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#825">[ date ]</a>
+              <a href="thread.html#825">[ thread ]</a>
+              <a href="subject.html#825">[ subject ]</a>
+              <a href="author.html#825">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-23 21:04:54 +0100 (Thu, 23 Nov 2006)
+New Revision: 2240
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+Log:
+Added a form rule that prevents people from adding more than 1 hyperlink to a comment (as another item in my ongoing quest to combat comment spam).
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-11-22 16:31:24 UTC (rev 2239)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-11-23 20:04:54 UTC (rev 2240)
+@@ -171,6 +171,7 @@
+             $this-&gt;registerRule( 'maxlength_escape', array( 'YDValidateRules', 'maxlength_escape' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'rangelength_escape', array( 'YDValidateRules', 'rangelength_escape' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'httpurl', array( 'YDValidateRules', 'httpurl' ), 'YDValidateRules.php' );
++            $this-&gt;registerRule( 'maxhyperlinks', array( 'YDValidateRules', 'maxhyperlinks' ), 'YDValidateRules.php' );
+ 
+             // Add the filters
+             $this-&gt;registerFilter( 'trim', 'trim' );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-11-22 16:31:24 UTC (rev 2239)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-11-23 20:04:54 UTC (rev 2240)
+@@ -358,6 +358,27 @@
+         }
+ 
+         /**
++         *	This function returns true if the variable is containing less hyperlinks than indicated, otherwise, it
++         *	returns false.
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	The maximum amount of hyperlinks that are allowed.
++         */
++        function maxhyperlinks( $val, $opts ) {
++            $count = intval( $opts );
++            $count1 = preg_match_all( &quot;/href=/i&quot;, $val, $matches1 );
++            $count2 = preg_match_all( &quot;/\[url=/i&quot;, $val, $matches2 );
++            if ( ( $count1 + $count2 ) &gt; $count ) {
++                return false;
++            }
++            $count = preg_match_all( &quot;/http\:\/\//i&quot;, $val, $matches );
++            if ( ( $count ) &gt; $count ) {
++                return false;
++            }
++            return true;
++        }
++
++        /**
+          *	This rule checks if a string contains the maximum specified words or not.
+          *
+          *	@param $val		The value to test.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-22 16:31:24 UTC (rev 2239)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-23 20:04:54 UTC (rev 2240)
+@@ -595,19 +595,6 @@
+ 
+             }
+ 
+-            // Check the amount of hyperlinks in the comments. More than 1 is marked as spam.
+-            $count1 = preg_match_all( &quot;/href=/i&quot;, $values['comment'], $matches1 );
+-            $count2 = preg_match_all( &quot;/\[url=/i&quot;, $values['comment'], $matches2 );
+-            if ( ( $count1 + $count2 ) &gt; 1 ) {
+-                $values['is_spam'] = '1';
+-            }
+-
+-            // Only 2 http links are allowed
+-            $count = preg_match_all( &quot;/http\:\/\//i&quot;, $values['comment'], $matches );
+-            if ( ( $count ) &gt; 1 ) {
+-                $values['is_spam'] = '1';
+-            }
+-
+             // Add the comment
+             $result = $this-&gt;_executeInsert( '#_comments', $values );
+             $comment_id = $this-&gt;db-&gt;getLastInsertID();
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-22 16:31:24 UTC (rev 2239)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-23 20:04:54 UTC (rev 2240)
+@@ -90,7 +90,8 @@
+ $GLOBALS['t']['err_email'] = 'Email is missing or invalid';
+ $GLOBALS['t']['err_website'] = 'The website specified is not a valid URL';
+ $GLOBALS['t']['err_comment'] = 'Comment is required';
+-$GLOBALS['t']['err_comment_length'] = 'Comment is cannot be more than 2048 characters';
++$GLOBALS['t']['err_comment_length'] = 'Comment cannot be more than 2048 characters';
++$GLOBALS['t']['err_comment_links'] = 'Comment cannot contain more than 1 hyperlink';
+ $GLOBALS['t']['with'] = 'for';
+ $GLOBALS['t']['item_closed'] = 'This item does not allow comments.';
+ $GLOBALS['t']['spam'] = 'Spam';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-22 16:31:24 UTC (rev 2239)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-23 20:04:54 UTC (rev 2240)
+@@ -91,6 +91,7 @@
+ $GLOBALS['t']['err_website'] = 'De website is geen geldige URL';
+ $GLOBALS['t']['err_comment'] = 'Een commentaar is vereist';
+ $GLOBALS['t']['err_comment_length'] = 'Commentaar kan niet meer dan 2048 karakters bevatten';
++$GLOBALS['t']['err_comment_links'] = 'Commentaar kan niet meer dan 1 hyperlink bevatten';
+ $GLOBALS['t']['with'] = 'bij';
+ $GLOBALS['t']['item_closed'] = 'Dit item laat geen commentaren toe.';
+ $GLOBALS['t']['spam'] = 'Spam';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-11-22 16:31:24 UTC (rev 2239)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-11-23 20:04:54 UTC (rev 2240)
+@@ -67,14 +67,15 @@
+             $form-&gt;setDefaults( $defaults );
+ 
+             // Set the rules
+-            $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
+-            $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
+-            $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), 35 );
+-            $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
+-            $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
+-            $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
+-            $form-&gt;addRule( 'comment',     'required',  t( 'err_comment' ) );
+-            $form-&gt;addRule( 'comment',     'maxlength', t( 'err_comment_length' ), 2048 );
++            $form-&gt;addRule( 'username',    'required',      t( 'err_name' ) );
++            $form-&gt;addRule( 'username',    'not_email',     t( 'err_name_email' ) );
++            $form-&gt;addRule( 'username',    'maxlength',     t( 'err_name_length' ), 35 );
++            $form-&gt;addRule( 'useremail',   'email',         t( 'err_email' ) );
++            $form-&gt;addRule( 'useremail',   'required',      t( 'err_email' ) );
++            $form-&gt;addRule( 'userwebsite', 'httpurl',       t( 'err_website' ) );
++            $form-&gt;addRule( 'comment',     'required',      t( 'err_comment' ) );
++            $form-&gt;addRule( 'comment',     'maxlength',     t( 'err_comment_length' ), 2048 );
++            $form-&gt;addRule( 'comment',     'maxhyperlinks', t( 'err_comment_links' ), 1 );
+ 
+             // Add the filters
+             $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000824.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000826.html">[ydf-devel] Small bug in YDUrl
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#825">[ date ]</a>
+              <a href="thread.html#825">[ thread ]</a>
+              <a href="subject.html#825">[ subject ]</a>
+              <a href="author.html#825">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

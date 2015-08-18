@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2014 - in YDFramework2.0/trunk/examples: . cm	cm/backend cm/backend/templates
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2014%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20cm%0A%09cm/backend%20cm/backend/templates&In-Reply-To=%3C200608151705.k7FH5WvC012017%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000520.html">
+   <LINK REL="Next"  HREF="000522.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2014 - in YDFramework2.0/trunk/examples: . cm	cm/backend cm/backend/templates</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2014%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20cm%0A%09cm/backend%20cm/backend/templates&In-Reply-To=%3C200608151705.k7FH5WvC012017%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2014 - in YDFramework2.0/trunk/examples: . cm	cm/backend cm/backend/templates">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug 15 19:05:32 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000520.html">[ydf-devel] r2013 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000522.html">[ydf-devel] r2015 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#521">[ date ]</a>
+              <a href="thread.html#521">[ thread ]</a>
+              <a href="subject.html#521">[ subject ]</a>
+              <a href="author.html#521">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-15 19:04:22 +0200 (Tue, 15 Aug 2006)
+New Revision: 2014
+
+Added:
+   YDFramework2.0/trunk/examples/cm/
+   YDFramework2.0/trunk/examples/cm/backend/
+   YDFramework2.0/trunk/examples/cm/backend/templates/
+   YDFramework2.0/trunk/examples/cm/backend/templates/default/
+   YDFramework2.0/trunk/examples/cm/backend/templates/green/
+   YDFramework2.0/trunk/examples/cm/backend/templates/orange/
+   YDFramework2.0/trunk/examples/cm/backend/userdetails.php
+   YDFramework2.0/trunk/examples/cm/cm.php
+   YDFramework2.0/trunk/examples/cm/frontend/
+   YDFramework2.0/trunk/examples/cm/instructions.txt
+Log:
+added first YDCM example about user details changing
+
+Added: YDFramework2.0/trunk/examples/cm/backend/userdetails.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/backend/userdetails.php	2006-08-15 17:02:01 UTC (rev 2013)
++++ YDFramework2.0/trunk/examples/cm/backend/userdetails.php	2006-08-15 17:04:22 UTC (rev 2014)
+@@ -0,0 +1,76 @@
++&lt;?php
++
++    include_once( dirname( __FILE__ ) . '/../cm.php' );
++
++    // Class definition
++    class userdetails extends cm {
++
++        // Class constructor
++        function userdetails() {
++
++			// init parent class
++            $this-&gt;cm();
++
++			// create a user object
++			$this-&gt;users = YDCMComponent::module( 'YDCMUsers' );
++        }
++
++
++        // Default action (that shows user details form with some editable fields)
++		// User should only update his details eg name, email
++        function actionDefault() {
++
++			// add form. User cannot edit username, cannot see password, cannot edit login details, can edit user details
++			$this-&gt;users-&gt;addFormDetails( false, false, false, true );
++
++			// get info of user id 100
++			$defaults = $this-&gt;users-&gt;getUser( 100 );
++
++			// get user form (filled with previous defaults)
++			$form = $this-&gt;users-&gt;getForm( $defaults );
++
++			// show form :)
++			$form-&gt;display();
++        }
++
++
++        // Change details example
++        function actionChangeDetails() {
++
++			// add form. User cannot edit username, cannot see password, cannot edit login details, can edit user details
++			$this-&gt;users-&gt;addFormDetails( false, false, false, true );
++
++			// get form filled with details from user id 100
++			$defaults = $this-&gt;users-&gt;getUser( 100 );
++
++			// get user details form with a submit button
++			$form = $this-&gt;users-&gt;getForm( $defaults );
++			$form-&gt;addElement( 'submit', '_cmdSubmit', 'Submit' );
++
++			// if we have submitted the form, update user
++			if ( $form-&gt;isSubmitted() ){
++
++				// update user 100 with submitted information, magic isn't it ;)
++				$result = $this-&gt;users-&gt;changeUserForm( 100 );
++
++				// check if result is a array (form error messages)
++				if( is_array( $result ) ) return print( implode( '&lt;br&gt;', $result ) );
++
++				// if update was sucessfull, show ok message in current language
++				if ( $result == 1 ) return print( t( 'user details updated' ) );
++
++				// if form is valid but details are not changed (because are same as the db ones)
++				if ( $result == 0 ) return print( t( 'user not updated' ) );
++			}
++
++			// show form :)
++			$form-&gt;display();
++        }
++
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/cm/cm.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/cm.php	2006-08-15 17:02:01 UTC (rev 2013)
++++ YDFramework2.0/trunk/examples/cm/cm.php	2006-08-15 17:04:22 UTC (rev 2014)
+@@ -0,0 +1,32 @@
++&lt;?php
++
++    // Initialize the Yellow Duck Framework
++    include_once( dirname( __FILE__ ) . '/../../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDTemplate.php' );
++    YDInclude( 'YDDatabase.php' );
++    YDInclude( 'YDCMComponent.php' );
++
++    // set YDDatabase instance connection
++    YDDatabase::registerInstance( 'default', 'mysql', 'tppp', 'root', '', 'localhost' );
++
++	// set portal language. Currently you can user 'en' and 'pt'.
++	YDLocale::set( 'en' );
++
++	// set admin template path
++	YDConfig::set( 'YDCMTEMPLATES_ADMIN_PATH', dirname( __FILE__ ) . '/backend/templates' );
++
++    // Class definition for the index request
++    class cm extends YDRequest {
++
++        // Class constructor
++        function cm() {
++
++            $this-&gt;YDRequest();
++            $this-&gt;template = new YDTemplate();
++        }
++
++    }
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/cm/instructions.txt
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/instructions.txt	2006-08-15 17:02:01 UTC (rev 2013)
++++ YDFramework2.0/trunk/examples/cm/instructions.txt	2006-08-15 17:04:22 UTC (rev 2014)
+@@ -0,0 +1,13 @@
++1 - Get DBDesigner4 (opensource db scheme editor): <A HREF="http://fabforce.net/dbdesigner4/">http://fabforce.net/dbdesigner4/</A>
++
++	1.1 - open YDFramework2\YDClasses\YDCMComponent\DBDesigner4.xml in DBDesigner4
++
++	1.2 - in DBDesigner4 select FILE -&gt; EXPORT -&gt; SQL CREATE SCRIPT
++
++	1.3 - in &quot;General Settings&quot; select 'Order tables by foreign keys'
++
++	1.4 - in &quot;SQL Creates Settings&quot; select all options
++
++	1.5 - copy script to clipboard/file and insert it in your database
++
++2 - in examples\cm directory, open cm.php and edit your database settings
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000520.html">[ydf-devel] r2013 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000522.html">[ydf-devel] r2015 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#521">[ date ]</a>
+              <a href="thread.html#521">[ thread ]</a>
+              <a href="subject.html#521">[ subject ]</a>
+              <a href="author.html#521">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

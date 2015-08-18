@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2498 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2498%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200711011518.lA1FIGsG018248%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001093.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2498 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2498%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200711011518.lA1FIGsG018248%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2498 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Nov  1 16:18:16 CET 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001093.html">[ydf-devel] r2499 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1092">[ date ]</a>
+              <a href="thread.html#1092">[ thread ]</a>
+              <a href="subject.html#1092">[ subject ]</a>
+              <a href="author.html#1092">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-11-01 16:18:11 +0100 (Thu, 01 Nov 2007)
+New Revision: 2498
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+ENH: added simple string check to argument calculation in YDAjax
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-10-20 16:40:50 UTC (rev 2497)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-11-01 15:18:11 UTC (rev 2498)
+@@ -580,8 +580,16 @@
+ 			foreach ( $arguments as $arg ){
+ 
+ 				// if argument is numeric just add it and continue
+-				if ( is_numeric( $arg ) ) { $args[] = $arg; continue; }
++				if ( is_numeric( $arg ) ) {
++					$args[] = $arg; continue;
++				}
+ 
++				// if not numeric, argument must be a string
++				if ( ! is_string( $arg ) ){ 
++					$args[] = '&quot;?&quot;';
++					continue;
++				}
++
+ 				// if is a javascript variable, just add it
+ 				if ( ereg ( &quot;^var (.*)$&quot;, $arg, $res ) ){ $args[] = $res[1]; continue; }
+ 				
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001093.html">[ydf-devel] r2499 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1092">[ date ]</a>
+              <a href="thread.html#1092">[ thread ]</a>
+              <a href="subject.html#1092">[ subject ]</a>
+              <a href="author.html#1092">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

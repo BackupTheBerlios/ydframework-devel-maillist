@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2217 - YDFramework2.0/trunk/examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2217%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200611182234.kAIMYVdq029412%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000777.html">
+   <LINK REL="Next"  HREF="000780.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2217 - YDFramework2.0/trunk/examples</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2217%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200611182234.kAIMYVdq029412%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2217 - YDFramework2.0/trunk/examples">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Nov 18 23:34:31 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000777.html">[ydf-devel] r2216 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000780.html">[ydf-devel] r2218 - in YDFramework2.0/trunk/examples: . ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#778">[ date ]</a>
+              <a href="thread.html#778">[ thread ]</a>
+              <a href="subject.html#778">[ subject ]</a>
+              <a href="author.html#778">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-18 23:34:19 +0100 (Sat, 18 Nov 2006)
+New Revision: 2217
+
+Added:
+   YDFramework2.0/trunk/examples/database_tree3.php
+Log:
+- added new YDDatabaseTree3 test example: database_tree3.php
+
+Added: YDFramework2.0/trunk/examples/database_tree3.php
+===================================================================
+--- YDFramework2.0/trunk/examples/database_tree3.php	2006-11-18 22:29:08 UTC (rev 2216)
++++ YDFramework2.0/trunk/examples/database_tree3.php	2006-11-18 22:34:19 UTC (rev 2217)
+@@ -0,0 +1,213 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    /*
++
++	    CREATE TABLE nested_tree (
++            id int NOT NULL auto_increment,
++            parent_id int NULL,
++			lineage varchar(255) NOT NULL default '//',
++            level int NOT NULL default '1',
++            position int NOT NULL default '1',
++            title varchar(255) NOT NULL default '',
++            PRIMARY KEY (id),
++			FOREIGN KEY (parent_id)
++                REFERENCES nested_tree(id)
++                     ON DELETE CASCADE
++                     ON UPDATE CASCADE
++        )TYPE=InnoDB;
++
++		Note: root node must have ID 1, PARENT null and LINEAGE '' !
++
++        INSERT INTO nested_tree VALUES ( 1, null, '',         0, 1, '');
++        INSERT INTO nested_tree VALUES ( 2,    1, '//',       1, 1, 'General Resources');
++        INSERT INTO nested_tree VALUES ( 3,    2, '//2/',     2, 1, 'Code Paste');
++        INSERT INTO nested_tree VALUES ( 4,    2, '//2/',     2, 2, 'Documentation');
++        INSERT INTO nested_tree VALUES ( 5,    2, '//2/',     2, 3, 'Books &amp; Publications');
++        INSERT INTO nested_tree VALUES ( 6,    5, '//2/5/',   3, 1, 'Apache');
++        INSERT INTO nested_tree VALUES ( 7,    5, '//2/5/',   3, 2, 'PostgreSQL');
++        INSERT INTO nested_tree VALUES ( 8,    5, '//2/5/',   3, 3, 'MySQL');
++        INSERT INTO nested_tree VALUES ( 9,    2, '//2/',     2, 4, 'Links');
++        INSERT INTO nested_tree VALUES (10,    9, '//2/9/',   3, 1, 'Databases');
++        INSERT INTO nested_tree VALUES (11,    9, '//2/9/',   3, 2, 'Generators');
++        INSERT INTO nested_tree VALUES (12,    9, '//2/9/',   3, 3, 'Portals');
++
++        // ==== Sample data dump =======================================================================================
++		+----+-----------+---------+-------+----------+----------------------+
++		| id | parent_id | lineage | level | position | title                |
++		+----+-----------+---------+-------+----------+----------------------+
++		|  1 |      NULL |         |     0 |        1 |                      |
++		|  2 |         1 | //      |     1 |        1 | General Resources    |
++		|  3 |         2 | //2/    |     2 |        1 | Code Paste           |
++		|  4 |         2 | //2/    |     2 |        2 | Documentation        |
++		|  5 |         2 | //2/    |     2 |        3 | Books &amp; Publications |
++		|  6 |         5 | //2/5/  |     3 |        1 | Apache               |
++		|  7 |         5 | //2/5/  |     3 |        2 | PostgreSQL           |
++		|  8 |         5 | //2/5/  |     3 |        3 | MySQL                |
++		|  9 |         2 | //2/    |     2 |        4 | Links                |
++		| 10 |         9 | //2/9/  |     3 |        1 | Databases            |
++		| 11 |         9 | //2/9/  |     3 |        2 | Generators           |
++		| 12 |         9 | //2/9/  |     3 |        3 | Portals              |
++		+----+-----------+---------+-------+----------+----------------------+
++
++        // =============================================================================================================
++
++    */
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDDatabase.php' );
++    YDInclude( 'YDDatabaseTree3.php' );
++
++	YDConfig::set( 'YD_DEBUG', 2 );
++
++    // Class definition
++    class database_tree3 extends YDRequest {
++
++        // Class constructor
++        function database_tree3() {
++
++            // Call the parent
++            $this-&gt;YDRequest();
++
++            // Get the database connection
++            $db = YDDatabase::getInstance( 'mysql', 'tree_test', 'root', '', 'localhost' );
++
++            // Get the tree instance
++            $this-&gt;tree = new YDDatabaseTree3( 'nested_tree', $db );
++			
++			// register extra column
++			$this-&gt;tree-&gt;registerField( 'title', true );
++
++        }
++
++        // Default action
++        function actionDefault() {
++
++            // Show the link to the sitemap action
++            echo( '&lt;a href=&quot;' . YD_SELF_SCRIPT . '?do=example&quot;&gt;Sitemap&lt;/a&gt;' );
++
++            // Get a reference to the tree
++            $tree = &amp; $this-&gt;tree;
++
++            // Get a single node
++            YDDebugUtil::dump( $tree-&gt;getNode( 2 ), '$tree-&gt;getNode( 2 )' );
++
++            // Get the children of a single node
++            YDDebugUtil::dump( $tree-&gt;getChildren( 2 ), '$tree-&gt;getChildren( 2 )' );
++            YDDebugUtil::dump( $tree-&gt;getChildren( 4 ), '$tree-&gt;getChildren( 4 )' );
++
++            // Get the descendants of a single node
++            YDDebugUtil::dump( $tree-&gt;getDescendants( 4, true ), '$tree-&gt;getDescendants( 4, true )' );
++            YDDebugUtil::dump( $tree-&gt;getDescendants( 0, true ), '$tree-&gt;getDescendants( 0, true )' );
++
++            // Get the path to a node
++            YDDebugUtil::dump( $tree-&gt;getPath( 5 ), '$tree-&gt;getPath( 5 )' );
++            YDDebugUtil::dump( $tree-&gt;getPath( 5, true ), '$tree-&gt;getPath( 5, true )' );
++
++            // Check if descendant
++            YDDebugUtil::dump( $tree-&gt;isDescendantOf( 9, 1 ), '$tree-&gt;isDescendantOf( 9, 1 )' );
++            YDDebugUtil::dump( $tree-&gt;isDescendantOf( 9999, 1 ), '$tree-&gt;isDescendantOf( 9999, 1 )' );
++            YDDebugUtil::dump( $tree-&gt;isDescendantOf( 10, 2 ), '$tree-&gt;isDescendantOf( 10, 2 )' );
++
++            // Check if child of
++            YDDebugUtil::dump( $tree-&gt;isChildOf( 9, 8 ), '$tree-&gt;isChildOf( 9, 8 )' );
++            YDDebugUtil::dump( $tree-&gt;isChildOf( 9, 2 ), '$tree-&gt;isChildOf( 9, 2 )' );
++
++            // Number of descendants
++            YDDebugUtil::dump( $tree-&gt;numDescendants( 9 ), '$tree-&gt;numDescendants( 9 )' );
++            YDDebugUtil::dump( $tree-&gt;numDescendants( 4 ), '$tree-&gt;numDescendants( 4 )' );
++            YDDebugUtil::dump( $tree-&gt;numDescendants( 1 ), '$tree-&gt;numDescendants( 1 )' );
++
++            // Number of children
++            YDDebugUtil::dump( $tree-&gt;numChildren( 9 ), '$tree-&gt;numChildren( 9 )' );
++            YDDebugUtil::dump( $tree-&gt;numChildren( 4 ), '$tree-&gt;numChildren( 4 )' );
++            YDDebugUtil::dump( $tree-&gt;numChildren( 1 ), '$tree-&gt;numChildren( 1 )' );
++
++            // Get the node's immediate family
++            YDDebugUtil::dump( $tree-&gt;getImmediateFamily( 4 ), '$tree-&gt;getImmediateFamily( 4 )' );
++
++        }
++		
++        // Add a number of nodes
++        function actionAdd() {
++
++            // Get the node ID
++            $id = ( isset( $_GET['id'] ) &amp;&amp; is_numeric( $_GET['id'] ) ) ? $_GET['id'] : 1;
++        
++            // Add an item
++            $values = array( 'title' =&gt; 'New Node - ' . time() );
++            
++			$this-&gt;tree-&gt;addNode( $values, $id );
++
++            $this-&gt;actionExample( true );
++        }
++
++
++        // Delete a node and it's subnodes
++        function actionDelete() {
++
++            // Get a reference to the tree
++            $tree = &amp; $this-&gt;tree;
++
++            // Delete a node
++            $tree-&gt;deleteNode( $_GET['id'] );
++            
++            // Redirect to the sitemap
++            $this-&gt;actionExample( true );
++
++        }
++
++        // Real life example
++        function actionExample( $root = false) {
++
++  			YDConfig::set( 'YD_DEBUG', 0 );
++  
++            // Get node ID
++            $id = ( $root == false &amp;&amp; isset( $_GET['id'] ) &amp;&amp; is_numeric( $_GET['id'] ) ) ? $_GET['id'] : 1;
++
++            // compute path
++            echo( '&lt;p&gt;&lt;b&gt;Path:&lt;/b&gt; ROOT &raquo; ' );
++            foreach ( $this-&gt;tree-&gt;getPath( $id ) as $path_item ) {
++                echo( '&lt;a href=&quot;' . YD_SELF_SCRIPT . '?do=example&amp;id=' . $path_item['id'] . '&quot;&gt;' . $path_item['title'] . '&lt;/a&gt; &raquo; ' );
++            }
++
++			// compute node name
++            $node = $this-&gt;tree-&gt;getNode( $id );
++            echo( '&lt;a href=&quot;' . YD_SELF_SCRIPT . '?do=example&amp;id=' . $node['id'] . '&quot;&gt;' . $node['title'] . '&lt;/a&gt;' );
++            echo( '&lt;/p&gt;' );
++
++            // Show the item
++            echo( '&lt;p&gt;&lt;b&gt;' . $node['title'] . '&lt;/b&gt;&lt;/p&gt; ' );
++
++            // Show the children in a table
++			echo( '&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Children:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;actions&lt;/td&gt;&lt;/tr&gt;' );
++            foreach ( $this-&gt;tree-&gt;getChildren( $id ) as $child ) {
++				echo( '&lt;tr&gt;&lt;td&gt;' );
++
++					// show child action
++                	echo( '&lt;a href=&quot;' . YD_SELF_SCRIPT . '?do=example&amp;id=' . $child['id'] . '&quot;&gt;' . $child['title'] . '&lt;/a&gt;&nbsp;&nbsp;&nbsp;' );
++				echo( '&lt;/td&gt;&lt;td&gt;' );
++
++					// delete action
++	                echo( '&lt;a href=&quot;' . YD_SELF_SCRIPT . '?do=delete&amp;id='  . $child['id'] . '&quot;&gt;Delete (' . $child['title'] . ')&lt;/a&gt;&lt;br/&gt;' );
++				echo( '&lt;/td&gt;&lt;/tr&gt;' );
++            }
++  
++  			// add node action
++			echo( '&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;' );
++	                echo( '&lt;a href=&quot;' . YD_SELF_SCRIPT . '?do=add&amp;id='  . $node['id'] . '&quot;&gt;Add new node to (' . $node['title'] . ')&lt;/a&gt;&lt;br/&gt;' );
++			echo( '&lt;/td&gt;&lt;/tr&gt;' );
++
++            echo( '&lt;/table&gt;' );
++        }
++
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000777.html">[ydf-devel] r2216 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000780.html">[ydf-devel] r2218 - in YDFramework2.0/trunk/examples: . ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#778">[ date ]</a>
+              <a href="thread.html#778">[ thread ]</a>
+              <a href="subject.html#778">[ subject ]</a>
+              <a href="author.html#778">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,358 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDCM feedback
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C4450E8BE.40003%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000359.html">
+   <LINK REL="Next"  HREF="000301.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDCM feedback</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C4450E8BE.40003%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDCM feedback">francisco at fusemail.com
+       </A><BR>
+    <I>Thu Apr 27 17:52:30 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000359.html">[ydf-devel] YDCM feedback
+</A></li>
+        <LI>Next message: <A HREF="000301.html">[ydf-devel] r1857 - in YDFramework2.0/trunk/examples/cms: includes modules modules/ydcmfgallery modules/ydcmfgalleryalbum modules/ydcmfgalleryitem modules/ydcmfhome
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#360">[ date ]</a>
+              <a href="thread.html#360">[ thread ]</a>
+              <a href="subject.html#360">[ subject ]</a>
+              <a href="author.html#360">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Pieter
+
+
+&gt;<i> I did some thinking about your request about the position field in the 
+</I>&gt;<i> YDDatabaseTree class, but I don't think we should hardcode it in the 
+</I>&gt;<i> class. The class is very generic right now and that's what most people 
+</I>&gt;<i> prefer. The application could and should take care of maintaining the 
+</I>&gt;<i> data for the position column.
+</I>
+Sorry to disagree but this is a internal tree state. If some 
+applications don't use that it will be no problem.
+I can change the tree state externally but it would become an violation 
+(like changing 'nleft' or 'nright').
+
+It's not trivial to implement but i made that tree position management 
+in the past and i think it can be done with 2 sql queries before the 
+adding/moving sql query.
+
+I think that can be incorporated.. if the developer want's to use 
+position, those 2 queries will be executed, otherwise it will be like 
+it's now.
+
+What do you think?
+
+Francisco A
+
+&gt;<i>  
+</I>&gt;<i> On 4/26/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> 
+</I>&gt;<i> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt; wrote:
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>      &gt; That's why I added the position field for every node. Using
+</I>&gt;<i>     updateNode
+</I>&gt;<i>      &gt; and addingNode, you can take care of the ordering, provided the node
+</I>&gt;<i>      &gt; contains a field called &quot;position&quot; with the right value.
+</I>&gt;<i> 
+</I>&gt;<i>     Well.. now i'm confused. You added a new column 'position' but.. addNode
+</I>&gt;<i>     and updateNode are still the same (read: they don't care about node
+</I>&gt;<i>     reordering).
+</I>&gt;<i> 
+</I>&gt;<i>     I mean.. imagine this example
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>        + A (1)
+</I>&gt;<i>        | +- B  (1)
+</I>&gt;<i>        | +- C  (2)
+</I>&gt;<i>        |
+</I>&gt;<i>        +-D     (2)
+</I>&gt;<i> 
+</I>&gt;<i>     Inside '()' we have the correspondent position value for each node.
+</I>&gt;<i> 
+</I>&gt;<i>     When i use addNode like:  addNode( X, A, 2 ), this is will be the tree
+</I>&gt;<i>     with current addNode implementation:
+</I>&gt;<i> 
+</I>&gt;<i>        + A (1)
+</I>&gt;<i>        | +- B  (1)
+</I>&gt;<i>        | +- X  (2)
+</I>&gt;<i>        | +- C  (2)
+</I>&gt;<i>        |
+</I>&gt;<i>        +-D     (2)
+</I>&gt;<i> 
+</I>&gt;<i>     but it's _wrong_ because addNode didn't update new brother with upper
+</I>&gt;<i>     position value than 2.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>     The same for moveNode... if i have the next _correct_ tree
+</I>&gt;<i> 
+</I>&gt;<i>        + A (1)
+</I>&gt;<i>        | +- B  (1)
+</I>&gt;<i>        | +- X  (2)
+</I>&gt;<i>        | +- C  (3)
+</I>&gt;<i>        |
+</I>&gt;<i>        +-D     (2)
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>     and i want to move node X to be the first child of A i use:
+</I>&gt;<i>     moveNode( X,
+</I>&gt;<i>     A, 1 ) ... but with current moveNode implementation i will get:
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>        + A (1)
+</I>&gt;<i>        | +- B  (1)
+</I>&gt;<i>        | +- X  (1)
+</I>&gt;<i>        | +- C  (3)
+</I>&gt;<i>        |
+</I>&gt;<i>        +-D     (2)
+</I>&gt;<i> 
+</I>&gt;<i>     and not:
+</I>&gt;<i> 
+</I>&gt;<i>        + A (1)
+</I>&gt;<i>        | +- X  (1)
+</I>&gt;<i>        | +- B  (2)
+</I>&gt;<i>        | +- C  (3)
+</I>&gt;<i>        |
+</I>&gt;<i>        +-D     (2)
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>     because of the update stuff again..
+</I>&gt;<i> 
+</I>&gt;<i>     So, these methods must care about position changing of brothers.. and
+</I>&gt;<i>     they aren't yet.
+</I>&gt;<i> 
+</I>&gt;<i>     Francisco A
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>      &gt; On 4/26/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i>      &gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;&gt;
+</I>&gt;<i>     wrote:
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;      &gt; They way I did it now was to add an extra field called
+</I>&gt;<i>     position
+</I>&gt;<i>      &gt;     that can
+</I>&gt;<i>      &gt;      &gt; be used to sort on. By default, the sorting is done on
+</I>&gt;<i>     title, but
+</I>&gt;<i>      &gt;     now
+</I>&gt;<i>      &gt;      &gt; it's changed to first sort on position, and then on title.
+</I>&gt;<i>     From
+</I>&gt;<i>      &gt;     what I
+</I>&gt;<i>      &gt;      &gt; can see, that should work just fine and have no influence
+</I>&gt;<i>     on the
+</I>&gt;<i>      &gt;      &gt; nleft/nright/nlevel values.
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     Yes, nleft, nright and nlevel should not be touched.. but we
+</I>&gt;<i>     will need
+</I>&gt;<i>      &gt;     another value 'nposition' to control the order of nodes with
+</I>&gt;<i>     same parent
+</I>&gt;<i>      &gt;     (that, of course, have the same nlevel too).
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     Unless you have some idea how to manage positions.. basically
+</I>&gt;<i>     all we
+</I>&gt;<i>      &gt;     need is support in addNode and moveNode to define the position.
+</I>&gt;<i>      &gt;     This way we can do things like move node C upper, moveNode(
+</I>&gt;<i>     B, A, 2 ):
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     + A          + A
+</I>&gt;<i>      &gt;     | +- B       | +- C
+</I>&gt;<i>      &gt;     | +- C    =&gt; | +- B
+</I>&gt;<i>      &gt;     |            |
+</I>&gt;<i>      &gt;     +-D          +-D
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     or... addNode X after B, addNode( X, A, 2 ):
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     + A          + A
+</I>&gt;<i>      &gt;     | +- B       | +- B
+</I>&gt;<i>      &gt;     | +- C    =&gt; | +- X
+</I>&gt;<i>      &gt;     |            | +- C
+</I>&gt;<i>      &gt;     +-D          |
+</I>&gt;<i>      &gt;                  +-D
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     This is really needed..
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     Francisco A
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;      &gt; pieter
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt; On 4/26/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;
+</I>&gt;<i>      &gt;      &gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;&gt;&gt;
+</I>&gt;<i>      &gt;     wrote:
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt; Done in build 1888.
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;     Well.. feature #001986 is missing :)
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;     YDDatabaseTree should internally care about positions
+</I>&gt;<i>     (eg: like
+</I>&gt;<i>      &gt;      &gt;     'nleft')
+</I>&gt;<i>      &gt;      &gt;     and manage that automatically. This way:
+</I>&gt;<i>      &gt;      &gt;     - when we are inserting a node, it should calculate
+</I>&gt;<i>     the last
+</I>&gt;<i>      &gt;     position
+</I>&gt;<i>      &gt;      &gt;     for that parent
+</I>&gt;<i>      &gt;      &gt;     - when deleting a node, it should decrease positions
+</I>&gt;<i>     of bigger
+</I>&gt;<i>      &gt;      &gt;     brothers..
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;     it's not trivial. ;)
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;     Francisco A
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt; On 4/26/06, *Pieter Claerhout*
+</I>&gt;<i>     &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;
+</I>&gt;<i>      &gt;      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;&gt;
+</I>&gt;<i>      &gt;      &gt;      &gt; &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;&gt;&gt;&gt; wrote:
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;     I will take care of that.
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;     pieter
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;     On 4/25/06, *Francisco Azevedo* &lt;
+</I>&gt;<i>      &gt;     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i>     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;
+</I>&gt;<i>      &gt;      &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;&gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;
+</I>&gt;<i>      &gt;      &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt; &gt;&gt;&gt; wrote:
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;         &gt;  If there's anything we can help with,
+</I>&gt;<i>     let us know.
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;         Sure.. Now, a good help could be:
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;         - add YDDatabaseTree::updateNode
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;         - add the position column feature #001986
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;         - be able to define: setSortField(
+</I>&gt;<i>     &quot;parent_id ASC,
+</I>&gt;<i>      &gt;      &gt;     position ASC&quot;
+</I>&gt;<i>      &gt;      &gt;      &gt;         ) that
+</I>&gt;<i>      &gt;      &gt;      &gt;         will sort nodes by parent and nodes with same
+</I>&gt;<i>      &gt;     parent will be
+</I>&gt;<i>      &gt;      &gt;      &gt;         sorted by
+</I>&gt;<i>      &gt;      &gt;      &gt;         its position ;)
+</I>&gt;<i>      &gt;      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;      &gt;         Francisco A
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;     _______________________________________________
+</I>&gt;<i>      &gt;      &gt;     YDFramework-devel mailing list
+</I>&gt;<i>      &gt;      &gt;     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt; &gt;
+</I>&gt;<i>      &gt;      &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;&gt;&gt;
+</I>&gt;<i>      &gt;      &gt;     <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>      &gt;     &lt; <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>&gt;
+</I>&gt;<i>      &gt;      &gt;    
+</I>&gt;<i>     &lt;<A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A> &gt;
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt;
+</I>&gt;<i>      &gt;      &gt; --
+</I>&gt;<i>      &gt;      &gt; pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;&gt; .
+</I>&gt;<i>      &gt;      &gt; <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;     _______________________________________________
+</I>&gt;<i>      &gt;     YDFramework-devel mailing list
+</I>&gt;<i>      &gt;     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i>      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;&gt;
+</I>&gt;<i>      &gt;     <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt;
+</I>&gt;<i>      &gt; --
+</I>&gt;<i>      &gt; pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt; .
+</I>&gt;<i>      &gt; <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>&gt;<i> 
+</I>&gt;<i>     _______________________________________________
+</I>&gt;<i>     YDFramework-devel mailing list
+</I>&gt;<i>     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i>     <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>     &lt;<A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; . 
+</I>&gt;<i> <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000359.html">[ydf-devel] YDCM feedback
+</A></li>
+	<LI>Next message: <A HREF="000301.html">[ydf-devel] r1857 - in YDFramework2.0/trunk/examples/cms: includes modules modules/ydcmfgallery modules/ydcmfgalleryalbum modules/ydcmfgalleryitem modules/ydcmfhome
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#360">[ date ]</a>
+              <a href="thread.html#360">[ thread ]</a>
+              <a href="subject.html#360">[ subject ]</a>
+              <a href="author.html#360">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

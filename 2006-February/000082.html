@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1683 - in YDFramework2.0/trunk/examples/weblog: include include/dbupdates include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1683%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20include/dbupdates%20include/languages%20manage&In-Reply-To=%3C200602142021.k1EKLEqs032244%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000081.html">
+   <LINK REL="Next"  HREF="000083.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1683 - in YDFramework2.0/trunk/examples/weblog: include include/dbupdates include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1683%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20include/dbupdates%20include/languages%20manage&In-Reply-To=%3C200602142021.k1EKLEqs032244%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1683 - in YDFramework2.0/trunk/examples/weblog: include include/dbupdates include/languages manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 21:21:14 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000081.html">[ydf-devel] r1682 - YDFramework2.0/trunk/examples/weblog/include/dbupdates
+</A></li>
+        <LI>Next message: <A HREF="000083.html">[ydf-devel] r1684 - YDFramework2.0/trunk/examples/weblog/include/dbupdates
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#82">[ date ]</a>
+              <a href="thread.html#82">[ thread ]</a>
+              <a href="subject.html#82">[ subject ]</a>
+              <a href="author.html#82">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-14 21:21:10 +0100 (Tue, 14 Feb 2006)
+New Revision: 1683
+
+Added:
+   YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_002_AutoCloseItem.php
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/items.php
+   YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+Log:
+Improved the way automatic closing of items works:
+- You can now indicate if an item is subject to auto close or not.
+- The automatic update now only affects items subject to auto close.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 20:06:17 UTC (rev 1682)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-14 20:21:10 UTC (rev 1683)
+@@ -87,12 +87,18 @@
+             if ( ! in_array( 'allow_comments', $fields ) ) {
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD allow_comments TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER num_comments' );
+             }
++            if ( ! in_array( 'auto_close', $fields ) ) {
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD auto_close TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER allow_comments' );
++            }
+ 
+             // Get the list of index for the items table
+             $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_items', 'key_name' );
+             if ( ! in_array( 'allow_comments', $indexes ) ) {
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX allow_comments (allow_comments)' );
+             }
++            if ( ! in_array( 'auto_close', $indexes ) ) {
++                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX auto_close (auto_close)' );
++            }
+ 
+             // Get the list of indexes
+             $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_users', 'key_name' );
+@@ -111,8 +117,8 @@
+                 $treshold = time() - ( $auto_close_items * 86400 );
+ 
+                 // Close the items
+-                $this-&gt;db-&gt;executeSql( 'UPDATE #_items SET allow_comments=1' );
+-                $this-&gt;db-&gt;executeSql( 'UPDATE #_items SET allow_comments=0 WHERE created &lt; ' . $treshold );
++                $this-&gt;db-&gt;executeSql( 'UPDATE #_items SET allow_comments=1 WHERE auto_close = 1' );
++                $this-&gt;db-&gt;executeSql( 'UPDATE #_items SET allow_comments=0 WHERE auto_close = 1 AND created &lt; ' . $treshold );
+ 
+             }
+ 
+@@ -252,7 +258,7 @@
+         // Function to get the items of the weblog
+         function getItems( $limit=-1, $offset=-1, $order='created desc, title', $where='' ) {
+             $sql = 'SELECT i.id, i.category_id, i.title, i.body, i.body_more, i.num_comments, i.created, i.modified, '
+-                 . 'i.allow_comments, '
++                 . 'i.allow_comments, i.auto_close, '
+                  . 'c.title as category, u.email as user_email, u.name as user_name FROM #_items i, #_categories c, '
+                  . '#_users u WHERE i.category_id = c.id AND i.user_id = u.id ';
+             $sql = $this-&gt;_prepareQuery( $sql . $where, $order );
+
+Added: YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_002_AutoCloseItem.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_002_AutoCloseItem.php	2006-02-14 20:06:17 UTC (rev 1682)
++++ YDFramework2.0/trunk/examples/weblog/include/dbupdates/UPD_002_AutoCloseItem.php	2006-02-14 20:21:10 UTC (rev 1683)
+@@ -0,0 +1,29 @@
++&lt;?php
++
++    // Class definition
++    class UPD_002_AutoCloseItem {
++
++        // Class constructor
++        function UPD_002_AutoCloseItem( $db ) {
++
++            // Publish the database
++            $this-&gt;db = $db;
++
++        }
++
++        // Install the update
++        function update() {
++
++            // The SQL to add the `allow_comments` field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'items ADD auto_close TINYINT(1)  DEFAULT &quot;1&quot; NOT NULL AFTER allow_comments';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++            // The SQL to add the `allow_comments` field to the database
++            $sql = 'ALTER TABLE ' . YDConfig::get( 'db_prefix', '' ) . 'items ADD INDEX auto_close (auto_close)';
++            $this-&gt;db-&gt;executeSql( $sql );
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-14 20:06:17 UTC (rev 1682)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-14 20:21:10 UTC (rev 1683)
+@@ -283,6 +283,10 @@
+ $GLOBALS['t']['err_item_body'] = 'Item body is required';
+ $GLOBALS['t']['gallery'] = 'Photos';
+ $GLOBALS['t']['allow_comments'] = 'Allow comments';
++$GLOBALS['t']['auto_close_item'] = 'Automatically close item ';
++if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
++    $GLOBALS['t']['auto_close_item'] .= 'after ' . YDConfig::get( 'auto_close_items', '' ) . ' days';
++}
+ 
+ // item_gallery.tpl
+ $GLOBALS['t']['no_images_yet'] = 'No images yet';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-14 20:06:17 UTC (rev 1682)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-14 20:21:10 UTC (rev 1683)
+@@ -282,6 +282,10 @@
+ $GLOBALS['t']['err_item_body'] = 'Le corps de l\'entr&eacute;e est requis';
+ $GLOBALS['t']['gallery'] = 'Photos';
+ $GLOBALS['t']['allow_comments'] = 'Autoriser les commentaires';
++$GLOBALS['t']['auto_close_item'] = 'Fermez l\'entr&eacute;e automatiquement ';
++if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
++    $GLOBALS['t']['auto_close_item'] .= 'apr&egrave;s ' . YDConfig::get( 'auto_close_items', '' ) . ' jours';
++}
+ 
+ // item_gallery.tpl
+ $GLOBALS['t']['no_images_yet'] = 'Aucune image actuellement';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-14 20:06:17 UTC (rev 1682)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-14 20:21:10 UTC (rev 1683)
+@@ -283,6 +283,10 @@
+ $GLOBALS['t']['err_item_body'] = 'Item inhoud is vereist';
+ $GLOBALS['t']['gallery'] = 'Foto\'s';
+ $GLOBALS['t']['allow_comments'] = 'Laat commentaren toe';
++$GLOBALS['t']['auto_close_item'] = 'Sluit item automatisch '
++if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
++    $GLOBALS['t']['auto_close_item'] .= 'na ' . YDConfig::get( 'auto_close_items', '' ) . ' dagen';
++}
+ 
+ // item_gallery.tpl
+ $GLOBALS['t']['no_images_yet'] = 'Nog geen foto\'s';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-02-14 20:06:17 UTC (rev 1682)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-02-14 20:21:10 UTC (rev 1683)
+@@ -48,7 +48,8 @@
+             $form-&gt;addElement( 'select',          'category_id',    t('category'),         array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $categories );
+             $form-&gt;addElement( 'datetimeselect',  'created',        t('created_on'),       array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'datetimeselect',  'modified',       t('last_modified_on'), array( 'class' =&gt; 'tfM' ) );
+-            $form-&gt;addElement( 'checkbox',        'allow_comments', t( 'allow_comments' ), array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox',        'allow_comments', t('allow_comments'),   array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox',        'auto_close',     t('auto_close_item'),  array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'hidden',          'id' );
+             $form-&gt;addElement( 'submit',          '_cmdSubmit',  t('OK'),               array( 'class' =&gt; 'button' ) );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-02-14 20:06:17 UTC (rev 1682)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-02-14 20:21:10 UTC (rev 1683)
+@@ -157,6 +157,10 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.allow_comments.label_html}&lt;/td&gt; 
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.allow_comments.html}&lt;/td&gt; 
+             &lt;/tr&gt;
++            &lt;tr&gt; 
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.auto_close.label_html}&lt;/td&gt; 
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.auto_close.html}&lt;/td&gt; 
++            &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;{$form._cmdSubmit.html}&lt;/td&gt;
+             &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000081.html">[ydf-devel] r1682 - YDFramework2.0/trunk/examples/weblog/include/dbupdates
+</A></li>
+	<LI>Next message: <A HREF="000083.html">[ydf-devel] r1684 - YDFramework2.0/trunk/examples/weblog/include/dbupdates
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#82">[ date ]</a>
+              <a href="thread.html#82">[ thread ]</a>
+              <a href="subject.html#82">[ subject ]</a>
+              <a href="author.html#82">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

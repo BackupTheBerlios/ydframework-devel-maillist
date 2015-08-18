@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject&In-Reply-To=%3C306340e00606240311y41829750s8e2088ce066773b8%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000433.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseObject</H1>
+    <B>ydf poi</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject&In-Reply-To=%3C306340e00606240311y41829750s8e2088ce066773b8%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] YDDatabaseObject">ydfpoi at gmail.com
+       </A><BR>
+    <I>Sat Jun 24 12:11:18 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000433.html">[ydf-devel] YDDatabaseObject
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#434">[ date ]</a>
+              <a href="thread.html#434">[ thread ]</a>
+              <a href="subject.html#434">[ subject ]</a>
+              <a href="author.html#434">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi db,
+
+What do you think about a solution implementing the new behavior, but
+keeping the old one?
+I know this is not good practice in general, but it could be not so
+bad if both behaviour are interesting for the end user.
+
+You may have find() and reset() methods (find with no argument) as you
+stated in your first post.
+Then you can say that find($relation) performes an automatic reset()
+before loading.
+Perhaps, you can even have a reset($relation) to throw precisely this
+relation away (and not the others) from your next finding?
+
+In summary:
+ - reset() : reset all relations
+ - reset($relation) : reset just this one
+ - load($relation) : add this relation to the next find operation
+ - find() : find data following preceding load operations
+ - find($relation) : find data only for this relation
+Maybe, you can rename reset with unload?
+
+I am not sure i have a good understanding of the problem, but anyway
+this is also my 2 cents.
+
+Kind regards
+
+2006/6/23, David Bittencourt &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">muitocomplicado at gmail.com</A>&gt;:
+&gt;<i> Hi guys,
+</I>&gt;<i>
+</I>&gt;<i> For a long time I'm thinking of fixing YDDatabaseObject to be smarter when
+</I>&gt;<i> working with multiple joins. Like when we want to load a relation, and load
+</I>&gt;<i> another relation in those objects that were loaded, and so on. Then we can
+</I>&gt;<i> search in all of them. We can't do that now. Today the class works fine only
+</I>&gt;<i> with 3 objects in a relation and if you want to add more you have to tweak
+</I>&gt;<i> it a little bit and it's not good.
+</I>&gt;<i>
+</I>&gt;<i> The problem is that to fix it I have to change the class behavior. We'll
+</I>&gt;<i> have to check for the relations that were loaded and not the relations
+</I>&gt;<i> passed to the find() function. This could break a lot of existing code.
+</I>&gt;<i>
+</I>&gt;<i> In my analysis this change will only affect find actions. For example, now
+</I>&gt;<i> we can do this:
+</I>&gt;<i>
+</I>&gt;<i> $user = YDDatabaseObject::getInstance( 'user' );
+</I>&gt;<i> $user-&gt;id = 123;
+</I>&gt;<i> $user-&gt;find( 'group' );
+</I>&gt;<i>
+</I>&gt;<i> This code will find a user with id = 123 and will join the &quot;group&quot; relation
+</I>&gt;<i> to the query. After the changes are implemented we'll have to do this:
+</I>&gt;<i>
+</I>&gt;<i> $user = YDDatabaseObject::getInstance( 'user' );
+</I>&gt;<i> $user-&gt;load( 'group' );
+</I>&gt;<i>  $user-&gt;id = 123;
+</I>&gt;<i>  $user-&gt;find();
+</I>&gt;<i>
+</I>&gt;<i> So the query will include only the loaded relations. Doesn't look that
+</I>&gt;<i> complicated in this example, but if you use the same $user object after that
+</I>&gt;<i> and doesn't reset() it you could have problems. For example:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> $user = YDDatabaseObject::getInstance( 'user' );
+</I>&gt;<i>  $user-&gt;load( 'group' );
+</I>&gt;<i>  $user-&gt;id = 123;
+</I>&gt;<i>  $user-&gt;find();
+</I>&gt;<i>
+</I>&gt;<i> // do something
+</I>&gt;<i>
+</I>&gt;<i> $user-&gt;id = 2344;
+</I>&gt;<i> $user-&gt;load( 'event' );
+</I>&gt;<i> $user-&gt;find();
+</I>&gt;<i>
+</I>&gt;<i> The last query will join the &quot;event&quot; AND &quot;group&quot; relations because both of
+</I>&gt;<i> them are loaded. The solution is to add a reset() between them or get
+</I>&gt;<i> another instance of the class.
+</I>&gt;<i>
+</I>&gt;<i> So my options are:
+</I>&gt;<i>
+</I>&gt;<i> 1. Change it and we'll manage to fix our current codes
+</I>&gt;<i> 2. Create a new class (YDDatabaseObject2 for example)
+</I>&gt;<i> 3. Another suggestion.
+</I>&gt;<i>
+</I>&gt;<i> I'm looking forward for your input.
+</I>&gt;<i>
+</I>&gt;<i>  Thanks,
+</I>&gt;<i>
+</I>&gt;<i> -db
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+po&#239;
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000433.html">[ydf-devel] YDDatabaseObject
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#434">[ date ]</a>
+              <a href="thread.html#434">[ thread ]</a>
+              <a href="subject.html#434">[ subject ]</a>
+              <a href="author.html#434">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

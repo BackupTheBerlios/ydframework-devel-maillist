@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1655 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1655%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200602101158.k1ABw88K002766%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000043.html">
+   <LINK REL="Next"  HREF="000045.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1655 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1655%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200602101158.k1ABw88K002766%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1655 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject">david_db at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 12:58:08 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000043.html">[ydf-devel] YDDatabaseObject warnings
+</A></li>
+        <LI>Next message: <A HREF="000045.html">[ydf-devel] r1656 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#44">[ date ]</a>
+              <a href="thread.html#44">[ thread ]</a>
+              <a href="subject.html#44">[ subject ]</a>
+              <a href="author.html#44">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-02-10 12:58:02 +0100 (Fri, 10 Feb 2006)
+New Revision: 1655
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+Log:
+Added YDDatabaseObject::getColumn - request #1731
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-10 10:56:06 UTC (rev 1654)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-02-10 11:58:02 UTC (rev 1655)
+@@ -443,6 +443,34 @@
+             $null = null;
+             return $null;
+         }
++        
++        /**
++         *  This function returns the column name of a defined field.
++         *
++         *  @param $field  The field name.
++         *  @param $alias  (optional) If true, returns the table alias 
++         *                 with the column name. Default: false.
++         *
++         *  @returns  The column name with or without the table alias.
++         */
++        function getColumn( $field, $alias=false ) {
++            
++            if ( $f =&amp; $this-&gt;getField( $field ) ) {
++            
++                $str = '';
++                $r = '';
++            
++                if ( $alias ) {
++                    $r = $this-&gt;_query-&gt;getReserved();
++                    $str = $r . $this-&gt;getAlias() . $r . '.';
++                }
++                
++                return $str . $r . $f-&gt;getColumn() . $r;
++            
++            }
++            
++            return;
++        }
+ 
+         /**
+          *  This function returns a reference to a defined relation.
+@@ -530,20 +558,16 @@
+             // prepare group by
+             $groups = &amp; $this-&gt;_query-&gt;group;
+             foreach ( $groups as $n =&gt; $group ) {
+-                $field = $group['expr'];
+-                if ( $field_obj = &amp; $this-&gt;getField( $field ) ) {
+-                    $groups[ $n ]['expr']  = $r . $alias . $r . '.';
+-                    $groups[ $n ]['expr'] .= $r . $field_obj-&gt;getColumn() . $r;
++                if ( $expr = $this-&gt;getColumn( $group['expr'], true ) ) {
++                    $groups[ $n ]['expr'] = $expr;
+                 }
+             }
+ 
+             // prepare order by
+             $orders = &amp; $this-&gt;_query-&gt;order;
+             foreach ( $orders as $n =&gt; $order ) {
+-                $field = $order['expr'];
+-                if ( $field_obj = &amp; $this-&gt;getField( $field ) ) {
+-                    $orders[ $n ]['expr']  = $r . $alias . $r . '.';
+-                    $orders[ $n ]['expr'] .= $r . $field_obj-&gt;getColumn() . $r;
++                if ( $expr = $this-&gt;getColumn( $order['expr'], true ) ) {
++                    $orders[ $n ]['expr'] = $expr;
+                 }
+             }
+ 
+@@ -568,11 +592,13 @@
+             
+             foreach ( $fields as $field ) {
+ 
+-                if ( ! $this-&gt;exists( $field-&gt;getName() ) ) {
++                $name = $field-&gt;getName();
++                
++                if ( ! $this-&gt;exists( $name ) ) {
+                     continue;
+                 }
+ 
+-                $value = $this-&gt;get( $field-&gt;getName() );
++                $value = $this-&gt;get( $name );
+ 
+                 if ( is_null( $value ) ) {
+                     $value = ' IS NULL ';
+@@ -596,7 +622,7 @@
+                     $value = &quot; = &quot; . $this-&gt;_query-&gt;escapeSql( $value );
+                 }
+ 
+-                $this-&gt;where( $r . $alias . $r . '.' . $r . $field-&gt;getColumn() . $r . $value );
++                $this-&gt;where( $this-&gt;getColumn( $name, true ) . $value );
+             }
+             
+             // Replace #. with table alias in WHERE, HAVING, SELECT, ORDER and GROUP
+@@ -803,8 +829,7 @@
+                         }
+                         
+                         if ( $columns &amp;&amp; $this-&gt;_fields-&gt;exists( $field ) ) {
+-                            $field_obj = &amp; $this-&gt;getField( $field );
+-                            $res[ $pfx . $field_obj-&gt;getColumn() ] = $value;
++                            $res[ $pfx . $this-&gt;getColumn( $field ) ] = $value;
+                             unset( $res[ $pfx . $field ] );
+                         }
+                         
+@@ -1057,11 +1082,10 @@
+                     $l_key = current( $this-&gt;_getFieldsByMethod( 'isKey', true ) );
+                     $l_key = $l_key-&gt;name;
+                 }
+-                $l_field = &amp; $this-&gt;getField( $l_key );
+-                if ( ! $l_field ) {
++                
++                if ( ! $l_column = $this-&gt;getColumn( $l_key ) ) {
+                     trigger_error( 'Invalid local key &quot;' . $l_key . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
+                 }
+-                $l_column = $l_field-&gt;getColumn();
+ 
+                 // Foreign table
+                 $f_var   = $rel-&gt;getForeignVar();
+@@ -1083,11 +1107,9 @@
+                     $f_key = $f_key-&gt;name;
+                 }
+                 
+-                $f_field = &amp; $this-&gt;$f_var-&gt;getField( $f_key );
+-                if ( ! $f_field ) {
++                if ( ! $f_column = $this-&gt;$f_var-&gt;getColumn( $f_key ) ) {
+                     trigger_error( 'Invalid foreign key &quot;' . $f_key . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
+                 }
+-                $f_column = $f_field-&gt;getColumn();
+                 
+                 // Prepare the query in the foreign object
+                 $this-&gt;$f_var-&gt;_prepareQuery( true );
+@@ -1138,18 +1160,14 @@
+                     }
+                     
+                     // Cross foreign field column name
+-                    $c_ffield = &amp; $this-&gt;$c_var-&gt;getField( $c_fkey );
+-                    if ( ! $c_ffield ) {
++                    if ( ! $c_fcolumn = $this-&gt;$c_var-&gt;getColumn( $c_fkey ) ) {
+                         trigger_error( 'Invalid cross foreign key &quot;' . $c_fkey . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
+                     }
+-                    $c_fcolumn = $c_ffield-&gt;getColumn();
+                     
+                     // Cross local field column name
+-                    $c_lfield = &amp; $this-&gt;$c_var-&gt;getField( $c_lkey );
+-                    if ( ! $c_lfield ) {
++                    if ( ! $c_lcolumn = $this-&gt;$c_var-&gt;getColumn( $c_lkey ) ) {
+                         trigger_error( 'Invalid cross local key &quot;' . $c_lkey . '&quot; - relation &quot;' . $relation . '&quot; - class &quot;' . get_class( $this ) . '&quot;', YD_ERROR );
+                     }
+-                    $c_lcolumn = $c_lfield-&gt;getColumn();
+ 
+                     // Prepare the query in the cross object
+                     $this-&gt;$c_var-&gt;_prepareQuery( true );
+@@ -1350,9 +1368,6 @@
+             }
+             
+             $this-&gt;_all = true;
+-            $r = $this-&gt;_query-&gt;getReserved();
+-            
+-            $alias = $this-&gt;getAlias();
+ 
+             foreach ( $args as $field ) {
+             
+@@ -1368,8 +1383,7 @@
+                 if ( $select = &amp; $this-&gt;getSelect( $field ) ) {
+                     $expr = $select-&gt;getExpression();
+                 } else {
+-                    $field_obj = &amp; $this-&gt;getField( $field );
+-                    $expr = $r . $alias . $r . '.' . $r . $field_obj-&gt;getColumn() . $r;
++                    $expr = $this-&gt;getColumn( $field, true );
+                 }
+                 $this-&gt;_query-&gt;expr( $expr, $field );
+             }
+@@ -1606,8 +1620,7 @@
+                     if ( ! $only_fields  || ( $only_fields &amp;&amp; $this-&gt;_fields-&gt;exists( $field ) ) ) {
+                         $key = $prefix . $field;
+                         if ( $columns ) {
+-                            $field_obj = &amp; $this-&gt;getField( $field );
+-                            $key = $prefix . $field_obj-&gt;getColumn();
++                            $key = $prefix . $this-&gt;getColumn( $field );
+                         }
+                         $new[ $key ] = $value;
+                     }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000043.html">[ydf-devel] YDDatabaseObject warnings
+</A></li>
+	<LI>Next message: <A HREF="000045.html">[ydf-devel] r1656 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#44">[ date ]</a>
+              <a href="thread.html#44">[ thread ]</a>
+              <a href="subject.html#44">[ subject ]</a>
+              <a href="author.html#44">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,420 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1947 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1947%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%20YDClasses&In-Reply-To=%3C200606191323.k5JDNOnn010580%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000426.html">
+   <LINK REL="Next"  HREF="000428.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1947 - in YDFramework2.0/trunk/YDFramework2: . YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1947%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%20YDClasses&In-Reply-To=%3C200606191323.k5JDNOnn010580%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1947 - in YDFramework2.0/trunk/YDFramework2: . YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Jun 19 15:23:24 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000426.html">[ydf-devel] YDCMFeedback
+</A></li>
+        <LI>Next message: <A HREF="000428.html">[ydf-devel] r1948 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#427">[ date ]</a>
+              <a href="thread.html#427">[ thread ]</a>
+              <a href="subject.html#427">[ subject ]</a>
+              <a href="author.html#427">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-06-19 15:23:21 +0200 (Mon, 19 Jun 2006)
+New Revision: 1947
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+Log:
+Replaced fnmatch with glob.
+Added YDArrayUtil::createIfNeeded
+Minor code cleanup
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -220,9 +220,6 @@
+             return YDStringUtil::formatFilesize( $space, $decimals );
+         }
+ 
+-
+-
+-
+         /**
+          *	@param $path	Path of the file or directory.
+          *
+@@ -379,7 +376,7 @@
+                 if ( ! strlen( $arg ) ) {
+                     continue;
+                 }
+-                
++
+                 // Normalize the path elements
+                 $arg = str_replace( '/', YDPath::getDirectorySeparator(), $arg );
+                 $arg = str_replace( '\\', YDPath::getDirectorySeparator(), $arg );
+@@ -1382,43 +1379,28 @@
+             // Start with an empty list
+             $fileList = array();
+ 
+-            // Get a handle to the directory
+-            $dirHandle = opendir( $this-&gt;getPath() );
+-
+-            // Get the list of files
+-            while ( false !== ( $file = readdir( $dirHandle ) ) ) {
+-                if ( $file != '.' &amp;&amp; $file != '..' ) {
+-                    $fileList[ strtolower( $file ) ] = $file;
+-                }
+-            }
+-
+             // Get the list of patterns
+             if ( ! is_array( $pattern ) ) {
+                 $pattern = array( $pattern );
+             }
+ 
+-            // Apply the pattern to match
+-            $fileListMatch = array();
+-            foreach ( $fileList as $file ) {
+-                foreach ( $pattern as $patternitem ) {
+-                    if ( ! empty( $patternitem ) &amp;&amp; substr( $patternitem, 0, 1 ) != '!' ) {
+-                        if ( YDFSDirectory::_match( $patternitem, $file ) ) {
+-                            $fileListMatch[ $file ] = $file;
+-                        }
+-                    } else {
++            // Get the files that match
++            foreach ( $pattern as $patternitem ) {
++                if ( ! empty( $patternitem ) &amp;&amp; substr( $patternitem, 0, 1 ) != '!' ) {
++                    foreach ( glob( $this-&gt;getAbsolutePath() . '/' . $patternitem ) as $file ) {
++                        $file = basename( $file );
+                         $fileListMatch[ $file ] = $file;
+                     }
+                 }
+             }
+             $fileList = &amp; $fileListMatch;
+ 
+-            // Apply the patterns to not match
+-            foreach ( $fileList as $file ) {
+-                foreach ( $pattern as $patternitem ) {
+-                    if ( ! empty( $patternitem ) &amp;&amp; substr( $patternitem, 0, 1 ) == '!' ) {
+-                        if ( YDFSDirectory::_match( substr( $patternitem, 1 ), $file ) ) {
+-                            unset( $fileList[ $file ] );
+-                        }
++            // Remove the files that don't match
++            foreach ( $pattern as $patternitem ) {
++                if ( ! empty( $patternitem ) &amp;&amp; substr( $patternitem, 0, 1 ) == '!' ) {
++                    foreach ( glob( $this-&gt;getAbsolutePath() . '/' . substr( $patternitem, 1 ) ) as $file ) {
++                        $file = basename( $file );
++                        unset( $fileList[ $file ] );
+                     }
+                 }
+             }
+@@ -1681,7 +1663,30 @@
+             }
+         }
+ 
++
+         /**
++         *  This function will recursively create the directories
++         *	@param $directory	Directory to create.
++         *	@param $mode		(optional) The mode for the directory. By default, this is 0700.
++         *
++         *	@returns	False on failure, otherwise, it will return a YDFSDirectory object for the new directory.
++         *
++         *  @static
++         */
++        function createDirectories( $directory, $mode=0700 ) {
++            if ( is_null( $directory ) || $directory === '' ) {
++                return false;
++            }
++            if ( is_dir( $directory ) || $directory === '/' ) {
++                return true;
++            }
++            if ( YDFSDirectory::createDirectories( dirname( $directory ), $mode ) ) {
++                return mkdir( $directory, $mode );
++            }
++            return false;
++        }
++
++        /**
+          *	This function will recursively delete a directory. It will delete the directory and the complete
+          *	contents of that directory! Be careful I would say!
+          *
+@@ -1753,78 +1758,6 @@
+         }
+ 
+         /**
+-         *	Function to emulate the fnmatch function from UNIX which is not available on all servers.
+-         *
+-         *	@remark
+-         *		This function is a reformatted version of the function found on:
+-         *		<A HREF="http://www.php.net/manual/en/function.fnmatch.php#31353">http://www.php.net/manual/en/function.fnmatch.php#31353</A>
+-         *
+-         *	@param $pattern	Pattern to match the file against.
+-         *	@param $file	File name that needs to be checked.
+-         *
+-         *	@return	Boolean indicating if the file matched the pattern or not.
+-         *
+-         *	@internal
+-         */
+-        function _match( $pattern, $file ) {
+-
+-            // Use the native fnmatch function if it is there
+-            if ( function_exists( 'fnmatch' ) ) {
+-
+-                // Match the pattern
+-                return fnmatch( $pattern, $file );
+-
+-            }
+-
+-            // Loop over the characters of the pattern
+-            for ( $i=0; $i &lt; strlen( $pattern ); $i++ ) {
+-
+-                // Character is a *
+-                if ( $pattern[$i] == '*' ) {
+-                    for ( $c = $i; $c &lt; max( strlen( $pattern ), strlen( $file ) ); $c++ ) {
+-                        if ( YDFSDirectory::_match( substr( $pattern, $i+1 ), substr( $file, $c ) ) ) {
+-                            return true;
+-                        }
+-                    }
+-                    return false;
+-                }
+-
+-                // Pattern is a [
+-                if ( $pattern[$i] == '[' ) {
+-                    $letter_set = array();
+-                    for( $c=$i+1; $c &lt; strlen( $pattern ); $c++ ) {
+-                        if ( $pattern[$c] != ']' ) {
+-                            array_push( $letter_set, $pattern[$c] );
+-                        } else {
+-                            break;
+-                        }
+-                    }
+-                    foreach ( $letter_set as $letter ) {
+-                        if ( YDFSDirectory::_match( $letter . substr( $pattern, $c+1 ), substr( $file, $i ) ) ) {
+-                            return true;
+-                        }
+-                    }
+-                    return false;
+-                }
+-
+-                // Pattern is a ?
+-                if ( $pattern[$i] == '?' ) {
+-                    continue;
+-                }
+-
+-                // Pattern not the same as the file character
+-                if ( $pattern[$i] != $file[$i] ) {
+-                    return false;
+-                }
+-
+-            }
+-
+-            // All the rest returns positive
+-            return true;
+-
+-        }
+-
+-        /**
+          *	Function to recursively delete a directory.
+          *
+          *	@param $dirname	Directory to be removed.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -252,6 +252,22 @@
+             return substr( $return, 1 ); 
+         }
+ 
++        /**
++         *  This function will initialize the indicated array if it doesn't exist yet.
++         *
++         *  @param  $where  Where to instantiate the array in.
++         *  @param  $name   The name of the array to create.
++         *
++         *  @static
++         */
++        function createIfNeeded( &amp; $where, $name ) {
++            if ( ! isset( $where[$name] ) ) {
++                $where[$name] = array();
++            }
++
++
++        }
++
+     }
+ 
+     /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -121,9 +121,6 @@
+     $GLOBALS['YD_INCLUDE_PATH'] = explode( YD_PATHDELIM, $includePath );
+     @ini_set( 'include_path', $includePath );
+ 
+-//    // Include the standard functions
+-//    include_once( YD_DIR_HOME . '/YDF2_core.php' );
+-
+     // Constants
+     define( 'YD_CONFIG_VAR', 'YDF2_GLOBAL_CONFIG' );
+     define( 'YD_LOCALE_KEY', 'YD_LOCALE' );
+@@ -194,19 +191,33 @@
+      *	@param $file	File to be included.
+      */
+     function YDInclude( $file ) {
++
++        // Check if the file is an absolute path
+         if ( is_file( $file ) ) {
+             include_once( $file );
+             return;
+         }
++
++        // Check for known classes in known paths
++
++        // For YDTemplate, check which one needs to be included (optimize the file includes)
++        // If Smarty: include YDTemplate_smarty.php
++        // If PHP: include YDTemplate_php.php
++        // If not defined: include YDTemplate.php
++
++        // Search the include path
+         foreach ( $GLOBALS['YD_INCLUDE_PATH'] as $include ) {
+             if ( $include != false &amp;&amp; is_file( $include . '/' . $file ) ) {
+                 include_once( $include . '/' . $file );
+                 return;
+             }
+         }
++
++        // Raise an error
+         trigger_error(
+             'Failed to include the file: ' . $file . ' The file was not found in the include path.', YD_ERROR
+         );
++
+     }
+ 
+     /**
+@@ -252,16 +263,11 @@
+      *  @returns    The translated string.
+      */
+     function t( $t ) {
+-
+-        // Return empty string when param is missing
+         if ( empty( $t ) ) {
+             return '';
+         }
+-
+-        // Return the right translation
+         $t = strtolower( $t );
+         return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
+-
+     }
+ 
+     /**
+@@ -500,19 +506,13 @@
+          *	@param	$dir       Directory to add
+          */
+         function addDirectory( $dir ){
+-
+-            // check if directories array exists
+-            if ( !isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
++            if ( !isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) ) {
+                 $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] = array();
+-
+-            // add directory to array. Needed when changing locale
++            }
+             $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ][] = $dir;
+-
+-            // check if translations array exists
+-            if ( !isset( $GLOBALS['t'] ) )
++            if ( !isset( $GLOBALS['t'] ) ) {
+                 $GLOBALS['t'] = array();
+-
+-            // include directory
++            }
+             include_once( $dir . '/' . YDLocale::get() . '.php' );
+         }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2006-05-29 17:19:32 UTC (rev 1946)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2006-06-19 13:23:21 UTC (rev 1947)
+@@ -191,28 +191,17 @@
+             }
+ 
+             // Add the elapsed time
+-            $elapsed = $GLOBALS['timer']-&gt;getElapsed();
+-            echo( YD_CRLF . '&lt;!-- ' . $elapsed . ' ms --&gt;' );
++            die( YD_CRLF . '&lt;!-- ' . $GLOBALS['timer']-&gt;getElapsed() . ' ms --&gt;' );
+ 
+-            // Stop the execution of the request
+-            die();
+-
+         }
+ 
+     }
+ 
+     // Check if we need to auto execute
+     if ( YDConfig::get( 'YD_AUTO_EXECUTE', true ) == true ) { 
+-
+-        // Instantiate the executor class
+         $clsInst = new YDExecutor( YD_SELF_FILE );
+-
+-        // Start the session
+         @session_start();
+-
+-        // Execute the execute function
+         $clsInst-&gt;execute();
+-
+     }
+-    
+-?&gt;
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000426.html">[ydf-devel] YDCMFeedback
+</A></li>
+	<LI>Next message: <A HREF="000428.html">[ydf-devel] r1948 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#427">[ date ]</a>
+              <a href="thread.html#427">[ thread ]</a>
+              <a href="subject.html#427">[ subject ]</a>
+              <a href="author.html#427">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

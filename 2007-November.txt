@@ -1,0 +1,379 @@
+From ximian at mail.berlios.de  Thu Nov  1 16:18:16 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Thu, 1 Nov 2007 16:18:16 +0100
+Subject: [ydf-devel] r2498 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+Message-ID: <200711011518.lA1FIGsG018248@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-01 16:18:11 +0100 (Thu, 01 Nov 2007)
+New Revision: 2498
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+ENH: added simple string check to argument calculation in YDAjax
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-10-20 16:40:50 UTC (rev 2497)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-11-01 15:18:11 UTC (rev 2498)
+@@ -580,8 +580,16 @@
+ 			foreach ( $arguments as $arg ){
+ 
+ 				// if argument is numeric just add it and continue
+-				if ( is_numeric( $arg ) ) { $args[] = $arg; continue; }
++				if ( is_numeric( $arg ) ) {
++					$args[] = $arg; continue;
++				}
+ 
++				// if not numeric, argument must be a string
++				if ( ! is_string( $arg ) ){ 
++					$args[] = '"?"';
++					continue;
++				}
++
+ 				// if is a javascript variable, just add it
+ 				if ( ereg ( "^var (.*)$", $arg, $res ) ){ $args[] = $res[1]; continue; }
+ 				
+
+
+
+From ximian at mail.berlios.de  Thu Nov  1 20:06:30 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Thu, 1 Nov 2007 20:06:30 +0100
+Subject: [ydf-devel] r2499 -
+	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+Message-ID: <200711011906.lA1J6UPD018468@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-01 20:06:24 +0100 (Thu, 01 Nov 2007)
+New Revision: 2499
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php
+Log:
+on YDDatabaseObject, if a parent node was not found when adding an element, it tries to add to root element
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php	2007-11-01 15:18:11 UTC (rev 2498)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php	2007-11-01 19:06:24 UTC (rev 2499)
+@@ -583,7 +583,13 @@
+ 
+ 				// get parent lineage and compute node lineage
+ 				$parent_node = $this->getNode( $parent_id );
+-				$lineage     = $parent_node[ $this->__lineage ] . $parent_id . '/';
++				
++				// check if parent node was found
++				if( isset( $parent_node[ $this->__lineage ] ) ){
++					$lineage     = $parent_node[ $this->__lineage ] . $parent_id . '/';
++				}else{
++					$lineage     = '//' . $parent_id . '/';
++				}
+ 			}
+ 
+ 			// get how much brothers we will have
+
+
+
+From ximian at mail.berlios.de  Fri Nov  2 12:51:20 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Fri, 2 Nov 2007 12:51:20 +0100
+Subject: [ydf-devel] r2500 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200711021151.lA2BpKLN029655@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-02 12:51:08 +0100 (Fri, 02 Nov 2007)
+New Revision: 2500
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+new method YDStringUtil::convertToSafe to help convert a string to a valid url string. Useful on friendly urls.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-01 19:06:24 UTC (rev 2499)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-02 11:51:08 UTC (rev 2500)
+@@ -864,7 +864,61 @@
+ 
+         }
+ 
++
+         /**
++         *  This function will replace a string to a valid url one based on ascii conversion ( by: http://ascii.cl/htmlcodes.htm )
++         *
++         *  @param  $s		String to convert.
++         *  @param  $utf8 	(Optional) Flag that defines if string should be converted from UTF8 to ISO before conversion.
++         *
++         *  @returns    A converted string.
++         *
++         *  @static
++         */
++        function convertToSafe( $s, $utf8 = false ){
++
++            if( $utf8 ){
++                $s = utf8_decode( $s );
++            }
++
++            $res = '';
++            for( $i = 0; $i < strlen( $s ); $i++ ){
++
++                $ord = ord( $s{$i} );
++                if ($ord==32) { $res .= '_';    continue; }
++                if ($ord<48)  { $res .= '-';    continue; }
++                if ($ord<58)  { $res .= $s{$i}; continue; }
++                if ($ord<65)  { $res .= '-';    continue; }
++                if ($ord<91)  { $res .= $s{$i}; continue; }
++                if ($ord<96)  { $res .= '_';    continue; }
++                if ($ord<97)  { $res .= '-';    continue; }
++                if ($ord<123) { $res .= $s{$i}; continue; }
++                if ($ord<192) { $res .= '-';    continue; }
++                if ($ord<199) { $res .= 'A';    continue; }
++                if ($ord<200) { $res .= 'C';    continue; }
++                if ($ord<204) { $res .= 'E';    continue; }
++                if ($ord<208) { $res .= 'I';    continue; }
++                if ($ord<209) { $res .= 'D';    continue; }
++                if ($ord<210) { $res .= 'N';    continue; }
++                if ($ord<217) { $res .= 'O';    continue; }
++                if ($ord<224) { $res .= 'U';    continue; }
++                if ($ord<231) { $res .= 'a';    continue; }
++                if ($ord<232) { $res .= 'c';    continue; }
++                if ($ord<236) { $res .= 'e';    continue; }
++                if ($ord<240) { $res .= 'i';    continue; }
++                if ($ord<241) { $res .= 'o';    continue; }
++                if ($ord<242) { $res .= 'n';    continue; }
++                if ($ord<249) { $res .= 'o';    continue; }
++                if ($ord<253) { $res .= 'u';    continue; }
++                if ($ord<256) { $res .= 'y';    continue; }
++                $res .= '_';
++            }
++
++            return $res;
++        }
++
++
++        /**
+          *  This function will check if the specified string starts with the indicated text or not. You can specify if
+          *  this needs to happen case-sensitively or not.
+          *
+
+
+
+From ximian at mail.berlios.de  Sat Nov  3 02:33:15 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Sat, 3 Nov 2007 02:33:15 +0100
+Subject: [ydf-devel] r2501 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200711030133.lA31XFbn026785@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-03 02:32:55 +0100 (Sat, 03 Nov 2007)
+New Revision: 2501
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+new simple method YDForm::addElementByObject to add a object instance to a form
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-11-02 11:51:08 UTC (rev 2500)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-11-03 01:32:55 UTC (rev 2501)
+@@ -466,7 +466,26 @@
+ 
+         }
+ 
++
+         /**
++         *  This function will add a new element to the form, where element is an object
++         *
++         *  @param $instance    The object (form element) to add.
++         *  @param $name        The name of the form element.
++         *
++         *  @returns    A reference to the element that was added.
++         */
++        function & addElementByObject( $instance, $name ) {
++
++            // Register the element in the class.
++            $this->_elements[ $name ] = $instance;
++
++            // Return the reference to the instance
++            return $this->_elements[ $name ];
++        }
++
++
++        /**
+          *  This function will add multiple form elements at once.
+          *
+          *  @param $type        The type of element to add.
+
+
+
+From ximian at mail.berlios.de  Sat Nov  3 18:19:16 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Sat, 3 Nov 2007 18:19:16 +0100
+Subject: [ydf-devel] r2502 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200711031719.lA3HJGAs011957@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-03 18:18:19 +0100 (Sat, 03 Nov 2007)
+New Revision: 2502
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+new validate rule: md5
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-11-03 01:32:55 UTC (rev 2501)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-11-03 17:18:19 UTC (rev 2502)
+@@ -284,6 +284,16 @@
+         }
+ 
+         /**
++         *	This function returns true if the variable is a md5 string
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	(not required)
++         */
++        function md5( $val, $opts='' ) {
++            return YDValidateRules::regex( $val, '/^([a-z0-9]{32})$/' );
++        }
++
++        /**
+          *	This function returns true if the variable is an array.
+          *
+          *	@param $val		The value to test.
+
+
+
+From ximian at mail.berlios.de  Sat Nov 10 20:58:12 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Sat, 10 Nov 2007 20:58:12 +0100
+Subject: [ydf-devel] r2503 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200711101958.lAAJwCfq006504@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-10 20:58:03 +0100 (Sat, 10 Nov 2007)
+New Revision: 2503
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+ENH: add checks to rules that compare strings
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-11-03 17:18:19 UTC (rev 2502)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-11-10 19:58:03 UTC (rev 2503)
+@@ -254,6 +254,9 @@
+          *	@param $opts	(not required)
+          */
+         function alphanumeric( $val, $opts='' ) {
++            if ( is_string( $val ) == false ) {
++                return false;
++            }
+             $result = YDValidateRules::regex( $val, '/([\w^ ]+)$/' );
+             if ( $result === true ) {
+                 $result = YDValidateRules::nopunctuation( $val, array() ) ? true : false;
+@@ -270,6 +273,9 @@
+          *	@param $opts	(not required)
+          */
+         function alphanumericstrict( $val, $opts='' ) {
++            if ( is_string( $val ) == false ) {
++                return false;
++            }
+             return YDValidateRules::regex( $val, '/^([a-zA-Z0-9]+)$/' );
+         }
+ 
+@@ -280,6 +286,9 @@
+          *	@param $opts	(not required)
+          */
+         function numeric( $val, $opts='' ) {
++            if ( is_string( $val ) == false ) {
++                return false;
++            }
+             return YDValidateRules::regex( strval( $val ), '/(^-?\d\d*\.\d*$)|(^-?\d\d*$)|(^-?\.\d\d*$)/' );
+         }
+ 
+
+
+
+From ximian at mail.berlios.de  Sat Nov 10 20:59:22 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Sat, 10 Nov 2007 20:59:22 +0100
+Subject: [ydf-devel] r2504 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200711101959.lAAJxMG0006544@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-10 20:59:06 +0100 (Sat, 10 Nov 2007)
+New Revision: 2504
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+ENH: YDStringUtil::formatDate will not parse empty strings now
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-10 19:58:03 UTC (rev 2503)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-11-10 19:59:06 UTC (rev 2504)
+@@ -636,7 +636,7 @@
+             }
+ 
+             // If text, convert to number
+-            if ( is_string( $timestamp ) ) {
++            if ( is_string( $timestamp ) && ! empty( $timestamp ) ) {
+                 $timestamp = strtotime( $timestamp );
+             }
+ 
+@@ -671,7 +671,7 @@
+             }
+ 
+             // Return the formatted date
+-            $timestamp = strftime( $format, $timestamp );
++            $timestamp = strftime( $format, intval( $timestamp ) );
+ 
+             // Reset the old locale
+             if ( ! is_null( $locale ) ) {
+
+
+
+From ximian at mail.berlios.de  Sat Nov 10 21:00:44 2007
+From: ximian at mail.berlios.de (ximian at mail.berlios.de)
+Date: Sat, 10 Nov 2007 21:00:44 +0100
+Subject: [ydf-devel] r2505 - YDFramework2.0/trunk/YDFramework2/YDClasses
+Message-ID: <200711102000.lAAK0iq5006681@sheep.berlios.de>
+
+Author: ximian
+Date: 2007-11-10 21:00:31 +0100 (Sat, 10 Nov 2007)
+New Revision: 2505
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+NEW: method YDFormElement::setPlaceLabel to change where a label of a form element should be placed
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-11-10 19:59:06 UTC (rev 2504)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-11-10 20:00:31 UTC (rev 2505)
+@@ -1650,6 +1650,14 @@
+             $this->_label = $label;
+         }
+ 
++        /**
++         *  Function to set where to place label.
++         *
++         *  @param  $place    String. ( eg: 'after', 'before', 'none' )
++         */
++        function setPlaceLabel( $place ) {
++            $this->_placeLabel = $place;
++        }
+ 
+         /**
+          *      Gets the label of the form element.
+
+
+

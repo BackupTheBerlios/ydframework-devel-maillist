@@ -1,0 +1,3709 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1856 - in YDFramework2.0/trunk/examples: . forum forum/images forum/images/avatars forum/includes forum/languages forum/sql forum/templates
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1856%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20forum%20forum/images%20forum/images/avatars%20forum/includes%20forum/languages%20forum/sql%20forum/templates&In-Reply-To=%3C200604181256.k3ICu0Z8001207%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000287.html">
+   <LINK REL="Next"  HREF="000289.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1856 - in YDFramework2.0/trunk/examples: . forum forum/images forum/images/avatars forum/includes forum/languages forum/sql forum/templates</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1856%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20forum%20forum/images%20forum/images/avatars%20forum/includes%20forum/languages%20forum/sql%20forum/templates&In-Reply-To=%3C200604181256.k3ICu0Z8001207%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1856 - in YDFramework2.0/trunk/examples: . forum forum/images forum/images/avatars forum/includes forum/languages forum/sql forum/templates">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Apr 18 14:56:00 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000287.html">[ydf-devel] r1855 - in YDFramework2.0/trunk/examples: . cms cms/includes cms/includes/config cms/modules cms/modules/ydcmfhome cms/skins
+</A></li>
+        <LI>Next message: <A HREF="000289.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#288">[ date ]</a>
+              <a href="thread.html#288">[ thread ]</a>
+              <a href="subject.html#288">[ subject ]</a>
+              <a href="author.html#288">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-04-18 14:55:49 +0200 (Tue, 18 Apr 2006)
+New Revision: 1856
+
+Added:
+   YDFramework2.0/trunk/examples/forum/
+   YDFramework2.0/trunk/examples/forum/.htaccess
+   YDFramework2.0/trunk/examples/forum/admin.php
+   YDFramework2.0/trunk/examples/forum/changelog.txt
+   YDFramework2.0/trunk/examples/forum/fffRequest.php
+   YDFramework2.0/trunk/examples/forum/fffscreen.css
+   YDFramework2.0/trunk/examples/forum/forums.php
+   YDFramework2.0/trunk/examples/forum/images/
+   YDFramework2.0/trunk/examples/forum/images/Thumbs.db
+   YDFramework2.0/trunk/examples/forum/images/avatars/
+   YDFramework2.0/trunk/examples/forum/images/avatars/temp/
+   YDFramework2.0/trunk/examples/forum/images/caution.gif
+   YDFramework2.0/trunk/examples/forum/images/error.gif
+   YDFramework2.0/trunk/examples/forum/images/ydframework.png
+   YDFramework2.0/trunk/examples/forum/includes/
+   YDFramework2.0/trunk/examples/forum/includes/config.php
+   YDFramework2.0/trunk/examples/forum/includes/forums.class.php
+   YDFramework2.0/trunk/examples/forum/includes/groups.class.php
+   YDFramework2.0/trunk/examples/forum/includes/page.class.php
+   YDFramework2.0/trunk/examples/forum/includes/posts.class.php
+   YDFramework2.0/trunk/examples/forum/includes/sqlObject.class.php
+   YDFramework2.0/trunk/examples/forum/includes/users.class.php
+   YDFramework2.0/trunk/examples/forum/index.php
+   YDFramework2.0/trunk/examples/forum/languages/
+   YDFramework2.0/trunk/examples/forum/languages/language_en.php
+   YDFramework2.0/trunk/examples/forum/languages/language_fr.php
+   YDFramework2.0/trunk/examples/forum/posts.php
+   YDFramework2.0/trunk/examples/forum/readme.txt
+   YDFramework2.0/trunk/examples/forum/sql/
+   YDFramework2.0/trunk/examples/forum/sql/fff.sql
+   YDFramework2.0/trunk/examples/forum/templates/
+   YDFramework2.0/trunk/examples/forum/templates/admin.forum.edit.tpl
+   YDFramework2.0/trunk/examples/forum/templates/admin.forums.list.tpl
+   YDFramework2.0/trunk/examples/forum/templates/admin.user.edit.tpl
+   YDFramework2.0/trunk/examples/forum/templates/admin.users.list.tpl
+   YDFramework2.0/trunk/examples/forum/templates/errorApplication.tpl
+   YDFramework2.0/trunk/examples/forum/templates/fffRequest.tpl
+   YDFramework2.0/trunk/examples/forum/templates/forums.list.subjects.tpl
+   YDFramework2.0/trunk/examples/forum/templates/forums.list.tpl
+   YDFramework2.0/trunk/examples/forum/templates/forums.search.tpl
+   YDFramework2.0/trunk/examples/forum/templates/posts.del.tpl
+   YDFramework2.0/trunk/examples/forum/templates/posts.new.tpl
+   YDFramework2.0/trunk/examples/forum/templates/posts.success.tpl
+   YDFramework2.0/trunk/examples/forum/templates/posts.view.tpl
+   YDFramework2.0/trunk/examples/forum/templates/user.delprofile.tpl
+   YDFramework2.0/trunk/examples/forum/templates/user.login.tpl
+   YDFramework2.0/trunk/examples/forum/templates/user.monprofile.tpl
+   YDFramework2.0/trunk/examples/forum/templates/user.notAuth.tpl
+   YDFramework2.0/trunk/examples/forum/templates/user.suscribe.tpl
+   YDFramework2.0/trunk/examples/forum/templates/user.viewprofile.tpl
+   YDFramework2.0/trunk/examples/forum/todo.txt
+   YDFramework2.0/trunk/examples/forum/user.php
+Log:
+Added a small user example that implements a basic forum.
+
+Added: YDFramework2.0/trunk/examples/forum/.htaccess
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/.htaccess	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/.htaccess	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,30 @@
++# Yellow Duck Framework version 2.0
++# (c) copyright 2004 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
++
++# Denying direct access to the templates
++&lt;FilesMatch &quot;(.tpl|config.php)$&quot;&gt;
++    Order allow,deny
++    Deny from all
++&lt;/FilesMatch&gt;
++
++# Disallow directory browsing
++Options -Indexes
++
++# Disable magic quotes
++php_value magic_quotes_gpc 0
++php_value magic_quotes_runtime 0
++php_value magic_quotes_sybase 0
++
++# Disabled registering of globals and arg*
++php_value register_globals 0
++php_value register_argc_argv 0
++
++# Disallow some security holes
++php_value allow_call_time_pass_reference 0
++php_value allow_url_fopen 0
++php_flag short_open_tag Off
++php_flag enable_dl Off
++
++# Gzip compress the output
++php_flag output_buffering Off
++php_flag zlib.output_compression On
+
+Added: YDFramework2.0/trunk/examples/forum/admin.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/admin.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/admin.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,250 @@
++&lt;?php
++
++
++    // Includes main class of the site
++    require_once('fffRequest.php');
++
++
++    // Include the classes needed on this page
++	require_once('includes/forums.class.php');
++	require_once('includes/groups.class.php');
++	
++
++    // Define the request class
++    class admin extends fffRequest {
++		var $menusAdmin;
++		
++        // Class constructor
++        function admin() {
++
++            // Initialize the parent
++            $this-&gt;fffRequest();
++            
++            // Indicate we require login
++            $this-&gt;setRequiresAuthentication( true );
++            
++            $this-&gt;wrapperTpl-&gt;assign(&quot;viewadmin&quot;, true);
++
++						$this-&gt;menusAdmin = ' Administration &#187; ' .
++	            		'&lt;a class=&quot;fff_link1&quot; href=&quot;admin.php?do=manageUsers&quot;&gt;'.t('admin.users').' &lt;/a&gt;' .
++	            		' | '.
++	            		'&lt;a class=&quot;fff_link1&quot; href=&quot;admin.php?do=manageForums&quot;&gt;'.t('admin.forums').' &lt;/a&gt;' .
++	            		'';//' | ';
++        }
++
++		/*Overloading of isAutheticated, users, even registred need to be administrator to access this file*/
++        function isAuthenticated() {
++        	if($this-&gt;user-&gt;rightslevel &gt;= LEVEL_ADMIN) {
++        		return true;
++        	}
++        	else {
++        		return false;
++        	}
++        }
++
++        // The default action
++        function actionDefault() {
++						$this-&gt;forward('manageUsers');
++						return;
++        }
++
++		function actionEditUser() {
++			if(isset($_GET['userLogin'])) {
++				
++	
++	  			// get the asked profile
++	  			$userLogic = new UsersLogic();
++	  			$user = $userLogic-&gt;retrieveUserByLogin($_GET['userLogin']);
++	  			
++	  			$groupsLogic = new GroupsLogic();
++	  			$groups = $groupsLogic-&gt;listSelectGroups();
++	  			
++	  			if($user!=null) {
++	  				
++	  				// Create the addForum form
++		            $form = new YDForm( 'editForm' );
++		            
++		            $form-&gt;addElement( 'textarea', 'userDescription', t('admin.desc'),array(&quot;cols&quot; =&gt; 50, &quot;rows&quot; =&gt; 8) );
++  							$form-&gt;addElement( 'select', 'userGroup', t('admin.usergroups') , array(&quot;width&quot; =&gt; 60), $groups ); 
++		  					$form-&gt;addElement( 'hidden' , 'iduser', $user-&gt;id );
++	
++		            $form-&gt;addElement( 'submit', 'cmdSubmit', t('admin.saveupdates') );
++	
++		            // Process the form
++		            if ( $form-&gt;validate() ) {
++		               // update
++		               $user-&gt;description = $form-&gt;getValue( 'userDescription' );
++		               $user-&gt;groupid = $form-&gt;getValue( 'userGroup' );
++
++								   $user-&gt;update();
++								   $this-&gt;forward('manageUsers');
++								   return;		
++		     				}
++		            
++								$form-&gt;setDefaults( array( 'userGroup' =&gt; $user-&gt;groupid ) );
++								$form-&gt;setDefaults( array( 'userDescription' =&gt; $user-&gt;description ) );
++					
++			  				// Assign variables to the template
++			  				$this-&gt;actionTpl-&gt;assign( 'form',$form-&gt;toArray());
++						    $this-&gt;actionTpl-&gt;assign( 'user' ,$user);
++						    $this-&gt;actionTpl-&gt;assign( 'userfound',true);
++						    $title = 'Profil de '.$user-&gt;login;
++					    
++		  			}
++		  			else {
++		  				$this-&gt;actionTpl-&gt;assign( 'userfound',false);
++		  				$title = 'Utilisateur inconnu';
++		  			}
++			    	$content = new page($this-&gt;actionTpl-&gt;fetch('templates/admin.user.edit.tpl'), $title, $this-&gt;menusAdmin);
++						// Display the action template into the master template
++						$this-&gt;display($content);
++			}
++			else {
++				$this-&gt;errorRequete();
++				return;
++			}			
++		}
++		
++		
++        function actionManageUsers() {
++            $usersLogic = new UsersLogic();
++            
++            // Assign variables to the template
++            $temp = $usersLogic-&gt;retrieveAllByName();
++            $this-&gt;actionTpl-&gt;assign( 'users', $temp);
++
++            $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/admin.users.list.tpl'), t('admin.manageusers'), $this-&gt;menusAdmin);
++
++
++            // Display the action template into the master template
++            $this-&gt;display($content);
++
++        }
++
++        
++        function checkNewForum( $fields ) {
++			if(strlen($fields['forumTitle'])&gt;=5) {
++				if($fields['forumPoids']&gt;=0 &amp;&amp; $fields['forumPoids']&lt;=500) {
++					return true;
++	        	}
++		        else {
++		        	return array( 'search' =&gt; t('admin.forumweight') );
++		        }
++        	}
++	        else {
++	        	return array( 'search' =&gt; t('admin.forumtitle5char') );
++	        }
++        }
++        
++        function actionEditForum() {
++        	if(isset($_GET['idforum'])) {
++
++							// retrieve forum to edit
++	            $forumLogic = new ForumsLogic();
++	            $forum = $forumLogic-&gt;retrieveForumById($_GET['idforum']);
++
++							// Create the addForum form
++	            $form = new YDForm( 'editForumForm' );
++
++	            $form-&gt;addElement( 'text', 'forumTitle', t('admin.newforumtitle') , array(&quot;size&quot; =&gt; 40));
++			  			$form-&gt;addElement( 'text', 'forumPoids', t('admin.forumweightorder') , array());
++			  			$form-&gt;addElement( 'hidden' , 'idforum', $_GET['idforum'] );
++
++	            $form-&gt;addElement( 'submit', 'cmdSubmit', t('admin.forumsave') );
++
++	            // Add rules
++	            $form-&gt;addFormRule( array( &amp; $this, 'checkNewForum' ) );
++	 						$form-&gt;addRule( 'forumPoids', 'numeric', t('admin.forumweightinteger') ); 
++
++	 	         // defaults values
++	            $form-&gt;setDefaults( array( 'forumTitle' =&gt; $forum-&gt;name ) ); 
++	            $form-&gt;setDefaults( array( 'forumPoids' =&gt; $forum-&gt;order) ); 
++       
++	            // Process the form
++	            if ( $form-&gt;validate() ) {
++	               // get and show results
++	               $forum-&gt;name = $form-&gt;getValue( 'forumTitle' );
++	               $forum-&gt;order = $form-&gt;getValue( 'forumPoids' ); 
++							   $forum-&gt;update();
++							   $this-&gt;forward('manageForums');
++							   return;		
++	            }
++
++
++	            // Assign variables to the template
++	            $this-&gt;actionTpl-&gt;assign( 'form',$form-&gt;toArray());
++
++	
++	            $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/admin.forum.edit.tpl'), t('admin.manageforums'), $this-&gt;menusAdmin);
++	
++	            // Display the action template into the master template
++	            $this-&gt;display($content);
++        	}
++        	else {
++							$this-&gt;errorRequete();        		
++        	}
++        }
++        
++        function actionManageForums() {
++
++						// Create the addForum form
++            $form = new YDForm( 'forumForm' );
++
++            $form-&gt;addElement( 'text', 'forumTitle', t('admin.newforumtitle') , array(&quot;size&quot; =&gt; 40));
++  					$form-&gt;addElement( 'text', 'forumPoids', t('admin.forumweightorder') , array());
++  			
++            $form-&gt;addElement( 'submit', 'cmdSubmit', t('admin.forumcreate') );
++
++            // Add rules
++            $form-&gt;addFormRule( array( &amp; $this, 'checkNewForum' ) );
++ 						$form-&gt;addRule( 'forumPoids', 'numeric', t('admin.forumweightinteger') ); 
++ 
++            // Process the form
++            if ( $form-&gt;validate() ) {
++               // get and show results
++               $forum = new ForumObject($form-&gt;getValue( 'forumTitle' ),$form-&gt;getValue( 'forumPoids' ));
++			   				$forum-&gt;insert();
++
++            }
++            // Future defaults values
++            $form-&gt;setDefaults( array( 'forumTitle' =&gt; '' ) ); 
++            $form-&gt;setDefaults( array( 'forumPoids' =&gt; '' ) ); 
++            
++						// retrieve existing forums
++            $forumLogic = new ForumsLogic();
++            $forums = $forumLogic-&gt;retrieveAllByOrderSimple();     
++
++            // Assign variables to the template
++            $this-&gt;actionTpl-&gt;assign( 'form',$form-&gt;toArray());
++            $this-&gt;actionTpl-&gt;assign('forums', $forums);
++
++            $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/admin.forums.list.tpl'), t('admin.manageforums') , $this-&gt;menusAdmin);
++
++            // Display the action template into the master template
++            $this-&gt;display($content);
++        	
++        }
++        
++        
++        function actionDelForum() {
++        	$forumLogic = new ForumsLogic();
++            $forum = $forumLogic-&gt;retrieveForumById($_GET['idforum']);
++            $forum-&gt;delete();
++            $this-&gt;forward('manageForums');  
++            return;
++        	
++        }
++        
++
++          function actionDelUser() {
++            $usersLogic = new UsersLogic();
++            $user = $usersLogic-&gt;retrieveUserById($_GET['iduser']);
++            $user-&gt;delete();
++      			$this-&gt;forward('manageUsers');
++      			return;
++          }
++    } 
++
++    YDInclude( 'YDF2_process.php' ); 
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/changelog.txt
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/changelog.txt	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/changelog.txt	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,10 @@
++Friendly Freddy Forum
++
++
++Version 1.1 - 17/10/2005
++Add multilanguage support based on the YDWeblog solution
++Add English language file
++
++
++Version 1.0 - 01/03/2005
++Initial release made by Erwan PERGOD &amp; Sylvain GOUGOUZIAN in order to evaluate the YellowDuck Framework (<A HREF="http://ydframework.berlios.de">http://ydframework.berlios.de</A>) as a php pratical work in university.
+
+Added: YDFramework2.0/trunk/examples/forum/fffRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/fffRequest.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/fffRequest.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,220 @@
++&lt;?php
++		require_once( 'includes/config.php' );
++    // Include the Yellow Duck Framework
++
++		require_once( YD_INIT_FILE );
++
++    // Include the classes needed on all pages
++    YDInclude( 'YDForm.php' ); 
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDTemplate.php' );
++    require_once( 'includes/page.class.php' );
++		require_once( 'includes/users.class.php' );
++
++		
++  // Define the constants we want to override for the Framework
++  //YDConfig::set( 'YD_DEBUG', 1 );
++	YDLocale::set( LOCALE );
++
++	// Show all errors including notification of unset variables
++	error_reporting(E_ALL);
++
++    // Include the language file
++    include_once( dirname( __FILE__ ) . '/languages/language_' . strtolower( YDLocale::get() ) . '.php' );
++
++//	    /**
++//     * The t function used for translations
++//     * @param t Code of the word to translate
++//     * @return t corresponding string for the current locale
++//     * 
++//     * For the moment the code must be in form module.word.or.more
++//     * Every thing is currently in one file, could evolve if required
++//     */
++//    function t( $t ) {
++//
++//        // Return empty string when param is missing
++//        if ( empty( $t ) ) {
++//            return '';
++//        }
++//
++//        // Load the language file
++//        include_once( dirname( __FILE__ ) . '/languages/language_' . strtolower( YDLocale::get() ) . '.php' );
++//        // Initialize the language array
++//        if ( ! isset( $GLOBALS['t'] ) ) {
++//            $GLOBALS['t'] = array();
++//        }
++//        
++//        // Return the right translation
++//        //$t = strtolower( $t ); // strtolower removed to improve perfs
++//        return ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
++//    }
++    
++    /** 
++		 * Template t modifier
++     * @param params Parameters supplied by Smarty
++       @return $params['w'] corresponding string for the current locale.
++     */
++    function YDTplModT( $params ) {
++    		// strtolower removed to improve perfs.
++        /*if ( @ $params['lower'] == 'yes' ) {
++            return isset( $params['w'] ) ? strtolower( t( $params['w'] ) ) : '';
++        } else {*/
++            return isset( $params['w'] ) ? t( $params['w'] ) : '';
++        //}
++    }
++	
++
++    // Here, we define our custom request class
++    class fffRequest extends YDRequest {
++        var $template; // main template
++        var $actionTpl; // action template
++        var $user;
++        
++        // Class constructor
++        function fffRequest() {
++
++            // Initialize the parent request
++            $this-&gt;YDRequest();
++						
++            // Make the template object available for all requests
++            $this-&gt;wrapperTpl = new YDTemplate();  
++						$this-&gt;actionTpl = new YDTemplate();        	 
++						$this-&gt;wrapperTpl-&gt;register_function( 't', 'YDTplModT' );
++        	  $this-&gt;actionTpl-&gt;register_function( 't', 'YDTplModT' );
++												
++						// create a new user object for the request
++						if(isset($_SESSION['s_user'])) {
++							$this-&gt;user = YDObjectUtil::unserialize($_SESSION['s_user']);
++						}
++						else {
++							$this-&gt;user = new UserObject('Anonymous', '');
++						}
++						if($this-&gt;user-&gt;ip !=  $_SERVER['REMOTE_ADDR']) {
++							$this-&gt;user-&gt;ip =  $_SERVER['REMOTE_ADDR'];
++							$_SESSION['s_user'] = YDObjectUtil::serialize($this-&gt;user);
++						}
++
++        }
++        
++        function errorMissingAction() {
++        		// TODO : return 404 in HTTP headers
++        	 $this-&gt;actionTpl-&gt;assign( 'message',t('global.pagedoesnotexists') );
++           $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/errorApplication.tpl'), t('global.pagedoesnotexists') );
++
++            // Display the action template into the master template
++            $this-&gt;display($content);	
++        }
++        
++        function errorActionNotAllowed() {
++            $this-&gt;actionTpl-&gt;assign( 'message','Action non autoris&#233;e.');
++            $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/errorApplication.tpl'), t('global.erroractionnotallowed') );
++
++            // Display the action template into the master template
++            $this-&gt;display($content);	
++        }
++        
++        function errorRequete($message=null) {
++            
++            $message = $message==null?t('global.unrecognizederror'):$message;            
++            $actionTpl-&gt;assign( 'message',$message);
++            $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/errorApplication.tpl'), t('global.error').$message);
++
++            // Display the action template into the master template
++            $this-&gt;display($content);	
++        }
++        
++        
++        // function display, will display $content in master template
++        function display($page) {
++            $this-&gt;wrapperTpl-&gt;assign('user', $this-&gt;user);   
++            $this-&gt;wrapperTpl-&gt;assign( 'menus', $page-&gt;menus);
++            $this-&gt;wrapperTpl-&gt;assign( 'content' , $page-&gt;content!=null?$page-&gt;content:'');
++            
++            $this-&gt;wrapperTpl-&gt;assign( 'title' , $page-&gt;title!=null?$page-&gt;title:'FFF default title');
++
++            $this-&gt;wrapperTpl-&gt;display( 'templates/fffRequest.tpl' );
++        }
++        
++        
++        // Check the authentication
++        function isAuthenticated() {
++        	return $this-&gt;user-&gt;authentificated;
++        }
++
++
++       // Function to check the login and log
++        function checkLogin( $fields ) {
++	        	$user = new userObject($fields['loginName'], md5($fields['loginPass']));	
++				    $temp = $user-&gt;auth();
++	
++		  			// errors during authentification ?
++		  			if(is_array($temp)) {
++		  				return $temp;
++		  			}
++		  			else {
++		  				// else log the user
++		  				$this-&gt;user = $user;
++		  				$_SESSION['s_user'] = YDObjectUtil::serialize($user);
++		  				return true;
++		  			}
++        }
++        
++
++        // Login function
++        function actionLogin() {
++
++            // Redirect to default action if already logged in
++            if ( $this-&gt;isAuthenticated() === true ) {
++                $this-&gt;forward( 'default' );
++                return;
++            }
++
++            // Create the login form
++            $form = new YDForm( 'loginForm' );
++
++            $form-&gt;addElement( 'text', 'loginName', t('user.login') );
++            $form-&gt;addElement( 'password', 'loginPass', t('user.pwd') );
++            $form-&gt;addElement( 'submit', 'cmdSubmit', 'Login' );
++
++						$form-&gt;setDefaults( array( 'loginPass' =&gt; '' ) ); 
++			
++            // Add the rules
++            $form-&gt;addFormRule( array( &amp; $this, 'checkLogin' ) );
++
++            // Process the form
++            if ( $form-&gt;validate() ) {
++
++                // Mark the form as valid
++                $this-&gt;authenticationSucceeded();
++                header('location: forums.php');
++                return;
++            }
++                       
++            // Assign variables to the action template
++            $this-&gt;actionTpl-&gt;assign( 'form', $form-&gt;toArray());
++
++            $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/user.login.tpl'), '');
++
++            // Display the action template into the master template
++            $this-&gt;display($content);
++  
++        }
++
++
++        // Function to logout
++        function actionLogout() {
++            session_destroy();
++                      
++            header('location: forums.php');
++            return;
++        }
++
++        // Redirect to the login if the authentication failed
++        function authenticationFailed() {
++            $this-&gt;forward( 'login' );
++            return;
++        }
++
++    }
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/fffscreen.css
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/fffscreen.css	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/fffscreen.css	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,237 @@
++BODY {
++  background-color:#FFFFFF;
++	color: #007530;
++  padding-top:0px;
++  margin-top:0px;
++  text-align:center;
++  margin-left:auto;
++  margin-right:auto;
++  font-weight:bold;
++}
++
++hr {
++	width:90%;
++	color:#FF9933;
++}
++.fff_error {
++
++}
++form.fff_form {
++  display:inline;
++}
++div.fff_form_container {
++  width:550px;
++  margin-left:auto;
++  margin-right:auto;
++  margin-top:4px;
++  margin-bottom:4px;
++  padding:15px;
++  border:2px dotted orange; 
++}
++img.fff_img {
++  border:none;
++}
++#validation.fff_valid {
++  float:right;
++}
++#validation.fff_valid img {
++  margin-left:15px;
++}
++
++#fff_connexion {
++  float:right;
++  width:300px;
++}
++#fff_main_head {
++	color: #007530;
++	background-color: #CEF390;
++	padding:2px;
++	margin:0px;
++}
++#fff_main_menu {
++  float:left;
++  padding-left:2%;
++}
++
++#fff_main_user {
++  float:right;
++  padding-right:2%;
++}
++
++hr.fff_separator {
++  clear:both;
++  width:96%;
++}
++
++a.fff_link1 {
++	color:#0849B5;
++	text-decoration:none;
++	font-weight:bold;
++}
++a.fff_link1:visited {
++	color:#0849B5;
++	text-decoration:none;
++}
++a.fff_link1:hover {
++	color:#0849B5;
++	text-decoration:underline;
++}
++
++a.fff_link2 {
++	color:#007531;
++	text-decoration:none;
++	font-weight:bold;
++}
++a.fff_link2:visited {
++	color:#007531;
++	text-decoration:none;
++}
++a.fff_link2:hover {
++	color:#007531;
++	text-decoration:underline;
++}
++
++
++acronym.fff_acro {
++  border-bottom:1px dotted black;
++  cursor:help;
++}
++
++.fff_edited {
++  font-size:small;
++  font-style:italic;
++}
++
++.fff_error {
++  font-weight:bold;
++  color:#FF0000;
++}
++
++.fff_uri {
++  font-weight:bold;
++  color:#0000FF;
++}
++
++.fff_success {
++  font-weight: bold;
++  color:#00FF00;
++}
++
++.fff_row {
++  margin:5px;
++}
++
++DIV.fff_row SPAN {
++	float: left;
++	width: 8em;
++	text-align: left;
++	text-decoration: none;
++}
++div.fff_menus {
++  margin-left:2%;
++  margin-right:2%;
++  width:94%;
++  border:1px solid #000000;
++}
++
++div.fff_menu_user {
++    float:right;
++    font-weight:bold;font-size: medium;
++}
++div.fff_menu_forum {
++    float:left;
++    font-weight:bold;font-size: medium;
++}
++
++div.fff_bloc_medium {
++    border : 1px dotted white;
++    background-color: #003366; color:#66ffff; font-size: small;
++    padding:10px;
++    margin:5px;
++    margin-left:auto;
++    margin-right:auto;
++    text-align:center;
++    width:300px;
++}
++
++
++TABLE.fff_table {
++  margin-left:2%;
++  margin-right:2%;
++  margin-top:2px;
++  margin-bottom:2px;
++  width:94%;
++  empty-cells: show;
++  border:1px solid #000000;
++}
++
++TABLE.fff_table_bottom {
++  margin-left:2%;
++  margin-right:2%;
++  margin-top:2px;
++  margin-bottom:2px;
++  
++  width:94%;
++  empty-cells: show;
++}
++
++td.fff_left {
++  text-align:left;
++}
++td.fff_right {
++  text-align:right;
++}
++
++/*Ligne d'entete*/
++tr.fff_title	{   background-color: #007531; color:#66ffff; font-size: large; }
++
++/*Lignes paires impaires0*/
++tr.fff_trow0even	{ background-color: #FFFBCE; color:#007530; font-weight:bold;font-size: medium;}
++tr.fff_trow0odd	{ background-color: #ccFBCE; color:#007530; font-weight:bold;font-size: medium;}
++
++/*Titre colonne principale*/
++th.fff_tMai {
++  width:60%;
++}
++
++th.fff_tNbe {
++  text-align: center;
++}
++
++
++/*case colonne principale*/
++td.fff_rMai {
++  width:60%;
++  text-align:left;
++  padding-left:4px;
++}
++
++td.fff_rNbe {
++  text-align: center;
++}
++
++td.fff_rMessage_infos {
++  width:82%;
++  background-color:#0099FF;
++  border : 1px solid black;
++  text-align:left;
++  color:#66ffff;
++  font-weight:normal;
++  padding:4px;
++  font-style : italic;
++}
++
++td.fff_rMessage {
++  width:82%;
++  background-color:#03B0BE;
++  border : 1px solid black;
++  text-align:left;
++  color:#FFFFFF;
++  font-weight:normal;
++  padding:4px;
++}
++
++.fff_title {
++  font-weight:bold;
++  text-decoration:underline;
++}
+
+Added: YDFramework2.0/trunk/examples/forum/forums.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/forums.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/forums.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,131 @@
++&lt;?php
++
++    // Includes main class of the site
++    require_once('fffRequest.php');
++    
++    // Include the classes needed on this page
++    require_once('includes/forums.class.php');
++    require_once('includes/posts.class.php');
++
++
++
++    // Define the request class
++    class forums extends fffRequest {
++
++        // Class constructor
++        function forums() {
++            // Initialize the parent
++            $this-&gt;fffRequest();
++        }
++
++        // The default action
++        function actionDefault() {
++            $this-&gt;actionListForums();
++            return;
++        }       
++
++        function checkSearch( $fields ) {
++            if(strlen($fields['searchKeys'])&gt;2) {
++                return true;
++            }
++            else {
++                return array( 'search' =&gt; t('forums.search3chars') );
++            }
++        }
++
++
++        function actionSearch() {
++       
++            // retrieve list of forums
++            $forumLogic = new ForumsLogic();
++            $forums = $forumLogic-&gt;retrieveAllByOrderSimple();  
++            $selectForums = array();
++            foreach($forums as $i=&gt; $item) {
++                $selectForums[&quot;&quot;.$item-&gt;id] = $item-&gt;name;
++            }
++                        
++            // Create the search form
++            $form = new YDForm( 'searchForm' );
++
++            $form-&gt;addElement( 'text', 'searchKeys', t('forums.searchstring') , array(&quot;size&quot; =&gt; 40));
++            $form-&gt;addElement( 'select', 'searchForum', t('forums.searchforum'), array(&quot;width&quot; =&gt; 60), $selectForums ); 
++
++            $form-&gt;addElement( 'submit', 'cmdSubmit', t('forums.search') );
++
++            // Add rules
++            $form-&gt;addFormRule( array( &amp; $this, 'checkSearch' ) );
++
++
++            // Process the form
++
++            if ( $form-&gt;validate() ) {
++                $this-&gt;actionTpl-&gt;assign( 'searched',true);
++             // get and show results
++             $forum = $forumLogic-&gt;retrieveForumById($form-&gt;getValue( 'searchForum' )); 
++                   $forum-&gt;loadSubjectsMatching($form-&gt;getValue( 'searchKeys' ));
++                                    
++                   // number of results
++                   $this-&gt;actionTpl-&gt;assign( 'nbposts' , count($forum-&gt;subjects) );
++                   $this-&gt;actionTpl-&gt;assign( 'posts' , $forum-&gt;subjects );
++
++            }
++            
++            // Assign variables to the template
++            $this-&gt;actionTpl-&gt;assign( 'form',$form-&gt;toArray());
++            $content = new page($this-&gt;actionTpl-&gt;fetch('templates/forums.search.tpl'), t('forums.searching') );
++    
++    				$this-&gt;display($content);        	
++        }
++
++        function actionListForums() {
++
++						
++            // Retrieve all forums in Database
++            $forumLogic = new ForumsLogic();
++            $forums = $forumLogic-&gt;retrieveAllByOrderSimple();     
++
++            // Assign variables to the template
++            $this-&gt;actionTpl-&gt;assign('forums', $forums);
++            $content = $this-&gt;actionTpl-&gt;fetch('templates/forums.list.tpl');
++
++            // Display the action template into the master template
++            $this-&gt;display(new Page($content, t('global.forumlist') ) );
++
++        }
++      
++
++        function actionViewForum() {
++
++            // Retrieve one forum with all subjects
++            $forumLogic = new ForumsLogic();
++            $forum = $forumLogic-&gt;retrieveForumById($_GET['id']);
++
++            if(isset($_GET['from']) &amp;&amp; is_numeric($_GET['from']) ) {
++                  $forum-&gt;loadSubjects($_GET['from']);
++            }
++            else {
++                  $forum-&gt;loadSubjects();
++            }
++  
++            // Assign variables to the template
++            $this-&gt;actionTpl-&gt;assign('user', $this-&gt;user);
++            $this-&gt;actionTpl-&gt;assign('forum', $forum);
++            $this-&gt;actionTpl-&gt;assign('posts', $forum-&gt;subjects);            
++
++            $content = $this-&gt;actionTpl-&gt;fetch('templates/forums.list.subjects.tpl');
++
++			     $menus = ' &#187; ' .''.$forum-&gt;name.'';
++
++            // Display the action template into the master template
++            $this-&gt;display(new Page($content, $forum-&gt;name ,$menus));
++
++        }
++
++    } 
++
++
++
++    YDInclude( 'YDF2_process.php' ); 
++
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/images/Thumbs.db
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/forum/images/Thumbs.db
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/forum/images/caution.gif
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/forum/images/caution.gif
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/forum/images/error.gif
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/forum/images/error.gif
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/forum/images/ydframework.png
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/forum/images/ydframework.png
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/forum/includes/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/includes/config.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/includes/config.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,33 @@
++&lt;?php
++/*
++ * Configuration file for the Friendly Freddy Forum
++ * 
++ */
++
++/*
++ * rights levels, should be remove with db groups and replaced by roles
++ * */
++define('LEVEL_ADMIN', 5);
++define('LEVEL_MODERATOR', 3);
++define('LEVEL_USER', 1);
++define('LEVEL_ANONYMOUS', 0);
++
++define('GROUP_SIMPLEUSER_ID', 1);
++define('GROUP_INACTIVEUSER_ID', 4);
++
++
++define('DB_HOST', 'localhost');
++define('DB_BASE', 'fff_forum');
++define('DB_USER', 'root');
++define('DB_PASS', '');
++
++define('DB_PREXIX', 'fff_');
++
++define('SECONDS_BETWEEN_POSTS', 20); // number of seconds before the next allowed post
++
++define('NUMBER_SUBJECT_PER_PAGES', 10); // number of subjects in one page of a forum
++
++define('YD_INIT_FILE', dirname( __FILE__ ) . '/../../../YDFramework2/YDF2_init.php');
++
++define('LOCALE', 'en');
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/includes/forums.class.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/includes/forums.class.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/includes/forums.class.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,277 @@
++&lt;?php
++/*
++ * Fichier forums.class.php
++ * D&#233;crit un &#171;sous&#187;-forum et interragit avec la base de donn&#233;es
++ * 
++ * */
++
++require_once('sqlObject.class.php');
++require_once('posts.class.php');
++
++class ForumObject extends sqlObject {
++  var $id;
++  var $name;
++  var $order;
++  
++  var $nbPosts;
++  var $nbSubjects;
++  
++  var $subjects;
++
++  var $parity; //odd or even, used to alternate template
++   		
++  var $limiteBasse;
++  var $limiteHaute;
++  var $pas;
++  
++  /*
++   * Create a new forum object from known datas
++   * */
++  
++  function ForumObject($name, $order, $id=null) {
++  		//initialize parent construtor
++  		$this-&gt;sqlObject();
++  		
++  		$this-&gt;id = $id;
++  		$this-&gt;name = $name;
++  		$this-&gt;order = $order;
++  		
++  		$this-&gt;nbPosts=0;
++ 		$this-&gt;nbSubjects=0;
++  		$this-&gt;subjects = array(); // empty at start, need to be loaded
++  }
++  
++  /*
++   * Insert current forum in the database
++   * 
++   */
++  function insert() {
++	    $values = array();
++	    $values['nameForum'] = $this-&gt;name;
++	    $values['`order`'] = $this-&gt;order;
++	    
++	    // Insert the values into the database
++	    $this-&gt;id = $this-&gt;db-&gt;executeInsert( DB_PREXIX.'forums', $values );
++  }
++  
++   /*
++   * Update current user in the database
++   * 
++   */
++  function update() {
++	    $values = array();
++	    $values['nameForum'] = $this-&gt;name;
++		$values['`order`'] = $this-&gt;order;
++
++	    // Insert the values into the database
++	    $this-&gt;db-&gt;executeUpdate ( DB_PREXIX.'forums', $values, 'idforum = '.$this-&gt;id);
++  }
++  
++  /*
++   * Delete current forum from database
++   * */
++   function delete() {
++   		// delete forum object
++   		$this-&gt;db-&gt;executeDelete ( DB_PREXIX.'forums' , 'idforum = '.$this-&gt;id);
++   		
++   		// delete forum posts
++   		$this-&gt;db-&gt;executeDelete ( DB_PREXIX.'posts' , 'idforum = '.$this-&gt;id);
++   		
++   		// delete forums authorisation
++   		//$this-&gt;db-&gt;executeDelete ( DB_PREXIX.'users_forums_rights' , 'idforum = '.$this-&gt;id);
++   }
++  
++  // Load number of subjects and of postst
++  function loadNumbers() {
++  		// count answers and posts
++	  	$sql = ' SELECT COUNT(  idforum  )  AS nbposts ' .
++	  			' FROM  `'.DB_PREXIX.'posts` ' .
++	  			' WHERE idForum = '.$this-&gt;id.' ';  
++	    $dbPosts = $this-&gt;db-&gt;getRecord ( $sql );
++  	 	$this-&gt;nbPosts = $dbPosts['nbposts'];
++			
++		$sql = ' SELECT COUNT(  idpost  )  AS nbsubjects ' .
++				' FROM  `'.DB_PREXIX.'posts` ' .
++				' WHERE idForum = '.$this-&gt;id.' AND idPostParent IS NULL;';	
++	    $dbSubjects = $this-&gt;db-&gt;getRecord ( $sql );
++  	 	$this-&gt;nbSubjects = $dbSubjects['nbsubjects'];
++	   	
++  }
++  
++  // load subjects corresponding to a research
++  function loadSubjectsMatching($keys) {
++  	// So far, we research the plain keys, without decomposing words with spaces
++  	
++	$sql = 'SELECT idPostParent, idPost' .
++			' FROM  `'.DB_PREXIX.'posts` ' .
++			' WHERE  MATCH ( title, content ) ' .
++			' AGAINST (  \''.addslashes($keys).'\' )';
++
++ 	$dbPostsId = $this-&gt;db-&gt;getRecords( $sql );
++ 	
++ 	// We retrieve parent subjects id in order to present subjects instead of all posts
++ 	$idSubjects = array();
++ 	foreach($dbPostsId as $i =&gt; $item) {
++ 		// post subject or post answers ?
++ 		if($item['idpostparent']==null) {
++ 			$idSubjects[''.$item['idpost'].''] = $item['idpost'];
++ 		}
++ 		else {
++ 			$idSubjects[''.$item['idpostparent'].''] = $item['idpostparent'];
++ 		}
++ 	}
++    
++    $nb = count($idSubjects);
++    
++    if($nb&gt;0) {
++	    // construct id clause query
++	    $where = ' WHERE idpost IN (';
++	    $j=0;
++	
++	    foreach($idSubjects as $i =&gt; $item) {
++	    	$j++;
++	    	if($j==$nb) {
++	    	   $where .= ' '.$i.' ';
++	    	}
++	    	else {
++	    	   $where .= ' '.$i.', ';
++	    	}
++	    }
++	    $where .= ' )';
++	    
++	    
++	    // retrieve subjects of matching posts
++		$sql = 'SELECT '.DB_PREXIX.'posts.idpost, '.DB_PREXIX.'posts.title, '.DB_PREXIX.'users.login, '.DB_PREXIX.'users.idUser, '.DB_PREXIX.'posts.datePost, '.DB_PREXIX.'posts.dateAnswer, '.DB_PREXIX.'posts.nbViews, '.DB_PREXIX.'posts.nbAnswers '
++	       .' FROM '.DB_PREXIX.'posts '
++	       .' INNER JOIN '.DB_PREXIX.'users ON '.DB_PREXIX.'users.idUser = '.DB_PREXIX.'posts.idAuthor'
++	       .$where;
++    
++	    $dbSubjects = $this-&gt;db-&gt;getRecords( $sql );
++	 
++	    foreach($dbSubjects as $i =&gt; $item) {
++		  	// on charge un minimum d'informations sur les sujets
++	  		$subject = new PostObject($item['title'], '', $item['iduser'], $item['login'],
++	  			$item['datepost'],$item['dateanswer'], '', null, $this-&gt;id, $item['nbviews'],$item['nbanswers'], $item['idpost']);
++	  		$subject-&gt;parity = $i%2?'odd':'even';
++	        $this-&gt;subjects[] = $subject;
++	      
++	        $this-&gt;nbPosts += (1 + $item['nbanswers']);
++	  	}
++	   	$this-&gt;nbSubjects = count($this-&gt;subjects);
++    }
++  }
++    
++  
++  /*
++   *  Load specified subjects
++   * 
++   * @param $limitMin si the low limit
++   * @param $number is the number of post to show
++   */
++  function loadSubjects($limitMin = 0, $number = NUMBER_SUBJECT_PER_PAGES) {
++  	
++  		// Get all posts informations
++  		$sql = 'SELECT '.DB_PREXIX.'posts.idpost, '.DB_PREXIX.'posts.title, '.DB_PREXIX.'users.login, '.DB_PREXIX.'users.idUser, '.DB_PREXIX.'posts.datePost, '.DB_PREXIX.'posts.dateAnswer, '.DB_PREXIX.'posts.nbViews, '.DB_PREXIX.'posts.nbAnswers '
++           .' FROM '.DB_PREXIX.'posts '
++           .' INNER JOIN '.DB_PREXIX.'users ON '.DB_PREXIX.'users.idUser = '.DB_PREXIX.'posts.idAuthor'
++           .' WHERE '.DB_PREXIX.'posts.idPostParent IS NULL AND '.DB_PREXIX.'posts.idForum = \''.$this-&gt;id.'\' ORDER BY '.DB_PREXIX.'posts.dateAnswer DESC';
++     	$sql .= ' LIMIT '.$limitMin.','.$number.';';
++      	      
++     	$dbSubjects = $this-&gt;db-&gt;getRecords( $sql );
++ 
++      	foreach($dbSubjects as $i =&gt; $item) {
++	  		// on charge un minimum d'informations sur les sujets
++	  		$subject = new PostObject($item['title'], '', $item['iduser'], $item['login'],
++	  			$item['datepost'],$item['dateanswer'], '', null, $this-&gt;id, $item['nbviews'],$item['nbanswers'], $item['idpost']);
++	  		$subject-&gt;parity = $i%2?'odd':'even';
++	        $this-&gt;subjects[] = $subject;
++	      
++	        $this-&gt;nbPosts += (1 + $item['nbanswers']);
++	  	}
++	   	$this-&gt;nbSubjects = count($this-&gt;subjects);
++	   	
++	   	
++	   	/*Check if it exists any posts after those getted*/
++   		  	$sql = 'SELECT '.DB_PREXIX.'posts.idpost '
++           .' FROM '.DB_PREXIX.'posts '
++           .' WHERE '.DB_PREXIX.'posts.idPostParent IS NULL AND '.DB_PREXIX.'posts.idForum = \''.$this-&gt;id.'\' '
++           .' LIMIT '.($limitMin+$number).',1;';
++
++	     $dbSubjects = $this-&gt;db-&gt;getRecords( $sql );
++	     if(count($dbSubjects)==1) {
++	     	$this-&gt;limiteHaute = $limitMin+NUMBER_SUBJECT_PER_PAGES;
++	     }
++	     else {
++	     	$this-&gt;limiteHaute = -1;
++	     }
++	     if($this-&gt;limiteHaute &lt;= NUMBER_SUBJECT_PER_PAGES &amp;&amp; $this-&gt;limiteHaute!=-1) {
++	     	 $this-&gt;limiteBasse = -1;
++	     }
++	     else {
++	     	$this-&gt;limiteBasse = $limitMin-NUMBER_SUBJECT_PER_PAGES&gt;=0?$limitMin-NUMBER_SUBJECT_PER_PAGES:-1;	
++	     }
++	
++	     $this-&gt;pas = NUMBER_SUBJECT_PER_PAGES;
++    }
++}
++
++
++class ForumsLogic extends sqlObject {
++
++	function ForumsLogic() {
++		//initialize parent construtor
++  		$this-&gt;sqlObject();	
++	}
++	
++	
++	/*
++	 * Retrieve one forum depending on id
++	 * internal Use only
++	 * */
++	function _retrieveForum($where) {
++  		$sql = 'SELECT '.DB_PREXIX.'forums.idforum, '.DB_PREXIX.'forums.nameforum, '.DB_PREXIX.'forums.order ' .
++  				' FROM '.DB_PREXIX.'forums WHERE '.
++            	$where;
++         
++        $dbForum = $this-&gt;db-&gt;getRecord( $sql );
++
++	    return new ForumObject($dbForum['nameforum'], $dbForum['order'], $dbForum['idforum']);
++	}
++	function retrieveForumById($id) {
++		return $this-&gt;_retrieveForum(DB_PREXIX.'forums.idforum = '.$id);
++	}
++
++	
++	/*
++	 * Retrieve all forums with a specified order
++	 * internal Use only
++	 * */
++	
++	function _retrieveAll($orderSQL, $direction=true, $full=false) {
++		$direction = $direction?' ASC':' DESC';
++  		$sql = 'SELECT '.DB_PREXIX.'forums.idforum, '.DB_PREXIX.'forums.nameforum, '.DB_PREXIX.'forums.order' 
++  		      .' FROM '.DB_PREXIX.'forums ' .
++            $orderSQL.$direction;
++        $dbForums = $this-&gt;db-&gt;getRecords( $sql );
++	    $forums = array();
++	    foreach($dbForums as $i =&gt; $item) {
++  			$forum = new ForumObject($item['nameforum'], $item['order'], $item['idforum']);  
++  			if($full) { $forum-&gt;loadSubjects(); } else { $forum-&gt;loadNumbers(); }
++  			$forum-&gt;parity = $i%2?'odd':'even';
++  			$forums[&quot;&quot;.$forum-&gt;id] = $forum;
++		  }
++		return $forums;
++	}
++	
++	function retrieveAllByOrder($direction=true) {
++		return $this-&gt;_retrieveAll('ORDER BY '.DB_PREXIX.'forums.order', $direction);	
++	}
++	
++	function retrieveAllByOrderFull($direction=true) {
++		return $this-&gt;_retrieveAll('ORDER BY '.DB_PREXIX.'forums.order', $direction, true);
++	}
++	function retrieveAllByOrderSimple($direction=true) {
++		return $this-&gt;_retrieveAll('ORDER BY '.DB_PREXIX.'forums.order', $direction, false);
++	}
++}	
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/includes/groups.class.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/includes/groups.class.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/includes/groups.class.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,120 @@
++&lt;?php
++/*
++ * Fichier groups.class.php
++ * D&#233;crit les groups
++ * 
++ * */
++
++require_once('sqlObject.class.php');
++
++
++class GroupObject extends sqlObject {
++  var $idGroup;
++  var $name;
++  var $rightsLevel;
++  
++  /*
++   * Create a new group object from known datas
++   * 
++   * */
++  
++  function PostObject 	($idGroup, $name, $rightsLevel) {
++  	
++  		//initialize parent construtor
++  		$this-&gt;sqlObject();
++
++      	$this-&gt;idGroup = $idGroup;
++      	$this-&gt;name = $name;
++      	$this-&gt;rightsLevel = $rightsLevel;
++  }
++  
++  /*
++   * Insert current group in the database
++   * 
++   */
++  function insert() {
++	    $values = array();
++	    
++	    $values['idGroup'] = $this-&gt;idGroup;
++	    $values['name'] = $this-&gt;name;
++	    $values['rightsLevel'] = $this-&gt;rightsLevel;
++	    
++	    // Insert the values into the database
++	    $this-&gt;id = $this-&gt;db-&gt;executeInsert( DB_PREXIX.'groups', $values );
++  }
++  
++   /*
++   * Update current group in the database
++   * 
++   */
++  function update() {
++	    $values = array();
++
++	    $values['name'] = $this-&gt;name;
++	    $values['rightsLevel'] = $this-&gt;rightsLevel;
++	    	    
++	    // Insert the values into the database
++	    $this-&gt;db-&gt;executeUpdate ( DB_PREXIX.'groups', $values, 'idGroup = '.$this-&gt;idGroup);
++  }
++  
++  /*
++   * Delete current group from database
++   * */
++   function delete() {
++   		$this-&gt;db-&gt;executeDelete ( DB_PREXIX.'groups', 'idGroup = '.$this-&gt;idGroup);
++   } 
++   
++}
++
++class GroupsLogic extends sqlObject {
++
++	function GroupsLogic() {
++		//initialize parent construtor
++  		$this-&gt;sqlObject();
++  		
++	}
++	
++	/*
++	 * Retrieve one group
++	 * */
++	function _retrieveGroup($where) {
++  		$sql = 'SELECT * '.
++  				' FROM '.DB_PREXIX.'groups ' .
++				' WHERE '.
++            	$where;
++	    $dbPost = $this-&gt;db-&gt;getRecord ( $sql );
++		
++	    return new  GroupObject ($dbPost['idgroup'], $dbPost['name'], $dbPost['rightslevel']);
++	
++	}
++	
++	function retrieveGroupById($id) {
++		return $this-&gt;_retrieveGroup(DB_PREXIX.'groups.idGroup = '.addslashes($id));
++	}
++	
++	function listSelectGroups() {
++  		$sql = 'SELECT * '.
++		' FROM '.DB_PREXIX.'groups ';
++    	
++	    $dbGroups = $this-&gt;db-&gt;getRecords ( $sql );
++		
++		$groups = array();
++		foreach($dbGroups as $i =&gt; $group) {
++			$groups[''.$group['idgroup'].''] = $group['name'];
++		}
++	    return $groups;
++	}
++	function getGroups() {
++  		$sql = 'SELECT * '.
++		' FROM '.DB_PREXIX.'groups ';
++    	
++	    $dbGroups = $this-&gt;db-&gt;getRecords ( $sql );
++		
++		$groups = array();
++		foreach($dbGroups as $i =&gt; $group) {
++			$groups[''.$group['idgroup'].''] = new  GroupObject ($group['idgroup'], $group['name'], $group['rightslevel']);
++		}
++	    return $groups;
++	}
++}	
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/includes/page.class.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/includes/page.class.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/includes/page.class.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,13 @@
++&lt;?php
++  class Page {
++    var $content;
++    var $title;
++    var $menus;
++    
++    function Page($content, $title, $menus=null) {
++      $this-&gt;content = $content;
++      $this-&gt;title = $title;
++      $this-&gt;menus = $menus;
++    } 
++  }
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/includes/posts.class.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/includes/posts.class.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/includes/posts.class.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,188 @@
++&lt;?php
++/*
++ * Fichier posts.class.php
++ * D&#233;crit les posts
++ * 
++ * */
++
++require_once('sqlObject.class.php');
++
++
++class PostObject extends sqlObject {
++  var $id;
++  var $title;
++  var $content;
++  
++  var $nbViews;
++  var $nbAnswers;
++  var $idAuthor;
++  var $ipAuthor;
++  var $loginAuthor;
++  var $datePost;
++  var $dateAnswer; // derni&#232;re r&#233;ponse au sujet
++  var $idForum;
++  var $idPostParent;
++  var $nbViews;
++  var $nbAnswers;
++  
++  var $idEditor;
++  var $ipEditor;
++  var $loginEditor;
++  var $dateEdited;
++  
++  var $answers;
++  
++  var $parity;
++  /*
++   * Create a new post object from known datas
++   * 
++   * */
++  
++  function PostObject 	($title, $content, $idAuthor, $loginAuthor , $datePost, $dateAnswer, $ipAuthor,
++	  	$idPostParent, $idForum, $nbViews, $nbAnswers ,$id=null, 
++	  	$idEditor=null, $loginEditor=null, $dateEdited=null, $ipEditor=null) {
++
++  		//initialize parent construtor
++  		$this-&gt;sqlObject();
++
++      	$this-&gt;title = $title;
++      	$this-&gt;content = $content;
++      	$this-&gt;idAuthor = $idAuthor;
++      	$this-&gt;ipAuthor = $ipAuthor;
++      	$this-&gt;loginAuthor = $loginAuthor;
++      	    	
++      	$this-&gt;datePost = $datePost;
++      	$this-&gt;dateAnswer = $dateAnswer;
++      	$this-&gt;idForum = $idForum;
++      	$this-&gt;idPostParent = $idPostParent;
++      	$this-&gt;nbViews = $nbViews;
++      	$this-&gt;nbAnswers = $nbAnswers;
++      	$this-&gt;idEditor = $idEditor;
++      	$this-&gt;dateEdited = $dateEdited;
++      	$this-&gt;id = $id;
++      	$this-&gt;loginEditor = $loginEditor;
++      	
++  }
++  
++  /*
++   * Insert current post in the database
++   * 
++   */
++  function insert() {
++	    $values = array();
++	    
++	    $values['title'] = $this-&gt;title;
++	    $values['content'] = $this-&gt;content;
++      	$values['idAuthor'] = $this-&gt;idAuthor;
++      	$values['datePost'] = $this-&gt;datePost;
++      	$values['dateAnswer'] = $this-&gt;dateAnswer;
++      	$values['ipAuthor'] = $this-&gt;ipAuthor;
++      	$values['idForum'] = $this-&gt;idForum;
++      	$values['idPostParent'] = $this-&gt;idPostParent;
++      	$values['nbViews'] = $this-&gt;nbViews;
++      	$values['nbAnswers'] = $this-&gt;nbAnswers;
++      	$values['idEditor'] = $this-&gt;idEditor;
++      	$values['dateEdited'] = $this-&gt;dateEdited;
++      	$values['ipEditor'] = $this-&gt;ipEditor;
++      	$values['idPost'] = $this-&gt;id; 
++	    
++	    // Insert the values into the database
++	    $this-&gt;id = $this-&gt;db-&gt;executeInsert( DB_PREXIX.'posts', $values );
++  }
++  
++   /*
++   * Update current post in the database
++   * 
++   */
++  function update() {
++	    $values = array();
++	    $values['title'] = $this-&gt;title;
++	    $values['content'] = $this-&gt;content;
++      	$values['idAuthor'] = $this-&gt;idAuthor;
++      	$values['datePost'] = $this-&gt;datePost;
++      	$values['dateAnswer'] = $this-&gt;dateAnswer;
++      	$values['ipAuthor'] = $this-&gt;ipAuthor;
++      	$values['idForum'] = $this-&gt;idForum;
++      	$values['idPostParent'] = $this-&gt;idPostParent;
++      	$values['nbViews'] = $this-&gt;nbViews;
++      	$values['nbAnswers'] = $this-&gt;nbAnswers;
++      	$values['idEditor'] = $this-&gt;idEditor;
++      	$values['ipEditor'] = $this-&gt;ipEditor;
++      	$values['dateEdited'] = $this-&gt;dateEdited;
++      	$values['idPost'] = $this-&gt;id; 
++	    
++
++	    // Insert the values into the database
++	    $this-&gt;db-&gt;executeUpdate ( DB_PREXIX.'posts', $values, 'idPost = '.$this-&gt;id);
++  }
++  
++  /*
++   * Delete current post from database
++   * */
++   function delete() {
++   		$this-&gt;db-&gt;executeDelete ( DB_PREXIX.'posts', 'idPost = '.$this-&gt;id);
++   		$this-&gt;db-&gt;executeDelete ( DB_PREXIX.'posts', 'idPostParent = '.$this-&gt;id);
++   		$this-&gt;authentificated = false;
++   } 
++   
++   		
++         	
++   /*
++    * Load answers of the post
++    */
++   function loadAnswers() {
++   		$sql = 'SELECT '.DB_PREXIX.'posts.title,'.DB_PREXIX.'posts.content,'.DB_PREXIX.'posts.idauthor,'.DB_PREXIX.'posts.datepost,'.DB_PREXIX.'posts.dateanswer,'.DB_PREXIX.'posts.ipauthor,'.DB_PREXIX.'posts.idpostparent,'.DB_PREXIX.'posts.idforum,'.DB_PREXIX.'posts.nbviews,'.DB_PREXIX.'posts.nbanswers,'.DB_PREXIX.'posts.idpost,'.DB_PREXIX.'posts.ideditor,'.DB_PREXIX.'posts.dateedited,'.DB_PREXIX.'posts.ipeditor, author.login AS authorlogin, editor.login AS editorlogin  '.
++  				' FROM '.DB_PREXIX.'posts ' .
++                ' INNER JOIN '.DB_PREXIX.'users AS author ON '.DB_PREXIX.'posts.idAuthor = author.idUser '.
++                ' LEFT JOIN '.DB_PREXIX.'users AS editor ON '.DB_PREXIX.'posts.idEditor = editor.idUser '.
++				'WHERE '.DB_PREXIX.'posts.idPostParent = '.$this-&gt;id .' ORDER BY '.DB_PREXIX.'posts.idpost ASC ';
++				
++	    $dbAnswers = $this-&gt;db-&gt;getRecords ( $sql );
++		foreach($dbAnswers as $i =&gt; $item) {
++		$this-&gt;answers[] = 	new PostObject 	($item['title'], $item['content'], $item['idauthor'], $item['authorlogin'] , $item['datepost'],  $item['dateanswer'], $item['ipauthor'],
++		  	$item['idpostparent'], $item['idforum'], $item['nbviews'], $item['nbanswers'] ,$item['idpost'], 
++		  	$item['ideditor'], $item['editorlogin'], $item['dateedited'], $item['ipeditor']);		
++		}   	
++   }
++}
++
++
++class PostsLogic extends sqlObject {
++
++	function PostsLogic() {
++		//initialize parent construtor
++  		$this-&gt;sqlObject();
++  		
++	}	
++		
++	
++	/*
++	 * Retrieve one user depending on id or name passed as parameter
++	 * internal Use only
++	 * */
++	function _retrievePost($where) {
++   		$sql = 'SELECT '.DB_PREXIX.'posts.title,'.DB_PREXIX.'posts.content,'.DB_PREXIX.'posts.idauthor,'.DB_PREXIX.'posts.datepost,'.DB_PREXIX.'posts.dateanswer,'.DB_PREXIX.'posts.ipauthor,'.DB_PREXIX.'posts.idpostparent,'.DB_PREXIX.'posts.idforum,'.DB_PREXIX.'posts.nbviews,'.DB_PREXIX.'posts.nbanswers,'.DB_PREXIX.'posts.idpost,'.DB_PREXIX.'posts.ideditor,'.DB_PREXIX.'posts.dateedited,'.DB_PREXIX.'posts.ipeditor,editor.login AS logineditor,author.login AS loginauthor '.
++  				' FROM '.DB_PREXIX.'posts ' .
++                ' INNER JOIN '.DB_PREXIX.'users AS author ON '.DB_PREXIX.'posts.idAuthor = author.idUser '.
++                ' LEFT JOIN '.DB_PREXIX.'users AS editor ON '.DB_PREXIX.'posts.idEditor = editor.idUser '.
++				' WHERE '.
++            	$where;
++	    $dbPosts = $this-&gt;db-&gt;getRecords ( $sql );
++
++		if(count($dbPosts) == 1) {
++			$dbPost = $dbPosts[0];
++			return new  PostObject 	($dbPost['title'], $dbPost['content'], $dbPost['idauthor'], $dbPost['loginauthor'] , $dbPost['datepost'],$dbPost['dateanswer'], $dbPost['ipauthor'],
++	  	$dbPost['idpostparent'], $dbPost['idforum'], $dbPost['nbviews'], $dbPost['nbanswers'] ,$dbPost['idpost'], 
++	  	$dbPost['ideditor'], $dbPost['logineditor'], $dbPost['dateedited'], $dbPost['ipeditor']);
++		}
++		else {
++			return null;	
++		}
++	}
++	
++	function retrievePostById($id) {
++		return $this-&gt;_retrievePost(DB_PREXIX.'posts.idpost = '.addslashes($id));
++	}
++	
++}	
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/includes/sqlObject.class.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/includes/sqlObject.class.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/includes/sqlObject.class.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,17 @@
++&lt;?php
++
++YDInclude( 'YDDatabase.php' ); 
++
++class sqlObject {
++	var $db; // database connector
++	
++	function sqlObject() {
++		$this-&gt;db = $db = YDDatabase::getInstance( 'mysql', DB_BASE, DB_USER, DB_PASS, DB_HOST ); 
++		 // Fetch as an associative array
++	    YDConfig::set( 'YD_DB_FETCHTYPE', YD_DB_FETCH_ASSOC );
++	}
++}
++
++
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/includes/users.class.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/includes/users.class.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/includes/users.class.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,208 @@
++&lt;?php
++/*
++ * Fichier users.class.php
++ * D&#233;crit l'utilisateur du forum et interragit avec la base de donn&#233;es
++ * 
++ * */
++
++require_once('sqlObject.class.php');
++
++class UserObject extends sqlObject {
++  var $id;
++  var $login;
++  var $password; //md5 password
++  var $authentificated; // boolean
++  var $description;
++  var $ip;
++  
++  var $groupid;
++  var $groupname;
++  var $rightslevel; // int
++
++
++  /*
++   * Create a new user object from known datas
++   * @param password in md5 format
++   * */
++  
++  function UserObject($login, $password, $id=null, $description = '', $rightslevel = LEVEL_ANONYMOUS, $groupname ='', $ip=null, $groupid = GROUP_SIMPLEUSER_ID) {
++  		//initialize parent construtor
++  		$this-&gt;sqlObject();
++  		
++  		$this-&gt;id = $id;
++		$this-&gt;login = $login;
++		$this-&gt;password = $password;
++		$this-&gt;authentificated = false;
++		$this-&gt;description = $description;
++		$this-&gt;rightslevel = $rightslevel;
++
++		$this-&gt;groupid = $groupid;
++		$this-&gt;groupname = $groupname;
++		$this-&gt;ip = $ip;
++  }
++  
++  /*
++   * Insert current user in the database
++   * 
++   */
++  function insert() {
++	    $values = array();
++	    $values['login'] = $this-&gt;login;
++	    $values['password'] = $this-&gt;password;
++	    $values['description'] = $this-&gt;description;
++	    
++	    // Insert the values into the database
++	    $this-&gt;id = $this-&gt;db-&gt;executeInsert( DB_PREXIX.'users', $values );
++	    
++	    $values = array();
++	    $values['idGroup'] = $this-&gt;groupid;
++	    $values['idUser'] = $this-&gt;id;
++	    $this-&gt;db-&gt;executeInsert ( DB_PREXIX.'groups_users', $values);
++  }
++  
++   /*
++   * Update current user in the database
++   * 
++   */
++  function update() {
++	    $values = array();
++	    $values['description'] = $this-&gt;description;
++	    $values['password'] = $this-&gt;password;
++
++	    // Update the values into the database
++	    $this-&gt;db-&gt;executeUpdate ( DB_PREXIX.'users', $values, 'iduser = '.$this-&gt;id);   	    
++	    $this-&gt;db-&gt;executeUpdate ( DB_PREXIX.'groups_users', array('idGroup'=&gt;$this-&gt;groupid), 'iduser = '.$this-&gt;id);
++  }
++  
++  /*
++   * Delete current user from database, in fact we set group to inactive users. Users are never deleted.
++	 */
++   function delete() {
++	    $this-&gt;db-&gt;executeUpdate ( DB_PREXIX.'groups_users', array('idGroup'=&gt;GROUP_INACTIVEUSER_ID), 'iduser = '.$this-&gt;id);;
++   		$this-&gt;authentificated = false;
++   }
++  
++  function auth() {
++  	if(isset($this-&gt;login) &amp;&amp; isset($this-&gt;password) &amp;&amp; strlen($this-&gt;login)&gt;0 &amp;&amp; strlen($this-&gt;password)&gt;0) {
++  		// Get password in db 
++  		$sql = 'SELECT password, rightsLevel, '.DB_PREXIX.'groups.name, '.DB_PREXIX.'groups.idGroup, '.DB_PREXIX.'users.idUser, '.DB_PREXIX.'users.description '
++             .' FROM '.DB_PREXIX.'users '
++             .' INNER JOIN '.DB_PREXIX.'groups_users ON '.DB_PREXIX.'groups_users.idUser = '.DB_PREXIX.'users.idUser '
++             .' INNER JOIN '.DB_PREXIX.'groups ON '.DB_PREXIX.'groups_users.idGroup = '.DB_PREXIX.'groups.idGroup '
++             .' WHERE '.DB_PREXIX.'users.login = \''.$this-&gt;login.'\'';
++	
++	    $result = $this-&gt;db-&gt;getRecord( $sql );
++
++	    if(isset($result) &amp;&amp; $result['password'] == $this-&gt;password &amp;&amp; $result['rightslevel'] &gt; 0) {
++	      	$this-&gt;id = $result['iduser'];
++	      	$this-&gt;password = $result['password'];
++	      	$this-&gt;rightslevel = $result['rightslevel'];
++	      	$this-&gt;authentificated = true;
++		    	$this-&gt;description = $result['description'];
++		    	$this-&gt;groupname = $result['name'];
++		    	$this-&gt;groupid = $result['idgroup'];
++	    	
++
++	    	return true;
++	    }
++	    else {
++	    	return array( 'login' =&gt; 'Utilisateur et/ou mot de passe incorrect' );
++	    }
++	    return true;
++  	}
++  	else {
++		return array( 'login' =&gt; 'Veuillez renseigner les champs &#171;login&#187; et &#171;mot de passe&#187; avant de valider. ' );
++  	}
++  }
++  
++  
++}
++
++
++class UsersLogic extends sqlObject {
++
++	function usersLogic() {
++		//initialize parent construtor
++  		$this-&gt;sqlObject();
++  		
++	}	
++	
++	/*
++	 * Retrieve one user depending on id or name passed as parameter
++	 * internal Use only
++	 * */
++	function _retrieveUser($where) {
++  		$sql = 'SELECT '.DB_PREXIX.'groups.name AS groupe, '.DB_PREXIX.'groups.idGroup, '.DB_PREXIX.'groups.rightslevel, '.DB_PREXIX.'users.idUser, '.DB_PREXIX.'users.login, '.DB_PREXIX.'users.password, '.DB_PREXIX.'users.description, '.DB_PREXIX.'users.login '.
++  				' FROM '.DB_PREXIX.'users ' .
++                ' INNER JOIN '.DB_PREXIX.'groups_users ON '.DB_PREXIX.'groups_users.idUser = '.DB_PREXIX.'users.idUser '.
++			    ' INNER JOIN '.DB_PREXIX.'groups ON '.DB_PREXIX.'groups_users.idGroup = '.DB_PREXIX.'groups.idGroup ' . 
++				'WHERE '.
++            	$where;
++
++	    $dbUsers = $this-&gt;db-&gt;getRecords ( $sql );	
++
++	    if(count($dbUsers)==1) {
++			$dbUser = $dbUsers[0];
++	    	return new UserObject($dbUser['login'], $dbUser['password'], $dbUser['iduser'], $dbUser['description'], $dbUser['rightslevel'], $dbUser['groupe'], '', $dbUser['idgroup']);
++	    }
++	    else {
++	    	return null;
++	    }
++	}
++	function doesLoginAlreadyExists($login) {
++  		$sql = 'SELECT  '.DB_PREXIX.'users.idUser, '.DB_PREXIX.'users.login, '.DB_PREXIX.'users.password, '.DB_PREXIX.'users.description, '.DB_PREXIX.'users.login '.
++  				' FROM '.DB_PREXIX.'users ' .
++				'WHERE '.DB_PREXIX.'users.login = \''.addslashes($login).'\'';
++	    $dbUser = $this-&gt;db-&gt;getRecords( $sql );	
++	    if(count( $dbUser ) == 1 ) {
++	    	return true;
++	    }
++	    else {
++	    	return false;	
++	    }
++	}
++	
++	function retrieveUserById($id) {
++		return $this-&gt;_retrieveUser(DB_PREXIX.'users.iduser = '.$id);
++	}
++	function retrieveUserByLogin($login) {
++		return $this-&gt;_retrieveUser(DB_PREXIX.'users.login = \''.$login.'\'');	
++	}
++	
++
++	
++	/*
++	 * Retrieve all users with a specified order
++	 * internal Use only
++	 * */
++	
++	function _retrieveAll($orderSQL, $direction=true) {
++		$direction = $direction?' ASC':' DESC';
++  		$sql = 'SELECT '.DB_PREXIX.'groups.name AS groupe, '.DB_PREXIX.'groups.idgroup, '.DB_PREXIX.'groups.rightslevel, '.DB_PREXIX.'users.idUser, '.DB_PREXIX.'users.login, '.DB_PREXIX.'users.password, '.DB_PREXIX.'users.description, '.DB_PREXIX.'users.login '
++             .' FROM '.DB_PREXIX.'users '
++             .' INNER JOIN '.DB_PREXIX.'groups_users ON '.DB_PREXIX.'groups_users.idUser = '.DB_PREXIX.'users.idUser '.
++			' INNER JOIN '.DB_PREXIX.'groups ON '.DB_PREXIX.'groups_users.idGroup = '.DB_PREXIX.'groups.idGroup ' .
++            $orderSQL.$direction;
++		$dbUsers = $this-&gt;db-&gt;getRecords( $sql );
++
++		$users = array();
++		foreach($dbUsers as $i =&gt; $item) {
++			$users[] = new UserObject($item['login'], $item['password'], $item['iduser'], $item['description'], $item['rightslevel'], $item['groupe'], '', $item['idgroup']);  
++		}
++	    return $users;
++	}
++	
++	function retrieveAllById($direction=true) {
++		return $this-&gt;_retrieveAll('ORDER BY '.DB_PREXIX.'users.idUser', $direction);	
++	}
++	
++	function retrieveAllByName($direction=true) {
++		return $this-&gt;_retrieveAll('ORDER BY '.DB_PREXIX.'users.login', $direction);	
++	}
++	
++	function retrieveAllByGroup($direction=true) {
++		return $this-&gt;_retrieveAll('ORDER BY '.DB_PREXIX.'groups.name', $direction);	
++	}
++	
++}	
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/index.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/index.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,3 @@
++&lt;?php
++  header(&quot;location: forums.php&quot;);
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/languages/language_en.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/languages/language_en.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,145 @@
++&lt;?php
++$GLOBALS['t']['global.notconnected'] = 'Your are not connected.';
++$GLOBALS['t']['global.unrecognizederror'] = 'Query unrecognized by the application.';
++$GLOBALS['t']['global.error'] = 'Error : ';
++$GLOBALS['t']['global.erroractionnotallowed'] = 'Error : unauthorized action.';
++$GLOBALS['t']['global.pagedoesnotexists'] = 'Error : document not found.';
++$GLOBALS['t']['global.profileof'] = 'See the profile of';
++$GLOBALS['t']['global.theprofileof'] = 'Profile of';
++$GLOBALS['t']['global.connectedas'] = 'Connected as';
++$GLOBALS['t']['global.forumlist'] = 'Forum list';
++$GLOBALS['t']['global.login'] = 'Login';
++$GLOBALS['t']['global.search'] = 'Search';
++$GLOBALS['t']['global.suscribe'] = 'Suscribe';
++$GLOBALS['t']['global.logout'] = 'Logout';
++$GLOBALS['t']['global.profile'] = 'My profile';
++$GLOBALS['t']['global.admin'] = 'Admin panel';
++$GLOBALS['t']['global.returnforumlist'] = 'Back to the forums';
++$GLOBALS['t']['global.returnhome'] = 'Back to the main page';
++$GLOBALS['t']['global.returnprevious'] = 'Back top the previous page';
++$GLOBALS['t']['global.author'] = 'Author';
++$GLOBALS['t']['global.by'] = 'by';
++$GLOBALS['t']['global.back'] = 'Back';
++$GLOBALS['t']['global.ifnotredirect'] = 'Click here if you are not redirect.';
++$GLOBALS['t']['global.yes'] = 'Yes';
++$GLOBALS['t']['global.no'] = 'No';
++
++$GLOBALS['t']['user.oldpwdincorrect'] = 'Old password is incorrect.';
++$GLOBALS['t']['user.newpwd4chars'] = 'Your new password must be at least 4 characters long.';
++$GLOBALS['t']['user.pwdsnotmatch'] = 'The two new passwords don\'t match.';
++$GLOBALS['t']['user.loginalready'] = 'The login you asked for already exists.';
++$GLOBALS['t']['user.pwd4chars'] = 'Your password must be at least 4 characters long.';
++$GLOBALS['t']['user.login4chars'] = 'Your login must be at least 4 characters long.';
++$GLOBALS['t']['user.2pwd'] = 'Please type your password twice.';
++$GLOBALS['t']['user.login'] = 'Login :';
++$GLOBALS['t']['user.desc'] = 'Describe yourself :';
++$GLOBALS['t']['user.oldpwd'] = 'Old password :';
++$GLOBALS['t']['user.newpwd'] = 'New password :';
++$GLOBALS['t']['user.pwd'] = 'Password :';
++$GLOBALS['t']['user.confirmpwd'] = 'Confirm your password :';
++$GLOBALS['t']['user.valid'] = 'Valid';
++$GLOBALS['t']['user.saveupdate'] = 'Save';
++$GLOBALS['t']['user.unkownuser'] = 'Unkown or deleted user.';
++$GLOBALS['t']['user.suscribeform'] = 'Suscribe form';
++$GLOBALS['t']['user.needauth'] = 'You need to be authenticated to access this page';
++$GLOBALS['t']['user.askdelaccount'] = 'Del my account';
++$GLOBALS['t']['user.delaccount'] = 'Your account has been deleted';
++$GLOBALS['t']['user.delaccountconfirm'] = 'Do you really want to delete your account ?';
++$GLOBALS['t']['user.edityrprofile'] = 'Profile edition :';
++$GLOBALS['t']['user.updateprofileok'] = 'Update have been saved';
++$GLOBALS['t']['user.descprofile'] = 'Fill the following fields only if you want to change your password ';
++$GLOBALS['t']['user.connection'] = 'Connection';
++$GLOBALS['t']['user.administrators'] = 'administrators';
++$GLOBALS['t']['user.moderators'] = 'moderators';
++$GLOBALS['t']['user.users'] = 'users';
++$GLOBALS['t']['user.inactiveusers'] = 'inactive users';
++
++$GLOBALS['t']['posts.toorapid'] = 'You cannot post two message so quickly.';
++$GLOBALS['t']['posts.tooshort'] = 'Your title and your message must each be at least 2 characters long.';
++$GLOBALS['t']['posts.messagetitle'] = 'Message title :';
++$GLOBALS['t']['posts.message'] = 'Message :';
++$GLOBALS['t']['posts.messagehead'] = 'Message';
++$GLOBALS['t']['posts.addmessage'] = 'Add the message';
++$GLOBALS['t']['posts.editmessage'] = 'Edit the message';
++$GLOBALS['t']['posts.newsubject'] = 'Create a thread';
++$GLOBALS['t']['posts.newanswer'] = 'Answer\'s writing';
++$GLOBALS['t']['posts.success'] = 'Your message has been saved.';
++$GLOBALS['t']['posts.updsuccess'] = 'Your message has been updated.';
++$GLOBALS['t']['posts.replyprefix'] = 'Re :';
++$GLOBALS['t']['posts.messageupdate'] = 'Message updating';
++$GLOBALS['t']['posts.notrightupdate'] = 'You cannot edit this message.';
++$GLOBALS['t']['posts.donotexists'] = 'Unknown message';
++$GLOBALS['t']['posts.delmessage'] = 'Del a message';
++$GLOBALS['t']['posts.messagedeleted'] = 'The message has been deleted';
++$GLOBALS['t']['posts.postedon'] = 'Posted on';
++$GLOBALS['t']['posts.editedon'] = 'Edit on';
++$GLOBALS['t']['posts.confirmdelthread'] = 'Are you sure do you want to delete this thread ?';
++$GLOBALS['t']['posts.answer'] = 'Answer';
++$GLOBALS['t']['posts.delete'] = 'Delete a thread';
++$GLOBALS['t']['posts.editmymessage'] = 'Edit my message';
++$GLOBALS['t']['posts.editthemessage'] = 'Edit the message';
++$GLOBALS['t']['posts.updateredirect'] = 'The message has been updated, you\'ll be redirect to the thread.';
++$GLOBALS['t']['posts.addredirect'] = 'Your message has been added, you\'ll be redirect to the thread.';
++$GLOBALS['t']['posts.messageedit'] = 'Edit the message';
++$GLOBALS['t']['posts.pleasesearch'] = 'Before creating a thread, please make sure to have made a research.';
++$GLOBALS['t']['posts.delandredirect'] = 'Thread deleted, you\'ll be redirected to the parent forum.';
++
++$GLOBALS['t']['forums.search3chars'] = 'Search string must be at least 3 characters long.';
++$GLOBALS['t']['forums.search'] = 'Search';
++$GLOBALS['t']['forums.searchstring'] = 'String search';
++$GLOBALS['t']['forums.searchforum'] = 'Search in the forum';
++$GLOBALS['t']['forums.searching'] = 'Search';
++$GLOBALS['t']['forums.suscribe'] = 'Suscribe if you want to post messages !';
++$GLOBALS['t']['forums.createthread'] = 'Create a thread';
++$GLOBALS['t']['forums.thread'] = 'Thread';
++$GLOBALS['t']['forums.threads'] = 'Threads';
++$GLOBALS['t']['forums.answers'] = 'Replies';
++$GLOBALS['t']['forums.messages'] = 'Messages';
++$GLOBALS['t']['forums.readings'] = 'Views';
++$GLOBALS['t']['forums.forums'] = 'Forums';
++$GLOBALS['t']['forums.nextthreads'] = 'next threads';
++$GLOBALS['t']['forums.previousthreads'] = 'previous threads';
++$GLOBALS['t']['forums.nothread'] = 'There\'s no thread in this forum.';
++$GLOBALS['t']['forums.yradmin'] = 'You\'re administrator of this forum.';
++$GLOBALS['t']['forums.yrcensor'] = 'You\'re moderator of this forum.';
++$GLOBALS['t']['forums.noforum'] = 'There aren\'t any threads forum.';
++$GLOBALS['t']['forums.confirmdelthread'] = 'Are you sure do you want to delete this thread ?';
++$GLOBALS['t']['forums.lastanswer'] = 'Last answer on ';
++$GLOBALS['t']['forums.dateprefix'] = 'The ';
++$GLOBALS['t']['forums.searchonforum'] = 'Search on forums';
++$GLOBALS['t']['forums.noresult'] = 'No thread matching to your search.';
++$GLOBALS['t']['forums.startresult'] = 'There are ';
++$GLOBALS['t']['forums.endresult'] = ' threads(s) matching your search :';
++
++$GLOBALS['t']['admin.users'] = 'Users';
++$GLOBALS['t']['admin.userslist'] = 'Users list :';
++$GLOBALS['t']['admin.forums'] = 'Forums';
++$GLOBALS['t']['admin.desc'] = 'Description :';
++$GLOBALS['t']['admin.usergroups'] = 'Users groups :';
++$GLOBALS['t']['admin.saveupdates'] = 'Save modifications';
++$GLOBALS['t']['admin.manageusers'] = 'Manage users';
++$GLOBALS['t']['admin.forumweight'] = 'Forum\'s weight must be an integer include between 0 and 500.';
++$GLOBALS['t']['admin.forumweightorder'] = 'Forum\'s weight (integer from 0 to 500) :';
++$GLOBALS['t']['admin.forumorder'] = 'Forums are ordered by increasing weight';
++$GLOBALS['t']['admin.forumtitle5char'] = 'Forum\s title must be at least 5 characters long.';
++$GLOBALS['t']['admin.newforumtitle'] = 'Title for the new forum :';
++$GLOBALS['t']['admin.forumsave'] = 'Save the forum';
++$GLOBALS['t']['admin.forumweightinteger'] = 'Forum weight must be an integer';
++$GLOBALS['t']['admin.manageforums'] = 'Manage forums';
++$GLOBALS['t']['admin.forumcreate'] = 'Create a forum';
++$GLOBALS['t']['admin.forumedit'] = 'Edition of the forum';
++$GLOBALS['t']['admin.noforums'] = 'There isn\'t any forums.';
++$GLOBALS['t']['admin.subjects'] = 'Threads';
++$GLOBALS['t']['admin.weights'] = 'Weights';
++$GLOBALS['t']['admin.operations'] = 'Actions';
++$GLOBALS['t']['admin.edit'] = 'Edit';
++$GLOBALS['t']['admin.delete'] = 'Delete';
++$GLOBALS['t']['admin.confirmdelforum'] = 'Are you sure to delete this forum and the whole threads it contains ?';
++$GLOBALS['t']['admin.confirmdeluser'] = 'Are you sure you want to desactivate the user ?';
++$GLOBALS['t']['admin.login'] = 'Login';
++$GLOBALS['t']['admin.group'] = 'Group';
++$GLOBALS['t']['admin.actions'] = 'Actions';
++$GLOBALS['t']['admin.unkownuser'] = 'Unknown user.';
++$GLOBALS['t']['admin.editprofileof'] = 'Profile edition of';
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/languages/language_fr.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/languages/language_fr.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/languages/language_fr.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,145 @@
++&lt;?php
++$GLOBALS['t']['global.notconnected'] = 'Vous n\'&#234;tes pas connect&#233;.';
++$GLOBALS['t']['global.unrecognizederror'] = 'Requete non reconnue par l\'application.';
++$GLOBALS['t']['global.error'] = 'Erreur : ';
++$GLOBALS['t']['global.erroractionnotallowed'] = 'Erreur : action non autoris&#233;e.';
++$GLOBALS['t']['global.pagedoesnotexists'] = 'Erreur : ressource inexistante.';
++$GLOBALS['t']['global.profileof'] = 'Voir le profil de';
++$GLOBALS['t']['global.theprofileof'] = 'Profil de';
++$GLOBALS['t']['global.connectedas'] = 'Connect&eacute; en tant que';
++$GLOBALS['t']['global.forumlist'] = 'Liste des forums';
++$GLOBALS['t']['global.login'] = 'Se connecter';
++$GLOBALS['t']['global.search'] = 'Rechercher';
++$GLOBALS['t']['global.suscribe'] = 'S&#039;inscrire';
++$GLOBALS['t']['global.logout'] = 'Se d&eacute;connecter';
++$GLOBALS['t']['global.profile'] = 'Mon profil';
++$GLOBALS['t']['global.admin'] = 'Panneau d&#039;administration';
++$GLOBALS['t']['global.returnforumlist'] = 'Retour aux forums';
++$GLOBALS['t']['global.returnhome'] = 'Retour &#224; la page principale';
++$GLOBALS['t']['global.returnprevious'] = 'Retour &#224; la page pr&#233;c&#233;dente';
++$GLOBALS['t']['global.author'] = 'Auteur';
++$GLOBALS['t']['global.by'] = 'par';
++$GLOBALS['t']['global.back'] = 'Retour';
++$GLOBALS['t']['global.ifnotredirect'] = 'Cliquez ici si vous n\'&#234;tes pas redirig&#233;.';
++$GLOBALS['t']['global.yes'] = 'Oui';
++$GLOBALS['t']['global.no'] = 'Non';
++
++$GLOBALS['t']['user.oldpwdincorrect'] = 'Ancien mot de passe incorrect.';
++$GLOBALS['t']['user.newpwd4chars'] = 'Votre nouveau mot de passe doit comporter au moins 4 caract&#232;res.';
++$GLOBALS['t']['user.pwdsnotmatch'] = 'Les deux nouveaux mots de passe saisis ne correspondent pas.';
++$GLOBALS['t']['user.loginalready'] = 'Le login souhait&#233; existe d&#233;ja.';
++$GLOBALS['t']['user.pwd4chars'] = 'Votre mot de passe doit comporter au moins 4 caract&#232;res.';
++$GLOBALS['t']['user.login4chars'] = 'Votre login doit comporter au moins 4 caract&#232;res.';
++$GLOBALS['t']['user.2pwd'] = 'Veuillez saisir deux fois votre mots de passe.';
++$GLOBALS['t']['user.login'] = 'Login :';
++$GLOBALS['t']['user.desc'] = 'Description :';
++$GLOBALS['t']['user.oldpwd'] = 'Ancien mot de passe :';
++$GLOBALS['t']['user.newpwd'] = 'Nouveau mot de passe :';
++$GLOBALS['t']['user.pwd'] = 'Mot de passe :';
++$GLOBALS['t']['user.confirmpwd'] = 'Confirmation mot de passe :';
++$GLOBALS['t']['user.valid'] = 'Valider';
++$GLOBALS['t']['user.saveupdate'] = 'Enregistrer';
++$GLOBALS['t']['user.unkownuser'] = 'Le compte de cet utilisateur est inconnu ou a &#233;t&#233; supprim&#233;.';
++$GLOBALS['t']['user.suscribeform'] = 'Formulaire d\'inscription';
++$GLOBALS['t']['user.needauth'] = 'Vous devez &#234;tre authentifi&#233; pour acc&#233;der &#224; cette page';
++$GLOBALS['t']['user.askdelaccount'] = 'Supprimer mon compte';
++$GLOBALS['t']['user.delaccount'] = 'Votre compte a &#233;t&#233; supprim&#233;';
++$GLOBALS['t']['user.delaccountconfirm'] = 'Etes vous certain(e) de vouloir supprimer d&#233;finitivement votre compte ?';
++$GLOBALS['t']['user.edityrprofile'] = 'Edition de votre profil :';
++$GLOBALS['t']['user.updateprofileok'] = 'Les modifications ont bien &#233;t&#233; prises en compte';
++$GLOBALS['t']['user.descprofile'] = 'Remplissez les champs suivants uniquement si vous souhaitez changer votre mot de passe ';
++$GLOBALS['t']['user.connection'] = 'Connexion';
++$GLOBALS['t']['user.administrators'] = 'administrateurs';
++$GLOBALS['t']['user.moderators'] = 'mod&#233;rateurs';
++$GLOBALS['t']['user.users'] = 'utilisateurs';
++$GLOBALS['t']['user.inactiveusers'] = 'utilisateur inactif';
++
++$GLOBALS['t']['posts.toorapid'] = 'Vous n\'&#234;tes pas autoris&#233; &#224; poster deux messages dans un laps de temps aussi court.';
++$GLOBALS['t']['posts.tooshort'] = 'Votre titre et votre texte doivent contenir un minimum de 2 caract&#232;res chacun.';
++$GLOBALS['t']['posts.messagetitle'] = 'Titre du message :';
++$GLOBALS['t']['posts.message'] = 'Message :';
++$GLOBALS['t']['posts.messagehead'] = 'Message';
++$GLOBALS['t']['posts.addmessage'] = 'Ajouter le message';
++$GLOBALS['t']['posts.editmessage'] = 'Editer le message';
++$GLOBALS['t']['posts.newsubject'] = 'Cr&#233;er un sujet de discussion';
++$GLOBALS['t']['posts.newanswer'] = 'R&#233;daction d\'une r&#233;ponse';
++$GLOBALS['t']['posts.success'] = 'Votre message a bien &#233;t&#233; enregistr&#233;.';
++$GLOBALS['t']['posts.updsuccess'] = 'Le message a bien &#233;t&#233; modifi&#233;.';
++$GLOBALS['t']['posts.replyprefix'] = 'Re :';
++$GLOBALS['t']['posts.messageupdate'] = 'Edition d\'un message';
++$GLOBALS['t']['posts.notrightupdate'] = 'Vous n\'avez pas le droit d\'&#233;diter ce message';
++$GLOBALS['t']['posts.donotexists'] = 'Message innexistant';
++$GLOBALS['t']['posts.delmessage'] = 'Suppression d\'un message';
++$GLOBALS['t']['posts.messagedeleted'] = 'Le message a &#233;t&#233; supprim&#233;';
++$GLOBALS['t']['posts.postedon'] = 'Post&#233; le';
++$GLOBALS['t']['posts.editedon'] = 'Edit&#233; le';
++$GLOBALS['t']['posts.confirmdelthread'] = 'Etes vous certain(e) de vouloir supprimer le sujet de discussion ?';
++$GLOBALS['t']['posts.answer'] = 'R&#233;pondre';
++$GLOBALS['t']['posts.delete'] = 'Supprimer le sujet de discussion';
++$GLOBALS['t']['posts.editmymessage'] = 'Editer mon message';
++$GLOBALS['t']['posts.editthemessage'] = 'Editer le message';
++$GLOBALS['t']['posts.updateredirect'] = 'Le message a bien &#233;t&#233; modifi&#233;, vous allez &#234;tre redirig&#233; vers le message.';
++$GLOBALS['t']['posts.addredirect'] = 'Votre message a bien &#233;t&#233; ajout&#233;, vous allez &#234;tre redirig&#233; vers votre message.';
++$GLOBALS['t']['posts.messageedit'] = 'Edition du message';
++$GLOBALS['t']['posts.pleasesearch'] = 'Avant de cr&#233;er un sujet, assurez vous d\'avoir au pr&#233;alable pens&#233; &#224; r&#233;aliser une recherche.';
++$GLOBALS['t']['posts.delandredirect'] = 'Le message a &#233;t&#233; supprim&#233;, vous allez &#234;tre redirig&#233; vers le forum parent.';
++
++$GLOBALS['t']['forums.search3chars'] = 'La chaine &#224; rechercher doit faire au moins trois caract&#232;res.';
++$GLOBALS['t']['forums.search'] = 'Rechercher';
++$GLOBALS['t']['forums.searchstring'] = 'Chaine &#224; rechercher';
++$GLOBALS['t']['forums.searchforum'] = 'Rechercher dans le forum';
++$GLOBALS['t']['forums.searching'] = 'Recherche';
++$GLOBALS['t']['forums.suscribe'] = 'Inscrivez vous pour pouvoir poster des messages !';
++$GLOBALS['t']['forums.createthread'] = 'Cr&#233;er un sujet';
++$GLOBALS['t']['forums.thread'] = 'Sujet';
++$GLOBALS['t']['forums.threads'] = 'Sujets';
++$GLOBALS['t']['forums.answers'] = 'R&#233;ponses';
++$GLOBALS['t']['forums.messages'] = 'Messages';
++$GLOBALS['t']['forums.readings'] = 'Vues';
++$GLOBALS['t']['forums.forums'] = 'Forums';
++$GLOBALS['t']['forums.nextthreads'] = 'sujets suivants';
++$GLOBALS['t']['forums.previousthreads'] = 'sujets pr&#233;c&#233;dents';
++$GLOBALS['t']['forums.nothread'] = 'Il n\'y a aucun sujet dans ce forum.';
++$GLOBALS['t']['forums.yradmin'] = 'Vous &#234;tes administrateur de ce forum.';
++$GLOBALS['t']['forums.yrcensor'] = 'Vous &#234;tes mod&#233;rateur de ce forum.';
++$GLOBALS['t']['forums.noforum'] = 'Il n\'existe encore aucun forum de discussion.';
++$GLOBALS['t']['forums.confirmdelthread'] = 'Etes vous certain(e) de vouloir supprimer le sujet de discussion ?';
++$GLOBALS['t']['forums.lastanswer'] = 'Derni&#232;re r&#233;ponse le ';
++$GLOBALS['t']['forums.dateprefix'] = 'Le ';
++$GLOBALS['t']['forums.searchonforum'] = 'Rechercher sur les forums';
++$GLOBALS['t']['forums.noresult'] = 'Aucun sujet ne correspondant &#224; votre recherche n\'a &#233;t&#233; trouv&#233;.';
++$GLOBALS['t']['forums.startresult'] = 'Il y a ';
++$GLOBALS['t']['forums.endresult'] = ' sujet(s) correspondant(s) &#224; votre recherche :';
++
++$GLOBALS['t']['admin.users'] = 'Utilisateurs';
++$GLOBALS['t']['admin.userslist'] = 'Liste des utilisateurs :';
++$GLOBALS['t']['admin.forums'] = 'Forums';
++$GLOBALS['t']['admin.desc'] = 'Description :';
++$GLOBALS['t']['admin.usergroups'] = 'Groupe d\'utilisateurs :';
++$GLOBALS['t']['admin.saveupdates'] = 'Enregistrer les modifications';
++$GLOBALS['t']['admin.manageusers'] = 'Gestion des utilisateurs';
++$GLOBALS['t']['admin.forumweight'] = 'Le poids du forum doit &#234;tre un entier compris entre 0 et 500.';
++$GLOBALS['t']['admin.forumweightorder'] = 'Poids du forum (entier de 0 &#224; 500) :';
++$GLOBALS['t']['admin.forumorder'] = 'Les forums sont class&#233;s par ordre de poids croissant';
++$GLOBALS['t']['admin.forumtitle5char'] = 'Le titre du forum doit faire au moins 5 caract&#232;res.';
++$GLOBALS['t']['admin.newforumtitle'] = 'Titre du nouveau forum :';
++$GLOBALS['t']['admin.forumsave'] = 'Enregistrer le forum';
++$GLOBALS['t']['admin.forumweightinteger'] = 'Le poids du forum doit &#234;tre un entier';
++$GLOBALS['t']['admin.manageforums'] = 'Gestion des forums';
++$GLOBALS['t']['admin.forumcreate'] = 'Cr&#233;er un forum';
++$GLOBALS['t']['admin.forumedit'] = 'Edition du forum';
++$GLOBALS['t']['admin.noforums'] = 'Il n\'existe encore aucun forum de discussion.';
++$GLOBALS['t']['admin.subjects'] = 'Sujets';
++$GLOBALS['t']['admin.weights'] = 'Poids';
++$GLOBALS['t']['admin.operations'] = 'Operations';
++$GLOBALS['t']['admin.edit'] = 'Editer';
++$GLOBALS['t']['admin.delete'] = 'Supprimer';
++$GLOBALS['t']['admin.confirmdelforum'] = 'Etes vous certain(e) de vouloir supprimer ce forum ainsi que tous les messages qu\&#39;il contient ?';
++$GLOBALS['t']['admin.confirmdeluser'] = 'Etes vous certain de vouloir supprimer l\&#39;utilisateur ?';
++$GLOBALS['t']['admin.login'] = 'Login';
++$GLOBALS['t']['admin.group'] = 'Groupe';
++$GLOBALS['t']['admin.actions'] = 'Actions';
++$GLOBALS['t']['admin.unkownuser'] = 'Utilisateur inconnu.';
++$GLOBALS['t']['admin.editprofileof'] = 'Edition du profil utilisateur de';
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/posts.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/posts.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/posts.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,328 @@
++&lt;?php
++    
++    // Includes main class of the site
++    require_once('fffRequest.php');
++    
++    // Include the classes needed on this page
++    // .... YDInclude( 'YDRequest.php' ); 
++    require_once('includes/posts.class.php');
++ 	require_once('includes/forums.class.php');
++ 	
++    // Define the request class
++    class posts extends fffRequest {
++
++        // Class constructor
++        function posts() {
++            // Initialize the parent
++            $this-&gt;fffRequest();
++
++        }
++
++        // The default action
++        function actionDefault() {
++            header('location: forums.php');
++            return;
++        }
++        
++        
++        function actionViewPost() {
++           
++            // Assign variables to the template
++			
++						$postlogic = new PostsLogic();
++						$post = $postlogic-&gt;retrievePostById($_GET['id']);
++						$post-&gt;nbViews++;
++						$post-&gt;update();
++						$post-&gt;loadAnswers();
++						
++						$forumLogic = new ForumsLogic();
++            $forum = $forumLogic-&gt;retrieveForumById($post-&gt;idForum);
++            
++            $menus = ' &#187; ' .
++            		'&lt;a class=&quot;fff_link1&quot; href=&quot;forums.php?do=viewForum&amp;id='.$forum-&gt;id.'&quot;&gt;'.$forum-&gt;name.'&lt;/a&gt;' .
++            		' &#187; '.$post-&gt;title;
++                        
++            $this-&gt;actionTpl-&gt;assign( 'post', $post);
++            $this-&gt;actionTpl-&gt;assign('user', $this-&gt;user);
++            $this-&gt;actionTpl-&gt;assign('forum', $forum);
++
++            $content = new Page($this-&gt;actionTpl-&gt;fetch('templates/posts.view.tpl'), $post-&gt;title, $menus);
++
++            // Display the action template into the master template
++            $this-&gt;display($content);
++        }
++        
++        function checkPost( $fields ) {
++        	// Controle de l'utilisateur, on ne peut pas poster deux messages trop rapidement
++        	if(isset($_SESSION['s_user_post_time'])) {
++        		if(($_SESSION['s_user_post_time']+SECONDS_BETWEEN_POSTS) &gt; mktime()){
++        			return array( 'timing' =&gt; t('posts.toorapid') );
++        		}
++        	}
++        	// les deux champs sont-ils replis
++        	if(strlen($fields['postTitle'])&gt;2 &amp;&amp; strlen($fields['postContent'])&gt;2) {
++				return true;
++        	}
++	        else {
++	        	return array( 'profile' =&gt; t('posts.tooshort') );
++	        }
++       	}
++        function simpleCheckPost( $fields ) {
++        	// les deux champs sont-ils replis
++        	if(strlen($fields['postTitle'])&gt;2 &amp;&amp; strlen($fields['postContent'])&gt;2) {
++				return true;
++        	}
++	        else {
++	        	return array( 'profile' =&gt; t('posts.tooshort') );
++	        }	
++        }
++        
++        
++        
++        function actionRepondre() {
++        	$this-&gt;forward('AddPost');
++        }
++        
++        
++        function actionAddPost() {
++        	if(!isset($_GET['idForum'])) {
++        		$this-&gt;errorRequete();
++        		return;
++        	}
++        	
++        	if($this-&gt;user-&gt;authentificated) {
++						$forumLogic = new ForumsLogic();
++						$forum = $forumLogic-&gt;retrieveForumById($_GET['idForum']);
++						
++				
++	        	// Create the add post form
++	          $form = new YDForm( 'postAdd' );
++	            
++						$form-&gt;addElement( 'hidden' , 'idForum', $_GET['idForum'] );
++		
++						$form-&gt;addElement( 'text', 'postTitle', t('posts.messagetitle') , array(&quot;size&quot; =&gt; 60));
++	          $form-&gt;addElement( 'textarea', 'postContent', t('posts.message') , array(&quot;cols&quot; =&gt; 50, &quot;rows&quot; =&gt; 8));
++	          $form-&gt;addElement( 'submit', 'cmdSubmit', t('posts.addmessage') );
++
++						if(isset($_GET['idPostParent'])) {
++							$postLogic = new PostsLogic();
++							$postParent = $postLogic-&gt;retrievePostById($_GET['idPostParent']);
++							$form-&gt;addElement( 'hidden' , 'idPostParent', $postParent-&gt;id);
++						}
++						else {
++							$postParent = null;
++						}
++
++						// nouveau post ou r&#233;ponse ?
++						if($postParent==null) {
++							$titre =  t('posts.newsubject');
++							
++							$menus = ' &#187; ' .
++			            		'&lt;a class=&quot;fff_link1&quot; href=&quot;forums.php?do=viewForum&amp;id='.$forum-&gt;id.'&quot;&gt;'.$forum-&gt;name.'&lt;/a&gt;' .
++			            		' &#187; '.$titre;
++						}
++						else {
++							$titre =   t('posts.newanswer');
++							
++							$menus = ' &#187; ' .
++			            		'&lt;a class=&quot;fff_link1&quot; href=&quot;forums.php?do=viewForum&amp;id='.$forum-&gt;id.'&quot;&gt;'.$forum-&gt;name.'&lt;/a&gt;' .
++			            		' &#187; '.$titre;
++						}
++				
++	          // Add rules
++	          $form-&gt;addFormRule( array( &amp; $this, 'checkPost' ) );
++	
++	          // Process the form
++					  if ( $form-&gt;validate() ) {
++									$idPP = isset($_GET['idPostParent'])?$_GET['idPostParent']:null;
++									
++									// Ins&#232;re le poste			
++									$post = new PostObject 	($form-&gt;getValue( 'postTitle' ), $form-&gt;getValue( 'postContent' ), $this-&gt;user-&gt;id , $this-&gt;user-&gt;login , date('Y-m-d H:i:s', mktime()),date('Y-m-d H:i:s', mktime()), $this-&gt;user-&gt;ip,
++					  					$idPP, $_GET['idForum'], 0, 0);
++									$post-&gt;insert();
++														
++									// Verrouillage de l'utilisateur avant de pouvoir poster un nouveau post
++									$_SESSION['s_user_post_time'] = mktime();
++									
++									// affiche la page de confirmation
++					        $this-&gt;actionTpl-&gt;assign( 'insert', true);
++	                
++	                // on redirige sur le post parent si il existe
++	                if($postParent!=null) {
++			            		// on incr&#233;mente le nombre de r&#233;ponses
++			            		$postParent-&gt;nbAnswers++;
++			            		$postParent-&gt;dateAnswer = date('Y-m-d H:i:s', mktime());
++			            		$postParent-&gt;update();
++			                $this-&gt;actionTpl-&gt;assign( 'post', $postParent);
++	                }
++	                else {
++	                	$this-&gt;actionTpl-&gt;assign( 'post', $post);
++	                }
++					
++									$content = new page($this-&gt;actionTpl-&gt;fetch('templates/posts.success.tpl'), t('posts.success'), $menus);
++									$this-&gt;display($content);
++	               	return;
++	            }
++	            
++							$form-&gt;setDefaults( array( 'postIdForum' =&gt; $_GET['idForum'] ) ); 
++							if($postParent!=null) {
++								$form-&gt;setDefaults( array( 'postTitle' =&gt; t('posts.replyprefix').$postParent-&gt;title ) ); 
++							}
++		
++	            // Assign variables to the template
++	            $this-&gt;actionTpl-&gt;assign( 'form',$form-&gt;toArray()); // forms
++			 				$this-&gt;actionTpl-&gt;assign( 'forum',$forum); // forum for displaying name
++			 				$this-&gt;actionTpl-&gt;assign( 'user',$this-&gt;user); // user for rights
++
++	            $content = new page($this-&gt;actionTpl-&gt;fetch('templates/posts.new.tpl'),$titre, $menus);
++
++        	}
++
++        	else {
++
++        		$content = new page($this-&gt;actionTpl-&gt;fetch('templates/user.notAuth.tpl'), t('global.notconnected') );
++
++        	}
++
++
++
++            // Display the action template into the master template
++
++            $this-&gt;display($content);
++    
++       }
++        
++       function actionEditPost() {
++        	if(!isset($_GET['idPost'])) {
++        		$this-&gt;errorRequete();
++        		return;
++        	}
++        	
++			if($this-&gt;user-&gt;authentificated) {
++				$postlogic = new PostsLogic();
++				$post = $postlogic-&gt;retrievePostById($_GET['idPost']);
++				if($post!=null) {
++					if($this-&gt;user-&gt;rightslevel&gt;=LEVEL_MODERATOR || $this-&gt;user-&gt;id == $post-&gt;idAuthor) {
++									
++			        	// Create the add post form
++			            $form = new YDForm( 'postEdit' );
++			            
++									$form-&gt;addElement( 'hidden' , 'idPost', $post-&gt;id);
++				
++									$form-&gt;addElement( 'text', 'postTitle', t('posts.messagetitle') , array(&quot;size&quot; =&gt; 60));
++			            $form-&gt;addElement( 'textarea', 'postContent', t('posts.message'), array(&quot;cols&quot; =&gt; 50, &quot;rows&quot; =&gt; 8));
++			            $form-&gt;addElement( 'submit', 'cmdSubmit', t('posts.editmessage') );
++				
++									// Add rules
++			            $form-&gt;addFormRule( array( &amp; $this, 'simpleCheckPost' ) );
++			
++			            // Process the form
++			            if ( $form-&gt;validate() ) {
++			            	$post-&gt;title = $form-&gt;getValue( 'postTitle' );
++			            	$post-&gt;content = $form-&gt;getValue( 'postContent' );
++			            	$post-&gt;idEditor = $this-&gt;user-&gt;id;
++			            	$post-&gt;ipEditor = $this-&gt;user-&gt;ip;
++			            	$post-&gt;dateEdited = date('Y-m-d H:i:s', mktime());
++			            	
++			            	$post-&gt;update();
++			            	 // on redirige sur le post parent si il existe
++			                if($post-&gt;idPostParent!=null) {
++			                	$postParent = $postlogic-&gt;retrievePostById($post-&gt;idPostParent);
++			            					                	
++			            			$postParent-&gt;dateAnswer = date('Y-m-d H:i:s', mktime());
++			            			$postParent-&gt;update();
++			                	$this-&gt;actionTpl-&gt;assign( 'post', $postParent);
++			                }
++			                else {
++			                	$this-&gt;actionTpl-&gt;assign( 'post', $post);
++			                }
++											$this-&gt;actionTpl-&gt;assign( 'editMessage',true); // we are editing the message
++											$content = new page($this-&gt;actionTpl-&gt;fetch('templates/posts.success.tpl'), t('posts.updsuccess') ) ;
++											$this-&gt;display($content);
++			               	return;
++			            }
++				
++									$form-&gt;setDefaults( array( 'postTitle' =&gt; $post-&gt;title ) ); 
++									$form-&gt;setDefaults( array( 'postContent' =&gt; $post-&gt;content ) ); 
++								     
++								  // Assign variables to the template
++						      $this-&gt;actionTpl-&gt;assign( 'form',$form-&gt;toArray()); // forms
++					 				$this-&gt;actionTpl-&gt;assign( 'user',$this-&gt;user); // user for rights
++									$this-&gt;actionTpl-&gt;assign( 'editMessage',true); // we are editing the message
++		
++			            $content = new page($this-&gt;actionTpl-&gt;fetch('templates/posts.new.tpl'),t('posts.messageupdate') );
++		
++									$this-&gt;display($content);
++		              return;
++					}
++					else {
++						$this-&gt;errorRequete(t('posts.notrightupdate'));
++        		return;
++					}
++				}
++				else {
++					$this-&gt;errorRequete(t('posts.donotexists'));
++        	return;
++				}
++			}
++			else {
++				$content = new page($this-&gt;actionTpl-&gt;fetch('templates/user.notAuth.tpl'), t('global.notconnected') );
++			}
++      } 
++        
++        
++        
++      function actionDelPost() {
++      		if(isset($_GET['idPost'])) {
++      			
++			
++					$postlogic = new PostsLogic();
++					$post = $postlogic-&gt;retrievePostById($_GET['idPost']);
++					if($post!=null) {
++	
++							$forumLogic = new ForumsLogic();
++		          $forum = $forumLogic-&gt;retrieveForumById($post-&gt;idForum);
++					
++
++		        	if($this-&gt;user-&gt;rightslevel &gt;= LEVEL_MODERATOR) {
++		        		
++		        		if($post-&gt;idPostParent!=null) {
++									$postParent = $postlogic-&gt;retrievePostById($post-&gt;idPostParent);
++									$postParent-&gt;nbAnswers--;
++								}
++								$forum-&gt;nbPosts -= 1;
++														
++								$post-&gt;delete();
++								
++								$menus = ' &#187; ' .
++			            		'&lt;a class=&quot;fff_link1&quot; href=&quot;forums.php?do=viewForum&amp;id='.$forum-&gt;id.'&quot;&gt;'.$forum-&gt;name.'&lt;/a&gt;' .
++			            		' &#187; '.t('posts.delmessage');
++						
++								// affiche l'op&#233;ration a &#233;t&#233; effectu&#233;e
++								$this-&gt;actionTpl-&gt;assign( 'post', $post);
++								
++								$content = new page($this-&gt;actionTpl-&gt;fetch('templates/posts.del.tpl'), t('posts.messagedeleted') , $menus);
++								$this-&gt;display($content);
++				        return;
++			    
++		        	}
++		        	else {
++		        		$this-&gt;errorActionNotAllowed();
++		        		return;
++		        	}
++				}
++				else {
++					$this-&gt;errorRequete();
++      		return;	
++				}
++      		}
++      		else {
++      			$this-&gt;errorRequete();
++      			return;	
++      		}
++        }
++    } 
++
++    YDInclude( 'YDF2_process.php' ); 
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/readme.txt
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/readme.txt	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/readme.txt	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,6 @@
++Create a database, load sql/fff.sql and configure includes/config.php
++
++Predefined user:password couples for the forum are
++root:root
++user1:user1
++user2:user2
+
+Added: YDFramework2.0/trunk/examples/forum/sql/fff.sql
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/sql/fff.sql	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/sql/fff.sql	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,136 @@
++-- phpMyAdmin SQL Dump
++-- version 2.6.4-pl1
++-- <A HREF="http://www.phpmyadmin.net">http://www.phpmyadmin.net</A>
++-- 
++-- Host: localhost
++-- Generation Time: Oct 29, 2005 at 10:11 AM
++-- Server version: 4.0.15
++-- PHP Version: 4.3.10
++-- 
++-- Database: `fff_forum`
++-- 
++
++-- --------------------------------------------------------
++
++-- 
++-- Table structure for table `fff_forums`
++-- 
++
++CREATE TABLE `fff_forums` (
++  `idForum` int(11) NOT NULL auto_increment,
++  `nameForum` varchar(255) NOT NULL default '',
++  `order` int(11) NOT NULL default '0',
++  PRIMARY KEY  (`idForum`)
++) TYPE=MyISAM AUTO_INCREMENT=394 ;
++
++-- 
++-- Dumping data for table `fff_forums`
++-- 
++
++INSERT INTO `fff_forums` VALUES (1, 'Java frameworks', 5);
++INSERT INTO `fff_forums` VALUES (2, 'PHP 4 &amp; 5 Frameworks', 14);
++
++-- --------------------------------------------------------
++
++-- 
++-- Table structure for table `fff_groups`
++-- 
++
++CREATE TABLE `fff_groups` (
++  `idGroup` int(11) NOT NULL auto_increment,
++  `name` varchar(255) NOT NULL default '',
++  `rightsLevel` int(11) NOT NULL default '1',
++  PRIMARY KEY  (`idGroup`),
++  UNIQUE KEY `nameGroup` (`name`)
++) TYPE=MyISAM AUTO_INCREMENT=5 ;
++
++-- 
++-- Dumping data for table `fff_groups`
++-- 
++
++INSERT INTO `fff_groups` VALUES (1, 'users', 1);
++INSERT INTO `fff_groups` VALUES (2, 'moderators', 3);
++INSERT INTO `fff_groups` VALUES (3, 'administrators', 5);
++INSERT INTO `fff_groups` VALUES (4, 'inactive users', 0);
++
++-- --------------------------------------------------------
++
++-- 
++-- Table structure for table `fff_groups_users`
++-- 
++
++CREATE TABLE `fff_groups_users` (
++  `idGroup` int(11) NOT NULL default '0',
++  `idUser` int(11) NOT NULL default '0',
++  PRIMARY KEY  (`idGroup`,`idUser`)
++) TYPE=MyISAM;
++
++-- 
++-- Dumping data for table `fff_groups_users`
++-- 
++
++INSERT INTO `fff_groups_users` VALUES (1, 0);
++INSERT INTO `fff_groups_users` VALUES (1, 4);
++INSERT INTO `fff_groups_users` VALUES (1, 5);
++INSERT INTO `fff_groups_users` VALUES (1, 6);
++INSERT INTO `fff_groups_users` VALUES (3, 3);
++INSERT INTO `fff_groups_users` VALUES (4, 16);
++
++-- --------------------------------------------------------
++
++-- 
++-- Table structure for table `fff_posts`
++-- 
++
++CREATE TABLE `fff_posts` (
++  `idPost` int(11) NOT NULL auto_increment,
++  `title` varchar(255) NOT NULL default '',
++  `content` longtext NOT NULL,
++  `idAuthor` int(11) NOT NULL default '0',
++  `datePost` datetime NOT NULL default '0000-00-00 00:00:00',
++  `dateAnswer` datetime NOT NULL default '0000-00-00 00:00:00',
++  `ipAuthor` varchar(15) NOT NULL default '',
++  `idEditor` int(11) default NULL,
++  `dateEdited` datetime default NULL,
++  `ipEditor` varchar(15) default NULL,
++  `idPostParent` int(11) default NULL,
++  `nbViews` int(11) NOT NULL default '0',
++  `nbAnswers` int(11) NOT NULL default '0',
++  `idForum` int(11) NOT NULL default '0',
++  PRIMARY KEY  (`idPost`),
++  FULLTEXT KEY `title` (`title`,`content`)
++) TYPE=MyISAM AUTO_INCREMENT=5 ;
++
++-- 
++-- Dumping data for table `fff_posts`
++-- 
++
++INSERT INTO `fff_posts` VALUES (1, 'PHPMVC', 'Qu''en pensez vous ?', 4, '2005-10-15 15:29:28', '2005-10-15 15:29:28', '192.168.0.66', NULL, NULL, NULL, NULL, 4, 0, 2);
++INSERT INTO `fff_posts` VALUES (2, 'YellowDuck', 'Enorme non ?', 4, '2005-10-15 15:30:15', '2005-10-15 15:30:15', '192.168.0.66', NULL, NULL, NULL, NULL, 5, 0, 2);
++INSERT INTO `fff_posts` VALUES (3, 'des utilisateurs de Struts ?', 'dans le coin ?', 4, '2005-10-15 15:30:57', '2005-10-15 15:30:57', '192.168.0.66', NULL, NULL, NULL, NULL, 3, 0, 1);
++INSERT INTO `fff_posts` VALUES (4, 'Mojavi', 'Moi j''aime pas, et vous ?', 4, '2005-10-15 15:32:31', '2005-10-15 15:32:31', '192.168.0.66', NULL, NULL, NULL, NULL, 4, 0, 2);
++
++-- --------------------------------------------------------
++
++-- 
++-- Table structure for table `fff_users`
++-- 
++
++CREATE TABLE `fff_users` (
++  `idUser` int(11) NOT NULL auto_increment,
++  `login` varchar(255) NOT NULL default '',
++  `password` varchar(255) NOT NULL default '',
++  `description` text NOT NULL,
++  PRIMARY KEY  (`idUser`),
++  UNIQUE KEY `nameUser` (`login`)
++) TYPE=MyISAM AUTO_INCREMENT=17 ;
++
++-- 
++-- Dumping data for table `fff_users`
++-- 
++
++
++INSERT INTO `fff_users` VALUES (3, 'root', '63a9f0ea7bb98050796b649e85481845', 'root');
++INSERT INTO `fff_users` VALUES (4, 'user1', '24c9e15e52afc47c225b757e7bee1f9d', 'Compte Test User 1\r\nMod&#233;rateur');
++INSERT INTO `fff_users` VALUES (5, 'user2', '7e58d63b60197ceb55a1c487989a3720', 'Compte Test User 2');
++INSERT INTO `fff_users` VALUES (16, 'user3', '92877af70a45fd6a2ed7fe81e1236b78', 'Utilisateur inactif');
+
+Added: YDFramework2.0/trunk/examples/forum/templates/admin.forum.edit.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/admin.forum.edit.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/admin.forum.edit.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,22 @@
++&lt;br /&gt;
++{if $form.errors}
++    &lt;div class=&quot;fff_error&quot;&gt;
++        &lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt; 
++        {foreach from=$form.errors item=error}
++            {$error}&lt;br /&gt;
++        {/foreach}
++    &lt;/div&gt;
++{/if}
++&lt;div class=&quot;fff_form_container&quot; &gt;
++	&lt;div class=&quot;fff_title&quot;&gt;
++		{t w=&quot;admin.forumedit&quot;}
++	&lt;/div&gt;
++	&lt;br /&gt;
++	&lt;form {$form.attribs} class=&quot;fff_form&quot;&gt;
++		&lt;table&gt; 
++			&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumTitle.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumTitle.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumPoids.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumPoids.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;{$form.cmdSubmit.html}&lt;/td&gt;&lt;/tr&gt;
++		&lt;/table&gt;
++    &lt;/form&gt;
++&lt;/div&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/admin.forums.list.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/admin.forums.list.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/admin.forums.list.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,42 @@
++&lt;div class=&quot;fff_title&quot;&gt;
++	{t w=&quot;admin.manageforums&quot;}
++&lt;/div&gt;
++&lt;br /&gt;
++{t w=&quot;admin.forumorder&quot;}
++
++{if $forums}
++  &lt;table class=&quot;fff_table&quot; id=&quot;listeforums&quot;&gt;
++
++    &lt;tr class=&quot;fff_title&quot;&gt;&lt;th class=&quot;fff_tMai&quot;&gt;{t w=&quot;admin.forums&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tNbe&quot;&gt;{t w=&quot;admin.weights&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tNbe&quot;&gt;{t w=&quot;admin.subjects&quot;}&lt;/th&gt;&lt;th class=&quot;tNbe&quot;&gt;{t w=&quot;admin.operations&quot;}&lt;/th&gt;&lt;/tr&gt;
++
++    {foreach from=$forums item=forum}
++        &lt;tr class=&quot;fff_trow0{$forum-&gt;parity}&quot;&gt;&lt;td class=&quot;fff_rMai&quot;&gt;{$forum-&gt;name}&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$forum-&gt;order}&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$forum-&gt;nbSubjects}&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;&lt;a href=&quot;admin.php?do=EditForum&amp;idforum={$forum-&gt;id}&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;admin.edit&quot;}&lt;/a&gt; - &lt;a href=&quot;admin.php?do=DelForum&amp;idforum={$forum-&gt;id}&quot; class=&quot;fff_link1&quot; onclick=&quot;return confirm('{t w=&quot;admin.confirmdelforum&quot;}');&quot;&gt;{t w=&quot;admin.delete&quot;}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
++    {/foreach}
++
++  &lt;/table&gt;
++{else}
++    &lt;p&gt;{t w=&quot;admin.noforums&quot;}&lt;/p&gt;
++{/if}
++
++&lt;br /&gt;
++{if $form.errors}
++    &lt;div class=&quot;fff_error&quot;&gt;
++        &lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt; 
++        {foreach from=$form.errors item=error}
++            {$error}&lt;br /&gt;
++        {/foreach}
++    &lt;/div&gt;
++{/if}
++&lt;div class=&quot;fff_form_container&quot; &gt;
++	&lt;div class=&quot;fff_title&quot;&gt;
++	{t w=&quot;admin.forumcreate&quot;}
++	&lt;/div&gt;
++	&lt;br /&gt;
++	&lt;form {$form.attribs} class=&quot;fff_form&quot;&gt;
++		&lt;table&gt; 
++			&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumTitle.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumTitle.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumPoids.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.forumPoids.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;{$form.cmdSubmit.html}&lt;/td&gt;&lt;/tr&gt;
++		&lt;/table&gt;
++    &lt;/form&gt;
++&lt;/div&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/admin.user.edit.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/admin.user.edit.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/admin.user.edit.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,28 @@
++{if $userfound }
++	&lt;div class=&quot;fff_form_container&quot; &gt;
++	    {if $form.errors}
++	        &lt;div class=&quot;error&quot;&gt;
++	        	&lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt;
++	            {foreach from=$form.errors item=error}
++	                {$error}&lt;br&gt;
++	            {/foreach}
++	        &lt;/div&gt;
++	    {/if}
++	    &lt;div class=&quot;fff_title&quot;&gt;
++		    {t w=&quot;admin.editprofileof&quot;} {$user-&gt;login}:&lt;br /&gt;&lt;br /&gt;
++		&lt;/div&gt;
++	    &lt;form {$form.attribs} class=&quot;fff_form&quot;&gt;
++	    
++	        	&lt;table&gt; 
++					&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.userDescription.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.userDescription.html}&lt;/td&gt;&lt;/tr&gt;
++					&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.userGroup.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.userGroup.html}&lt;/td&gt;&lt;/tr&gt;
++					&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;{$form.cmdSubmit.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;/table&gt;  
++	    
++	    &lt;/form&gt;
++	
++	    &lt;br /&gt;
++	&lt;/div&gt;
++{else}
++	{t w=&quot;admin.unkownuser&quot;}
++{/if}
+
+Added: YDFramework2.0/trunk/examples/forum/templates/admin.users.list.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/admin.users.list.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/admin.users.list.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,20 @@
++
++{t w=&quot;admin.userslist&quot;} &lt;br /&gt;&lt;br /&gt;
++
++&lt;div style=&quot;margin:auto;text-align:center&quot;&gt;
++
++  &lt;table class=&quot;fff_table&quot; id=&quot;listeUsers&quot;&gt;
++
++    &lt;tr class=&quot;fff_title&quot;&gt;&lt;th&gt;Id&lt;/th&gt;&lt;th&gt;{t w=&quot;admin.login&quot;}&lt;/th&gt;&lt;th&gt;{t w=&quot;admin.group&quot;}&lt;/th&gt;&lt;th&gt;{t w=&quot;admin.actions&quot;}&lt;/th&gt;&lt;/tr&gt;
++	
++	{assign var=&quot;parity&quot; value=&quot;odd&quot;}
++    {foreach from=$users item=user}
++        &lt;tr class=&quot;fff_trow0{$parity}&quot;&gt;&lt;td&gt;{$user-&gt;id}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;&lt;a title=&quot;{t w=&quot;global.profileof&quot;} {$user-&gt;login}&quot; href=&quot;user.php?do=ViewProfil&amp;userLogin={$user-&gt;login}&quot; class=&quot;fff_link2&quot;&gt;{$user-&gt;login}&lt;/a&gt;&lt;/td&gt;&lt;td&gt;{$user-&gt;groupname}&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=EditUser&amp;userLogin={$user-&gt;login}&quot; class=&quot;fff_link1&quot;&gt;Editer&lt;/a&gt; - &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=DelUser&amp;iduser={$user-&gt;id}&quot; class=&quot;fff_link1&quot; onclick=&quot;return confirm('{t w=&quot;admin.confirmdeluser&quot;}');&quot;&gt;{t w=&quot;admin.delete&quot;}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
++    	{if $parity==&quot;odd&quot;}
++			{assign var=&quot;parity&quot; value=&quot;even&quot;}
++		{else}
++			{assign var=&quot;parity&quot; value=&quot;odd&quot;}
++		{/if}
++    {/foreach}
++  &lt;/table&gt;
++&lt;/div&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/errorApplication.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/errorApplication.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/errorApplication.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,4 @@
++&lt;div class=&quot;fff_error&quot;&gt;
++	&lt;img src=&quot;images/error.gif&quot; /&gt; &lt;br/&gt; {$message}
++&lt;/div&gt;
++&lt;a href=&quot;forums.php&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.returnhome&quot;}&lt;/a&gt; - &lt;a href=&quot;#&quot; onclick=&quot;javascript:history.back()&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.returnprevious&quot;}&lt;/a&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/fffRequest.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/fffRequest.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/fffRequest.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,66 @@
++&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;<A HREF="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd</A>&quot;&gt;
++&lt;html xmlns=&quot;<A HREF="http://www.w3.org/1999/xhtml">http://www.w3.org/1999/xhtml</A>&quot; xml:lang=&quot;fr&quot;&gt;
++&lt;head&gt;
++
++  &lt;title&gt;{$title}&lt;/title&gt;
++
++  &lt;link href=&quot;fffscreen.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot; media=&quot;all&quot; /&gt;
++
++&lt;/head&gt;
++
++&lt;body&gt;
++&lt;div id=&quot;fff_main_head&quot;&gt;
++		&lt;h3&gt;Friendly Freddy Forum&lt;/h3&gt;
++		&lt;div id=&quot;fff_main_menu&quot;&gt;
++		  {if $user-&gt;rightslevel == LEVEL_ADMIN}
++				{if $viewadmin}
++					{$menus}
++				{else}
++					&lt;a href=&quot;forums.php?do=ListForums&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.forumlist&quot;}&lt;/a&gt; {$menus}
++				{/if}
++		  {else}
++		  	&#187; &lt;a href=&quot;forums.php?do=ListForums&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.forumlist&quot;}&lt;/a&gt; {$menus}
++		  {/if}
++		
++		&lt;/div&gt;	
++		
++		&lt;div id=&quot;fff_main_user&quot;&gt;
++		
++			  {if $user-&gt;authentificated==1}
++		
++				  {t w=&quot;global.connectedas&quot;} {$user-&gt;login} -
++		
++				  {if $user-&gt;rightslevel == LEVEL_ADMIN}
++						{if $viewadmin}
++							&lt;a href=&quot;forums.php?do=ListForums&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.returnforumlist&quot;}&lt;/a&gt; -
++						{else}
++							&lt;a href=&quot;forums.php?do=search&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.search&quot;}&lt;/a&gt; - 
++							&lt;a href=&quot;user.php?do=monprofil&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.profile&quot;}&lt;/a&gt; -
++							&lt;a href=&quot;admin.php&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.admin&quot;}&lt;/a&gt; -
++						{/if}
++				  {else}
++				  			&lt;a href=&quot;forums.php?do=search&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.search&quot;}&lt;/a&gt; - 
++				  			&lt;a href=&quot;user.php?do=monprofil&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.profile&quot;}&lt;/a&gt; -
++				  {/if}
++		
++				   &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=logout&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.logout&quot;}&lt;/a&gt;
++		
++			  {else}
++			   	  &lt;a href=&quot;forums.php?do=search&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.search&quot;}&lt;/a&gt; - 
++			   	
++				  &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=login&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.login&quot;}&lt;/a&gt; - 
++		
++				  &lt;a href=&quot;user.php?do=suscribe&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.suscribe&quot;}&lt;/a&gt;
++		
++			  {/if}
++		
++		&lt;/div&gt;
++		&nbsp;
++&lt;/div&gt;
++&lt;br class=&quot;fff_separator&quot; /&gt;
++
++{$content}
++
++    &lt;div style=&quot;margin-left:auto;margin-right:auto;margin-top:40px;text-align:center&quot;&gt;&lt;small&gt;FFF is powered by &lt;/small&gt;&lt;a href=&quot;<A HREF="http://ydframework.berlios.de/">http://ydframework.berlios.de/</A>&quot; title=&quot;Yellow Duck Framework&quot;&gt;&lt;img class=&quot;fff_img&quot; src=&quot;images/ydframework.png&quot;/&gt;&lt;/div&gt;
++&lt;/body&gt;
++&lt;/html&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/forums.list.subjects.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/forums.list.subjects.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/forums.list.subjects.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,35 @@
++{if $user-&gt;rightslevel &gt;= LEVEL_USER }
++	&lt;a href=&quot;posts.php?do=AddPost&amp;idForum={$forum-&gt;id}&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;forums.createthread&quot;}&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;
++{else}
++	{t w=&quot;forums.suscribe&quot;}&lt;br /&gt;&lt;br /&gt;
++{/if}
++
++{if $posts}
++
++  &lt;table class=&quot;fff_table&quot; id=&quot;listePosts&quot;&gt;
++
++    &lt;tr class=&quot;fff_title&quot;&gt;&lt;th class=&quot;fff_tMai&quot;&gt;{t w=&quot;forums.thread&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tNbe&quot;&gt;{t w=&quot;forums.answers&quot;}&lt;/th&gt;&lt;th class=&quot;fff_TAut&quot;&gt;{t w=&quot;global.author&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tNbe&quot;&gt;{t w=&quot;forums.readings&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tLst&quot;&gt;{t w=&quot;forums.lastanswer&quot;}&lt;/th&gt;&lt;/tr&gt;
++
++    {foreach from=$posts item=post}
++        &lt;tr class=&quot;fff_trow0{$post-&gt;parity}&quot;&gt;&lt;td class=&quot;fff_rMai&quot;&gt;&lt;a class=&quot;fff_link1&quot; href=&quot;posts.php?do=viewPost&amp;id={$post-&gt;id}&quot;&gt;{$post-&gt;title}&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$post-&gt;nbAnswers}&lt;/td&gt;&lt;td class=&quot;fff_rAut&quot;&gt;&lt;a title=&quot;{t w=&quot;global.profileof&quot;} {$post-&gt;loginAuthor}&quot; href=&quot;user.php?do=ViewProfil&amp;userLogin={$post-&gt;loginAuthor}&quot; class=&quot;fff_link2&quot;&gt;{$post-&gt;loginAuthor}&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$post-&gt;nbViews}&lt;/td&gt;&lt;td class=&quot;fff_rLst&quot;&gt;{t w=&quot;forums.dateprefix&quot;}{$post-&gt;dateAnswer|date_format:&quot;%d/%m/%Y &#224; %H:%M:%S&quot;}&lt;/td&gt;
++        {if $user-&gt;rightslevel &gt;= LEVEL_MODERATOR }
++			     &lt;td&gt;&lt;a href=&quot;posts.php?do=DelPost&amp;idPost={$post-&gt;id}&quot; class=&quot;fff_link1&quot; onclick=&quot;return confirm('{t w=&quot;forums.confirmdelthread&quot;}');&quot;&gt;X&lt;/a&gt;&lt;/td&gt;
++		{/if}
++
++        &lt;/tr&gt;
++    {/foreach}
++
++  &lt;/table&gt;
++  &lt;table class=&quot;fff_table_bottom&quot;&gt;
++    &lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;&lt;a href=&quot;forums.php?do=viewForum&amp;id=1{if $forum-&gt;limiteBasse != -1 }&amp;from={$forum-&gt;limiteBasse}{/if}&quot; class=&quot;fff_link1&quot;&gt;{if $forum-&gt;limiteBasse != -1 }{$forum-&gt;pas} {t w=&quot;forums.previousthreads&quot;}{/if}&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;&lt;a href=&quot;forums.php?do=viewForum&amp;id=1{if $forum-&gt;limiteHaute!=-1}&amp;from={$forum-&gt;limiteHaute}{/if}&quot; class=&quot;fff_link1&quot;&gt;{if $forum-&gt;limiteHaute != -1 }{$forum-&gt;pas} {t w=&quot;forums.nextthreads&quot;}{/if}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
++  &lt;/table&gt;
++{else}
++    &lt;p&gt;{t w=&quot;forums.nothread&quot;}&lt;/p&gt;
++{/if}
++
++
++{if $user-&gt;rightslevel &gt;= LEVEL_ADMIN }
++	{t w=&quot;forums.yradmin&quot;}
++{elseif $user-&gt;rightslevel &gt;= LEVEL_MODERATOR }
++	{t w=&quot;forums.yrcensor&quot;}
++{/if}
+
+Added: YDFramework2.0/trunk/examples/forum/templates/forums.list.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/forums.list.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/forums.list.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,18 @@
++{if $forums}
++
++  &lt;table class=&quot;fff_table&quot; id=&quot;listeforums&quot;&gt;
++
++    &lt;tr class=&quot;fff_title&quot;&gt;&lt;th class=&quot;fff_tMai&quot;&gt;{t w=&quot;forums.forums&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tNbe&quot;&gt;{t w=&quot;forums.threads&quot;}&lt;/th&gt;&lt;th class=&quot;tNbe&quot;&gt;{t w=&quot;forums.messages&quot;}&lt;/th&gt;&lt;/tr&gt;
++
++    {foreach from=$forums item=forum}
++        &lt;tr class=&quot;fff_trow0{$forum-&gt;parity}&quot;&gt;&lt;td class=&quot;fff_rMai&quot;&gt;&lt;a class=&quot;fff_link1&quot; href=&quot;forums.php?do=viewForum&amp;id={$forum-&gt;id}&amp;from=0&quot;&gt;{$forum-&gt;name}&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$forum-&gt;nbSubjects}&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$forum-&gt;nbPosts}&lt;/td&gt;&lt;/tr&gt;
++    {/foreach}
++
++  &lt;/table&gt;
++
++{else}
++
++    &lt;p&gt;{t w=&quot;forums.noforum&quot;}&lt;/p&gt;
++
++{/if}
++
+
+Added: YDFramework2.0/trunk/examples/forum/templates/forums.search.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/forums.search.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/forums.search.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,37 @@
++    {if $form.errors}
++        &lt;div class=&quot;fff_error&quot;&gt;
++            &lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt; 
++            {foreach from=$form.errors item=error}
++                {$error}&lt;br /&gt;
++            {/foreach}
++        &lt;/div&gt;
++    {/if}
++	&lt;div class=&quot;fff_form_container&quot; &gt;
++		&lt;div class=&quot;fff_title&quot;&gt;
++			{t w=&quot;forums.searchonforum&quot;}
++		&lt;/div&gt;
++		&lt;br /&gt;
++		&lt;form {$form.attribs} class=&quot;fff_form&quot;&gt;
++			&lt;table&gt; 
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.searchKeys.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.searchKeys.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.searchForum.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.searchForum.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;{$form.cmdSubmit.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;/table&gt;
++	    &lt;/form&gt;
++	&lt;/div&gt;
++	{if $searched}
++		&lt;br /&gt;
++		{if $nbposts &gt;0 }
++			{t w=&quot;forums.startresult&quot;}{$nbposts}{t w=&quot;forums.endresult&quot;}&lt;br /&gt;
++
++			&lt;table class=&quot;fff_table&quot; id=&quot;listePosts&quot;&gt;
++			    &lt;tr class=&quot;fff_title&quot;&gt;&lt;th class=&quot;fff_tMai&quot;&gt;{t w=&quot;forums.thread&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tNbe&quot;&gt;{t w=&quot;forums.answers&quot;}&lt;/th&gt;&lt;th class=&quot;fff_TAut&quot;&gt;{t w=&quot;global.author&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tNbe&quot;&gt;{t w=&quot;forums.readings&quot;}&lt;/th&gt;&lt;th class=&quot;fff_tLst&quot;&gt;{t w=&quot;forums.lastanswer&quot;}&lt;/th&gt;&lt;/tr&gt;
++			{foreach from=$posts item=post}
++		        &lt;tr class=&quot;fff_trow0{$post-&gt;parity}&quot;&gt;&lt;td class=&quot;fff_rMai&quot;&gt;&lt;a class=&quot;fff_link1&quot; href=&quot;posts.php?do=viewPost&amp;id={$post-&gt;id}&quot;&gt;{$post-&gt;title}&lt;/a&gt;&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$post-&gt;nbAnswers}&lt;/td&gt;&lt;td class=&quot;fff_rAut&quot;&gt;{$post-&gt;loginAuthor}&lt;/td&gt;&lt;td class=&quot;fff_rNbe&quot;&gt;{$post-&gt;nbViews}&lt;/td&gt;&lt;td class=&quot;fff_rLst&quot;&gt;{t w=&quot;forums.dateprefix&quot;}{$post-&gt;dateAnswer|date_format:&quot;%d/%m/%Y &#224; %H:%M:%S&quot;}&lt;/td&gt;
++		        &lt;/tr&gt;
++		    {/foreach}
++			&lt;/table&gt;
++		{else}
++			{t w=&quot;forums.noresult&quot;}
++		{/if}
++	{/if}
+
+Added: YDFramework2.0/trunk/examples/forum/templates/posts.del.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/posts.del.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/posts.del.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,18 @@
++&lt;p&gt;
++{t w=&quot;posts.delandredirect&quot;}
++&lt;/p&gt;
++{literal}
++&lt;script language=&quot;Javascript&quot;&gt;
++	&lt;!--
++	function redirect() {
++{/literal}
++			document.location=&quot;forums.php?do=viewForum&amp;id={$post-&gt;idForum}&quot;;
++{literal}
++	}
++{/literal}
++	setTimeout(&quot;redirect()&quot;,1500);
++	--&gt;
++&lt;/script&gt;
++&lt;p&gt;
++	&lt;a href=&quot;forums.php?do=viewForum&amp;id={$post-&gt;idForum}&quot; &gt;{t w=&quot;global.ifnotredirect&quot;}&lt;/a&gt;
++&lt;/p&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/posts.new.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/posts.new.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/posts.new.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,27 @@
++    {if $form.errors}
++        &lt;div class=&quot;error&quot;&gt;
++            &lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt; 
++            {foreach from=$form.errors item=error}
++                {$error}&lt;br&gt;
++            {/foreach}
++        &lt;/div&gt;
++    {/if}
++	{if $editMessage}
++	 {t w=&quot;posts.messageedit&quot;}
++	{else}
++	 {t w=&quot;posts.pleasesearch&quot;}
++	{/if}
++	&lt;br /&gt;
++&lt;div class=&quot;fff_form_container&quot;&gt;
++    &lt;form {$form.attribs} class=&quot;fff_form&quot; &gt;
++        &lt;div&gt;
++            &lt;span width=&quot;300px&quot;&gt;{$form.postTitle.label}&lt;/span&gt;&lt;br /&gt;{$form.postTitle.html}
++        &lt;/div&gt;
++        &lt;div&gt;
++            &lt;span width=&quot;300px&quot;&gt;{$form.postContent.label}&lt;/span&gt;&lt;br /&gt;{$form.postContent.html}
++        &lt;/div&gt;
++        &lt;div&gt;
++            &lt;a href=&quot;#&quot; onclick=&quot;javascript:history.back();&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.back&quot;}&lt;/a&gt; {$form.cmdSubmit.html}
++        &lt;/div&gt;
++    &lt;/form&gt;
++&lt;/div&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/posts.success.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/posts.success.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/posts.success.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,22 @@
++&lt;p&gt;
++	{if $editMessage}
++		{t w=&quot;posts.updateredirect&quot;}
++	{else}
++		{t w=&quot;posts.addredirect&quot;}
++	{/if}
++&lt;/p&gt;
++{literal}
++&lt;script language=&quot;Javascript&quot;&gt;
++	&lt;!--
++	function redirect() {
++{/literal}
++			document.location=&quot;{$YD_SELF_SCRIPT}?do=viewPost&amp;id={$post-&gt;id}&quot;;
++{literal}
++	}
++{/literal}
++	setTimeout(&quot;redirect()&quot;,1500);
++	--&gt;
++&lt;/script&gt;
++&lt;p&gt;
++	&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=viewPost&amp;id={$post-&gt;id}&quot; &gt;{t w=&quot;global.ifnotredirect&quot;}&lt;/a&gt;
++&lt;/p&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/posts.view.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/posts.view.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/posts.view.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,69 @@
++&lt;br /&gt;
++&lt;table class=&quot;fff_table&quot; id=&quot;listePosts&quot;&gt;
++	&lt;tr class=&quot;fff_title&quot;&gt;
++	 &lt;th&gt;{t w=&quot;global.author&quot;}&lt;/th&gt;
++	 &lt;th class=&quot;fff_rMessage&quot;&gt;{t w=&quot;posts.messagehead&quot;}&lt;/th&gt;
++	&lt;/tr&gt;
++		
++    &lt;tr class=&quot;fff_trow0even&quot;&gt;
++	 &lt;td rowspan=&quot;2&quot;&gt;
++	    &lt;a title=&quot;{t w=&quot;global.profileof&quot;} {$post-&gt;loginAuthor}&quot; href=&quot;user.php?do=ViewProfil&amp;userLogin={$post-&gt;loginAuthor}&quot; class=&quot;fff_link2&quot;&gt;{$post-&gt;loginAuthor}&lt;/a&gt;
++	 &lt;/td&gt;
++	 &lt;td class=&quot;fff_rMessage&quot;&gt;
++	  &lt;span class=&quot;fff_title&quot;&gt;{$post-&gt;title} : &lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
++	  {$post-&gt;content}
++	  
++	  {if $post-&gt;idEditor != &quot;&quot;}
++	  	&lt;br /&gt;&lt;br /&gt;
++	  	&lt;span class=&quot;fff_edited&quot;&gt;{t w=&quot;posts.editedon&quot;} {$post-&gt;dateEdited|date_format:&quot;%d/%m/%Y  %H:%M:%S&quot;} {t w=&quot;global.by&quot;} {$post-&gt;loginEditor}.&lt;/span&gt;
++	  {/if}
++	 &lt;/td&gt;
++	&lt;/tr&gt;
++	&lt;tr class=&quot;fff_trow0even&quot;&gt;
++	 &lt;td class=&quot;fff_rMessage_infos&quot;&gt;
++	 	{t w=&quot;posts.postedon&quot;} {$post-&gt;datePost|date_format:&quot;%d/%m/%Y  %H:%M:%S&quot;}
++	 	{if $user-&gt;rightslevel &gt;= LEVEL_MODERATOR } par {$post-&gt;ipAuthor} &lt;a class=&quot;fff_link2&quot; href=&quot;posts.php?do=EditPost&amp;idPost={$post-&gt;id}&quot;&gt;{t w=&quot;posts.editthemessage&quot;}&lt;/a&gt;
++	 	{elseif $user-&gt;id == $post-&gt;idAuthor } &lt;a class=&quot;fff_link2&quot; href=&quot;posts.php?do=EditPost&amp;idPost={$post-&gt;id}&quot;&gt;{t w=&quot;posts.editmymessage&quot;}&lt;/a&gt;
++	 	{/if}
++	 &lt;/td&gt;
++	&lt;/tr&gt;
++	
++{assign var=&quot;parity&quot; value=&quot;odd&quot;}
++{foreach from=$post-&gt;answers item=ans}
++    &lt;tr class=&quot;fff_trow0{$parity}&quot;&gt;
++	 &lt;td rowspan=&quot;2&quot;&gt;
++		 &lt;a title=&quot;{t w=&quot;global.profileof&quot;} {$ans-&gt;loginAuthor}&quot; href=&quot;user.php?do=ViewProfil&amp;userLogin={$ans-&gt;loginAuthor}&quot; class=&quot;fff_link2&quot;&gt;{$ans-&gt;loginAuthor}&lt;/a&gt;
++	 &lt;/td&gt;
++	 &lt;td class=&quot;fff_rMessage&quot;&gt;
++	  &lt;span class=&quot;fff_title&quot;&gt;{$ans-&gt;title} : &lt;/span&gt;&lt;br /&gt;&lt;br /&gt;
++	  {$ans-&gt;content}
++	  {if $ans-&gt;idEditor != &quot;&quot;}
++	  	&lt;br /&gt;&lt;br /&gt;
++	  	&lt;span class=&quot;fff_edited&quot;&gt;{t w=&quot;posts.editedon&quot;} {$ans-&gt;dateEdited|date_format:&quot;%d/%m/%Y &#224; %H:%M:%S&quot;} {t w=&quot;global.by&quot;} {$ans-&gt;loginEditor}.&lt;/span&gt;
++	  {/if}
++	 &lt;/td&gt;
++	&lt;/tr&gt;
++	&lt;tr class=&quot;fff_trow0{$parity}&quot;&gt;
++	 &lt;td class=&quot;fff_rMessage_infos&quot;&gt;
++	 	 {t w=&quot;posts.postedon&quot;} {$ans-&gt;datePost|date_format:&quot;%d/%m/%Y %H:%M:%S&quot;}
++	 	{if $user-&gt;rightslevel &gt;= LEVEL_MODERATOR } par {$ans-&gt;ipAuthor} &lt;a class=&quot;fff_link2&quot; href=&quot;posts.php?do=EditPost&amp;idPost={$ans-&gt;id}&quot;&gt;{t w=&quot;posts.editthemessage&quot;}&lt;/a&gt;
++	 	{elseif $user-&gt;id == $ans-&gt;idAuthor } &lt;a class=&quot;fff_link2&quot; href=&quot;posts.php?do=EditPost&amp;idPost={$ans-&gt;id}&quot;&gt;{t w=&quot;posts.editmymessage&quot;}&lt;/a&gt;
++	 	{/if}
++	 &lt;/td&gt;
++	&lt;/tr&gt;
++	
++	{if $parity==&quot;odd&quot;}
++		{assign var=&quot;parity&quot; value=&quot;even&quot;}
++	{else}
++		{assign var=&quot;parity&quot; value=&quot;odd&quot;}
++	{/if}
++{/foreach}
++	&lt;tr&gt;
++	 &lt;td colspan=&quot;2&quot; align=&quot;right&quot;&gt;
++		{if $user-&gt;rightslevel &gt;= LEVEL_MODERATOR }
++			&lt;a href=&quot;posts.php?do=DelPost&amp;idPost={$post-&gt;id}&quot; class=&quot;fff_link1&quot; onclick=&quot;return confirm('{t w=&quot;posts.confirmdelthread&quot;}');&quot;&gt;{t w=&quot;posts.delete&quot;}&lt;/a&gt;
++		{/if}
++	  &lt;a class=&quot;fff_link1&quot; href=&quot;posts.php?do=Repondre&amp;idForum={$post-&gt;idForum}&amp;idPostParent={$post-&gt;id}&quot;&gt;{t w=&quot;posts.answer&quot;}&lt;/a&gt;
++	 &lt;/td&gt;
++	&lt;/tr&gt;
++&lt;/table&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/user.delprofile.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/user.delprofile.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/user.delprofile.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,10 @@
++    {if $confirmation}
++        &lt;p style=&quot;color: green&quot;&gt;
++						{t w=&quot;user.delaccount&quot;}
++        &lt;/p&gt;
++    {else}
++    	&lt;p style=&quot;color: red&quot;&gt;
++			{t w=&quot;user.delaccountconfirm&quot;}
++			&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=deleteProfil&amp;confirm=true&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.yes&quot;}&lt;/a&gt; - &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=monProfil&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.no&quot;}&lt;/a&gt;
++        &lt;/p&gt;
++    {/if}
+
+Added: YDFramework2.0/trunk/examples/forum/templates/user.login.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/user.login.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/user.login.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,22 @@
++&lt;div class=&quot;fff_form_container&quot; &gt;
++	&lt;div class=&quot;fff_title&quot;&gt;
++		{t w=&quot;user.connection&quot;}
++	&lt;/div&gt;
++    {if $form.errors}
++    	&lt;div class=&quot;error&quot;&gt;
++	    	&lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt; 
++	            {foreach from=$form.errors item=error}
++	                {$error}&lt;br&gt;
++	            {/foreach}
++        &lt;/div&gt;
++    {/if}
++
++    &lt;form {$form.attribs} class=&quot;fff_form&quot;&gt;
++    		&lt;table&gt; 
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.loginName.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.loginName.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.loginPass.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.loginPass.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;{$form.cmdSubmit.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;/table&gt;        
++    &lt;/form&gt;
++&lt;/div&gt;
++    
+
+Added: YDFramework2.0/trunk/examples/forum/templates/user.monprofile.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/user.monprofile.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/user.monprofile.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,38 @@
++&lt;div class=&quot;fff_form_container&quot; &gt;
++    {if $form.errors}
++        &lt;div class=&quot;error&quot;&gt;
++        	&lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt;
++            {foreach from=$form.errors item=error}
++                {$error}&lt;br&gt;
++            {/foreach}
++        &lt;/div&gt;
++    {/if}
++    &lt;div class=&quot;fff_title&quot;&gt;
++	    {t w=&quot;user.edityrprofile&quot;}&lt;br /&gt;&lt;br /&gt;
++	&lt;/div&gt;
++    {if $updated}
++    	    {t w=&quot;user.updateprofileok&quot;}&lt;br /&gt;&lt;br /&gt;
++    {/if}
++    &lt;form {$form.attribs} class=&quot;fff_form&quot;&gt;
++    
++        	&lt;table&gt; 
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profileDescription.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profileDescription.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;/table&gt;  
++       
++        {t w=&quot;user.descprofile&quot;}       
++        
++        	&lt;table&gt; 
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profilePass.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profilePass.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profilePassUn.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profilePassUn.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profilePassDeux.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.profilePassDeux.html}&lt;/td&gt;&lt;/tr&gt;
++
++				&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;{$form.cmdSubmit.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;/table&gt;  
++
++
++
++    &lt;/form&gt;
++
++    &lt;br /&gt;
++    &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=deleteProfil&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;user.askdelaccount&quot;}&lt;/a&gt;
++&lt;/div&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/user.notAuth.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/user.notAuth.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/user.notAuth.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,4 @@
++&lt;p&gt;
++	{t w=&quot;user.needauth&quot;}
++&lt;/p&gt;
++&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=login&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.login&quot;}&lt;/a&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/user.suscribe.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/user.suscribe.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/user.suscribe.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,24 @@
++	&lt;div class=&quot;fff_form_container&quot; &gt;
++		&lt;div class=&quot;fff_title&quot;&gt;
++			{t w=&quot;user.suscribeform&quot;}
++		&lt;/div&gt;
++			{if $form.errors}
++				&lt;br /&gt;
++        &lt;div class=&quot;fff_error&quot;&gt;
++            &lt;img src=&quot;images/caution.gif&quot; /&gt;&lt;br /&gt; 
++            {foreach from=$form.errors item=error}
++                {$error}&lt;br /&gt;
++            {/foreach}
++        &lt;/div&gt;
++    	{/if}
++		&lt;br /&gt;
++		&lt;form {$form.attribs} class=&quot;fff_form&quot;&gt;
++			&lt;table&gt; 
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribeLogin.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribeLogin.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribePassUn.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribePassUn.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribePassDeux.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribePassDeux.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribeDescription.label}&lt;/td&gt;&lt;td class=&quot;fff_left&quot;&gt;{$form.suscribeDescription.html}&lt;/td&gt;&lt;/tr&gt;
++				&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td class=&quot;fff_right&quot;&gt;{$form.cmdSubmit.html}&lt;/td&gt;&lt;/tr&gt;
++			&lt;/table&gt;
++	    &lt;/form&gt;
++	&lt;/div&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/templates/user.viewprofile.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/templates/user.viewprofile.tpl	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/templates/user.viewprofile.tpl	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,13 @@
++{if $userfound }
++	&lt;div class=&quot;fff_title&quot;&gt;
++		{t w=&quot;global.theprofileof&quot;} {$user-&gt;login}
++	&lt;/div&gt;
++	&lt;br/&gt;
++	&lt;br /&gt;
++	{$user-&gt;description}
++	
++{else}
++	{t w=&quot;user.unkownuser&quot;}	
++{/if}
++&lt;br /&gt;&lt;br /&gt;
++&lt;a title=&quot;{t w=&quot;global.returnprevious&quot;}&quot; href=&quot;#&quot; onclick=&quot;javascript:history.back()&quot; class=&quot;fff_link1&quot;&gt;{t w=&quot;global.returnprevious&quot;}&lt;/a&gt;
+
+Added: YDFramework2.0/trunk/examples/forum/todo.txt
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/todo.txt	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/todo.txt	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,17 @@
++Tasks todo, in priority order :
++
++:Critical:  	Review the group management, the database groups should be replaced by hardcode roles.
++:High:		Comment the whole code using a phpdoc like standard. Remove french comments.
++:High: 		Redirect after login on requested page
++:High:		Add Association between forums and moderators.
++:Normal:	Add 404 HTTP status on actions which don't exist
++:Normal: 	Forum grouping
++:Normal: 	Valid XHTML
++:Low: 		Mark new posts / posts user replies with flags.
++:Low: 		Add last message link in forums with date.
++:Low: 		Add nice icons
++:Low: 		Improve graphic layout and create a logo
++:Low: 		Extend profiles (add avatar and other fields)
++
++
++...to be continued
+
+Added: YDFramework2.0/trunk/examples/forum/user.php
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/user.php	2006-04-18 12:52:41 UTC (rev 1855)
++++ YDFramework2.0/trunk/examples/forum/user.php	2006-04-18 12:55:49 UTC (rev 1856)
+@@ -0,0 +1,275 @@
++&lt;?php
++
++    
++
++    // Includes main class of the site
++    require_once('fffRequest.php');
++
++  
++    // Include the classes needed on this page
++        
++
++    // Define the request class
++    class user extends fffRequest {
++
++        // Class constructor
++        function user() {
++            // Initialize the parent
++            $this-&gt;fffRequest();
++
++            // Indicate we require login
++            //$this-&gt;setRequiresAuthentication( true );
++        }
++
++        function isActionAllowed() {
++						$act = $this-&gt;getActionName();
++						switch($act) {
++							case &quot;suscribe&quot; :
++							case &quot;ViewProfil&quot; :
++								return true;
++								break;
++								
++							case &quot;MonProfil&quot;:
++							case &quot;DeleteProfil&quot;:
++								if($this-&gt;user-&gt;authentificated) {
++									return true;
++								}
++								else {
++									return false;
++								}
++								break;
++							default :
++								return true;
++						}
++        	//echo $this-&gt;getActionName();
++        }
++     
++        // The default action
++        function actionDefault() {
++      		$this-&gt;forward('monProfil');
++      		return;			
++        }
++
++
++        function checkPass( $fields ) {
++        	// L'utilisateur souhaite modifier son mot de passe ?
++        	if(strlen($fields['profilePassUn'])&gt;0|| strlen($fields['profilePassDeux'])&gt;0) {
++	        	if($fields['profilePassUn']==$fields['profilePassDeux']) {
++	        		if(strlen($fields['profilePassUn'])&gt;=4) {
++		        		if(md5($fields['profilePass'])==$this-&gt;user-&gt;password) {
++		        			return true;
++		        		}
++		        		else {
++		        		   return array( 'profile' =&gt; t('user.oldpwdincorrect') );
++		        		}	
++	        		}
++	        		else {
++	        			return array( 'profile' =&gt; t('user.newpwd4chars'));
++	        		}
++
++	        	}
++	        	else {
++	        		return array( 'profile' =&gt; t('user.pwdsnotmatch') );
++	        	}		
++        	}
++        	else {
++        		return true;	
++        	}
++        }
++        
++        function checkSuscribe( $fields ) {
++  			// check passwords
++        	if(strlen($fields['suscribePassUn'])&gt;0 || strlen($fields['suscribePassDeux'])&gt;0) {
++	        	if($fields['suscribePassUn']==$fields['suscribePassDeux']) {
++	        		if(strlen($fields['suscribePassUn'])&gt;=4) {
++	        			if(strlen($fields['suscribeLogin'])&gt;=4) {
++	        				// check user don't already exist
++	        				$userLogic = new UsersLogic();
++	        				if($userLogic-&gt;doesLoginAlreadyExists($fields['suscribeLogin'])== false) {
++  								return true;
++  							}
++  							else {
++  								return array( 'suscribeLogin' =&gt; t('user.loginalready') );
++  						    }
++	        			}
++	        			else {
++	        				return array( 'suscribe' =&gt; t('user.pwd4chars') );
++	        			}
++	        		}
++	        		else {
++	        			return array( 'suscribe' =&gt; t('user.login4chars') );
++	        		}
++	        	}
++	        	else {
++
++	        		return array( 'suscribe' =&gt; t('user.pwdsnotmatch') );
++	        	}		
++        	}
++        	else {
++        		return array( 'suscribe' =&gt; t('user.2pwd') );
++        	}
++        }
++
++		function actionViewProfil() {
++			if(isset($_GET['userLogin'])) {
++		        
++	  			// load user's profile
++	  			$userLogic = new UsersLogic();
++	  			$user = $userLogic-&gt;retrieveUserByLogin($_GET['userLogin']);
++	  			
++	  			if($user!=null) {
++	  				// Assign variables to the template
++				    $this-&gt;actionTpl-&gt;assign( 'user' ,$user);
++				    $this-&gt;actionTpl-&gt;assign( 'userfound',true);
++				    $title = 'Profil de '.$user-&gt;login;
++	  			}
++	  			else {
++	  				$this-&gt;actionTpl-&gt;assign( 'userfound',false);
++	  				$title = 'Utilisateur inconnu';
++	  			}
++			    $content = new page($this-&gt;actionTpl-&gt;fetch('templates/user.viewprofile.tpl'), $title);
++				// Display the action template into the master template
++				$this-&gt;display($content);
++			}
++			else {
++				$this-&gt;errorRequete();
++				return;
++			}
++		}
++
++   		function actionMonProfil() {
++
++        	if($this-&gt;user-&gt;authentificated) {
++
++	        	// Create the profile form
++	            $form = new YDForm( 'profileForm' );
++	            $form-&gt;addElement( 'textarea', 'profileDescription', t('user.desc'),array(&quot;cols&quot; =&gt; 50, &quot;rows&quot; =&gt; 8) );
++	            $form-&gt;addElement( 'password', 'profilePass', t('user.oldpwd') );
++	            $form-&gt;addElement( 'password', 'profilePassUn', t('user.newpwd') );
++	            $form-&gt;addElement( 'password', 'profilePassDeux', t('user.newpwd') );
++	            $form-&gt;addElement( 'submit', 'cmdSubmit', t('user.saveupdate') );
++			
++							// default values
++				      $form-&gt;setDefaults( array( 'profileDescription' =&gt; $this-&gt;user-&gt;description ) ); 
++							$form-&gt;setDefaults( array( 'profilePass' =&gt; '' ) ); 
++							$form-&gt;setDefaults( array( 'profilePassUn' =&gt; '' ) ); 
++							$form-&gt;setDefaults( array( 'profilePassDeux' =&gt; '' ) ); 
++								
++	            // Add rules
++	            $form-&gt;addFormRule( array( &amp; $this, 'checkPass' ) );
++
++	            // Process the form
++	            if ( $form-&gt;validate() ) {
++
++	                // Update profile
++	                $newPass = $form-&gt;getValue( 'profilePassUn' );
++									if(strlen($newPass)&gt;0) {
++										// Update description and password
++										$this-&gt;user-&gt;description = $form-&gt;getValue( 'profileDescription' );
++										$this-&gt;user-&gt;password = md5($form-&gt;getValue( 'profilePassUn' ));
++									}
++									else {
++										// Update only description
++										$this-&gt;user-&gt;description = $form-&gt;getValue( 'profileDescription' );
++									}
++				
++									$this-&gt;user-&gt;update();
++									$_SESSION['s_user'] = YDObjectUtil::serialize($this-&gt;user);
++										
++	                // Mark the form as valid
++	                $this-&gt;actionTpl-&gt;assign( 'updated', true);            	
++				
++									$form-&gt;setDefaults( array( 'profilePass' =&gt; '' ) ); 
++									$form-&gt;setDefaults( array( 'profilePassUn' =&gt; '' ) ); 
++									$form-&gt;setDefaults( array( 'profilePassDeux' =&gt; '' ) ); 
++
++	            }
++	            // Assign variables to the template
++	            $this-&gt;actionTpl-&gt;assign( 'form',$form-&gt;toArray());
++	            $content = new page($this-&gt;actionTpl-&gt;fetch('templates/user.monprofile.tpl'), 'Mon profil');
++
++        	}
++
++        	else {
++        		$content = new page($tpl-&gt;fetch('templates/user.notAuth.tpl'), t('global.notconnected') );
++        	}
++
++            // Display the action template into the master template
++            $this-&gt;display($content);
++        }
++
++
++      function actionDeleteProfil() {
++        	// Ask for a validation
++        	if(isset($_GET['confirm']) &amp;&amp; $_GET['confirm'] == 'true') {
++        		// Suppression effective
++        		$this-&gt;user-&gt;delete();
++        		$_SESSION['s_user'] = YDObjectUtil::serialize($this-&gt;user);
++        		$this-&gt;actionTpl-&gt;assign( 'confirmation',true);
++
++        	}
++
++        	else {
++        		$this-&gt;actionTpl-&gt;assign( 'confirmation',false);
++        	}
++
++        	$content = new page($this-&gt;actionTpl-&gt;fetch('templates/user.delprofile.tpl'), t('user.delyraccount') );
++
++          // Display the action template into the master template
++          $this-&gt;display($content);
++
++        }
++
++        
++
++        function actionSuscribe() {
++			
++        	if(!$this-&gt;user-&gt;authentificated) {
++	        	// Create the profile form
++	            $form = new YDForm( 'suscribeForm' );
++							$form-&gt;addElement( 'text', 'suscribeLogin', t('user.login') );
++	            $form-&gt;addElement( 'textarea', 'suscribeDescription', t('user.desc') );
++	            $form-&gt;addElement( 'password', 'suscribePassUn', t('user.pwd') );
++	            $form-&gt;addElement( 'password', 'suscribePassDeux', t('user.confirmpwd') );
++	            $form-&gt;addElement( 'submit', 'cmdSubmit', t('user.valid') );
++
++	            // Add rules
++	            $form-&gt;addFormRule( array( &amp; $this, 'checkSuscribe' ) );
++	
++	            // Process the form
++	            if ( $form-&gt;validate() ) {
++
++	                // Insert profile
++	                $this-&gt;user-&gt;id = '';
++        					$this-&gt;user-&gt;login = $form-&gt;getValue( 'suscribeLogin' );
++        					$this-&gt;user-&gt;description = $form-&gt;getValue( 'suscribeDescription' );
++        					$this-&gt;user-&gt;password = md5($form-&gt;getValue( 'suscribePassUn' ));
++        					$this-&gt;user-&gt;insert();
++        					$this-&gt;user-&gt;auth();
++        					$_GET['idUser']	= $this-&gt;user-&gt;id;				
++									$_SESSION['s_user'] = YDObjectUtil::serialize($this-&gt;user);
++							
++	                // Redirect sur les forums
++	                header('location: forums.php');
++        			return;
++	
++	            }
++	            // Assign variables to the template
++	            $this-&gt;actionTpl-&gt;assign( 'form', $form-&gt;toArray());
++	            $content = new page($this-&gt;actionTpl-&gt;fetch('templates/user.suscribe.tpl'), 'Inscription');
++	            // Display the action template into the master template
++    	        $this-&gt;display($content);
++				
++        	}
++        	else {
++        		$this-&gt;actionMonProfil();
++        		return;
++        	}
++        } 
++
++    }
++
++
++    YDInclude( 'YDF2_process.php' ); 
++
++?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000287.html">[ydf-devel] r1855 - in YDFramework2.0/trunk/examples: . cms cms/includes cms/includes/config cms/modules cms/modules/ydcmfhome cms/skins
+</A></li>
+	<LI>Next message: <A HREF="000289.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#288">[ date ]</a>
+              <a href="thread.html#288">[ thread ]</a>
+              <a href="subject.html#288">[ subject ]</a>
+              <a href="author.html#288">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

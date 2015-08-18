@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1781 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1781%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200603142310.k2ENAV8B018897%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000204.html">
+   <LINK REL="Next"  HREF="000208.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1781 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1781%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200603142310.k2ENAV8B018897%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1781 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Wed Mar 15 00:10:31 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000204.html">[ydf-devel] r1780 - YDFramework2.0/trunk/examples
+</A></li>
+        <LI>Next message: <A HREF="000208.html">[ydf-devel] r1782 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#209">[ date ]</a>
+              <a href="thread.html#209">[ thread ]</a>
+              <a href="subject.html#209">[ subject ]</a>
+              <a href="author.html#209">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-03-15 00:10:04 +0100 (Wed, 15 Mar 2006)
+New Revision: 1781
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+YDTemplate::addJavascript now supports onload code.
+Onload code is javascript code that is executed in the end.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-03-13 19:41:30 UTC (rev 1780)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-03-14 23:10:04 UTC (rev 1781)
+@@ -85,10 +85,11 @@
+                 $this-&gt;register_function( 't', 'YDTemplate_function_t' );
+ 
+                 // custom javascript code
+-                $this-&gt;customJavascript = null;
++                $this-&gt;customJavascript       = '';
++                $this-&gt;customJavascriptOnload = '';
+ 
+                 // custom Css code
+-                $this-&gt;customCss = null;
++                $this-&gt;customCss = '';
+             }
+ 
+             /**
+@@ -212,11 +213,15 @@
+                 $code = '';
+ 
+                 // test if customCss is set
+-                if ( !is_null( $this-&gt;customCss ) )
+-                    $code  = &quot;\n&lt;style type=\&quot;text/css\&quot;&gt;\n&quot; . $this-&gt;customCss . &quot;&lt;/style&gt;&quot;;
++                if ( $this-&gt;customCss != '' )
++                    $code = &quot;\n&lt;style type=\&quot;text/css\&quot;&gt;\n&quot; . $this-&gt;customCss . &quot;&lt;/style&gt;&quot;;
+ 
++                // add onload code to custom javascript code
++                if ( $this-&gt;customJavascriptOnload != '' )
++                    $this-&gt;customJavascript .= &quot;window.onload = function() {&quot; . $this-&gt;customJavascriptOnload . &quot;}\n&quot;;
++
+                 // test if customJavascript is set
+-                if ( !is_null( $this-&gt;customJavascript ) ) 
++                if ( $this-&gt;customJavascript != '' ) 
+                     $code .= &quot;\n&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot; . $this-&gt;customJavascript . &quot;&lt;/script&gt;\n&quot;;
+ 
+                 if ( $code == '' ) return $tpl_source;
+@@ -230,11 +235,18 @@
+              *
+              *	@param $jsCode	   Javascript code to add
+              *	@param $prepend    (Optional) Boolean that defines if code should be prepended
++             *	@param $onload     (Optional) Boolean that defines if code should be added after page load
+              */
+-            function addJavascript( $jsCode, $prepend = false ) {
++            function addJavascript( $jsCode, $prepend = false, $onload = false ) {
+ 
+-                if (!$prepend) $this-&gt;customJavascript  = $this-&gt;customJavascript . $jsCode . &quot;\n&quot;;
+-                else           $this-&gt;customJavascript  = $jsCode . $this-&gt;customJavascript . &quot;\n&quot;;
++                if ( $onload ){
++                    if ( !$prepend ) $this-&gt;customJavascriptOnload = $this-&gt;customJavascriptOnload . $jsCode . &quot;\n&quot;;
++                    else             $this-&gt;customJavascriptOnload = $jsCode . $this-&gt;customJavascriptOnload . &quot;\n&quot;;
++                    return;
++                }
++
++                if (!$prepend) $this-&gt;customJavascript = $this-&gt;customJavascript . $jsCode . &quot;\n&quot;;
++                else           $this-&gt;customJavascript = $jsCode . $this-&gt;customJavascript . &quot;\n&quot;;
+             }
+ 
+             /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000204.html">[ydf-devel] r1780 - YDFramework2.0/trunk/examples
+</A></li>
+	<LI>Next message: <A HREF="000208.html">[ydf-devel] r1782 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#209">[ date ]</a>
+              <a href="thread.html#209">[ thread ]</a>
+              <a href="subject.html#209">[ subject ]</a>
+              <a href="author.html#209">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

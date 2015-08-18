@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1911 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1911%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses/YDCMComponent%20addons/YDCMLanguages/languages&In-Reply-To=%3C200605041635.k44GZfYg031167%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000374.html">
+   <LINK REL="Next"  HREF="000376.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1911 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1911%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses/YDCMComponent%20addons/YDCMLanguages/languages&In-Reply-To=%3C200605041635.k44GZfYg031167%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1911 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages">ximian at berlios.de
+       </A><BR>
+    <I>Thu May  4 18:35:41 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000374.html">[ydf-devel] r1910 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk
+</A></li>
+        <LI>Next message: <A HREF="000376.html">[ydf-devel] r1912 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#375">[ date ]</a>
+              <a href="thread.html#375">[ thread ]</a>
+              <a href="subject.html#375">[ subject ]</a>
+              <a href="author.html#375">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-04 18:35:02 +0200 (Thu, 04 May 2006)
+New Revision: 1911
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/inserts.sql
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php
+Log:
+- updated sql inserts file (2 new columns 'candrag &amp; candrop' were added)
+- new generic translation added
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/inserts.sql
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/inserts.sql	2006-05-04 16:11:15 UTC (rev 1910)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/inserts.sql	2006-05-04 16:35:02 UTC (rev 1911)
+@@ -19,17 +19,17 @@
+ 
+ 
+ 
+-INSERT INTO `ydcmtree` VALUES (1,0,1,22,1,1,'YDCMRoot','',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (2,1,2,3,2,1,'YDCMRootmenu','menu Code Paste',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (3,1,4,5,2,1,'YDCMRootmenu','menu Documentation',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (4,1,6,13,2,1,'YDCMRootmenu','menu Books',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (5,4,7,8,3,1,'YDCMPage','Apache',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (6,4,9,10,3,1,'YDCMPage','PostegreSQL',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (7,4,11,12,3,1,'YDCMPage','mysql',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (8,1,14,21,2,1,'YDCMRootmenu','links',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (9,8,15,16,3,1,'YDCMPage','databases',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (10,8,17,18,3,1,'YDCMPage','generators',1,1,1,0,0);
+-INSERT INTO `ydcmtree` VALUES (11,8,19,20,3,1,'YDCMPage','portals',1,1,1,0,0);
++INSERT INTO `ydcmtree` VALUES (1,0,1,22,1,1,'YDCMRoot','',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (2,1,2,3,2,1,'YDCMRootmenu','menu Code Paste',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (3,1,4,5,2,1,'YDCMRootmenu','menu Documentation',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (4,1,6,13,2,1,'YDCMRootmenu','menu Books',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (5,4,7,8,3,1,'YDCMPage','Apache',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (6,4,9,10,3,1,'YDCMPage','PostegreSQL',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (7,4,11,12,3,1,'YDCMPage','mysql',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (8,1,14,21,2,1,'YDCMRootmenu','links',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (9,8,15,16,3,1,'YDCMPage','databases',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (10,8,17,18,3,1,'YDCMPage','generators',1,1,1,0,0,0,0);
++INSERT INTO `ydcmtree` VALUES (11,8,19,20,3,1,'YDCMPage','portals',1,1,1,0,0,0,0);
+ 
+ 
+ INSERT INTO `ydcmpage` VALUES (1,  5, 'en', 1, 'Apache in english', '', '', 0, '', 0, '', '');
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php	2006-05-04 16:11:15 UTC (rev 1910)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php	2006-05-04 16:35:02 UTC (rev 1911)
+@@ -13,6 +13,7 @@
+ $GLOBALS['t']['toggle state'] = 'Toggle state';
+ $GLOBALS['t']['public'] = 'Public';
+ $GLOBALS['t']['private'] = 'Private';
++$GLOBALS['t']['not allowed'] = 'Not allowed';
+ 
+ $GLOBALS['t']['add page'] = 'Add page';
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php	2006-05-04 16:11:15 UTC (rev 1910)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php	2006-05-04 16:35:02 UTC (rev 1911)
+@@ -13,6 +13,7 @@
+ $GLOBALS['t']['toggle state'] = 'Inverter estado';
+ $GLOBALS['t']['public'] = 'P&uacute;blico';
+ $GLOBALS['t']['private'] = 'Privado';
++$GLOBALS['t']['not allowed'] = 'N&atilde;o permitido';
+ 
+ $GLOBALS['t']['add page'] = 'Adicionar p&aacute;gina';
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000374.html">[ydf-devel] r1910 - YDFramework2.0/trunk/YDFramework2/addons/YDCMHelpdesk
+</A></li>
+	<LI>Next message: <A HREF="000376.html">[ydf-devel] r1912 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#375">[ date ]</a>
+              <a href="thread.html#375">[ thread ]</a>
+              <a href="subject.html#375">[ subject ]</a>
+              <a href="author.html#375">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

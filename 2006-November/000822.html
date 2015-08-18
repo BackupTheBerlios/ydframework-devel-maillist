@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Proposed changes to YDTemplate and YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Proposed%20changes%20to%20YDTemplate%20and%20YDAjax&In-Reply-To=%3C20061123120920.27590.qmail%40web62501.mail.re1.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000815.html">
+   <LINK REL="Next"  HREF="000823.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Proposed changes to YDTemplate and YDAjax</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Proposed%20changes%20to%20YDTemplate%20and%20YDAjax&In-Reply-To=%3C20061123120920.27590.qmail%40web62501.mail.re1.yahoo.com%3E"
+       TITLE="[ydf-devel] Proposed changes to YDTemplate and YDAjax">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Thu Nov 23 13:09:19 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000815.html">[ydf-devel] r2239 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000823.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#822">[ date ]</a>
+              <a href="thread.html#822">[ thread ]</a>
+              <a href="subject.html#822">[ subject ]</a>
+              <a href="author.html#822">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Francisco Azevedo wrote:      
+I've got some suggestions for changes to YDTemplate and YDAjax:   1. Add a method YDTemplate::addJavascriptUrl to enable linked      javascript to be added to the template head. This provides for      performance improvements because it allows the xajax core      javascript, the accompanying effects library and any javascript      file to be cached.      <A HREF="http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2824&amp;group_id=3988">http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2824&amp;group_id=3988</A>    
+    
+When i start the YDAjax creation i got your problem too. I have make YDAjax output all js because i wanted to demonstrated that, with YDAjax, all that you need is a template! .. and it works ;)Of course that, for an advanced usage it's usefull to add other js files/libs and to do that we need to say where is the js file.I propose to do that in a different way: defining in YDAjax to not output the js header code related to xajax/effects. This way you can use your own lib (and include the js path in you template file).  
+So will this also disable the default YDAjaxEffects class?
+  
+
+      
+   2. Allow code using YDAjax to determine ajax response state (i.e.      whether current processing is in the context of a request or a      response).      <A HREF="http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2791&amp;group_id=3988">http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2791&amp;group_id=3988</A>    
+    
+Done.  
+Thanks.
+  
+
+      
+   3. Modify YDAjax to use a new effects library to replace the old      moofx library used by YDAjax ( <A HREF="http://moofx.mad4milk.net/old/">http://moofx.mad4milk.net/old/</A> ).      Some thought needs to be put into the best way to go. There are      two choices:    * moofx2 at <A HREF="http://moofx.mad4milk.net/">http://moofx.mad4milk.net/</A> . This is a rearchitected      implementation of moofx that provides additional functionality in      it's lightweight 3kb implementation.    * mootools at <A HREF="http://mootools.net/">http://mootools.net/</A> . This has been developed by the      same author as moofx but has much more functionality in a 25kb      implementation. You can see some of the functionality described at      <A HREF="http://mootools.net/download/release">http://mootools.net/download/release</A> .    Both options provide a richer set of effects and there are plenty of    good examples around for using them.    My suggestion is to provide 3 alternative implementations of    YDAjaxEffects. The default would be to use the current effects    library, however config variable could be used to select moofx2 or    mootools.   
+ My YDLayer code uses a YDAjaxEffects implementation based on    mootools that is backwardly compatible with the original    YDAjaxEffects . My earlier e-mail describes this    <A HREF="https://lists.berlios.de/pipermail/ydframework-devel/2006-October/000717.html">https://lists.berlios.de/pipermail/ydframework-devel/2006-October/000717.html</A>    .    
+    
+YAjax is now complex and has more than the ajax logic on it. I think its better to segment it and put the effects and confirmations in another file. Otherwise it will be harder and harder to maintain.  
+This is a good suggestion to make effects separate to YDAjax. You justneed to maintain backward compatibility.
+
+Regards,
+
+Graeme
+
+ 
+---------------------------------
+Cheap Talk? Check out Yahoo! Messenger's low PC-to-Phone call rates.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061123/323d9aea/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061123/323d9aea/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000815.html">[ydf-devel] r2239 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000823.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#822">[ date ]</a>
+              <a href="thread.html#822">[ thread ]</a>
+              <a href="subject.html#822">[ subject ]</a>
+              <a href="author.html#822">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

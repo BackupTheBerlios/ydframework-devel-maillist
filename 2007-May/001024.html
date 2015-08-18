@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2430 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2430%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200705191824.l4JIOmZc007121%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001023.html">
+   <LINK REL="Next"  HREF="001025.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2430 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2430%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200705191824.l4JIOmZc007121%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2430 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat May 19 20:24:48 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001023.html">[ydf-devel] r2429 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDFormElements addons/YDCaptcha
+</A></li>
+        <LI>Next message: <A HREF="001025.html">[ydf-devel] r2431 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1024">[ date ]</a>
+              <a href="thread.html#1024">[ thread ]</a>
+              <a href="subject.html#1024">[ subject ]</a>
+              <a href="author.html#1024">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-05-19 20:24:38 +0200 (Sat, 19 May 2007)
+New Revision: 2430
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php
+Log:
+fix on span form element. On submit we got duplicated content, now it's fixed using static content.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php	2007-05-18 11:05:06 UTC (rev 2429)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php	2007-05-19 18:24:38 UTC (rev 2430)
+@@ -45,7 +45,7 @@
+          *
+          *        @param $form                The name of the form to which this element is connected.
+          *        @param $name                The name of the form element.
+-         *        @param $label                (optional) The label for the form element.
++         *        @param $label               HTML content.
+          *        @param $attributes        (optional) The attributes for the form element.
+          *        @param $options                (optional) The options for the elment.
+          */
+@@ -58,11 +58,14 @@
+             $this-&gt;_type = 'span';
+ 
+             // Set the value correctly
+-            $this-&gt;setValue( $label );
++            $this-&gt;_customValue = $label;
+ 
+             // Indicate if filters need to be applied
+             $this-&gt;_applyFilters = false;
+ 
++            // Span don't have label
++            $this-&gt;_placeLabel = 'none';
++
+             // Indicate we are a button type
+             $this-&gt;_isButton = false;
+ 
+@@ -92,7 +95,7 @@
+             $attribs = array_merge( $this-&gt;_attributes, $attribs );
+ 
+             // Get the HTML
+-            return '&lt;span' . YDForm::_convertToHtmlAttrib( $attribs ) . '&gt;' . $this-&gt;_value . '&lt;/span&gt;';
++            return '&lt;span' . YDForm::_convertToHtmlAttrib( $attribs ) . '&gt;' . $this-&gt;_customValue . '&lt;/span&gt;';
+ 
+         }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001023.html">[ydf-devel] r2429 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDFormElements addons/YDCaptcha
+</A></li>
+	<LI>Next message: <A HREF="001025.html">[ydf-devel] r2431 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1024">[ date ]</a>
+              <a href="thread.html#1024">[ thread ]</a>
+              <a href="subject.html#1024">[ subject ]</a>
+              <a href="author.html#1024">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

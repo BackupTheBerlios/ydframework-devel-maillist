@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Propose for a YD language repository
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Propose%20for%20a%20YD%20language%20repository&In-Reply-To=%3C1164298551.v2.fusewebmail-15630%40f%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000822.html">
+   <LINK REL="Next"  HREF="000824.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Propose for a YD language repository</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Propose%20for%20a%20YD%20language%20repository&In-Reply-To=%3C1164298551.v2.fusewebmail-15630%40f%3E"
+       TITLE="[ydf-devel] Propose for a YD language repository">francisco at fusemail.com
+       </A><BR>
+    <I>Thu Nov 23 17:15:51 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000822.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000824.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#823">[ date ]</a>
+              <a href="thread.html#823">[ thread ]</a>
+              <a href="subject.html#823">[ subject ]</a>
+              <a href="author.html#823">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi
+
+&gt;<i> But its very easy,,  we put  3 lines in php setting what translation
+</I>&gt;<i> file to use.  and all strings that need translation we put :
+</I>&gt;<i> instead
+</I>&gt;<i> echo &quot;test&quot;;
+</I>&gt;<i> we put
+</I>&gt;<i> echo _(&quot;test&quot;);
+</I>&gt;<i>
+</I>&gt;<i> There was others 2 or 3 functions,  one to verbals strings,
+</I>&gt;<i>
+</I>&gt;<i> after we need to run one program,  xgettext  with some param ,
+</I>&gt;<i> this program take all strings marked  and create a .pot file.
+</I>&gt;<i>
+</I>&gt;<i> translator copy this file as xx_xx.po ,, ex.  pt_BR.po   , translate
+</I>&gt;<i> file and send to you .
+</I>&gt;<i>
+</I>&gt;<i> done,   we need one more translation :)
+</I>&gt;<i>
+</I>&gt;<i> To update is very easy too.   We continue to editing software and
+</I>&gt;<i> creating new strings with _(&quot;&quot;)
+</I>&gt;<i> there was one program that update all translations putting new strings
+</I>&gt;<i> in all .po files.
+</I>&gt;<i>
+</I>&gt;<i> if one of these string arent translated , _() print original string.
+</I>&gt;<i> and if is translated  print translated string.
+</I>
+Basically, to use gettext we need to:
+
+- define the current language code and directory where the translation
+files reside (using gettext functions).
+
+- use function
+  _('String to be translated');
+
+  instead of
+
+  $_GLOBALS['t']['string_trans'] = 'String to be translated';
+  t('string_trans');
+
+- Then opEditor can do the rest:
+  * scans all *.php files for _() functions to get the strings
+  * updates its own translation files
+  * mark all new strings in yellow
+  * delete all strings that are not used anymore
+  * exports the translation file to a .mo used by gettext
+
+
+regards
+Francisco A
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000822.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000824.html">[ydf-devel] Proposed changes to YDTemplate and YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#823">[ date ]</a>
+              <a href="thread.html#823">[ thread ]</a>
+              <a href="subject.html#823">[ subject ]</a>
+              <a href="author.html#823">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

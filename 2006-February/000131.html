@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1718 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDFeedCreator
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1718%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20addons/YDFeedCreator&In-Reply-To=%3C200602221330.k1MDUnRA027051%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000130.html">
+   <LINK REL="Next"  HREF="000132.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1718 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDFeedCreator</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1718%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%20addons/YDFeedCreator&In-Reply-To=%3C200602221330.k1MDUnRA027051%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1718 - in YDFramework2.0/trunk/YDFramework2: YDClasses addons/YDFeedCreator">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Feb 22 14:30:49 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000130.html">[ydf-devel] r1717 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000132.html">[ydf-devel] r1719 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#131">[ date ]</a>
+              <a href="thread.html#131">[ thread ]</a>
+              <a href="subject.html#131">[ subject ]</a>
+              <a href="author.html#131">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-22 14:30:16 +0100 (Wed, 22 Feb 2006)
+New Revision: 1718
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+Log:
+Fixed some character encoding issues with YDFeedCreator.
+
+Bug #6546
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-22 13:07:29 UTC (rev 1717)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-22 13:30:16 UTC (rev 1718)
+@@ -576,6 +576,8 @@
+          *	@static
+          */
+         function encodeString( $string, $htmlent=false ) {
++            $trans = array_flip( get_html_translation_table( HTML_ENTITIES ) );
++            $string = strtr( $string, $trans );
+             $trans = get_html_translation_table( HTML_ENTITIES, ENT_NOQUOTES );
+             foreach ( $trans as $key =&gt; $value ) {
+                 if ( ord( $key ) == 60 || ord( $key ) == 62 ) {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2006-02-22 13:07:29 UTC (rev 1717)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2006-02-22 13:30:16 UTC (rev 1718)
+@@ -80,7 +80,7 @@
+          *	@param $title	The title of the feed.
+          */
+         function setTitle( $title ) {
+-            $this-&gt;_title = $title;
++            $this-&gt;_title = YDStringUtil::encodeString( $title );
+         }
+ 
+         /**
+@@ -90,7 +90,7 @@
+          */
+         function setDescription( $desc ) {
+             $desc = YDUrl::makeLinksAbsolute( $desc, $this-&gt;_link );
+-            $this-&gt;_description = $desc;
++            $this-&gt;_description = YDStringUtil::encodeString( $desc );
+         }
+ 
+         /**
+@@ -134,8 +134,9 @@
+             }
+ 
+             $item = array(
+-                'title' =&gt; $title, 'link' =&gt; $link,
+-                'description' =&gt; $desc, 'guid' =&gt; $guid, 'enclosure' =&gt; $enclosure, 'enclosure_size' =&gt; $enclosure_size,
++                'title' =&gt; YDStringUtil::encodeString( $title ), 'link' =&gt; $link,
++                'description' =&gt; $desc, 'guid' =&gt; $guid,
++                'enclosure' =&gt; $enclosure, 'enclosure_size' =&gt; $enclosure_size,
+                 'enclosure_type' =&gt; $enclosure_type
+             );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000130.html">[ydf-devel] r1717 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000132.html">[ydf-devel] r1719 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#131">[ date ]</a>
+              <a href="thread.html#131">[ thread ]</a>
+              <a href="subject.html#131">[ subject ]</a>
+              <a href="author.html#131">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

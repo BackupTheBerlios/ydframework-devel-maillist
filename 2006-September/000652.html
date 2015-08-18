@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2133 - in YDFramework2.0/trunk/examples/cm: .	backend/templates/default backend/templates/green	backend/templates/orange
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2133%20-%20in%20YDFramework2.0/trunk/examples/cm%3A%20.%0A%09backend/templates/default%20backend/templates/green%0A%09backend/templates/orange&In-Reply-To=%3C200609140915.k8E9FK9x002114%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000651.html">
+   <LINK REL="Next"  HREF="000653.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2133 - in YDFramework2.0/trunk/examples/cm: .	backend/templates/default backend/templates/green	backend/templates/orange</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2133%20-%20in%20YDFramework2.0/trunk/examples/cm%3A%20.%0A%09backend/templates/default%20backend/templates/green%0A%09backend/templates/orange&In-Reply-To=%3C200609140915.k8E9FK9x002114%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2133 - in YDFramework2.0/trunk/examples/cm: .	backend/templates/default backend/templates/green	backend/templates/orange">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep 14 11:15:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000651.html">[ydf-devel] r2132 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000653.html">[ydf-devel] r2134 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#652">[ date ]</a>
+              <a href="thread.html#652">[ thread ]</a>
+              <a href="subject.html#652">[ subject ]</a>
+              <a href="author.html#652">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-14 11:14:27 +0200 (Thu, 14 Sep 2006)
+New Revision: 2133
+
+Added:
+   YDFramework2.0/trunk/examples/cm/backend/templates/default/shot.png
+   YDFramework2.0/trunk/examples/cm/backend/templates/green/shot.png
+   YDFramework2.0/trunk/examples/cm/backend/templates/orange/shot.png
+Modified:
+   YDFramework2.0/trunk/examples/cm/cm.php
+Log:
+- added YDConfig parameter to cm.php that defines the url path to template screenshots.
+
+Added: YDFramework2.0/trunk/examples/cm/backend/templates/default/shot.png
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/cm/backend/templates/default/shot.png
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/cm/backend/templates/green/shot.png
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/cm/backend/templates/green/shot.png
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/cm/backend/templates/orange/shot.png
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/cm/backend/templates/orange/shot.png
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Modified: YDFramework2.0/trunk/examples/cm/cm.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/cm.php	2006-09-14 09:12:07 UTC (rev 2132)
++++ YDFramework2.0/trunk/examples/cm/cm.php	2006-09-14 09:14:27 UTC (rev 2133)
+@@ -4,14 +4,17 @@
+     include_once( dirname( __FILE__ ) . '/../../YDFramework2/YDF2_init.php' );
+ 
+ 	YDInclude( 'YDDatabase.php' );
++	YDInclude( 'YDUrl.php' );
+ 
+-    // set YDDatabase instance connection
++    // BASIC CONFIGURATION: set YDDatabase instance connection
+     YDDatabase::registerInstance( 'default', 'mysql', 'xpto', 'root', '', 'localhost' );
+ 
+-	// set portal language. Currently you can user 'en' and 'pt'.
++    // BASIC CONFIGURATION: set portal language. Currently you can use 'en' and 'pt'.
+ 	YDLocale::set( 'en' );
+ 
++
+ 	// set admin template path
+ 	YDConfig::set( 'YDCMTEMPLATES_ADMIN_PATH', dirname( __FILE__ ) . '/backend/templates' );
+ 
++	YDConfig::set( 'YDCMTEMPLATES_ADMIN_URL', YDUrl::makeLinkAbsolute( './templates' ) );
+ ?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000651.html">[ydf-devel] r2132 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000653.html">[ydf-devel] r2134 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#652">[ date ]</a>
+              <a href="thread.html#652">[ thread ]</a>
+              <a href="subject.html#652">[ subject ]</a>
+              <a href="author.html#652">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

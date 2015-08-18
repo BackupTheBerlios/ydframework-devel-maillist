@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1990 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1990%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200608081405.k78E5Y8T026089%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000496.html">
+   <LINK REL="Next"  HREF="000498.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1990 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1990%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200608081405.k78E5Y8T026089%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1990 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  8 16:05:34 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000496.html">[ydf-devel] r1989 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000498.html">[ydf-devel] r1991 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#497">[ date ]</a>
+              <a href="thread.html#497">[ thread ]</a>
+              <a href="subject.html#497">[ subject ]</a>
+              <a href="author.html#497">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-08 16:05:23 +0200 (Tue, 08 Aug 2006)
+New Revision: 1990
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+small updates (about previous commit) in YDAjax
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-08-08 13:59:05 UTC (rev 1989)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-08-08 14:05:23 UTC (rev 1990)
+@@ -68,7 +68,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '2.82b';
++            $this-&gt;_version = '2.83';
+             $this-&gt;_copyright = '(c) Copyright 2002-2006 Francisco Azevedo';
+             $this-&gt;_description = 'This class makes ajax easy for YDF developers';
+ 
+@@ -458,7 +458,6 @@
+ 				return $this-&gt;prefix . $serverFunction . 'get()';
+ 			}
+ 
+-
+ 			return $functionName;
+ 		}
+ 		
+@@ -518,12 +517,12 @@
+ 			// cycle arguments to create js function to get values
+ 			foreach ( $arguments as $arg ){
+ 
+-				// if is a string and it's a form name, we want the form values
+-				if ( is_string( $arg ) &amp;&amp; $this-&gt;__isForm( $arg ) ) { $args[] = &quot;xajax.getFormValues('&quot; . $arg . &quot;')&quot;; continue; }
+-				
+ 				// if is a string and it's a harcoded form name (eg: 'form xpto', where 'xpto' is a form name)
+ 				if ( is_string( $arg ) &amp;&amp; ereg ( &quot;^form (.*)$&quot;, $arg, $res ) ) { $args[] = &quot;xajax.getFormValues('&quot; . $res[1] . &quot;')&quot;; continue; }
+ 
++				// if is a string and it's a form name, we want the form values
++				if ( is_string( $arg ) &amp;&amp; $this-&gt;__isForm( $arg ) ) { $args[] = &quot;xajax.getFormValues('&quot; . $arg . &quot;')&quot;; continue; }
++
+ 				// if argument is numeric just add it and continue
+ 				if ( is_numeric( $arg ) ) { $args[] = $arg; continue; }
+ 					
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000496.html">[ydf-devel] r1989 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000498.html">[ydf-devel] r1991 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#497">[ date ]</a>
+              <a href="thread.html#497">[ thread ]</a>
+              <a href="subject.html#497">[ subject ]</a>
+              <a href="author.html#497">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

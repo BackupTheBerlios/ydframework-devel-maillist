@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1867 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages addons/YDCMUsers addons/YDCMUsers/languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1867%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses/YDCMComponent%20addons/YDCMLanguages/languages%20addons/YDCMUsers%20addons/YDCMUsers/languages&In-Reply-To=%3C200604230056.k3N0uEi4008199%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000310.html">
+   <LINK REL="Next"  HREF="000312.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1867 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages addons/YDCMUsers addons/YDCMUsers/languages</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1867%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses/YDCMComponent%20addons/YDCMLanguages/languages%20addons/YDCMUsers%20addons/YDCMUsers/languages&In-Reply-To=%3C200604230056.k3N0uEi4008199%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1867 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages addons/YDCMUsers addons/YDCMUsers/languages">ximian at berlios.de
+       </A><BR>
+    <I>Sun Apr 23 02:56:14 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000310.html">[ydf-devel] r1866 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers: . languages
+</A></li>
+        <LI>Next message: <A HREF="000312.html">[ydf-devel] r1868 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers: . languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#311">[ date ]</a>
+              <a href="thread.html#311">[ thread ]</a>
+              <a href="subject.html#311">[ subject ]</a>
+              <a href="author.html#311">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-23 02:55:04 +0200 (Sun, 23 Apr 2006)
+New Revision: 1867
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php
+Log:
+- new method YDCMUsers::updateLogin
+- new generic translation
+- updated DB scheme with not null values for datetime elements in YDCMUsers
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-04-23 00:10:19 UTC (rev 1866)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-04-23 00:55:04 UTC (rev 1867)
+@@ -736,11 +736,11 @@
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1251&quot; ColName=&quot;login_start&quot; PrevColName=&quot;&quot; Pos=&quot;14&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;when state is schedule this is the start date&quot;&gt;
++&lt;COLUMN ID=&quot;1251&quot; ColName=&quot;login_start&quot; PrevColName=&quot;&quot; Pos=&quot;14&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;when state is schedule this is the start date&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1252&quot; ColName=&quot;login_end&quot; PrevColName=&quot;&quot; Pos=&quot;15&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;when state is schedule this is the end date&quot;&gt;
++&lt;COLUMN ID=&quot;1252&quot; ColName=&quot;login_end&quot; PrevColName=&quot;&quot; Pos=&quot;15&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;when state is schedule this is the end date&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+@@ -750,11 +750,11 @@
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1256&quot; ColName=&quot;login_last&quot; PrevColName=&quot;&quot; Pos=&quot;19&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;last login date&quot;&gt;
++&lt;COLUMN ID=&quot;1256&quot; ColName=&quot;login_last&quot; PrevColName=&quot;&quot; Pos=&quot;19&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;last login date&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1257&quot; ColName=&quot;login_current&quot; PrevColName=&quot;&quot; Pos=&quot;20&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;date of current session&quot;&gt;
++&lt;COLUMN ID=&quot;1257&quot; ColName=&quot;login_current&quot; PrevColName=&quot;&quot; Pos=&quot;20&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;date of current session&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+@@ -764,7 +764,7 @@
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1253&quot; ColName=&quot;created_date&quot; PrevColName=&quot;created&quot; Pos=&quot;16&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;creation date&quot;&gt;
++&lt;COLUMN ID=&quot;1253&quot; ColName=&quot;created_date&quot; PrevColName=&quot;created&quot; Pos=&quot;16&quot; idDatatype=&quot;15&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;creation date&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php	2006-04-23 00:10:19 UTC (rev 1866)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/en.php	2006-04-23 00:55:04 UTC (rev 1867)
+@@ -5,5 +5,6 @@
+ $GLOBALS['t']['open'] = 'Open';
+ $GLOBALS['t']['help'] = 'Help';
+ $GLOBALS['t']['back'] = 'Back';
++$GLOBALS['t']['not applicable'] = 'Not applicable';
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php	2006-04-23 00:10:19 UTC (rev 1866)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/languages/pt.php	2006-04-23 00:55:04 UTC (rev 1867)
+@@ -5,5 +5,6 @@
+ $GLOBALS['t']['open'] = 'Abrir';
+ $GLOBALS['t']['help'] = 'Ajuda';
+ $GLOBALS['t']['back'] = 'Voltar';
++$GLOBALS['t']['not applicable'] = 'N&atilde;o aplic&aacute;vel';
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php	2006-04-23 00:10:19 UTC (rev 1866)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/YDCMUsers.php	2006-04-23 00:55:04 UTC (rev 1867)
+@@ -297,6 +297,7 @@
+             $form-&gt;addElement( 'password', 'new_confirm', t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+ 
+ 			// add rules
++			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'required',     t('passwords are required') );
+ 			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'maxlength',    t('passwords too big'), 31 );
+ 			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'alphanumeric', t('passwords not alphanumeric') );
+ 
+@@ -326,6 +327,37 @@
+ 			return $this-&gt;getValues();
+ 		}
+ 
++
++        /**
++         *  This function updates user login details
++         *
++         *  @returns    updated result
++         */
++		function updateLogin(){
++
++			YDInclude( 'YDUtil.php' );
++
++			$this-&gt;resetValues();
++			
++			// get current user id
++			$this-&gt;user_id = $this-&gt;currentID();
++			
++			// get all attributes
++			$this-&gt;find();
++
++			// increase login value
++			$this-&gt;login_counter ++;
++
++			// set last login date
++			$this-&gt;login_last = $this-&gt;login_current;
++
++			// set current login
++			$this-&gt;login_current = YDStringUtil::formatDate( time(), 'datetimesql' );
++
++			// return values
++			return $this-&gt;update();
++		}
++
+ 		
+     }
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php	2006-04-23 00:10:19 UTC (rev 1866)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/en.php	2006-04-23 00:55:04 UTC (rev 1867)
+@@ -28,6 +28,7 @@
+ $GLOBALS['t']['password_new_confirm'] = 'Confirm new password';
+ 
+ // PASSWORD FORM RULES
++$GLOBALS['t']['passwords are required'] = 'All passwords are required';
+ $GLOBALS['t']['passwords dont match'] = 'Passwords do not match';
+ $GLOBALS['t']['passwords too big'] = 'There is at least one password too big';
+ $GLOBALS['t']['passwords not alphanumeric'] = 'All passwords must be alphanumeric';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php	2006-04-23 00:10:19 UTC (rev 1866)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers/languages/pt.php	2006-04-23 00:55:04 UTC (rev 1867)
+@@ -28,6 +28,7 @@
+ $GLOBALS['t']['password_new_confirm'] = 'Confirme a nova password';
+ 
+ // PASSWORD FORM RULES
++$GLOBALS['t']['passwords are required'] = 'Todas as passwords s&atilde;o obrigat&oacute;rias';
+ $GLOBALS['t']['passwords dont match'] = 'As passwords n&atilde;o s&atilde;o iguais';
+ $GLOBALS['t']['passwords too big'] = 'Existe pelo menos uma password demasiado grande';
+ $GLOBALS['t']['passwords not alphanumeric'] = 'As password t&ecirc;em de ser alfanum&eacute;ricas';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000310.html">[ydf-devel] r1866 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers: . languages
+</A></li>
+	<LI>Next message: <A HREF="000312.html">[ydf-devel] r1868 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMUsers: . languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#311">[ date ]</a>
+              <a href="thread.html#311">[ thread ]</a>
+              <a href="subject.html#311">[ subject ]</a>
+              <a href="author.html#311">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2458 - in YDFramework2.0/trunk/YDFramework2:	3rdparty/captcha addons/YDCaptcha
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2458%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%093rdparty/captcha%20addons/YDCaptcha&In-Reply-To=%3C200707161455.l6GEtLpw016453%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001051.html">
+   <LINK REL="Next"  HREF="001053.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2458 - in YDFramework2.0/trunk/YDFramework2:	3rdparty/captcha addons/YDCaptcha</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2458%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%093rdparty/captcha%20addons/YDCaptcha&In-Reply-To=%3C200707161455.l6GEtLpw016453%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2458 - in YDFramework2.0/trunk/YDFramework2:	3rdparty/captcha addons/YDCaptcha">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Jul 16 16:55:21 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001051.html">[ydf-devel] r2457 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001053.html">[ydf-devel] r2459 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1052">[ date ]</a>
+              <a href="thread.html#1052">[ thread ]</a>
+              <a href="subject.html#1052">[ subject ]</a>
+              <a href="author.html#1052">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-07-16 16:55:08 +0200 (Mon, 16 Jul 2007)
+New Revision: 2458
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+Log:
+new YDConfig &quot;YD_CAPTCHA_BGCOLOR&quot; that defines the captcha background color of the image
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php	2007-07-16 11:47:28 UTC (rev 2457)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php	2007-07-16 14:55:08 UTC (rev 2458)
+@@ -107,8 +107,11 @@
+          $this-&gt;SetFileType(CAPTCHA_FILE_TYPE);   
+          $this-&gt;SetWidth($iWidth);
+          $this-&gt;SetHeight($iHeight);
++         $this-&gt;_red = 255;
++         $this-&gt;_green = 255;
++         $this-&gt;_blue = 255;
+       }
+-      
++
+       function CalculateSpacing() {
+          $this-&gt;iSpacing = (int)($this-&gt;iWidth / $this-&gt;iNumChars);
+       }
+@@ -362,7 +365,7 @@
+          }
+          
+          // allocate white background colour
+-         imagecolorallocate($this-&gt;oImage, 255, 255, 255);
++         imagecolorallocate($this-&gt;oImage, $this-&gt;_red, $this-&gt;_green, $this-&gt;_blue);
+          
+          // check for owner text
+          if ($this-&gt;sOwnerText != '') {
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-07-16 11:47:28 UTC (rev 2457)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-07-16 14:55:08 UTC (rev 2458)
+@@ -53,6 +53,13 @@
+ 
+ 
+     /**
++     *  This config defines the image background color
++     *  Default: &quot;#FFFFFF&quot;.
++     */
++    YDConfig::set( 'YD_CAPTCHA_BGCOLOR', &quot;#FFFFFF&quot;, false );
++
++
++    /**
+      *  This config defines the charset scheme.
+      *  Default: 'simple'. Can be: 'simple', 'complex', 'letters', 'numeric' or a custom scheme.
+      */
+@@ -123,6 +130,13 @@
+             $this-&gt;_img-&gt;useColour( YDConfig::get( 'YD_CAPTCHA_COLOR' ) );
+             $this-&gt;_img-&gt;SetNumChars( YDConfig::get( 'YD_CAPTCHA_NUMCHARS' ) );
+ 
++            // apply image color
++            $bgcolor = YDConfig::get( 'YD_CAPTCHA_BGCOLOR' ); 
++
++            $this-&gt;_img-&gt;_red   = hexdec( substr( $bgcolor, 1, 2 ) );
++            $this-&gt;_img-&gt;_green = hexdec( substr( $bgcolor, 3, 2 ) );
++            $this-&gt;_img-&gt;_blue  = hexdec( substr( $bgcolor, 5, 2 ) );
++
+             return $this-&gt;_img-&gt;Create();
+         }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001051.html">[ydf-devel] r2457 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001053.html">[ydf-devel] r2459 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1052">[ date ]</a>
+              <a href="thread.html#1052">[ thread ]</a>
+              <a href="subject.html#1052">[ subject ]</a>
+              <a href="author.html#1052">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

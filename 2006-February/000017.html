@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1648 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1648%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples&In-Reply-To=%3C200602091213.k19CD1cU031674%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000016.html">
+   <LINK REL="Next"  HREF="000018.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1648 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1648%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples&In-Reply-To=%3C200602091213.k19CD1cU031674%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1648 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples">pclaerhout at berlios.de
+       </A><BR>
+    <I>Thu Feb  9 13:13:01 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000016.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+        <LI>Next message: <A HREF="000018.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#17">[ date ]</a>
+              <a href="thread.html#17">[ thread ]</a>
+              <a href="subject.html#17">[ subject ]</a>
+              <a href="author.html#17">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-09 13:12:58 +0100 (Thu, 09 Feb 2006)
+New Revision: 1648
+
+Added:
+   YDFramework2.0/trunk/examples/guidutil.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+Added the YDGuidUtil class and also added examples for using it.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-08 14:36:39 UTC (rev 1647)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-02-09 12:12:58 UTC (rev 1648)
+@@ -945,4 +945,53 @@
+ 
+     }
+ 
++    /**
++     *  This class allows you to generate GUIDs (global unique identifier).
++     *
++     *  More info: <A HREF="http://www.ietf.org/rfc/rfc4122.txt">http://www.ietf.org/rfc/rfc4122.txt</A>
++     */
++    class YDGuidUtil extends YDBase {
++
++        /**
++         *  Generate a new GUID.
++         *
++         *  @returns    A new GUID as a string.
++         */
++        function create() {
++            return md5( uniqid( rand(), true ) . $_ENV['COMPUTERNAME'] . $_SERVER['SERVER_ADDR'] );
++        }
++
++        /**
++         *  Generate a new formatted GUID.
++         *
++         *  @returns    A formatted GUID as a string.
++         */
++        function createFormatted() {
++            return YDGuidUtil::format( YDGuidUtil::create() );
++//            YDDebugUtil::dump( $g );
++//            return sprintf(
++//                '%s-%s-%s-%s-%s',
++//                substr( $g, 0, 8 ), substr( $g, 8, 4 ), substr( $g, 12, 4 ), substr( $g, 16, 4 ), substr( $g, 20 )
++//            );
++//            //substr( $g, 0, 8 ) . '-' . substr( $g, 8, 4 ) . '-' . substr( $g, 12, 4 ) . '-' . substr( $g, 16, 4 ) . '-' . substr( $g, 20 );
++        }
++
++        /**
++         *  Formats a GUID.
++         *
++         *  @param $g    GUID to format.
++         *
++         *  @returns    A formatted GUID as a string.
++         */
++         function format( $g ) {
++            $g = str_replace( '-', '', $g );
++            return sprintf(
++                '%s-%s-%s-%s-%s',
++                substr( $g, 0, 8 ), substr( $g, 8, 4 ), substr( $g, 12, 4 ), substr( $g, 16, 4 ), substr( $g, 20 )
++            );
++         }
++
++
++    }
++
+ ?&gt;
+
+Added: YDFramework2.0/trunk/examples/guidutil.php
+===================================================================
+--- YDFramework2.0/trunk/examples/guidutil.php	2006-02-08 14:36:39 UTC (rev 1647)
++++ YDFramework2.0/trunk/examples/guidutil.php	2006-02-09 12:12:58 UTC (rev 1648)
+@@ -0,0 +1,40 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++
++    // Class definition
++    class guidutil extends YDRequest {
++
++        // Class constructor
++        function guidutil() {
++            $this-&gt;YDRequest();
++        }
++
++        // Default action
++        function actionDefault() {
++
++            // Generate 10 GUIDs
++            foreach ( range( 1, 10 ) as $i ) {
++
++                // Show the raw version
++                $guid = YDGuidUtil::create();
++                YDDebugUtil::dump( $guid, 'GUID ' . $i );
++
++                // Create a formatted one
++                $guid_formatted = YDGuidUtil::format( $guid );
++                YDDebugUtil::dump( $guid_formatted, 'Formatted GUID ' . $i );
++
++            }
++
++        }
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-02-08 14:36:39 UTC (rev 1647)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-02-09 12:12:58 UTC (rev 1648)
+@@ -689,7 +689,7 @@
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-            &lt;td rowspan=&quot;14&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
++            &lt;td rowspan=&quot;15&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;constants.php&quot;&gt;YDFramework2 constants&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=constants.php&quot;&gt;constants.php&lt;/a&gt;
+@@ -759,6 +759,12 @@
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=error.php&quot;&gt;error.php&lt;/a&gt;
+             &lt;/td&gt;
+         &lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;guidutil.php&quot;&gt;Using the YDGuidUtil class&lt;/a&gt;&lt;/td&gt;
++            &lt;td valign=&quot;top&quot;&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=guidutil.php&quot;&gt;guidutil.php&lt;/a&gt;
++            &lt;/td&gt;
++        &lt;/tr&gt;
+         &lt;/table&gt;
+ 
+     {/if}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000016.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+	<LI>Next message: <A HREF="000018.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#17">[ date ]</a>
+              <a href="thread.html#17">[ thread ]</a>
+              <a href="subject.html#17">[ subject ]</a>
+              <a href="author.html#17">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

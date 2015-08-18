@@ -1,0 +1,655 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2279 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2279%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%203rdparty%0A%09YDClasses&In-Reply-To=%3C200612281749.kBSHnfA5023149%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000870.html">
+   <LINK REL="Next"  HREF="000872.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2279 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2279%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%203rdparty%0A%09YDClasses&In-Reply-To=%3C200612281749.kBSHnfA5023149%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2279 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Dec 28 18:49:41 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000870.html">[ydf-devel] r2278 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000872.html">[ydf-devel] r2280 - YDFramework2.0/trunk/YDFramework2/3rdparty
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#871">[ date ]</a>
+              <a href="thread.html#871">[ thread ]</a>
+              <a href="subject.html#871">[ subject ]</a>
+              <a href="author.html#871">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-12-28 18:49:40 +0100 (Thu, 28 Dec 2006)
+New Revision: 2279
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/bmp.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+Log:
+Improved YDFSImage and YDPath to support BMP images.
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/bmp.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/bmp.php	2006-12-27 20:08:50 UTC (rev 2278)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/bmp.php	2006-12-28 17:49:40 UTC (rev 2279)
+@@ -0,0 +1,529 @@
++&lt;?
++/*
++*------------------------------------------------------------
++*                   BMP Image functions
++*------------------------------------------------------------
++*                      By JPEXS
++*/
++
++
++
++
++/*
++*------------------------------------------------------------
++*                    ImageBMP
++*------------------------------------------------------------
++*            - Creates new BMP file
++*
++*         Parameters:  $img - Target image
++*                      $file - Target file to store
++*                            - if not specified, bmp is returned
++*
++*           Returns: if $file specified - true if OK
++                     if $file not specified - image data
++*/
++function imagebmp($img,$file=&quot;&quot;,$RLE=0)
++{
++
++
++$ColorCount=imagecolorstotal($img);
++
++$Transparent=imagecolortransparent($img);
++$IsTransparent=$Transparent!=-1;
++
++
++if($IsTransparent) $ColorCount--;
++
++if($ColorCount==0) {$ColorCount=0; $BitCount=24;};
++if(($ColorCount&gt;0)and($ColorCount&lt;=2)) {$ColorCount=2; $BitCount=1;};
++if(($ColorCount&gt;2)and($ColorCount&lt;=16)) { $ColorCount=16; $BitCount=4;};
++if(($ColorCount&gt;16)and($ColorCount&lt;=256)) { $ColorCount=0; $BitCount=8;};
++
++
++                $Width=imagesx($img);
++                $Height=imagesy($img);
++
++                $Zbytek=(4-($Width/(8/$BitCount))%4)%4;
++
++                if($BitCount&lt;24) $palsize=pow(2,$BitCount)*4;
++
++                $size=(floor($Width/(8/$BitCount))+$Zbytek)*$Height+54;
++                $size+=$palsize;
++                $offset=54+$palsize;
++
++                // Bitmap File Header
++                $ret = 'BM';                        // header (2b)
++                $ret .= int_to_dword($size);        // size of file (4b)
++                $ret .= int_to_dword(0);        // reserved (4b)
++                $ret .= int_to_dword($offset);        // byte location in the file which is first byte of IMAGE (4b)
++                // Bitmap Info Header
++                $ret .= int_to_dword(40);        // Size of BITMAPINFOHEADER (4b)
++                $ret .= int_to_dword($Width);        // width of bitmap (4b)
++                $ret .= int_to_dword($Height);        // height of bitmap (4b)
++                $ret .= int_to_word(1);        // biPlanes = 1 (2b)
++                $ret .= int_to_word($BitCount);        // biBitCount = {1 (mono) or 4 (16 clr ) or 8 (256 clr) or 24 (16 Mil)} (2b)
++                $ret .= int_to_dword($RLE);        // RLE COMPRESSION (4b)
++                $ret .= int_to_dword(0);        // width x height (4b)
++                $ret .= int_to_dword(0);        // biXPelsPerMeter (4b)
++                $ret .= int_to_dword(0);        // biYPelsPerMeter (4b)
++                $ret .= int_to_dword(0);        // Number of palettes used (4b)
++                $ret .= int_to_dword(0);        // Number of important colour (4b)
++                // image data
++
++                $CC=$ColorCount;
++                $sl1=strlen($ret);
++                if($CC==0) $CC=256;
++                if($BitCount&lt;24)
++                   {
++                    $ColorTotal=imagecolorstotal($img);
++                     if($IsTransparent) $ColorTotal--;
++
++                     for($p=0;$p&lt;$ColorTotal;$p++)
++                     {
++                      $color=imagecolorsforindex($img,$p);
++                       $ret.=inttobyte($color[&quot;blue&quot;]);
++                       $ret.=inttobyte($color[&quot;green&quot;]);
++                       $ret.=inttobyte($color[&quot;red&quot;]);
++                       $ret.=inttobyte(0); //RESERVED
++                     };
++
++                    $CT=$ColorTotal;
++                  for($p=$ColorTotal;$p&lt;$CC;$p++)
++                       {
++                      $ret.=inttobyte(0);
++                      $ret.=inttobyte(0);
++                      $ret.=inttobyte(0);
++                      $ret.=inttobyte(0); //RESERVED
++                     };
++                   };
++
++
++if($BitCount&lt;=8)
++{
++
++ for($y=$Height-1;$y&gt;=0;$y--)
++ {
++  $bWrite=&quot;&quot;;
++  for($x=0;$x&lt;$Width;$x++)
++   {
++   $color=imagecolorat($img,$x,$y);
++   $bWrite.=decbinx($color,$BitCount);
++   if(strlen($bWrite)==8)
++    {
++     $retd.=inttobyte(bindec($bWrite));
++     $bWrite=&quot;&quot;;
++    };
++   };
++
++  if((strlen($bWrite)&lt;8)and(strlen($bWrite)!=0))
++    {
++     $sl=strlen($bWrite);
++     for($t=0;$t&lt;8-$sl;$t++)
++      $sl.=&quot;0&quot;;
++     $retd.=inttobyte(bindec($bWrite));
++    };
++ for($z=0;$z&lt;$Zbytek;$z++)
++   $retd.=inttobyte(0);
++ };
++};
++
++if(($RLE==1)and($BitCount==8))
++{
++ for($t=0;$t&lt;strlen($retd);$t+=4)
++  {
++   if($t!=0)
++   if(($t)%$Width==0)
++    $ret.=chr(0).chr(0);
++
++   if(($t+5)%$Width==0)
++   {
++     $ret.=chr(0).chr(5).substr($retd,$t,5).chr(0);
++     $t+=1;
++   }
++   if(($t+6)%$Width==0)
++    {
++     $ret.=chr(0).chr(6).substr($retd,$t,6);
++     $t+=2;
++    }
++    else
++    {
++     $ret.=chr(0).chr(4).substr($retd,$t,4);
++    };
++  };
++  $ret.=chr(0).chr(1);
++}
++else
++{
++$ret.=$retd;
++};
++
++
++                if($BitCount==24)
++                {
++                for($z=0;$z&lt;$Zbytek;$z++)
++                 $Dopl.=chr(0);
++
++                for($y=$Height-1;$y&gt;=0;$y--)
++                 {
++                 for($x=0;$x&lt;$Width;$x++)
++                        {
++                           $color=imagecolorsforindex($img,ImageColorAt($img,$x,$y));
++                           $ret.=chr($color[&quot;blue&quot;]).chr($color[&quot;green&quot;]).chr($color[&quot;red&quot;]);
++                        }
++                 $ret.=$Dopl;
++                 };
++
++                 };
++
++  if($file!=&quot;&quot;)
++   {
++    $r=($f=fopen($file,&quot;w&quot;));
++    $r=$r and fwrite($f,$ret);
++    $r=$r and fclose($f);
++    return $r;
++   }
++  else
++  {
++   echo $ret;
++  };
++};
++
++
++/*
++*------------------------------------------------------------
++*                    ImageCreateFromBmp
++*------------------------------------------------------------
++*            - Reads image from a BMP file
++*
++*         Parameters:  $file - Target file to load
++*
++*            Returns: Image ID
++*/
++
++function imagecreatefrombmp($file)
++{
++global  $CurrentBit, $echoMode;
++
++$f=fopen($file,&quot;r&quot;);
++$Header=fread($f,2);
++
++if($Header==&quot;BM&quot;)
++{
++ $Size=freaddword($f);
++ $Reserved1=freadword($f);
++ $Reserved2=freadword($f);
++ $FirstByteOfImage=freaddword($f);
++
++ $SizeBITMAPINFOHEADER=freaddword($f);
++ $Width=freaddword($f);
++ $Height=freaddword($f);
++ $biPlanes=freadword($f);
++ $biBitCount=freadword($f);
++ $RLECompression=freaddword($f);
++ $WidthxHeight=freaddword($f);
++ $biXPelsPerMeter=freaddword($f);
++ $biYPelsPerMeter=freaddword($f);
++ $NumberOfPalettesUsed=freaddword($f);
++ $NumberOfImportantColors=freaddword($f);
++
++if($biBitCount&lt;24)
++ {
++  $img=imagecreate($Width,$Height);
++  $Colors=pow(2,$biBitCount);
++  for($p=0;$p&lt;$Colors;$p++)
++   {
++    $B=freadbyte($f);
++    $G=freadbyte($f);
++    $R=freadbyte($f);
++    $Reserved=freadbyte($f);
++    $Palette[]=imagecolorallocate($img,$R,$G,$B);
++   };
++
++
++
++
++if($RLECompression==0)
++{
++   $Zbytek=(4-ceil(($Width/(8/$biBitCount)))%4)%4;
++
++for($y=$Height-1;$y&gt;=0;$y--)
++    {
++     $CurrentBit=0;
++     for($x=0;$x&lt;$Width;$x++)
++      {
++         $C=freadbits($f,$biBitCount);
++       imagesetpixel($img,$x,$y,$Palette[$C]);
++      };
++    if($CurrentBit!=0) {freadbyte($f);};
++    for($g=0;$g&lt;$Zbytek;$g++)
++     freadbyte($f);
++     };
++
++ };
++};
++
++
++if($RLECompression==1) //$BI_RLE8
++{
++$y=$Height;
++
++$pocetb=0;
++
++while(true)
++{
++$y--;
++$prefix=freadbyte($f);
++$suffix=freadbyte($f);
++$pocetb+=2;
++
++$echoit=false;
++
++if($echoit)echo &quot;Prefix: $prefix Suffix: $suffix&lt;BR&gt;&quot;;
++if(($prefix==0)and($suffix==1)) break;
++if(feof($f)) break;
++
++while(!(($prefix==0)and($suffix==0)))
++{
++ if($prefix==0)
++  {
++   $pocet=$suffix;
++   $Data.=fread($f,$pocet);
++   $pocetb+=$pocet;
++   if($pocetb%2==1) {freadbyte($f); $pocetb++;};
++  };
++ if($prefix&gt;0)
++  {
++   $pocet=$prefix;
++   for($r=0;$r&lt;$pocet;$r++)
++    $Data.=chr($suffix);
++  };
++ $prefix=freadbyte($f);
++ $suffix=freadbyte($f);
++ $pocetb+=2;
++ if($echoit) echo &quot;Prefix: $prefix Suffix: $suffix&lt;BR&gt;&quot;;
++};
++
++for($x=0;$x&lt;strlen($Data);$x++)
++ {
++  imagesetpixel($img,$x,$y,$Palette[ord($Data[$x])]);
++ };
++$Data=&quot;&quot;;
++
++};
++
++};
++
++
++if($RLECompression==2) //$BI_RLE4
++{
++$y=$Height;
++$pocetb=0;
++
++/*while(!feof($f))
++ echo freadbyte($f).&quot;_&quot;.freadbyte($f).&quot;&lt;BR&gt;&quot;;*/
++while(true)
++{
++//break;
++$y--;
++$prefix=freadbyte($f);
++$suffix=freadbyte($f);
++$pocetb+=2;
++
++$echoit=false;
++
++if($echoit)echo &quot;Prefix: $prefix Suffix: $suffix&lt;BR&gt;&quot;;
++if(($prefix==0)and($suffix==1)) break;
++if(feof($f)) break;
++
++while(!(($prefix==0)and($suffix==0)))
++{
++ if($prefix==0)
++  {
++   $pocet=$suffix;
++
++   $CurrentBit=0;
++   for($h=0;$h&lt;$pocet;$h++)
++    $Data.=chr(freadbits($f,4));
++   if($CurrentBit!=0) freadbits($f,4);
++   $pocetb+=ceil(($pocet/2));
++   if($pocetb%2==1) {freadbyte($f); $pocetb++;};
++  };
++ if($prefix&gt;0)
++  {
++   $pocet=$prefix;
++   $i=0;
++   for($r=0;$r&lt;$pocet;$r++)
++    {
++    if($i%2==0)
++     {
++      $Data.=chr($suffix%16);
++     }
++     else
++     {
++      $Data.=chr(floor($suffix/16));
++     };
++    $i++;
++    };
++  };
++ $prefix=freadbyte($f);
++ $suffix=freadbyte($f);
++ $pocetb+=2;
++ if($echoit) echo &quot;Prefix: $prefix Suffix: $suffix&lt;BR&gt;&quot;;
++};
++
++for($x=0;$x&lt;strlen($Data);$x++)
++ {
++  imagesetpixel($img,$x,$y,$Palette[ord($Data[$x])]);
++ };
++$Data=&quot;&quot;;
++
++};
++
++};
++
++
++ if($biBitCount==24)
++{
++ $img=imagecreatetruecolor($Width,$Height);
++ $Zbytek=$Width%4;
++
++   for($y=$Height-1;$y&gt;=0;$y--)
++    {
++     for($x=0;$x&lt;$Width;$x++)
++      {
++       $B=freadbyte($f);
++       $G=freadbyte($f);
++       $R=freadbyte($f);
++       $color=imagecolorexact($img,$R,$G,$B);
++       if($color==-1) $color=imagecolorallocate($img,$R,$G,$B);
++       imagesetpixel($img,$x,$y,$color);
++      }
++    for($z=0;$z&lt;$Zbytek;$z++)
++     freadbyte($f);
++   };
++};
++return $img;
++
++};
++
++
++fclose($f);
++
++
++};
++
++
++
++
++
++/*
++* Helping functions:
++*-------------------------
++*
++* freadbyte($file) - reads 1 byte from $file
++* freadword($file) - reads 2 bytes (1 word) from $file
++* freaddword($file) - reads 4 bytes (1 dword) from $file
++* freadlngint($file) - same as freaddword($file)
++* decbin8($d) - returns binary string of d zero filled to 8
++* RetBits($byte,$start,$len) - returns bits $start-&gt;$start+$len from $byte
++* freadbits($file,$count) - reads next $count bits from $file
++* RGBToHex($R,$G,$B) - convert $R, $G, $B to hex
++* int_to_dword($n) - returns 4 byte representation of $n
++* int_to_word($n) - returns 2 byte representation of $n
++*/
++
++function freadbyte($f)
++{
++ return ord(fread($f,1));
++};
++
++function freadword($f)
++{
++ $b1=freadbyte($f);
++ $b2=freadbyte($f);
++ return $b2*256+$b1;
++};
++
++
++function freadlngint($f)
++{
++return freaddword($f);
++};
++
++function freaddword($f)
++{
++ $b1=freadword($f);
++ $b2=freadword($f);
++ return $b2*65536+$b1;
++};
++
++
++
++function RetBits($byte,$start,$len)
++{
++$bin=decbin8($byte);
++$r=bindec(substr($bin,$start,$len));
++return $r;
++
++};
++
++
++
++$CurrentBit=0;
++function freadbits($f,$count)
++{
++ global $CurrentBit,$SMode;
++ $Byte=freadbyte($f);
++ $LastCBit=$CurrentBit;
++ $CurrentBit+=$count;
++ if($CurrentBit==8)
++  {
++   $CurrentBit=0;
++  }
++ else
++  {
++   fseek($f,ftell($f)-1);
++  };
++ return RetBits($Byte,$LastCBit,$count);
++};
++
++
++
++function RGBToHex($Red,$Green,$Blue)
++  {
++   $hRed=dechex($Red);if(strlen($hRed)==1) $hRed=&quot;0$hRed&quot;;
++   $hGreen=dechex($Green);if(strlen($hGreen)==1) $hGreen=&quot;0$hGreen&quot;;
++   $hBlue=dechex($Blue);if(strlen($hBlue)==1) $hBlue=&quot;0$hBlue&quot;;
++   return($hRed.$hGreen.$hBlue);
++  };
++
++        function int_to_dword($n)
++        {
++                return chr($n &amp; 255).chr(($n &gt;&gt; 8) &amp; 255).chr(($n &gt;&gt; 16) &amp; 255).chr(($n &gt;&gt; 24) &amp; 255);
++        }
++        function int_to_word($n)
++        {
++                return chr($n &amp; 255).chr(($n &gt;&gt; 8) &amp; 255);
++        }
++
++
++function decbin8($d)
++{
++return decbinx($d,8);
++};
++
++function decbinx($d,$n)
++{
++$bin=decbin($d);
++$sbin=strlen($bin);
++for($j=0;$j&lt;$n-$sbin;$j++)
++ $bin=&quot;0$bin&quot;;
++return $bin;
++};
++
++function inttobyte($n)
++{
++return chr($n);
++};
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-12-27 20:08:50 UTC (rev 2278)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-12-28 17:49:40 UTC (rev 2279)
+@@ -649,7 +649,7 @@
+                 if ( $id == 0 ) {
+                     continue;
+                 }
+-                $query = sprintf(
++                @ $query = sprintf(
+                     'update %s set nlevel = %d, nleft = %d, nright = %d where %s = %d',
+                     $this-&gt;table, $row-&gt;nlevel, $row-&gt;nleft, $row-&gt;nright, $this-&gt;fields['id'], $id
+                 );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-12-27 20:08:50 UTC (rev 2278)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-12-28 17:49:40 UTC (rev 2279)
+@@ -28,6 +28,7 @@
+ 
+     // Includes
+     include_once( YD_DIR_HOME_CLS . '/YDUtil.php');
++    include_once( YD_DIR_HOME . '/3rdparty/bmp.php' );
+ 
+     // YDFSImage cropping specific constants
+     define( 'YD_FS_CROP_UNCHANGED', 1 );
+@@ -444,6 +445,9 @@
+             if ( substr( $header, 0, 8 ) == &quot;\211PNG\r\n\032\n&quot; ) {
+                 return 'png';
+             }
++            if ( substr( $header, 0, 2 ) == &quot;BM&quot; ) {
++                return 'bmp';
++            }
+ 
+             // Not an image
+             return false;
+@@ -1077,6 +1081,8 @@
+                 $src_img = imagecreatefromgif( $this-&gt;getAbsolutePath() );
+             } elseif ( $img_type == 'png' ) {
+                 $src_img = imagecreatefrompng( $this-&gt;getAbsolutePath() );
++            } elseif ( $img_type == 'bmp' ) {
++                $src_img = imagecreatefrombmp( $this-&gt;getAbsolutePath() );
+             } else {
+                 $src_img = imagecreatefromjpeg( $this-&gt;getAbsolutePath() );
+             }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000870.html">[ydf-devel] r2278 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000872.html">[ydf-devel] r2280 - YDFramework2.0/trunk/YDFramework2/3rdparty
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#871">[ date ]</a>
+              <a href="thread.html#871">[ thread ]</a>
+              <a href="subject.html#871">[ subject ]</a>
+              <a href="author.html#871">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

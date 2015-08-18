@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1767 - in YDFramework2.0/trunk: YDFramework2/addons/YDAjax examples examples/ajax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1767%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/addons/YDAjax%20examples%20examples/ajax&In-Reply-To=%3C200603051713.k25HD9Cv017828%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000187.html">
+   <LINK REL="Next"  HREF="000190.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1767 - in YDFramework2.0/trunk: YDFramework2/addons/YDAjax examples examples/ajax</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1767%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/addons/YDAjax%20examples%20examples/ajax&In-Reply-To=%3C200603051713.k25HD9Cv017828%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1767 - in YDFramework2.0/trunk: YDFramework2/addons/YDAjax examples examples/ajax">ximian at berlios.de
+       </A><BR>
+    <I>Sun Mar  5 18:13:09 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000187.html">[ydf-devel] YDAjax v2.4
+</A></li>
+        <LI>Next message: <A HREF="000190.html">[ydf-devel] r1768 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#188">[ date ]</a>
+              <a href="thread.html#188">[ thread ]</a>
+              <a href="subject.html#188">[ subject ]</a>
+              <a href="author.html#188">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-03-05 18:12:40 +0100 (Sun, 05 Mar 2006)
+New Revision: 1767
+
+Added:
+   YDFramework2.0/trunk/examples/ajax/functions.tpl
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+   YDFramework2.0/trunk/examples/ajax/functions.php
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+release 2.4(1) :)
+- added a new example that demonstrates YDAjax without a YDForm
+- simple YDAjax clean up
+
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-03-05 02:02:00 UTC (rev 1766)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-03-05 17:12:40 UTC (rev 1767)
+@@ -68,7 +68,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '2.4';
++            $this-&gt;_version = '2.41';
+             $this-&gt;_copyright = '(c) Copyright 2002-2006 Francisco Azevedo';
+             $this-&gt;_description = 'This class makes ajax easy for YDF developers';
+ 
+@@ -243,7 +243,7 @@
+ 			$options['style.zindex']   = 9999;
+ 
+ 			// create js for html element creation
+-			$this-&gt;waitingMessageCode  = &quot;\n\tvar &quot; . $this-&gt;wtID . &quot; = document.createElement('div');&quot;;
++			$this-&gt;waitingMessageCode  = &quot;var &quot; . $this-&gt;wtID . &quot; = document.createElement('div');&quot;;
+ 			
+ 			// add custom options
+ 			foreach( $options as $name =&gt; $value )
+
+Modified: YDFramework2.0/trunk/examples/ajax/functions.php
+===================================================================
+--- YDFramework2.0/trunk/examples/ajax/functions.php	2006-03-05 02:02:00 UTC (rev 1766)
++++ YDFramework2.0/trunk/examples/ajax/functions.php	2006-03-05 17:12:40 UTC (rev 1767)
+@@ -6,7 +6,6 @@
+ 	// Includes
+ 	YDInclude( 'YDRequest.php' );
+ 	YDInclude( 'YDTemplate.php' );
+-	YDInclude( 'YDForm.php' );
+ 	YDInclude( 'YDAjax.php' );
+ 
+ 	// Class definition
+@@ -15,43 +14,36 @@
+ 		function functions() {
+ 
+ 			$this-&gt;YDRequest();
+-			$this-&gt;tpl = new YDTemplate();
+ 		}
+ 
+ 
+ 		// Default action
+ 		function actionDefault() {
+ 
+-			// create a form with a span and a button
+-			$form = new YDForm('myform');
+-			$form-&gt;addElement('span',   'myspanresult', '&nbsp;', array('style' =&gt; 'BACKGROUND-COLOR:#ccccff') );
++			// create template object
++			$tpl = new YDTemplate();
+ 
+-			// create ajax object
+-			$this-&gt;ajax = new YDAjax( $this-&gt;tpl );
+-			$this-&gt;ajax-&gt;addForm( $form );
++			// create ajax object with waiting message
++			$this-&gt;ajax = new YDAjax( $tpl );
++			$this-&gt;ajax-&gt;useWaitingMessage();
+ 
+-			// register custom function
+-			$this-&gt;ajax-&gt;addEvent( 'customFunction()', array( &amp; $this, 'getversion' ) );
++			// add custom event
++			$this-&gt;ajax-&gt;addEvent( 'customFunction(x)', array( &amp; $this, 'getResult' ), 'var x' );
+ 
+ 			// process ajax events
+ 			$this-&gt;ajax-&gt;processEvents();
+ 
+-
+-			// assign form and display template
+-			$this-&gt;tpl-&gt;assign( 'title', 'This is a simple ajax example');
+-			$this-&gt;tpl-&gt;assign( 'form',  $form-&gt;tohtml() );
+-			$this-&gt;tpl-&gt;display();
++			// assign title and display template
++			$tpl-&gt;assign( 'title', 'This example demonstrates YDAjax without YDForm');
++			$tpl-&gt;display();
+ 		}
+ 
+ 
+-		// getversion invoked by ajax client
+-		function getversion(){
++		// getResult invoked by ajax client
++		function getResult( $var ){
+  
+-			// assign result to 'myspanresult'
+-			$this-&gt;ajax-&gt;addResult('myspanresult', YD_FW_NAMEVERS);
+-
+-			// return response to client browser
+-			return $this-&gt;ajax-&gt;processResults();
++			// message to client browser
++			return YDAjax::message( 'Argument submitted : ' . $var );
+ 		}
+ 
+ 	}
+
+Added: YDFramework2.0/trunk/examples/ajax/functions.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/ajax/functions.tpl	2006-03-05 02:02:00 UTC (rev 1766)
++++ YDFramework2.0/trunk/examples/ajax/functions.tpl	2006-03-05 17:12:40 UTC (rev 1767)
+@@ -0,0 +1,12 @@
++&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;&gt;
++&lt;html&gt;
++&lt;head&gt;&lt;title&gt;&lt;/title&gt;
++&lt;/head&gt;
++&lt;body&gt;
++&lt;p&gt;{$title}&lt;/p&gt;
++&lt;p&gt;Custom buttons : 
++  &lt;input name=&quot;b1&quot; type=&quot;button&quot; id=&quot;b1&quot; onclick=&quot;customFunction(1);&quot; value=&quot;customFunction(1)&quot; /&gt;
++  &lt;input name=&quot;b2&quot; type=&quot;button&quot; id=&quot;b2&quot; onclick=&quot;customFunction('Hello World');&quot; value=&quot;customFunction('Hello World')&quot; /&gt;
++&lt;/p&gt;
++&lt;/body&gt;
++&lt;/html&gt;
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-03-05 02:02:00 UTC (rev 1766)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-03-05 17:12:40 UTC (rev 1767)
+@@ -614,7 +614,7 @@
+           &lt;td&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-          &lt;td valign=&quot;top&quot; rowspan=&quot;16&quot;&gt;&nbsp;&lt;/td&gt;
++          &lt;td valign=&quot;top&quot; rowspan=&quot;17&quot;&gt;&nbsp;&lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/version.php&quot;&gt;Simple ajax example&lt;/a&gt;&lt;br/&gt;
+           &lt;/td&gt;
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/version.php&quot;&gt;ajax/version.php&lt;/a&gt; &lt;/td&gt;
+@@ -686,6 +686,10 @@
+           &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/autocompleter.php&quot;&gt;ajax/autocompleter.php&lt;/a&gt; &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;ajax/functions.php&quot;&gt;Without a YDForm &lt;/a&gt;&lt;/td&gt;
++          &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=ajax/functions.php&quot;&gt;ajax/functions.php&lt;/a&gt; &lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;YDXml&lt;/b&gt;&lt;/td&gt;
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000187.html">[ydf-devel] YDAjax v2.4
+</A></li>
+	<LI>Next message: <A HREF="000190.html">[ydf-devel] r1768 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#188">[ date ]</a>
+              <a href="thread.html#188">[ thread ]</a>
+              <a href="subject.html#188">[ subject ]</a>
+              <a href="author.html#188">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

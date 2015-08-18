@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDCM feedback
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C4aef63030604250419h67f11459qd13ebd2264c01a5a%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000331.html">
+   <LINK REL="Next"  HREF="000333.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDCM feedback</H1>
+    <B>Pieter Claerhout</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C4aef63030604250419h67f11459qd13ebd2264c01a5a%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] YDCM feedback">pieter at yellowduck.be
+       </A><BR>
+    <I>Tue Apr 25 13:19:57 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000331.html">[ydf-devel] YDCM feedback
+</A></li>
+        <LI>Next message: <A HREF="000333.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#332">[ date ]</a>
+              <a href="thread.html#332">[ thread ]</a>
+              <a href="subject.html#332">[ subject ]</a>
+              <a href="author.html#332">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Francisco,
+
+you did manage to confuse me for a second. The framework does allow
+multi-lingual content, right?
+
+pieter
+
+
+On 4/25/06, Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Hi Pieter
+</I>&gt;<i>
+</I>&gt;<i> Sorry but this email was in my spam box until now (i don't know whay
+</I>&gt;<i> but..)
+</I>&gt;<i>
+</I>&gt;<i> &gt; a few things:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; - I would keep the CMS components in a different directory than the
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> .. &quot;addons&quot; right? No problem at all
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &gt; - I like the fact that the components should have a predefined prefix
+</I>&gt;<i> &gt; (preferably configurable)
+</I>&gt;<i>
+</I>&gt;<i> Sure.. but that depends on your instalation script. DB table handling
+</I>&gt;<i> should be completly transparent (eg, that's way we have the PREFIX
+</I>&gt;<i> YDConfig set for dbs.. i don't know if it's working with
+</I>&gt;<i> YDDatabaseObject but it doesn't seems difficult to implement).
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &gt; - Extending YDDatabaseObject seems like a good idea. How will different
+</I>&gt;<i> &gt; languages be handled with that?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> There are 2 types of components: standard and non-standard.
+</I>&gt;<i> - Standard components are components that are related with _content_
+</I>&gt;<i> (eg, page, guestbook, ...)
+</I>&gt;<i> - Non-standard components are normal (?) components (eg, newsletter
+</I>&gt;<i> sending, visitors statistics..) and these are not related to content
+</I>&gt;<i>
+</I>&gt;<i> Because standard components are related to content, they are
+</I>&gt;<i> automatically related with the content tree and the language management.
+</I>&gt;<i> And the abstract Component object will care about that because it
+</I>&gt;<i> extends YDDatabaseObject (for db table relations management, eg with
+</I>&gt;<i> languages) and uses an internal YDDatabaseTree (for node management).
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &gt; - Do we really need the DBDesigner4 files, or are the SQL files enough?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> DBDesigner4 is the only (free) way i can think of manage a db scheme.
+</I>&gt;<i> Instead of lots of separated sql files you will have just 1 file. Btw,
+</I>&gt;<i> with DBDesigner4:
+</I>&gt;<i> - you can create the separated sql files you want (selecting tables to
+</I>&gt;<i> export)
+</I>&gt;<i> - you can visually manage tables and relations
+</I>&gt;<i> - you can export directly to your local development db
+</I>&gt;<i>
+</I>&gt;<i> .. the only feature i miss is be able to store example data (that's way
+</I>&gt;<i> i created the 'inserts.sql' file.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &gt; - The language files are only for the common strings, right, not for the
+</I>&gt;<i> &gt; actual contents (such as title, body, ...)
+</I>&gt;<i>
+</I>&gt;<i> No.
+</I>&gt;<i> - Each component has it's own language files (eg, YDCMPage has
+</I>&gt;<i> translations for it's own form elements: 'title', 'body'..., form
+</I>&gt;<i> validation rules: 'title is required'...)
+</I>&gt;<i> and
+</I>&gt;<i> - There is one component YDCMLanguages that contains the common strings
+</I>&gt;<i> (eg: 'yes', 'copy', 'delete', 'exit'..)
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &gt; - Adding the components example is definitely a good way to show how
+</I>&gt;<i> &gt; this works.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Currently i'm developing the YDCMPage component.
+</I>&gt;<i>
+</I>&gt;<i> regards
+</I>&gt;<i> Francisco A
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On 4/19/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt; wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     Pieter,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;      &gt; I like your proposed way of seeing everything as components. I
+</I>&gt;<i> think
+</I>&gt;<i> &gt;      &gt; that this is a very good basis for a CMS application.
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt; I guess that if we add the building blocks for that to the
+</I>&gt;<i> framework,
+</I>&gt;<i> &gt;      &gt; and create an example with one or two modules, people can start
+</I>&gt;<i> &gt;      &gt; developing their own modules. The modules in the end are where
+</I>&gt;<i> &gt;     most of
+</I>&gt;<i> &gt;      &gt; the logic is stored, while the underlying CMS framework is just
+</I>&gt;<i> &gt;     making
+</I>&gt;<i> &gt;      &gt; it easier to hook everything up. The admin side of things should
+</I>&gt;<i> &gt;     be part
+</I>&gt;<i> &gt;      &gt; of the framework as well as we don't want users to create this
+</I>&gt;<i> from
+</I>&gt;<i> &gt;      &gt; scratch.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     I think that we can start to develop some draft ;) but i think it's
+</I>&gt;<i> &gt;     better to define some standard rules for it.
+</I>&gt;<i> &gt;     I propose that:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     - components should be created inside the YDF addons directory (like
+</I>&gt;<i> a
+</I>&gt;<i> &gt;     standard addon)... or a specific YDCM directory?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     - each component should have a name with prefix YDCM and be defined
+</I>&gt;<i> &gt;     inside a directory with same name (like any YDF addon but specific
+</I>&gt;<i> for
+</I>&gt;<i> &gt;     CM). Eg: component 'page' should be defined as YDCMPage.php inside a
+</I>&gt;<i> &gt;     directory YDCMPage.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     - each component extends YDDatabaseObject (or a class that we can
+</I>&gt;<i> create
+</I>&gt;<i> &gt;     that defines an abstract component) and has (at least) a table name
+</I>&gt;<i> with
+</I>&gt;<i> &gt;     same name.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     - we should have a DBDesigner4 file that defined the db scheme of
+</I>&gt;<i> _all_
+</I>&gt;<i> &gt;     current components and not a separated file (or sql file) for each
+</I>&gt;<i> &gt;     component. Because we have an integrated environment with relations
+</I>&gt;<i> it's
+</I>&gt;<i> &gt;     not recommended to create a sql/DBDesigner4 file for each one. Btw,
+</I>&gt;<i> with
+</I>&gt;<i> &gt;     DBDesigner4 we can export sql files individually ;) and it's free.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     - inside each component directory we must create a &quot;languages&quot;
+</I>&gt;<i> &gt;     directory
+</I>&gt;<i> &gt;     that stores filenames about translations (when they are used in
+</I>&gt;<i> &gt;     component). I propose that a filename here should have the same name
+</I>&gt;<i> as
+</I>&gt;<i> &gt;     locale (eg, english filename is &quot;en.php&quot;, portugueses filename is &quot;
+</I>&gt;<i> &gt;     pt.php&quot;).
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     - in YDF example directory we can create the component example
+</I>&gt;<i> directory
+</I>&gt;<i> &gt;     (that demonstrates the visitors and administration side). Inside
+</I>&gt;<i> that
+</I>&gt;<i> &gt;     directory, a template directory with the correspondent templates.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     ... and i think we can start it.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     What you think?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     Francisco A
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;      &gt; We can leave the choice then to the users whether they want to
+</I>&gt;<i> &gt;     share out
+</I>&gt;<i> &gt;      &gt; their custom modules with other users or not.
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt; Cheers,
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt; pieter
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt; On 4/19/06, *Francisco Azevedo* &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i> &gt;      &gt; &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;&gt;
+</I>&gt;<i> &gt;     wrote:
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;     Pieter,
+</I>&gt;<i> &gt;      &gt;      &gt; Looks really cool for a way of working. Are you planning
+</I>&gt;<i> &gt;     to share
+</I>&gt;<i> &gt;      &gt;     this
+</I>&gt;<i> &gt;      &gt;      &gt; with the other Yellow Duck Users?
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;     I think this is a specific way of doing things because almost
+</I>&gt;<i> &gt;     all cms
+</I>&gt;<i> &gt;      &gt;     share a common structure and this is very different.. and if
+</I>&gt;<i> &gt;     YFcm start
+</I>&gt;<i> &gt;      &gt;     with it all components must be created with this structure in
+</I>&gt;<i> &gt;     mind..
+</I>&gt;<i> &gt;      &gt;     and
+</I>&gt;<i> &gt;      &gt;     i don't know your feedback about it.
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;     About sharing.. no problem at all. Languages and dbObject
+</I>&gt;<i> &gt;     logic (read:
+</I>&gt;<i> &gt;      &gt;     the main parts) are the most difficult part because have all
+</I>&gt;<i> &gt;     component
+</I>&gt;<i> &gt;      &gt;     operations.. pHObject and templating is different because
+</I>&gt;<i> each
+</I>&gt;<i> &gt;      &gt;     aplication has it's own way of presentation.. but i think we
+</I>&gt;<i> &gt;     should
+</I>&gt;<i> &gt;      &gt;     create a generic &quot;pHObject&quot; (read: a class and a template
+</I>&gt;<i> &gt;     directory to
+</I>&gt;<i> &gt;      &gt;     show how the component works).
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;     What do you think?
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;     Francisco A
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt; pieter
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt; On 4/19/06, *Francisco Azevedo* &lt; <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;
+</I>&gt;<i> &gt;      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;      &gt;      &gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;      &gt;     wrote:
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt;     img Zip
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt;     Francisco A
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;      &gt; --
+</I>&gt;<i> &gt;      &gt;      &gt; pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;
+</I>&gt;<i> &gt;      &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;
+</I>&gt;<i> &gt;     &lt;mailto: <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;
+</I>&gt;<i> &gt;      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt;&gt;
+</I>&gt;<i> &gt;      &gt;      &gt; . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;     _______________________________________________
+</I>&gt;<i> &gt;      &gt;     YDFramework-devel mailing list
+</I>&gt;<i> &gt;      &gt;     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i> &gt;      &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;&gt;
+</I>&gt;<i> &gt;      &gt;     <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i> &gt;     &lt;<A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>&gt;
+</I>&gt;<i> &gt;      &gt;     &lt;<A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>&gt;
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt;
+</I>&gt;<i> &gt;      &gt; --
+</I>&gt;<i> &gt;      &gt; pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt;&gt; .
+</I>&gt;<i> &gt;      &gt; <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     _______________________________________________
+</I>&gt;<i> &gt;     YDFramework-devel mailing list
+</I>&gt;<i> &gt;     <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> &gt;     &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>&gt;
+</I>&gt;<i> &gt;     <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt; pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> &lt;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&gt; .
+</I>&gt;<i> &gt; <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>
+
+
+--
+pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060425/3edfa925/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060425/3edfa925/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000331.html">[ydf-devel] YDCM feedback
+</A></li>
+	<LI>Next message: <A HREF="000333.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#332">[ date ]</a>
+              <a href="thread.html#332">[ thread ]</a>
+              <a href="subject.html#332">[ subject ]</a>
+              <a href="author.html#332">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

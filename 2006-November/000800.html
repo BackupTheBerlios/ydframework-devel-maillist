@@ -1,0 +1,2044 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2234 - in YDFramework2.0/trunk/examples/weblog:	include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2234%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include/languages%20manage&In-Reply-To=%3C200611211232.kALCWaF5002843%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000799.html">
+   <LINK REL="Next"  HREF="000801.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2234 - in YDFramework2.0/trunk/examples/weblog:	include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2234%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include/languages%20manage&In-Reply-To=%3C200611211232.kALCWaF5002843%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2234 - in YDFramework2.0/trunk/examples/weblog:	include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 21 13:32:36 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000799.html">[ydf-devel] r2233 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000801.html">[ydf-devel] r2235 - in YDFramework2.0/trunk/examples/weblog: .	include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#800">[ date ]</a>
+              <a href="thread.html#800">[ thread ]</a>
+              <a href="subject.html#800">[ subject ]</a>
+              <a href="author.html#800">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-21 13:32:35 +0100 (Tue, 21 Nov 2006)
+New Revision: 2234
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+The comments now have a weight which is the number of characters in the body of the comment. Turns out that a lot of spam comments have a body size of more than 2048 characters (2Kb), whereas normal comments don't tend to have this and are most of the time smaller.
+
+I might add a maxlen filter to the body of the comment to prevent comment spam even further.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-21 08:05:22 UTC (rev 2233)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-21 12:32:35 UTC (rev 2234)
+@@ -1,368 +1,369 @@
+-&lt;?php
+-
+-// General stuff
+-$GLOBALS['t']['not_found'] = 'Not Found';
+-$GLOBALS['t']['sorry_not_there'] = 'Sorry, but you are looking for something that isn\'t here.';
+-$GLOBALS['t']['sorry_not_found'] = 'Sorry, but you are looking for something that isn\'t here.';
+-$GLOBALS['t']['no_items_found'] = 'Sorry, but you are looking for something that isn\'t here.';
+-$GLOBALS['t']['by'] = 'by';
+-$GLOBALS['t']['required'] = 'required';
+-$GLOBALS['t']['login'] = 'Login';
+-$GLOBALS['t']['actions'] = 'Actions';
+-$GLOBALS['t']['save'] = 'Save';
+-$GLOBALS['t']['edit'] = 'edit';
+-$GLOBALS['t']['delete'] = 'delete';
+-$GLOBALS['t']['previous'] = 'previous';
+-$GLOBALS['t']['next'] = 'next';
+-$GLOBALS['t']['total'] = 'total';
+-$GLOBALS['t']['of'] = 'of';
+-$GLOBALS['t']['at'] = 'at';
+-$GLOBALS['t']['title'] = 'Title';
+-$GLOBALS['t']['install_warning'] = 'You need to remove the install.php and install.tpl files for security reasons!';
+-$GLOBALS['t']['home'] = 'Home';
+-$GLOBALS['t']['view'] = 'view';
+-$GLOBALS['t']['author'] = 'Author';
+-$GLOBALS['t']['more'] = 'more';
+-$GLOBALS['t']['err_general'] = 'An error occured';
+-$GLOBALS['t']['back'] = 'Go back';
+-$GLOBALS['t']['yes'] = 'yes';
+-$GLOBALS['t']['no'] = 'no';
+-$GLOBALS['t']['confirm_action'] = 'Are you sure you want to perform the following action?';
+-$GLOBALS['t']['rows'] = 'row(s)';
+-$GLOBALS['t']['tables'] = 'Tables';
+-$GLOBALS['t']['related_items'] = 'Related items to';
+-
+-// __std_header.tpl
+-$GLOBALS['t']['another_powered_by'] = 'Just another weblog powered by the ' . YD_FW_NAME . '!';
+-
+-// __std_footer.tpl
+-$GLOBALS['t']['or'] = 'or';
+-$GLOBALS['t']['powered_by'] = 'This weblog is powered by the';
+-$GLOBALS['t']['syndicate_as'] = 'Syndicate this weblog as ';
+-$GLOBALS['t']['syndicate_comments_as'] = 'Comments as ';
+-$GLOBALS['t']['syndicate_gallery_as'] = 'Galleries as ';
+-$GLOBALS['t']['design_by'] = 'Design by Michael Heilemann.';
+-
+-// __std_sidebar.tpl
+-$GLOBALS['t']['weblogs'] = 'Weblogs';
+-$GLOBALS['t']['weblog'] = 'Weblog';
+-$GLOBALS['t']['pages'] = 'Pages';
+-$GLOBALS['t']['page'] = 'Page';
+-$GLOBALS['t']['archives'] = 'Archives';
+-$GLOBALS['t']['archives_gallery'] = 'Photo Galleries';
+-$GLOBALS['t']['categories'] = 'Categories';
+-$GLOBALS['t']['view_posts_filed_under'] = 'View all posts filed under';
+-$GLOBALS['t']['links'] = 'Links';
+-$GLOBALS['t']['link_to'] = 'Link to';
+-$GLOBALS['t']['admin'] = 'Admin';
+-
+-// archive.tpl
+-
+-// category.tpl
+-$GLOBALS['t']['archive_for_the'] = 'Archive for the';
+-$GLOBALS['t']['category'] = 'Category';
+-
+-// index.tpl
+-$GLOBALS['t']['posted_in'] = 'posted in';
+-$GLOBALS['t']['older_items'] = 'Older posts';
+-
+-// item.tpl
+-$GLOBALS['t']['older_post'] = 'older post';
+-$GLOBALS['t']['newer_post'] = 'newer post';
+-$GLOBALS['t']['posted_under'] = 'This entry was posted on';
+-$GLOBALS['t']['filed_under'] = 'and is filed under';
+-$GLOBALS['t']['can_leave_comment'] = 'You can &lt;a href=&quot;#respond&quot;&gt;leave a comment&lt;/a&gt;';
+-$GLOBALS['t']['trackback'] = 'trackback';
+-$GLOBALS['t']['from_your_site'] = 'from your own site.';
+-$GLOBALS['t']['to'] = 'to';
+-$GLOBALS['t']['says'] = 'says';
+-$GLOBALS['t']['leave_comment'] = 'Leave a comment';
+-$GLOBALS['t']['error_comment'] = 'There was a problem adding your comment';
+-$GLOBALS['t']['name'] = 'Name';
+-$GLOBALS['t']['mail_not_published'] = 'Email (will not be published)';
+-$GLOBALS['t']['website'] = 'Website';
+-$GLOBALS['t']['submit_comment'] = 'Submit comment';
+-$GLOBALS['t']['ta_enter_url'] = 'Enter the url';
+-$GLOBALS['t']['ta_enter_email'] = 'Enter the email address';
+-$GLOBALS['t']['ta_enter_image'] = 'Enter the full url of the image';
+-$GLOBALS['t']['err_name'] = 'Name is missing';
+-$GLOBALS['t']['err_name_email'] = 'Name should not be an email address';
+-$GLOBALS['t']['err_email'] = 'Email is missing or invalid';
+-$GLOBALS['t']['err_website'] = 'The website specified is not a valid URL';
+-$GLOBALS['t']['err_comment'] = 'Comment is required';
+-$GLOBALS['t']['with'] = 'for';
+-$GLOBALS['t']['item_closed'] = 'This item does not allow comments.';
+-$GLOBALS['t']['spam'] = 'Spam';
+-$GLOBALS['t']['no_spam'] = 'No spam';
+-$GLOBALS['t']['choose_no_spam'] = 'Choose &quot;no spam&quot; here';
+-$GLOBALS['t']['err_userspam'] = 'Detected a spam attack';
+-
+-// comment_email.tpl
+-$GLOBALS['t']['new_comment'] = 'New comment';
+-$GLOBALS['t']['item_title'] = 'Item title';
+-$GLOBALS['t']['wrote'] = 'wrote';
+-
+-// item_email.tpl
+-$GLOBALS['t']['new_item'] = 'New item';
+-
+-// page.tpl
+-$GLOBALS['t']['created_on'] = 'Created on';
+-$GLOBALS['t']['last_modified_on'] = 'Last modified on';
+-
+-// Comments
+-$GLOBALS['t']['no_comments_yet'] = 'No comments yet';
+-$GLOBALS['t']['comment'] = 'Comment';
+-$GLOBALS['t']['comments'] = 'Comments';
+-$GLOBALS['t']['err_name_length'] = 'Name cannot be longer than 35 characters';
+-
+-// manage/__mng_header.tpl
+-$GLOBALS['t']['confirm_delete'] = 'Are you sure you want to delete:';
+-$GLOBALS['t']['logoff'] = 'logoff';
+-$GLOBALS['t']['view_site'] = 'view site';
+-$GLOBALS['t']['user'] = 'user';
+-$GLOBALS['t']['server'] = 'Server';
+-$GLOBALS['t']['h_shortcuts'] = 'Shortcuts';
+-$GLOBALS['t']['a_admin_home'] = 'Admin home';
+-$GLOBALS['t']['a_view_site'] = 'View site';
+-$GLOBALS['t']['h_contents'] = 'Contents';
+-$GLOBALS['t']['a_weblogs'] = 'Weblogs';
+-$GLOBALS['t']['a_items'] = 'Items';
+-$GLOBALS['t']['a_comments'] = 'Comments';
+-$GLOBALS['t']['a_links'] = 'Links';
+-$GLOBALS['t']['a_pages'] = 'Pages';
+-$GLOBALS['t']['a_images'] = 'Images';
+-$GLOBALS['t']['a_categories'] = 'Categories';
+-$GLOBALS['t']['h_global_settings'] = 'Global Settings';
+-$GLOBALS['t']['a_users'] = 'Users';
+-$GLOBALS['t']['a_settings'] = 'Settings';
+-$GLOBALS['t']['h_maintenance'] = 'Maintenance';
+-$GLOBALS['t']['a_cleanup_cache'] = 'Cache files';
+-$GLOBALS['t']['a_server_info'] = 'Server info';
+-$GLOBALS['t']['h_statistics'] = 'Statistics';
+-$GLOBALS['t']['a_statistics'] = 'Statistics';
+-$GLOBALS['t']['h_logoff'] = 'Logoff';
+-$GLOBALS['t']['a_logoff'] = 'Logoff';
+-
+-// manage/login.tpl
+-$GLOBALS['t']['username'] = 'User';
+-$GLOBALS['t']['password'] = 'Password';
+-$GLOBALS['t']['msg_login'] = 'Please enter your username and password';
+-$GLOBALS['t']['err_login'] = 'There was a problem logging you in';
+-$GLOBALS['t']['err_username'] = 'Username is missing';
+-$GLOBALS['t']['err_password'] = 'Password is missing or incorrect';
+-$GLOBALS['t']['err_login_all'] = 'Username and/or password are incorrect';
+-
+-// manage/cache.tpl
+-$GLOBALS['t']['cleanup'] = 'Cleanup';
+-$GLOBALS['t']['cleanup_cache'] = 'Cleanup cache files';
+-$GLOBALS['t']['cache_cleaned_up'] = 'Cache files are cleaned up!';
+-
+-// manage/serverinfo.tpl
+-$GLOBALS['t']['system'] = 'System';
+-$GLOBALS['t']['server_name'] = 'Server Name';
+-$GLOBALS['t']['server_address'] = 'Server Address';
+-$GLOBALS['t']['server_port'] = 'Server Port';
+-$GLOBALS['t']['server_software'] = 'Server Software';
+-$GLOBALS['t']['operating_system'] = 'Operating System';
+-$GLOBALS['t']['version'] = 'version';
+-$GLOBALS['t']['loaded_modules'] = 'Loaded modules';
+-$GLOBALS['t']['server_api'] = 'Server API';
+-$GLOBALS['t']['registered_streams'] = 'Registered PHP streams';
+-$GLOBALS['t']['include_path'] = 'Include Path';
+-$GLOBALS['t']['full_php_info'] = 'Full PHP information';
+-
+-// manage/stats.tpl
+-$GLOBALS['t']['general_stats'] = 'General statistics';
+-$GLOBALS['t']['installed_since'] = 'Installed since';
+-$GLOBALS['t']['num_days_online'] = 'Number of days online';
+-$GLOBALS['t']['days'] = 'day(s)';
+-$GLOBALS['t']['hits'] = 'hit(s)';
+-$GLOBALS['t']['no_bots'] = ' (without automatic bots)';
+-$GLOBALS['t']['total_hits'] = 'Total number of hits';
+-$GLOBALS['t']['total_hits_no_bots'] = $GLOBALS['t']['total_hits'] . $GLOBALS['t']['no_bots'];
+-$GLOBALS['t']['avg_hits_per_day'] = 'Average number of hits per day';
+-$GLOBALS['t']['avg_hits_per_day_no_bots'] = $GLOBALS['t']['avg_hits_per_day'] . $GLOBALS['t']['no_bots'];
+-$GLOBALS['t']['total_average_stats'] = 'Totals and averages';
+-$GLOBALS['t']['hits_last_6_months'] = 'Hits last 6 months';
+-$GLOBALS['t']['all_months'] = 'All months';
+-$GLOBALS['t']['hits_last_7_days'] = 'Hits last 7 days';
+-$GLOBALS['t']['all_days'] = 'All days';
+-$GLOBALS['t']['nothing_found'] = 'Nothing found';
+-$GLOBALS['t']['top_10_urls'] = 'The 10 most visited URLs';
+-$GLOBALS['t']['all_urls'] = 'All URLs';
+-$GLOBALS['t']['web_browsers'] = 'Web browsers';
+-$GLOBALS['t']['operating_systems'] = 'Operating systems';
+-$GLOBALS['t']['other'] = 'Other';
+-$GLOBALS['t']['totalitems'] = 'Total number of items';
+-$GLOBALS['t']['totalcomments'] = 'Total number of comments';
+-$GLOBALS['t']['items'] = 'item(s)';
+-$GLOBALS['t']['top_10_commenters'] = 'The 10 most active commenters';
+-$GLOBALS['t']['all_commenters'] = 'All commenters';
+-$GLOBALS['t']['reset_stats'] = 'Reset all statistics';
+-
+-// manage/users.tpl
+-$GLOBALS['t']['useremail'] = 'Email address';
+-$GLOBALS['t']['created'] = 'Created on';
+-$GLOBALS['t']['add_user'] = 'Add new user';
+-$GLOBALS['t']['req_useremail'] = 'Email address is missing or invalid';
+-$GLOBALS['t']['req_loginpass'] = 'Password is required';
+-$GLOBALS['t']['user_dup'] = 'User already exists';
+-$GLOBALS['t']['change_user_desc'] = 'Changing user:';
+-
+-// manage/images.tpl
+-$GLOBALS['t']['upload_image'] = 'Upload image';
+-$GLOBALS['t']['ok'] = 'OK';
+-$GLOBALS['t']['size'] = 'Size';
+-$GLOBALS['t']['type'] = 'Type';
+-$GLOBALS['t']['dimensions'] = 'Dimensions';
+-$GLOBALS['t']['no_images_found'] = 'No images were found';
+-
+-// manage/categories.tpl
+-$GLOBALS['t']['add_category'] = 'Add category';
+-$GLOBALS['t']['number_of_items'] = 'Number of items';
+-$GLOBALS['t']['change_category_desc'] = 'Edit category';
+-$GLOBALS['t']['err_category_title'] = 'Category name is required';
+-$GLOBALS['t']['err_unique_category'] = 'Category exists already';
+-$GLOBALS['t']['no_categories_found'] = 'No categories were found';
+-
+-// manage/links.tpl
+-$GLOBALS['t']['link_title'] = 'Link Title';
+-$GLOBALS['t']['link_url'] = 'Link URL';
+-$GLOBALS['t']['add_link'] = 'Add link';
+-$GLOBALS['t']['err_link_title'] = 'Link title is required';
+-$GLOBALS['t']['err_link_url'] = 'Link URL is required';
+-$GLOBALS['t']['err_unique_link'] = 'Link URL exists already';
+-$GLOBALS['t']['change_link_desc'] = 'Change link';
+-$GLOBALS['t']['no_links_found'] = 'No links were found';
+-$GLOBALS['t']['num_visits'] = 'Visits';
+-
+-// manage/pages.tpl
+-$GLOBALS['t']['add_page'] = 'Add page';
+-$GLOBALS['t']['page_title'] = 'Page title';
+-$GLOBALS['t']['page_body'] = 'Page body';
+-$GLOBALS['t']['change_page_desc'] = 'Change page';
+-$GLOBALS['t']['err_page_title'] = 'Page title is required';
+-$GLOBALS['t']['err_page_body'] = 'Page body is required';
+-$GLOBALS['t']['no_pages_found'] = 'No pages were found';
+-
+-// manage/comments.tpl
+-$GLOBALS['t']['date'] = 'Date';
+-$GLOBALS['t']['parent'] = 'Parent Item';
+-$GLOBALS['t']['change_comment_desc'] = 'Change comment';
+-$GLOBALS['t']['mail'] = 'Email';
+-$GLOBALS['t']['no_comments_found'] = 'No comments were found';
+-$GLOBALS['t']['no_spam_comments_found'] = 'No spam comments were found';
+-$GLOBALS['t']['posted_from'] = 'Posted from IP address';
+-$GLOBALS['t']['a_comments_spam'] = 'Spam comments';
+-$GLOBALS['t']['mark_as_spam'] = 'mark as spam';
+-$GLOBALS['t']['mark_as_not_spam'] = 'mark as not spam';
+-$GLOBALS['t']['is_spam'] = 'Spam comment';
+-$GLOBALS['t']['ip_number'] = 'IP number';
+-$GLOBALS['t']['spam_delete_desc'] = 'Spam comments are automatically deleted after 7 days.';
+-$GLOBALS['t']['confirm_empty_spam'] = 'Are you sure you want to delete all spam comments?';
+-$GLOBALS['t']['empty_spam_now'] = 'Delete all spam comments now.';
+-
+-// manage/config.tpl
+-$GLOBALS['t']['cfg_db_settings'] = 'Database Settings';
+-$GLOBALS['t']['cfg_db_host'] = 'Database Hostname';
+-$GLOBALS['t']['cfg_db_name'] = 'Database Name';
+-$GLOBALS['t']['cfg_db_user'] = 'Database Username';
+-$GLOBALS['t']['cfg_db_pass'] = 'Database Password';
+-$GLOBALS['t']['cfg_weblog_settings'] = 'Weblog Settings';
+-$GLOBALS['t']['cfg_weblog_title'] = 'Weblog Title';
+-$GLOBALS['t']['cfg_weblog_description'] = 'Weblog Description';
+-$GLOBALS['t']['cfg_weblog_entries_fp'] = 'Number of items on the front page';
+-$GLOBALS['t']['cfg_weblog_skin'] = 'Weblog skin';
+-$GLOBALS['t']['cfg_weblog_language'] = 'Weblog Language';
+-$GLOBALS['t']['cfg_weblog_date_format'] = 'Date format';
+-$GLOBALS['t']['cfg_notification'] = 'Notification Settings';
+-$GLOBALS['t']['cfg_notification_email_comment'] = 'Email new comments';
+-$GLOBALS['t']['cfg_notification_email_item'] = 'Email new items to site authors';
+-$GLOBALS['t']['cfg_rss'] = 'Syndication Settings';
+-$GLOBALS['t']['cfg_rss_max_syndicated_items'] = 'Number of syndicated items';
+-$GLOBALS['t']['err_db_host'] = 'Database Hostname is required';
+-$GLOBALS['t']['err_db_name'] = 'Database Name is required';
+-$GLOBALS['t']['err_db_user'] = 'Database Username is required';
+-$GLOBALS['t']['err_weblog_title'] = 'Weblog Title is required';
+-$GLOBALS['t']['err_weblog_entries_fp'] = 'Number of entries on the front page is required';
+-$GLOBALS['t']['err_weblog_entries_fp_num'] = 'Number of entries on the front page should be numeric';
+-$GLOBALS['t']['err_max_syndicated_items'] = 'Number of syndicated items is required';
+-$GLOBALS['t']['err_max_syndicated_items_num'] = 'Number of syndicated items should be numeric';
+-$GLOBALS['t']['change_config'] = 'Change';
+-$GLOBALS['t']['cfg_db_prefix'] = 'Database table prefix';
+-$GLOBALS['t']['cfg_cache'] = 'Caching';
+-$GLOBALS['t']['cfg_use_cache_comment'] = 'Cache public pages';
+-$GLOBALS['t']['cfg_friendly_urls'] = 'Friendly URLs';
+-$GLOBALS['t']['cfg_spam_protection'] = 'Spam protection';
+-$GLOBALS['t']['cfg_auto_close_items'] = 'Do not allow comment after x days';
+-$GLOBALS['t']['err_auto_close_items'] = 'Do not allow comment after x days should be numeric';
+-$GLOBALS['t']['cfg_include_debug_info'] = 'Show debugging information';
+-$GLOBALS['t']['cfg_default_item_settings'] = 'Default values for new items';
+-$GLOBALS['t']['cfg_weblog_google_analytics'] = '&lt;a href=&quot;<A HREF="http://www.google.com/analytics/">http://www.google.com/analytics/</A>&quot; target=&quot;_blank&quot;&gt;Google Analytics&lt;/a&gt; Account';
+-$GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
+-$GLOBALS['t']['cfg_keep_stats'] = 'Track statistics';
+-$GLOBALS['t']['cfg_blocked_ips'] = 'Blocked IP addresses separated by comma\'s. An asterix can be used as a wildcard.';
+-$GLOBALS['t']['cfg_akismet_key'] = 'Akismet API key (&lt;a href=&quot;<A HREF="http://wordpress.com/signup/">http://wordpress.com/signup/</A>&quot; target=&quot;_blank&quot;&gt;get one here&lt;/a&gt;)';
+-$GLOBALS['t']['cfg_max_img_size'] = 'Maximum image size';
+-$GLOBALS['t']['cfg_comment_interval'] = 'Comment interval in seconds';
+-$GLOBALS['t']['err_comment_interval_num'] = 'Comment interval should be numeric';
+-
+-// manage/item.tpl
+-$GLOBALS['t']['item_title'] = 'Item Title';
+-$GLOBALS['t']['item_body'] = 'Item Body';
+-$GLOBALS['t']['item_body_more'] = 'Item Body (extended)';
+-$GLOBALS['t']['select_image'] = 'Select Image';
+-$GLOBALS['t']['view'] = 'view';
+-$GLOBALS['t']['add_item'] = 'Add Item';
+-$GLOBALS['t']['change_item_desc'] = 'Change Item';
+-$GLOBALS['t']['err_item_title'] = 'Item title is required';
+-$GLOBALS['t']['err_item_body'] = 'Item body is required';
+-$GLOBALS['t']['gallery'] = 'Photos';
+-$GLOBALS['t']['allow_comments'] = 'Allow comments';
+-$GLOBALS['t']['auto_close_item'] = 'Automatically close item ';
+-if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
+-    $GLOBALS['t']['auto_close_item'] .= 'after ' . YDConfig::get( 'auto_close_items', '' ) . ' days';
+-}
+-$GLOBALS['t']['is_draft'] = 'Draft (do not publish)';
+-$GLOBALS['t']['draft'] = 'draft';
+-$GLOBALS['t']['closed'] = 'closed';
+-$GLOBALS['t']['active_items'] = 'active items';
+-$GLOBALS['t']['drafts_items'] = 'drafts';
+-$GLOBALS['t']['closed_items'] = 'closed items';
+-
+-// item_gallery.tpl
+-$GLOBALS['t']['no_images_yet'] = 'No images yet';
+-$GLOBALS['t']['image'] = 'image';
+-$GLOBALS['t']['images'] = 'images';
+-$GLOBALS['t']['item'] = 'Item';
+-$GLOBALS['t']['edit_meta'] = 'metadata';
+-
+-// manage/index.tpl
+-$GLOBALS['t']['latest_items'] = 'Latest items';
+-$GLOBALS['t']['overview'] = 'Overview';
+-
+-// manage/dbbackup.tpl
+-$GLOBALS['t']['a_db_backup'] = 'Database backup';
+-$GLOBALS['t']['bck_name'] = 'Database backup filename';
+-$GLOBALS['t']['gz_compress'] = 'Compress backup using GZip compression';
+-$GLOBALS['t']['backup'] = 'Backup';
+-$GLOBALS['t']['err_bck_name'] = 'Database backup filename is required';
+-$GLOBALS['t']['bck_name_comment'] = 'Use &quot;%%DBNAME&quot; for database name and &lt;a href=&quot;<A HREF="http://www.php.net/strftime">http://www.php.net/strftime</A>&quot; target=&quot;_blank&quot;&gt;any strftime options&lt;/a&gt; for time specification. The extension will be automagically added. Any other text will be preserved.';
+-$GLOBALS['t']['bck_type'] = 'Backup type';
+-$GLOBALS['t']['bck_full'] = 'Full backup (structure and data)';
+-$GLOBALS['t']['bck_structure_only'] = 'Structure only';
+-$GLOBALS['t']['bck_data_only'] = 'Data only';
+-
+-// manage/version_info.tpl
+-$GLOBALS['t']['h_diagtools'] = 'Tools';
+-$GLOBALS['t']['a_version_info'] = 'Auto Update';
+-$GLOBALS['t']['version_check'] = 'Check Version';
+-$GLOBALS['t']['installed_version'] = 'Installed version';
+-$GLOBALS['t']['development_version'] = 'Development version';
+-$GLOBALS['t']['msg_correct_version'] = 'There are no newer versions available';
+-$GLOBALS['t']['msg_install_update'] = 'Newer versions are available';
+-$GLOBALS['t']['development_changelog'] = 'Development Changelog';
+-$GLOBALS['t']['schema_version'] = 'Database schema version';
+-$GLOBALS['t']['installed_on'] = 'installed on';
+-
+-?&gt;
++&lt;?php
++
++// General stuff
++$GLOBALS['t']['not_found'] = 'Not Found';
++$GLOBALS['t']['sorry_not_there'] = 'Sorry, but you are looking for something that isn\'t here.';
++$GLOBALS['t']['sorry_not_found'] = 'Sorry, but you are looking for something that isn\'t here.';
++$GLOBALS['t']['no_items_found'] = 'Sorry, but you are looking for something that isn\'t here.';
++$GLOBALS['t']['by'] = 'by';
++$GLOBALS['t']['required'] = 'required';
++$GLOBALS['t']['login'] = 'Login';
++$GLOBALS['t']['actions'] = 'Actions';
++$GLOBALS['t']['save'] = 'Save';
++$GLOBALS['t']['edit'] = 'edit';
++$GLOBALS['t']['delete'] = 'delete';
++$GLOBALS['t']['previous'] = 'previous';
++$GLOBALS['t']['next'] = 'next';
++$GLOBALS['t']['total'] = 'total';
++$GLOBALS['t']['of'] = 'of';
++$GLOBALS['t']['at'] = 'at';
++$GLOBALS['t']['title'] = 'Title';
++$GLOBALS['t']['install_warning'] = 'You need to remove the install.php and install.tpl files for security reasons!';
++$GLOBALS['t']['home'] = 'Home';
++$GLOBALS['t']['view'] = 'view';
++$GLOBALS['t']['author'] = 'Author';
++$GLOBALS['t']['more'] = 'more';
++$GLOBALS['t']['err_general'] = 'An error occured';
++$GLOBALS['t']['back'] = 'Go back';
++$GLOBALS['t']['yes'] = 'yes';
++$GLOBALS['t']['no'] = 'no';
++$GLOBALS['t']['confirm_action'] = 'Are you sure you want to perform the following action?';
++$GLOBALS['t']['rows'] = 'row(s)';
++$GLOBALS['t']['tables'] = 'Tables';
++$GLOBALS['t']['related_items'] = 'Related items to';
++
++// __std_header.tpl
++$GLOBALS['t']['another_powered_by'] = 'Just another weblog powered by the ' . YD_FW_NAME . '!';
++
++// __std_footer.tpl
++$GLOBALS['t']['or'] = 'or';
++$GLOBALS['t']['powered_by'] = 'This weblog is powered by the';
++$GLOBALS['t']['syndicate_as'] = 'Syndicate this weblog as ';
++$GLOBALS['t']['syndicate_comments_as'] = 'Comments as ';
++$GLOBALS['t']['syndicate_gallery_as'] = 'Galleries as ';
++$GLOBALS['t']['design_by'] = 'Design by Michael Heilemann.';
++
++// __std_sidebar.tpl
++$GLOBALS['t']['weblogs'] = 'Weblogs';
++$GLOBALS['t']['weblog'] = 'Weblog';
++$GLOBALS['t']['pages'] = 'Pages';
++$GLOBALS['t']['page'] = 'Page';
++$GLOBALS['t']['archives'] = 'Archives';
++$GLOBALS['t']['archives_gallery'] = 'Photo Galleries';
++$GLOBALS['t']['categories'] = 'Categories';
++$GLOBALS['t']['view_posts_filed_under'] = 'View all posts filed under';
++$GLOBALS['t']['links'] = 'Links';
++$GLOBALS['t']['link_to'] = 'Link to';
++$GLOBALS['t']['admin'] = 'Admin';
++
++// archive.tpl
++
++// category.tpl
++$GLOBALS['t']['archive_for_the'] = 'Archive for the';
++$GLOBALS['t']['category'] = 'Category';
++
++// index.tpl
++$GLOBALS['t']['posted_in'] = 'posted in';
++$GLOBALS['t']['older_items'] = 'Older posts';
++
++// item.tpl
++$GLOBALS['t']['older_post'] = 'older post';
++$GLOBALS['t']['newer_post'] = 'newer post';
++$GLOBALS['t']['posted_under'] = 'This entry was posted on';
++$GLOBALS['t']['filed_under'] = 'and is filed under';
++$GLOBALS['t']['can_leave_comment'] = 'You can &lt;a href=&quot;#respond&quot;&gt;leave a comment&lt;/a&gt;';
++$GLOBALS['t']['trackback'] = 'trackback';
++$GLOBALS['t']['from_your_site'] = 'from your own site.';
++$GLOBALS['t']['to'] = 'to';
++$GLOBALS['t']['says'] = 'says';
++$GLOBALS['t']['leave_comment'] = 'Leave a comment';
++$GLOBALS['t']['error_comment'] = 'There was a problem adding your comment';
++$GLOBALS['t']['name'] = 'Name';
++$GLOBALS['t']['mail_not_published'] = 'Email (will not be published)';
++$GLOBALS['t']['website'] = 'Website';
++$GLOBALS['t']['submit_comment'] = 'Submit comment';
++$GLOBALS['t']['ta_enter_url'] = 'Enter the url';
++$GLOBALS['t']['ta_enter_email'] = 'Enter the email address';
++$GLOBALS['t']['ta_enter_image'] = 'Enter the full url of the image';
++$GLOBALS['t']['err_name'] = 'Name is missing';
++$GLOBALS['t']['err_name_email'] = 'Name should not be an email address';
++$GLOBALS['t']['err_email'] = 'Email is missing or invalid';
++$GLOBALS['t']['err_website'] = 'The website specified is not a valid URL';
++$GLOBALS['t']['err_comment'] = 'Comment is required';
++$GLOBALS['t']['with'] = 'for';
++$GLOBALS['t']['item_closed'] = 'This item does not allow comments.';
++$GLOBALS['t']['spam'] = 'Spam';
++$GLOBALS['t']['no_spam'] = 'No spam';
++$GLOBALS['t']['choose_no_spam'] = 'Choose &quot;no spam&quot; here';
++$GLOBALS['t']['err_userspam'] = 'Detected a spam attack';
++
++// comment_email.tpl
++$GLOBALS['t']['new_comment'] = 'New comment';
++$GLOBALS['t']['item_title'] = 'Item title';
++$GLOBALS['t']['wrote'] = 'wrote';
++
++// item_email.tpl
++$GLOBALS['t']['new_item'] = 'New item';
++
++// page.tpl
++$GLOBALS['t']['created_on'] = 'Created on';
++$GLOBALS['t']['last_modified_on'] = 'Last modified on';
++
++// Comments
++$GLOBALS['t']['no_comments_yet'] = 'No comments yet';
++$GLOBALS['t']['comment'] = 'Comment';
++$GLOBALS['t']['comments'] = 'Comments';
++$GLOBALS['t']['err_name_length'] = 'Name cannot be longer than 35 characters';
++
++// manage/__mng_header.tpl
++$GLOBALS['t']['confirm_delete'] = 'Are you sure you want to delete:';
++$GLOBALS['t']['logoff'] = 'logoff';
++$GLOBALS['t']['view_site'] = 'view site';
++$GLOBALS['t']['user'] = 'user';
++$GLOBALS['t']['server'] = 'Server';
++$GLOBALS['t']['h_shortcuts'] = 'Shortcuts';
++$GLOBALS['t']['a_admin_home'] = 'Admin home';
++$GLOBALS['t']['a_view_site'] = 'View site';
++$GLOBALS['t']['h_contents'] = 'Contents';
++$GLOBALS['t']['a_weblogs'] = 'Weblogs';
++$GLOBALS['t']['a_items'] = 'Items';
++$GLOBALS['t']['a_comments'] = 'Comments';
++$GLOBALS['t']['a_links'] = 'Links';
++$GLOBALS['t']['a_pages'] = 'Pages';
++$GLOBALS['t']['a_images'] = 'Images';
++$GLOBALS['t']['a_categories'] = 'Categories';
++$GLOBALS['t']['h_global_settings'] = 'Global Settings';
++$GLOBALS['t']['a_users'] = 'Users';
++$GLOBALS['t']['a_settings'] = 'Settings';
++$GLOBALS['t']['h_maintenance'] = 'Maintenance';
++$GLOBALS['t']['a_cleanup_cache'] = 'Cache files';
++$GLOBALS['t']['a_server_info'] = 'Server info';
++$GLOBALS['t']['h_statistics'] = 'Statistics';
++$GLOBALS['t']['a_statistics'] = 'Statistics';
++$GLOBALS['t']['h_logoff'] = 'Logoff';
++$GLOBALS['t']['a_logoff'] = 'Logoff';
++
++// manage/login.tpl
++$GLOBALS['t']['username'] = 'User';
++$GLOBALS['t']['password'] = 'Password';
++$GLOBALS['t']['msg_login'] = 'Please enter your username and password';
++$GLOBALS['t']['err_login'] = 'There was a problem logging you in';
++$GLOBALS['t']['err_username'] = 'Username is missing';
++$GLOBALS['t']['err_password'] = 'Password is missing or incorrect';
++$GLOBALS['t']['err_login_all'] = 'Username and/or password are incorrect';
++
++// manage/cache.tpl
++$GLOBALS['t']['cleanup'] = 'Cleanup';
++$GLOBALS['t']['cleanup_cache'] = 'Cleanup cache files';
++$GLOBALS['t']['cache_cleaned_up'] = 'Cache files are cleaned up!';
++
++// manage/serverinfo.tpl
++$GLOBALS['t']['system'] = 'System';
++$GLOBALS['t']['server_name'] = 'Server Name';
++$GLOBALS['t']['server_address'] = 'Server Address';
++$GLOBALS['t']['server_port'] = 'Server Port';
++$GLOBALS['t']['server_software'] = 'Server Software';
++$GLOBALS['t']['operating_system'] = 'Operating System';
++$GLOBALS['t']['version'] = 'version';
++$GLOBALS['t']['loaded_modules'] = 'Loaded modules';
++$GLOBALS['t']['server_api'] = 'Server API';
++$GLOBALS['t']['registered_streams'] = 'Registered PHP streams';
++$GLOBALS['t']['include_path'] = 'Include Path';
++$GLOBALS['t']['full_php_info'] = 'Full PHP information';
++
++// manage/stats.tpl
++$GLOBALS['t']['general_stats'] = 'General statistics';
++$GLOBALS['t']['installed_since'] = 'Installed since';
++$GLOBALS['t']['num_days_online'] = 'Number of days online';
++$GLOBALS['t']['days'] = 'day(s)';
++$GLOBALS['t']['hits'] = 'hit(s)';
++$GLOBALS['t']['no_bots'] = ' (without automatic bots)';
++$GLOBALS['t']['total_hits'] = 'Total number of hits';
++$GLOBALS['t']['total_hits_no_bots'] = $GLOBALS['t']['total_hits'] . $GLOBALS['t']['no_bots'];
++$GLOBALS['t']['avg_hits_per_day'] = 'Average number of hits per day';
++$GLOBALS['t']['avg_hits_per_day_no_bots'] = $GLOBALS['t']['avg_hits_per_day'] . $GLOBALS['t']['no_bots'];
++$GLOBALS['t']['total_average_stats'] = 'Totals and averages';
++$GLOBALS['t']['hits_last_6_months'] = 'Hits last 6 months';
++$GLOBALS['t']['all_months'] = 'All months';
++$GLOBALS['t']['hits_last_7_days'] = 'Hits last 7 days';
++$GLOBALS['t']['all_days'] = 'All days';
++$GLOBALS['t']['nothing_found'] = 'Nothing found';
++$GLOBALS['t']['top_10_urls'] = 'The 10 most visited URLs';
++$GLOBALS['t']['all_urls'] = 'All URLs';
++$GLOBALS['t']['web_browsers'] = 'Web browsers';
++$GLOBALS['t']['operating_systems'] = 'Operating systems';
++$GLOBALS['t']['other'] = 'Other';
++$GLOBALS['t']['totalitems'] = 'Total number of items';
++$GLOBALS['t']['totalcomments'] = 'Total number of comments';
++$GLOBALS['t']['items'] = 'item(s)';
++$GLOBALS['t']['top_10_commenters'] = 'The 10 most active commenters';
++$GLOBALS['t']['all_commenters'] = 'All commenters';
++$GLOBALS['t']['reset_stats'] = 'Reset all statistics';
++
++// manage/users.tpl
++$GLOBALS['t']['useremail'] = 'Email address';
++$GLOBALS['t']['created'] = 'Created on';
++$GLOBALS['t']['add_user'] = 'Add new user';
++$GLOBALS['t']['req_useremail'] = 'Email address is missing or invalid';
++$GLOBALS['t']['req_loginpass'] = 'Password is required';
++$GLOBALS['t']['user_dup'] = 'User already exists';
++$GLOBALS['t']['change_user_desc'] = 'Changing user:';
++
++// manage/images.tpl
++$GLOBALS['t']['upload_image'] = 'Upload image';
++$GLOBALS['t']['ok'] = 'OK';
++$GLOBALS['t']['size'] = 'Size';
++$GLOBALS['t']['type'] = 'Type';
++$GLOBALS['t']['dimensions'] = 'Dimensions';
++$GLOBALS['t']['no_images_found'] = 'No images were found';
++
++// manage/categories.tpl
++$GLOBALS['t']['add_category'] = 'Add category';
++$GLOBALS['t']['number_of_items'] = 'Number of items';
++$GLOBALS['t']['change_category_desc'] = 'Edit category';
++$GLOBALS['t']['err_category_title'] = 'Category name is required';
++$GLOBALS['t']['err_unique_category'] = 'Category exists already';
++$GLOBALS['t']['no_categories_found'] = 'No categories were found';
++
++// manage/links.tpl
++$GLOBALS['t']['link_title'] = 'Link Title';
++$GLOBALS['t']['link_url'] = 'Link URL';
++$GLOBALS['t']['add_link'] = 'Add link';
++$GLOBALS['t']['err_link_title'] = 'Link title is required';
++$GLOBALS['t']['err_link_url'] = 'Link URL is required';
++$GLOBALS['t']['err_unique_link'] = 'Link URL exists already';
++$GLOBALS['t']['change_link_desc'] = 'Change link';
++$GLOBALS['t']['no_links_found'] = 'No links were found';
++$GLOBALS['t']['num_visits'] = 'Visits';
++
++// manage/pages.tpl
++$GLOBALS['t']['add_page'] = 'Add page';
++$GLOBALS['t']['page_title'] = 'Page title';
++$GLOBALS['t']['page_body'] = 'Page body';
++$GLOBALS['t']['change_page_desc'] = 'Change page';
++$GLOBALS['t']['err_page_title'] = 'Page title is required';
++$GLOBALS['t']['err_page_body'] = 'Page body is required';
++$GLOBALS['t']['no_pages_found'] = 'No pages were found';
++
++// manage/comments.tpl
++$GLOBALS['t']['date'] = 'Date';
++$GLOBALS['t']['parent'] = 'Parent Item';
++$GLOBALS['t']['change_comment_desc'] = 'Change comment';
++$GLOBALS['t']['mail'] = 'Email';
++$GLOBALS['t']['no_comments_found'] = 'No comments were found';
++$GLOBALS['t']['no_spam_comments_found'] = 'No spam comments were found';
++$GLOBALS['t']['posted_from'] = 'Posted from IP address';
++$GLOBALS['t']['a_comments_spam'] = 'Spam comments';
++$GLOBALS['t']['mark_as_spam'] = 'spam';
++$GLOBALS['t']['mark_as_not_spam'] = 'not spam';
++$GLOBALS['t']['is_spam'] = 'Spam comment';
++$GLOBALS['t']['ip_number'] = 'IP number';
++$GLOBALS['t']['spam_delete_desc'] = 'Spam comments are automatically deleted after 7 days.';
++$GLOBALS['t']['confirm_empty_spam'] = 'Are you sure you want to delete all spam comments?';
++$GLOBALS['t']['empty_spam_now'] = 'Delete all spam comments now.';
++$GLOBALS['t']['weight'] = 'Weight';
++
++// manage/config.tpl
++$GLOBALS['t']['cfg_db_settings'] = 'Database Settings';
++$GLOBALS['t']['cfg_db_host'] = 'Database Hostname';
++$GLOBALS['t']['cfg_db_name'] = 'Database Name';
++$GLOBALS['t']['cfg_db_user'] = 'Database Username';
++$GLOBALS['t']['cfg_db_pass'] = 'Database Password';
++$GLOBALS['t']['cfg_weblog_settings'] = 'Weblog Settings';
++$GLOBALS['t']['cfg_weblog_title'] = 'Weblog Title';
++$GLOBALS['t']['cfg_weblog_description'] = 'Weblog Description';
++$GLOBALS['t']['cfg_weblog_entries_fp'] = 'Number of items on the front page';
++$GLOBALS['t']['cfg_weblog_skin'] = 'Weblog skin';
++$GLOBALS['t']['cfg_weblog_language'] = 'Weblog Language';
++$GLOBALS['t']['cfg_weblog_date_format'] = 'Date format';
++$GLOBALS['t']['cfg_notification'] = 'Notification Settings';
++$GLOBALS['t']['cfg_notification_email_comment'] = 'Email new comments';
++$GLOBALS['t']['cfg_notification_email_item'] = 'Email new items to site authors';
++$GLOBALS['t']['cfg_rss'] = 'Syndication Settings';
++$GLOBALS['t']['cfg_rss_max_syndicated_items'] = 'Number of syndicated items';
++$GLOBALS['t']['err_db_host'] = 'Database Hostname is required';
++$GLOBALS['t']['err_db_name'] = 'Database Name is required';
++$GLOBALS['t']['err_db_user'] = 'Database Username is required';
++$GLOBALS['t']['err_weblog_title'] = 'Weblog Title is required';
++$GLOBALS['t']['err_weblog_entries_fp'] = 'Number of entries on the front page is required';
++$GLOBALS['t']['err_weblog_entries_fp_num'] = 'Number of entries on the front page should be numeric';
++$GLOBALS['t']['err_max_syndicated_items'] = 'Number of syndicated items is required';
++$GLOBALS['t']['err_max_syndicated_items_num'] = 'Number of syndicated items should be numeric';
++$GLOBALS['t']['change_config'] = 'Change';
++$GLOBALS['t']['cfg_db_prefix'] = 'Database table prefix';
++$GLOBALS['t']['cfg_cache'] = 'Caching';
++$GLOBALS['t']['cfg_use_cache_comment'] = 'Cache public pages';
++$GLOBALS['t']['cfg_friendly_urls'] = 'Friendly URLs';
++$GLOBALS['t']['cfg_spam_protection'] = 'Spam protection';
++$GLOBALS['t']['cfg_auto_close_items'] = 'Do not allow comment after x days';
++$GLOBALS['t']['err_auto_close_items'] = 'Do not allow comment after x days should be numeric';
++$GLOBALS['t']['cfg_include_debug_info'] = 'Show debugging information';
++$GLOBALS['t']['cfg_default_item_settings'] = 'Default values for new items';
++$GLOBALS['t']['cfg_weblog_google_analytics'] = '&lt;a href=&quot;<A HREF="http://www.google.com/analytics/">http://www.google.com/analytics/</A>&quot; target=&quot;_blank&quot;&gt;Google Analytics&lt;/a&gt; Account';
++$GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
++$GLOBALS['t']['cfg_keep_stats'] = 'Track statistics';
++$GLOBALS['t']['cfg_blocked_ips'] = 'Blocked IP addresses separated by comma\'s. An asterix can be used as a wildcard.';
++$GLOBALS['t']['cfg_akismet_key'] = 'Akismet API key (&lt;a href=&quot;<A HREF="http://wordpress.com/signup/">http://wordpress.com/signup/</A>&quot; target=&quot;_blank&quot;&gt;get one here&lt;/a&gt;)';
++$GLOBALS['t']['cfg_max_img_size'] = 'Maximum image size';
++$GLOBALS['t']['cfg_comment_interval'] = 'Comment interval in seconds';
++$GLOBALS['t']['err_comment_interval_num'] = 'Comment interval should be numeric';
++
++// manage/item.tpl
++$GLOBALS['t']['item_title'] = 'Item Title';
++$GLOBALS['t']['item_body'] = 'Item Body';
++$GLOBALS['t']['item_body_more'] = 'Item Body (extended)';
++$GLOBALS['t']['select_image'] = 'Select Image';
++$GLOBALS['t']['view'] = 'view';
++$GLOBALS['t']['add_item'] = 'Add Item';
++$GLOBALS['t']['change_item_desc'] = 'Change Item';
++$GLOBALS['t']['err_item_title'] = 'Item title is required';
++$GLOBALS['t']['err_item_body'] = 'Item body is required';
++$GLOBALS['t']['gallery'] = 'Photos';
++$GLOBALS['t']['allow_comments'] = 'Allow comments';
++$GLOBALS['t']['auto_close_item'] = 'Automatically close item ';
++if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
++    $GLOBALS['t']['auto_close_item'] .= 'after ' . YDConfig::get( 'auto_close_items', '' ) . ' days';
++}
++$GLOBALS['t']['is_draft'] = 'Draft (do not publish)';
++$GLOBALS['t']['draft'] = 'draft';
++$GLOBALS['t']['closed'] = 'closed';
++$GLOBALS['t']['active_items'] = 'active items';
++$GLOBALS['t']['drafts_items'] = 'drafts';
++$GLOBALS['t']['closed_items'] = 'closed items';
++
++// item_gallery.tpl
++$GLOBALS['t']['no_images_yet'] = 'No images yet';
++$GLOBALS['t']['image'] = 'image';
++$GLOBALS['t']['images'] = 'images';
++$GLOBALS['t']['item'] = 'Item';
++$GLOBALS['t']['edit_meta'] = 'metadata';
++
++// manage/index.tpl
++$GLOBALS['t']['latest_items'] = 'Latest items';
++$GLOBALS['t']['overview'] = 'Overview';
++
++// manage/dbbackup.tpl
++$GLOBALS['t']['a_db_backup'] = 'Database backup';
++$GLOBALS['t']['bck_name'] = 'Database backup filename';
++$GLOBALS['t']['gz_compress'] = 'Compress backup using GZip compression';
++$GLOBALS['t']['backup'] = 'Backup';
++$GLOBALS['t']['err_bck_name'] = 'Database backup filename is required';
++$GLOBALS['t']['bck_name_comment'] = 'Use &quot;%%DBNAME&quot; for database name and &lt;a href=&quot;<A HREF="http://www.php.net/strftime">http://www.php.net/strftime</A>&quot; target=&quot;_blank&quot;&gt;any strftime options&lt;/a&gt; for time specification. The extension will be automagically added. Any other text will be preserved.';
++$GLOBALS['t']['bck_type'] = 'Backup type';
++$GLOBALS['t']['bck_full'] = 'Full backup (structure and data)';
++$GLOBALS['t']['bck_structure_only'] = 'Structure only';
++$GLOBALS['t']['bck_data_only'] = 'Data only';
++
++// manage/version_info.tpl
++$GLOBALS['t']['h_diagtools'] = 'Tools';
++$GLOBALS['t']['a_version_info'] = 'Auto Update';
++$GLOBALS['t']['version_check'] = 'Check Version';
++$GLOBALS['t']['installed_version'] = 'Installed version';
++$GLOBALS['t']['development_version'] = 'Development version';
++$GLOBALS['t']['msg_correct_version'] = 'There are no newer versions available';
++$GLOBALS['t']['msg_install_update'] = 'Newer versions are available';
++$GLOBALS['t']['development_changelog'] = 'Development Changelog';
++$GLOBALS['t']['schema_version'] = 'Database schema version';
++$GLOBALS['t']['installed_on'] = 'installed on';
++
++?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-21 08:05:22 UTC (rev 2233)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-21 12:32:35 UTC (rev 2234)
+@@ -1,368 +1,369 @@
+-&lt;?php
+-
+-// General stuff
+-$GLOBALS['t']['not_found'] = 'Niets gevonden';
+-$GLOBALS['t']['sorry_not_there'] = 'Sorry, maar je bent iets aan het zoeken dat er niet is.';
+-$GLOBALS['t']['sorry_not_found'] = 'Sorry, maar je bent iets aan het zoeken dat er niet is.';
+-$GLOBALS['t']['no_items_found'] = 'Sorry, maar je bent iets aan het zoeken dat er niet is.';
+-$GLOBALS['t']['by'] = 'door';
+-$GLOBALS['t']['required'] = 'vereist';
+-$GLOBALS['t']['login'] = 'Aanmelden';
+-$GLOBALS['t']['actions'] = 'Acties';
+-$GLOBALS['t']['save'] = 'Bewaar';
+-$GLOBALS['t']['edit'] = 'wijzig';
+-$GLOBALS['t']['delete'] = 'verwijder';
+-$GLOBALS['t']['previous'] = 'vorige';
+-$GLOBALS['t']['next'] = 'volgende';
+-$GLOBALS['t']['total'] = 'totaal';
+-$GLOBALS['t']['of'] = 'van';
+-$GLOBALS['t']['at'] = 'op';
+-$GLOBALS['t']['title'] = 'Titel';
+-$GLOBALS['t']['install_warning'] = 'Je moet de install.php en install.tpl bestanden verwijderen voor veiligheidsredenen!';
+-$GLOBALS['t']['home'] = 'Home';
+-$GLOBALS['t']['view'] = 'toon';
+-$GLOBALS['t']['author'] = 'Auteur';
+-$GLOBALS['t']['more'] = 'meer';
+-$GLOBALS['t']['err_general'] = 'Er is een probleem';
+-$GLOBALS['t']['back'] = 'Ga terug';
+-$GLOBALS['t']['yes'] = 'ja';
+-$GLOBALS['t']['no'] = 'nee';
+-$GLOBALS['t']['confirm_action'] = 'Bent u zeker dat u de volgende actie wil uitvoeren?';
+-$GLOBALS['t']['rows'] = 'rij(en)';
+-$GLOBALS['t']['tables'] = 'Tabellen';
+-$GLOBALS['t']['related_items'] = 'Gerelateerde items aan';
+-
+-// __std_header.tpl
+-$GLOBALS['t']['another_powered_by'] = 'Weer een weblog aangedreven door het ' . YD_FW_NAME . '!';
+-
+-// __std_footer.tpl
+-$GLOBALS['t']['or'] = 'of';
+-$GLOBALS['t']['powered_by'] = 'Deze weblog is aangedreven door het';
+-$GLOBALS['t']['syndicate_as'] = 'Syndiceer deze weblog als ';
+-$GLOBALS['t']['syndicate_comments_as'] = 'Commentaren als ';
+-$GLOBALS['t']['syndicate_gallery_as'] = 'Foto albums als ';
+-$GLOBALS['t']['design_by'] = 'Design door Michael Heilemann.';
+-
+-// __std_sidebar.tpl
+-$GLOBALS['t']['weblogs'] = 'Weblogs';
+-$GLOBALS['t']['weblog'] = 'Weblog';
+-$GLOBALS['t']['pages'] = 'Pagina\'s';
+-$GLOBALS['t']['page'] = 'Pagina';
+-$GLOBALS['t']['archives'] = 'Archieven';
+-$GLOBALS['t']['archives_gallery'] = 'Foto albums';
+-$GLOBALS['t']['categories'] = 'Categorie&euml;n';
+-$GLOBALS['t']['view_posts_filed_under'] = 'Toon alle posts gecatalogeerd onder';
+-$GLOBALS['t']['links'] = 'Links';
+-$GLOBALS['t']['link_to'] = 'Link naar';
+-$GLOBALS['t']['admin'] = 'Admin';
+-
+-// archive.tpl
+-
+-// category.tpl
+-$GLOBALS['t']['archive_for_the'] = 'Archief voor de ';
+-$GLOBALS['t']['category'] = 'Categorie';
+-
+-// index.tpl
+-$GLOBALS['t']['posted_in'] = 'gepost in';
+-$GLOBALS['t']['older_items'] = 'Oudere posts';
+-
+-// item.tpl
+-$GLOBALS['t']['older_post'] = 'oudere post';
+-$GLOBALS['t']['newer_post'] = 'nieuwere post';
+-$GLOBALS['t']['posted_under'] = 'Dit artikel werd gepost op';
+-$GLOBALS['t']['filed_under'] = 'en is gecatalogeerd onder';
+-$GLOBALS['t']['can_leave_comment'] = 'Je kan &lt;a href=&quot;#respond&quot;&gt;een commentaar nalaten&lt;/a&gt;';
+-$GLOBALS['t']['trackback'] = 'trackback';
+-$GLOBALS['t']['from_your_site'] = 'van je eigen site.';
+-$GLOBALS['t']['to'] = 'op';
+-$GLOBALS['t']['says'] = 'zegt';
+-$GLOBALS['t']['leave_comment'] = 'Laat een commentaar na';
+-$GLOBALS['t']['error_comment'] = 'Er was een probleem om je commentaar toe te voegen';
+-$GLOBALS['t']['name'] = 'Naam';
+-$GLOBALS['t']['mail_not_published'] = 'Mail (wordt niet gepubliceerd)';
+-$GLOBALS['t']['website'] = 'Website';
+-$GLOBALS['t']['submit_comment'] = 'Voeg commentaar toe';
+-$GLOBALS['t']['ta_enter_url'] = 'Geef de URL in';
+-$GLOBALS['t']['ta_enter_email'] = 'Geef het email adres in';
+-$GLOBALS['t']['ta_enter_image'] = 'Geef de volledige URL naar het beeld in';
+-$GLOBALS['t']['err_name'] = 'Naam is niet ingegeven';
+-$GLOBALS['t']['err_name_email'] = 'Naam mag geen email adres zijn';
+-$GLOBALS['t']['err_email'] = 'Email is niet ingegeven of niet correct';
+-$GLOBALS['t']['err_website'] = 'De website is geen geldige URL';
+-$GLOBALS['t']['err_comment'] = 'Een commentaar is vereist';
+-$GLOBALS['t']['with'] = 'bij';
+-$GLOBALS['t']['item_closed'] = 'Dit item laat geen commentaren toe.';
+-$GLOBALS['t']['spam'] = 'Spam';
+-$GLOBALS['t']['no_spam'] = 'Geen spam';
+-$GLOBALS['t']['choose_no_spam'] = 'Kies hier &quot;geen spam&quot;';
+-$GLOBALS['t']['err_userspam'] = 'Detecteerde een spam aanval';
+-
+-// comment_email.tpl
+-$GLOBALS['t']['new_comment'] = 'Nieuw commentaar';
+-$GLOBALS['t']['item_title'] = 'Item titel';
+-$GLOBALS['t']['wrote'] = 'schreef';
+-
+-// item_email.tpl
+-$GLOBALS['t']['new_item'] = 'Nieuw item';
+-
+-// page.tpl
+-$GLOBALS['t']['created_on'] = 'Aangemaakt op';
+-$GLOBALS['t']['last_modified_on'] = 'Laatst aangepast op';
+-
+-// Comments
+-$GLOBALS['t']['no_comments_yet'] = 'Nog geen commentaren';
+-$GLOBALS['t']['comment'] = 'Commentaar';
+-$GLOBALS['t']['comments'] = 'Commentaren';
+-$GLOBALS['t']['err_name_length'] = 'Naam kan niet langer zijn dan 35 karakters';
+-
+-// manage/__mng_header.tpl
+-$GLOBALS['t']['confirm_delete'] = 'Bent u zeker dat u het volgende wil verwijderen:';
+-$GLOBALS['t']['logoff'] = 'afmelden';
+-$GLOBALS['t']['view_site'] = 'toon site';
+-$GLOBALS['t']['user'] = 'gebruiker';
+-$GLOBALS['t']['server'] = 'Server';
+-$GLOBALS['t']['h_shortcuts'] = 'Snelkoppelingen';
+-$GLOBALS['t']['a_admin_home'] = 'Admin home';
+-$GLOBALS['t']['a_view_site'] = 'Toon site';
+-$GLOBALS['t']['h_contents'] = 'Inhoud';
+-$GLOBALS['t']['a_weblogs'] = 'Weblogs';
+-$GLOBALS['t']['a_items'] = 'Items';
+-$GLOBALS['t']['a_comments'] = 'Commentaren';
+-$GLOBALS['t']['a_links'] = 'Links';
+-$GLOBALS['t']['a_pages'] = 'Pagina\'s';
+-$GLOBALS['t']['a_images'] = 'Beelden';
+-$GLOBALS['t']['a_categories'] = 'Categorie&euml;n';
+-$GLOBALS['t']['h_global_settings'] = 'Algemene instellingen';
+-$GLOBALS['t']['a_users'] = 'Gebruikers';
+-$GLOBALS['t']['a_settings'] = 'Instellingen';
+-$GLOBALS['t']['h_maintenance'] = 'Onderhoud';
+-$GLOBALS['t']['a_cleanup_cache'] = 'Cache bestanden';
+-$GLOBALS['t']['a_server_info'] = 'Server info';
+-$GLOBALS['t']['h_statistics'] = 'Statistieken';
+-$GLOBALS['t']['a_statistics'] = 'Statistieken';
+-$GLOBALS['t']['h_logoff'] = 'Afmelden';
+-$GLOBALS['t']['a_logoff'] = 'Afmelden';
+-
+-// manage/login.tpl
+-$GLOBALS['t']['username'] = 'Gebruiker';
+-$GLOBALS['t']['password'] = 'Paswoord';
+-$GLOBALS['t']['msg_login'] = 'Gelieve je gebruikersnaam en paswoord in te geven';
+-$GLOBALS['t']['err_login'] = 'Er was een probleem om je aan te melden';
+-$GLOBALS['t']['err_username'] = 'Gebruikersnaam is niet ingegeven';
+-$GLOBALS['t']['err_password'] = 'Paswoord is niet ingegeven of foutief';
+-$GLOBALS['t']['err_login_all'] = 'Gebruikersnaam en/of paswoord zijn foutief';
+-
+-// manage/cache.tpl
+-$GLOBALS['t']['cleanup'] = 'Verwijder';
+-$GLOBALS['t']['cleanup_cache'] = 'Verwijder cache bestanden';
+-$GLOBALS['t']['cache_cleaned_up'] = 'De cache bestanden zijn verwijderd!';
+-
+-// manage/serverinfo.tpl
+-$GLOBALS['t']['system'] = 'System';
+-$GLOBALS['t']['server_name'] = 'Server Naam';
+-$GLOBALS['t']['server_address'] = 'Server Adres';
+-$GLOBALS['t']['server_port'] = 'Server Poort';
+-$GLOBALS['t']['server_software'] = 'Server Software';
+-$GLOBALS['t']['operating_system'] = 'Besturingssysteem';
+-$GLOBALS['t']['version'] = 'versie';
+-$GLOBALS['t']['loaded_modules'] = 'Geladen modules';
+-$GLOBALS['t']['server_api'] = 'Server API';
+-$GLOBALS['t']['registered_streams'] = 'Geregistreerde PHP streams';
+-$GLOBALS['t']['include_path'] = 'Include Path';
+-$GLOBALS['t']['full_php_info'] = 'Volledige PHP informatie';
+-
+-// manage/stats.tpl
+-$GLOBALS['t']['general_stats'] = 'Algemene Statistieken';
+-$GLOBALS['t']['installed_since'] = 'Ge&iuml;nstalleerd sinds';
+-$GLOBALS['t']['num_days_online'] = 'Aantal dagen online';
+-$GLOBALS['t']['days'] = 'dag(en)';
+-$GLOBALS['t']['hits'] = 'hit(s)';
+-$GLOBALS['t']['no_bots'] = ' (zonder automatic bots)';
+-$GLOBALS['t']['total_hits'] = 'Totaal aantal hits';
+-$GLOBALS['t']['total_hits_no_bots'] = $GLOBALS['t']['total_hits'] . $GLOBALS['t']['no_bots'];
+-$GLOBALS['t']['avg_hits_per_day'] = 'Gemiddeld aantal hits per dag';
+-$GLOBALS['t']['avg_hits_per_day_no_bots'] = $GLOBALS['t']['avg_hits_per_day'] . $GLOBALS['t']['no_bots'];
+-$GLOBALS['t']['hits_last_6_months'] = 'Hits van de laatste 6 maanden';
+-$GLOBALS['t']['total_average_stats'] = 'Totalen en gemiddelden';
+-$GLOBALS['t']['all_months'] = 'Alle maanden';
+-$GLOBALS['t']['hits_last_7_days'] = 'Hits laatste 7 dagen';
+-$GLOBALS['t']['all_days'] = 'Alle dagen';
+-$GLOBALS['t']['nothing_found'] = 'Niets gevonden';
+-$GLOBALS['t']['top_10_urls'] = 'De 10 meest bekeken URLs';
+-$GLOBALS['t']['all_urls'] = 'Alle URLs';
+-$GLOBALS['t']['web_browsers'] = 'Web browsers';
+-$GLOBALS['t']['operating_systems'] = 'Besturingssystemen';
+-$GLOBALS['t']['other'] = 'Andere';
+-$GLOBALS['t']['totalitems'] = 'Totaal aantal items';
+-$GLOBALS['t']['totalcomments'] = 'Totaal aantal commentaren';
+-$GLOBALS['t']['items'] = 'item(s)';
+-$GLOBALS['t']['top_10_commenters'] = 'De 10 meest actieve commentators';
+-$GLOBALS['t']['all_commenters'] = 'Alle commentators';
+-$GLOBALS['t']['reset_stats'] = 'Reset alle statistieken';
+-
+-// manage/users.tpl
+-$GLOBALS['t']['useremail'] = 'Email adres';
+-$GLOBALS['t']['created'] = 'Aangemaakt op';
+-$GLOBALS['t']['add_user'] = 'Voeg nieuwe gebruiker toe';
+-$GLOBALS['t']['req_useremail'] = 'Email address ontbreekt of is incorrect';
+-$GLOBALS['t']['req_loginpass'] = 'Paswoord is vereist';
+-$GLOBALS['t']['user_dup'] = 'Gebruiker bestaat al';
+-$GLOBALS['t']['change_user_desc'] = 'Wijzig gebruiker:';
+-
+-// manage/images.tpl
+-$GLOBALS['t']['upload_image'] = 'Upload beeld';
+-$GLOBALS['t']['ok'] = 'OK';
+-$GLOBALS['t']['size'] = 'Grootte';
+-$GLOBALS['t']['type'] = 'Type';
+-$GLOBALS['t']['dimensions'] = 'Afmetingen';
+-$GLOBALS['t']['no_images_found'] = 'Er werden geen beelden gevonden';
+-
+-// manage/categories.tpl
+-$GLOBALS['t']['add_category'] = 'Voeg categorie toe';
+-$GLOBALS['t']['number_of_items'] = 'Aantal items';
+-$GLOBALS['t']['change_category_desc'] = 'Wijzig categorie';
+-$GLOBALS['t']['err_category_title'] = 'Naam van de categorie ontbreekt';
+-$GLOBALS['t']['err_unique_category'] = 'Categorie bestaat al';
+-$GLOBALS['t']['no_categories_found'] = 'Er werden geen categorie&euml;n gevonden';
+-
+-// manage/links.tpl
+-$GLOBALS['t']['link_title'] = 'Link Titel';
+-$GLOBALS['t']['link_url'] = 'Link URL';
+-$GLOBALS['t']['add_link'] = 'Voeg link toe';
+-$GLOBALS['t']['err_link_title'] = 'Titel van de link is vereist';
+-$GLOBALS['t']['err_link_url'] = 'URL van de link is vereist';
+-$GLOBALS['t']['err_unique_link'] = 'Link URL bestaat al';
+-$GLOBALS['t']['change_link_desc'] = 'Wijzig link';
+-$GLOBALS['t']['no_links_found'] = 'Er werden geen links gevonden';
+-$GLOBALS['t']['num_visits'] = 'Visits';
+-
+-// manage/pages.tpl
+-$GLOBALS['t']['add_page'] = 'Voeg pagina toe';
+-$GLOBALS['t']['page_title'] = 'Pagina titel';
+-$GLOBALS['t']['page_body'] = 'Pagina inhoud';
+-$GLOBALS['t']['change_page_desc'] = 'Wijzig pagina';
+-$GLOBALS['t']['err_page_title'] = 'Pagina titel is vereist';
+-$GLOBALS['t']['err_page_body'] = 'Pagina inhoud is vereist';
+-$GLOBALS['t']['no_pages_found'] = 'Er werden geen pagina\'s gevonden';
+-
+-// manage/comments.tpl
+-$GLOBALS['t']['date'] = 'Datum';
+-$GLOBALS['t']['parent'] = 'Bovenliggend Item';
+-$GLOBALS['t']['change_comment_desc'] = 'Wijzig commentaar';
+-$GLOBALS['t']['mail'] = 'Email';
+-$GLOBALS['t']['no_comments_found'] = 'Er werden geen commentaren gevonden';
+-$GLOBALS['t']['no_spam_comments_found'] = 'Er werden geen spam commentaren gevonden';
+-$GLOBALS['t']['posted_from'] = 'Gepost van het IP adres';
+-$GLOBALS['t']['a_comments_spam'] = 'Spam commentaren';
+-$GLOBALS['t']['mark_as_spam'] = 'markeer als spam';
+-$GLOBALS['t']['mark_as_not_spam'] = 'markeer als niet spam';
+-$GLOBALS['t']['is_spam'] = 'Spam commentaar';
+-$GLOBALS['t']['ip_number'] = 'IP nummer';
+-$GLOBALS['t']['spam_delete_desc'] = 'Spam commentaren worden automatisch verwijderd na 7 dagen.';
+-$GLOBALS['t']['confirm_empty_spam'] = 'Bent u zeker dat u alle spam commentaren wil verwijderen?';
+-$GLOBALS['t']['empty_spam_now'] = 'Verwijder nu alle spam commentaren.';
+-
+-// manage/config.tpl
+-$GLOBALS['t']['cfg_db_settings'] = 'Database Instellingen';
+-$GLOBALS['t']['cfg_db_host'] = 'Database Hostnaam';
+-$GLOBALS['t']['cfg_db_name'] = 'Database Naam';
+-$GLOBALS['t']['cfg_db_user'] = 'Database Gebruiker';
+-$GLOBALS['t']['cfg_db_pass'] = 'Database Paswoord';
+-$GLOBALS['t']['cfg_weblog_settings'] = 'Weblog Instellingen';
+-$GLOBALS['t']['cfg_weblog_title'] = 'Weblog Titel';
+-$GLOBALS['t']['cfg_weblog_description'] = 'Weblog Beschrijving';
+-$GLOBALS['t']['cfg_weblog_entries_fp'] = 'Aantal items op de voorpagina';
+-$GLOBALS['t']['cfg_weblog_skin'] = 'Weblog skin';
+-$GLOBALS['t']['cfg_weblog_language'] = 'Weblog Taal';
+-$GLOBALS['t']['cfg_weblog_date_format'] = 'Datum formaat';
+-$GLOBALS['t']['cfg_notification'] = 'Notificatie Instellingen';
+-$GLOBALS['t']['cfg_notification_email_comment'] = 'Email nieuwe commentaren';
+-$GLOBALS['t']['cfg_notification_email_item'] = 'Email niewe items naar de site auteurs';
+-$GLOBALS['t']['cfg_rss'] = 'Syndicatie Instellingen';
+-$GLOBALS['t']['cfg_rss_max_syndicated_items'] = 'Aantal gesyndiceerde items';
+-$GLOBALS['t']['err_db_host'] = 'Database Hostnaam is vereist';
+-$GLOBALS['t']['err_db_name'] = 'Database Naam is vereist';
+-$GLOBALS['t']['err_db_user'] = 'Database Gebruiker is vereist';
+-$GLOBALS['t']['err_weblog_title'] = 'Weblog Titel is vereist';
+-$GLOBALS['t']['err_weblog_entries_fp'] = 'Aantal items op de voorpagina is vereist';
+-$GLOBALS['t']['err_weblog_entries_fp_num'] = 'Aantal items op de voorpagina moet een getal zijn';
+-$GLOBALS['t']['err_max_syndicated_items'] = 'Aantal gesyndiceerde items is vereist';
+-$GLOBALS['t']['err_max_syndicated_items_num'] = 'Aantal gesyndiceerde items moet een getal zijn';
+-$GLOBALS['t']['change_config'] = 'Wijzig';
+-$GLOBALS['t']['cfg_db_prefix'] = 'Database tabel prefix';
+-$GLOBALS['t']['cfg_cache'] = 'Caching';
+-$GLOBALS['t']['cfg_use_cache_comment'] = 'Cache publieke pagina\'s';
+-$GLOBALS['t']['cfg_friendly_urls'] = 'Vriendelijke URLs';
+-$GLOBALS['t']['cfg_spam_protection'] = 'Beveiliging tegen spam';
+-$GLOBALS['t']['cfg_auto_close_items'] = 'Laat geen commentaren toe na x dagen';
+-$GLOBALS['t']['err_auto_close_items'] = 'Laat geen commentaren toe na x dagen moet een getal zijn';
+-$GLOBALS['t']['cfg_include_debug_info'] = 'Toon debugging informatie';
+-$GLOBALS['t']['cfg_default_item_settings'] = 'Standaard waardes voor nieuwe posts';
+-$GLOBALS['t']['cfg_weblog_google_analytics'] = '&lt;a href=&quot;<A HREF="http://www.google.com/analytics/">http://www.google.com/analytics/</A>&quot; target=&quot;_blank&quot;&gt;Google Analytics&lt;/a&gt; Account';
+-$GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
+-$GLOBALS['t']['cfg_keep_stats'] = 'Houdt statistieken bij';
+-$GLOBALS['t']['cfg_blocked_ips'] = 'Geblokkeerde IP adressen gescheiden door comma\'s. Je kan een sterretje gebruiken als wildcard.';
+-$GLOBALS['t']['cfg_akismet_key'] = 'Akismet API key (&lt;a href=&quot;<A HREF="http://wordpress.com/signup/">http://wordpress.com/signup/</A>&quot; target=&quot;_blank&quot;&gt;hier te verkrijgen&lt;/a&gt;)';
+-$GLOBALS['t']['cfg_max_img_size'] = 'Maximale beeldgrootte';
+-$GLOBALS['t']['cfg_comment_interval'] = 'Commentaar interval in seconden';
+-$GLOBALS['t']['err_comment_interval_num'] = 'Commentaar interval moet een getal zijn';
+-
+-// manage/item.tpl
+-$GLOBALS['t']['item_title'] = 'Item Titel';
+-$GLOBALS['t']['item_body'] = 'Item Inhoud';
+-$GLOBALS['t']['item_body_more'] = 'Item Inhoud (uitgebreid)';
+-$GLOBALS['t']['select_image'] = 'Selecteer Beeld';
+-$GLOBALS['t']['view'] = 'toon';
+-$GLOBALS['t']['add_item'] = 'Voeg item toe';
+-$GLOBALS['t']['change_item_desc'] = 'Wijzig Item';
+-$GLOBALS['t']['err_item_title'] = 'Item titel is vereist';
+-$GLOBALS['t']['err_item_body'] = 'Item inhoud is vereist';
+-$GLOBALS['t']['gallery'] = 'Foto\'s';
+-$GLOBALS['t']['allow_comments'] = 'Laat commentaren toe';
+-$GLOBALS['t']['auto_close_item'] = 'Sluit item automatisch ';
+-if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
+-    $GLOBALS['t']['auto_close_item'] .= 'na ' . YDConfig::get( 'auto_close_items', '' ) . ' dagen';
+-}
+-$GLOBALS['t']['is_draft'] = 'Concept (niet publiceren)';
+-$GLOBALS['t']['draft'] = 'concept';
+-$GLOBALS['t']['closed'] = 'gesloten';
+-$GLOBALS['t']['active_items'] = 'actieve items';
+-$GLOBALS['t']['drafts_items'] = 'concepten';
+-$GLOBALS['t']['closed_items'] = 'gesloten items';
+-
+-// item_gallery.tpl
+-$GLOBALS['t']['no_images_yet'] = 'Nog geen foto\'s';
+-$GLOBALS['t']['image'] = 'foto';
+-$GLOBALS['t']['images'] = 'foto\'s';
+-$GLOBALS['t']['item'] = 'Item';
+-$GLOBALS['t']['edit_meta'] = 'informatie';
+-
+-// manage/index.tpl
+-$GLOBALS['t']['latest_items'] = 'Laatste items';
+-$GLOBALS['t']['overview'] = 'Overzicht';
+-
+-// manage/dbbackup.tpl
+-$GLOBALS['t']['a_db_backup'] = 'Databank backup';
+-$GLOBALS['t']['bck_name'] = 'Databank backup bestandsnaam';
+-$GLOBALS['t']['gz_compress'] = 'Comprimeer backup met GZip compressie';
+-$GLOBALS['t']['backup'] = 'Backup';
+-$GLOBALS['t']['err_bck_name'] = 'Databank backup bestandsnaam is vereist';
+-$GLOBALS['t']['bck_name_comment'] = 'Gebruik &quot;%%DBNAME&quot; voor de databank naam en &lt;a href=&quot;<A HREF="http://www.php.net/strftime">http://www.php.net/strftime</A>&quot; target=&quot;_blank&quot;&gt;gelijk welke strftime optie&lt;/a&gt; voor de tijdsaanduiding. De extensie wordt automatisch toegevoegd. Alle andere tekst wordt behouden.';
+-$GLOBALS['t']['bck_type'] = 'Backup type';
+-$GLOBALS['t']['bck_full'] = 'Volledige backup (structuur en data)';
+-$GLOBALS['t']['bck_structure_only'] = 'Enkel de structuur';
+-$GLOBALS['t']['bck_data_only'] = 'Enkel de data';
+-
+-// manage/version_info.tpl
+-$GLOBALS['t']['h_diagtools'] = 'Tools';
+-$GLOBALS['t']['a_version_info'] = 'Auto Update';
+-$GLOBALS['t']['version_check'] = 'Controleer Versie';
+-$GLOBALS['t']['installed_version'] = 'Ge&iuml;nstalleerde versie';
+-$GLOBALS['t']['development_version'] = 'Ontwikkel versie';
+-$GLOBALS['t']['msg_correct_version'] = 'Er zijn geen nieuwere versies beschikbaar';
+-$GLOBALS['t']['msg_install_update'] = 'Er zijn nieuwe versies beschikbaar';
+-$GLOBALS['t']['development_changelog'] = 'Ontwikkel Logboek';
+-$GLOBALS['t']['schema_version'] = 'Database schema versie';
+-$GLOBALS['t']['installed_on'] = 'ge&iuml;nstalleerd op';
+-
+-?&gt;
++&lt;?php
++
++// General stuff
++$GLOBALS['t']['not_found'] = 'Niets gevonden';
++$GLOBALS['t']['sorry_not_there'] = 'Sorry, maar je bent iets aan het zoeken dat er niet is.';
++$GLOBALS['t']['sorry_not_found'] = 'Sorry, maar je bent iets aan het zoeken dat er niet is.';
++$GLOBALS['t']['no_items_found'] = 'Sorry, maar je bent iets aan het zoeken dat er niet is.';
++$GLOBALS['t']['by'] = 'door';
++$GLOBALS['t']['required'] = 'vereist';
++$GLOBALS['t']['login'] = 'Aanmelden';
++$GLOBALS['t']['actions'] = 'Acties';
++$GLOBALS['t']['save'] = 'Bewaar';
++$GLOBALS['t']['edit'] = 'wijzig';
++$GLOBALS['t']['delete'] = 'verwijder';
++$GLOBALS['t']['previous'] = 'vorige';
++$GLOBALS['t']['next'] = 'volgende';
++$GLOBALS['t']['total'] = 'totaal';
++$GLOBALS['t']['of'] = 'van';
++$GLOBALS['t']['at'] = 'op';
++$GLOBALS['t']['title'] = 'Titel';
++$GLOBALS['t']['install_warning'] = 'Je moet de install.php en install.tpl bestanden verwijderen voor veiligheidsredenen!';
++$GLOBALS['t']['home'] = 'Home';
++$GLOBALS['t']['view'] = 'toon';
++$GLOBALS['t']['author'] = 'Auteur';
++$GLOBALS['t']['more'] = 'meer';
++$GLOBALS['t']['err_general'] = 'Er is een probleem';
++$GLOBALS['t']['back'] = 'Ga terug';
++$GLOBALS['t']['yes'] = 'ja';
++$GLOBALS['t']['no'] = 'nee';
++$GLOBALS['t']['confirm_action'] = 'Bent u zeker dat u de volgende actie wil uitvoeren?';
++$GLOBALS['t']['rows'] = 'rij(en)';
++$GLOBALS['t']['tables'] = 'Tabellen';
++$GLOBALS['t']['related_items'] = 'Gerelateerde items aan';
++
++// __std_header.tpl
++$GLOBALS['t']['another_powered_by'] = 'Weer een weblog aangedreven door het ' . YD_FW_NAME . '!';
++
++// __std_footer.tpl
++$GLOBALS['t']['or'] = 'of';
++$GLOBALS['t']['powered_by'] = 'Deze weblog is aangedreven door het';
++$GLOBALS['t']['syndicate_as'] = 'Syndiceer deze weblog als ';
++$GLOBALS['t']['syndicate_comments_as'] = 'Commentaren als ';
++$GLOBALS['t']['syndicate_gallery_as'] = 'Foto albums als ';
++$GLOBALS['t']['design_by'] = 'Design door Michael Heilemann.';
++
++// __std_sidebar.tpl
++$GLOBALS['t']['weblogs'] = 'Weblogs';
++$GLOBALS['t']['weblog'] = 'Weblog';
++$GLOBALS['t']['pages'] = 'Pagina\'s';
++$GLOBALS['t']['page'] = 'Pagina';
++$GLOBALS['t']['archives'] = 'Archieven';
++$GLOBALS['t']['archives_gallery'] = 'Foto albums';
++$GLOBALS['t']['categories'] = 'Categorie&euml;n';
++$GLOBALS['t']['view_posts_filed_under'] = 'Toon alle posts gecatalogeerd onder';
++$GLOBALS['t']['links'] = 'Links';
++$GLOBALS['t']['link_to'] = 'Link naar';
++$GLOBALS['t']['admin'] = 'Admin';
++
++// archive.tpl
++
++// category.tpl
++$GLOBALS['t']['archive_for_the'] = 'Archief voor de ';
++$GLOBALS['t']['category'] = 'Categorie';
++
++// index.tpl
++$GLOBALS['t']['posted_in'] = 'gepost in';
++$GLOBALS['t']['older_items'] = 'Oudere posts';
++
++// item.tpl
++$GLOBALS['t']['older_post'] = 'oudere post';
++$GLOBALS['t']['newer_post'] = 'nieuwere post';
++$GLOBALS['t']['posted_under'] = 'Dit artikel werd gepost op';
++$GLOBALS['t']['filed_under'] = 'en is gecatalogeerd onder';
++$GLOBALS['t']['can_leave_comment'] = 'Je kan &lt;a href=&quot;#respond&quot;&gt;een commentaar nalaten&lt;/a&gt;';
++$GLOBALS['t']['trackback'] = 'trackback';
++$GLOBALS['t']['from_your_site'] = 'van je eigen site.';
++$GLOBALS['t']['to'] = 'op';
++$GLOBALS['t']['says'] = 'zegt';
++$GLOBALS['t']['leave_comment'] = 'Laat een commentaar na';
++$GLOBALS['t']['error_comment'] = 'Er was een probleem om je commentaar toe te voegen';
++$GLOBALS['t']['name'] = 'Naam';
++$GLOBALS['t']['mail_not_published'] = 'Mail (wordt niet gepubliceerd)';
++$GLOBALS['t']['website'] = 'Website';
++$GLOBALS['t']['submit_comment'] = 'Voeg commentaar toe';
++$GLOBALS['t']['ta_enter_url'] = 'Geef de URL in';
++$GLOBALS['t']['ta_enter_email'] = 'Geef het email adres in';
++$GLOBALS['t']['ta_enter_image'] = 'Geef de volledige URL naar het beeld in';
++$GLOBALS['t']['err_name'] = 'Naam is niet ingegeven';
++$GLOBALS['t']['err_name_email'] = 'Naam mag geen email adres zijn';
++$GLOBALS['t']['err_email'] = 'Email is niet ingegeven of niet correct';
++$GLOBALS['t']['err_website'] = 'De website is geen geldige URL';
++$GLOBALS['t']['err_comment'] = 'Een commentaar is vereist';
++$GLOBALS['t']['with'] = 'bij';
++$GLOBALS['t']['item_closed'] = 'Dit item laat geen commentaren toe.';
++$GLOBALS['t']['spam'] = 'Spam';
++$GLOBALS['t']['no_spam'] = 'Geen spam';
++$GLOBALS['t']['choose_no_spam'] = 'Kies hier &quot;geen spam&quot;';
++$GLOBALS['t']['err_userspam'] = 'Detecteerde een spam aanval';
++
++// comment_email.tpl
++$GLOBALS['t']['new_comment'] = 'Nieuw commentaar';
++$GLOBALS['t']['item_title'] = 'Item titel';
++$GLOBALS['t']['wrote'] = 'schreef';
++
++// item_email.tpl
++$GLOBALS['t']['new_item'] = 'Nieuw item';
++
++// page.tpl
++$GLOBALS['t']['created_on'] = 'Aangemaakt op';
++$GLOBALS['t']['last_modified_on'] = 'Laatst aangepast op';
++
++// Comments
++$GLOBALS['t']['no_comments_yet'] = 'Nog geen commentaren';
++$GLOBALS['t']['comment'] = 'Commentaar';
++$GLOBALS['t']['comments'] = 'Commentaren';
++$GLOBALS['t']['err_name_length'] = 'Naam kan niet langer zijn dan 35 karakters';
++
++// manage/__mng_header.tpl
++$GLOBALS['t']['confirm_delete'] = 'Bent u zeker dat u het volgende wil verwijderen:';
++$GLOBALS['t']['logoff'] = 'afmelden';
++$GLOBALS['t']['view_site'] = 'toon site';
++$GLOBALS['t']['user'] = 'gebruiker';
++$GLOBALS['t']['server'] = 'Server';
++$GLOBALS['t']['h_shortcuts'] = 'Snelkoppelingen';
++$GLOBALS['t']['a_admin_home'] = 'Admin home';
++$GLOBALS['t']['a_view_site'] = 'Toon site';
++$GLOBALS['t']['h_contents'] = 'Inhoud';
++$GLOBALS['t']['a_weblogs'] = 'Weblogs';
++$GLOBALS['t']['a_items'] = 'Items';
++$GLOBALS['t']['a_comments'] = 'Commentaren';
++$GLOBALS['t']['a_links'] = 'Links';
++$GLOBALS['t']['a_pages'] = 'Pagina\'s';
++$GLOBALS['t']['a_images'] = 'Beelden';
++$GLOBALS['t']['a_categories'] = 'Categorie&euml;n';
++$GLOBALS['t']['h_global_settings'] = 'Algemene instellingen';
++$GLOBALS['t']['a_users'] = 'Gebruikers';
++$GLOBALS['t']['a_settings'] = 'Instellingen';
++$GLOBALS['t']['h_maintenance'] = 'Onderhoud';
++$GLOBALS['t']['a_cleanup_cache'] = 'Cache bestanden';
++$GLOBALS['t']['a_server_info'] = 'Server info';
++$GLOBALS['t']['h_statistics'] = 'Statistieken';
++$GLOBALS['t']['a_statistics'] = 'Statistieken';
++$GLOBALS['t']['h_logoff'] = 'Afmelden';
++$GLOBALS['t']['a_logoff'] = 'Afmelden';
++
++// manage/login.tpl
++$GLOBALS['t']['username'] = 'Gebruiker';
++$GLOBALS['t']['password'] = 'Paswoord';
++$GLOBALS['t']['msg_login'] = 'Gelieve je gebruikersnaam en paswoord in te geven';
++$GLOBALS['t']['err_login'] = 'Er was een probleem om je aan te melden';
++$GLOBALS['t']['err_username'] = 'Gebruikersnaam is niet ingegeven';
++$GLOBALS['t']['err_password'] = 'Paswoord is niet ingegeven of foutief';
++$GLOBALS['t']['err_login_all'] = 'Gebruikersnaam en/of paswoord zijn foutief';
++
++// manage/cache.tpl
++$GLOBALS['t']['cleanup'] = 'Verwijder';
++$GLOBALS['t']['cleanup_cache'] = 'Verwijder cache bestanden';
++$GLOBALS['t']['cache_cleaned_up'] = 'De cache bestanden zijn verwijderd!';
++
++// manage/serverinfo.tpl
++$GLOBALS['t']['system'] = 'System';
++$GLOBALS['t']['server_name'] = 'Server Naam';
++$GLOBALS['t']['server_address'] = 'Server Adres';
++$GLOBALS['t']['server_port'] = 'Server Poort';
++$GLOBALS['t']['server_software'] = 'Server Software';
++$GLOBALS['t']['operating_system'] = 'Besturingssysteem';
++$GLOBALS['t']['version'] = 'versie';
++$GLOBALS['t']['loaded_modules'] = 'Geladen modules';
++$GLOBALS['t']['server_api'] = 'Server API';
++$GLOBALS['t']['registered_streams'] = 'Geregistreerde PHP streams';
++$GLOBALS['t']['include_path'] = 'Include Path';
++$GLOBALS['t']['full_php_info'] = 'Volledige PHP informatie';
++
++// manage/stats.tpl
++$GLOBALS['t']['general_stats'] = 'Algemene Statistieken';
++$GLOBALS['t']['installed_since'] = 'Ge&iuml;nstalleerd sinds';
++$GLOBALS['t']['num_days_online'] = 'Aantal dagen online';
++$GLOBALS['t']['days'] = 'dag(en)';
++$GLOBALS['t']['hits'] = 'hit(s)';
++$GLOBALS['t']['no_bots'] = ' (zonder automatic bots)';
++$GLOBALS['t']['total_hits'] = 'Totaal aantal hits';
++$GLOBALS['t']['total_hits_no_bots'] = $GLOBALS['t']['total_hits'] . $GLOBALS['t']['no_bots'];
++$GLOBALS['t']['avg_hits_per_day'] = 'Gemiddeld aantal hits per dag';
++$GLOBALS['t']['avg_hits_per_day_no_bots'] = $GLOBALS['t']['avg_hits_per_day'] . $GLOBALS['t']['no_bots'];
++$GLOBALS['t']['hits_last_6_months'] = 'Hits van de laatste 6 maanden';
++$GLOBALS['t']['total_average_stats'] = 'Totalen en gemiddelden';
++$GLOBALS['t']['all_months'] = 'Alle maanden';
++$GLOBALS['t']['hits_last_7_days'] = 'Hits laatste 7 dagen';
++$GLOBALS['t']['all_days'] = 'Alle dagen';
++$GLOBALS['t']['nothing_found'] = 'Niets gevonden';
++$GLOBALS['t']['top_10_urls'] = 'De 10 meest bekeken URLs';
++$GLOBALS['t']['all_urls'] = 'Alle URLs';
++$GLOBALS['t']['web_browsers'] = 'Web browsers';
++$GLOBALS['t']['operating_systems'] = 'Besturingssystemen';
++$GLOBALS['t']['other'] = 'Andere';
++$GLOBALS['t']['totalitems'] = 'Totaal aantal items';
++$GLOBALS['t']['totalcomments'] = 'Totaal aantal commentaren';
++$GLOBALS['t']['items'] = 'item(s)';
++$GLOBALS['t']['top_10_commenters'] = 'De 10 meest actieve commentators';
++$GLOBALS['t']['all_commenters'] = 'Alle commentators';
++$GLOBALS['t']['reset_stats'] = 'Reset alle statistieken';
++
++// manage/users.tpl
++$GLOBALS['t']['useremail'] = 'Email adres';
++$GLOBALS['t']['created'] = 'Aangemaakt op';
++$GLOBALS['t']['add_user'] = 'Voeg nieuwe gebruiker toe';
++$GLOBALS['t']['req_useremail'] = 'Email address ontbreekt of is incorrect';
++$GLOBALS['t']['req_loginpass'] = 'Paswoord is vereist';
++$GLOBALS['t']['user_dup'] = 'Gebruiker bestaat al';
++$GLOBALS['t']['change_user_desc'] = 'Wijzig gebruiker:';
++
++// manage/images.tpl
++$GLOBALS['t']['upload_image'] = 'Upload beeld';
++$GLOBALS['t']['ok'] = 'OK';
++$GLOBALS['t']['size'] = 'Grootte';
++$GLOBALS['t']['type'] = 'Type';
++$GLOBALS['t']['dimensions'] = 'Afmetingen';
++$GLOBALS['t']['no_images_found'] = 'Er werden geen beelden gevonden';
++
++// manage/categories.tpl
++$GLOBALS['t']['add_category'] = 'Voeg categorie toe';
++$GLOBALS['t']['number_of_items'] = 'Aantal items';
++$GLOBALS['t']['change_category_desc'] = 'Wijzig categorie';
++$GLOBALS['t']['err_category_title'] = 'Naam van de categorie ontbreekt';
++$GLOBALS['t']['err_unique_category'] = 'Categorie bestaat al';
++$GLOBALS['t']['no_categories_found'] = 'Er werden geen categorie&euml;n gevonden';
++
++// manage/links.tpl
++$GLOBALS['t']['link_title'] = 'Link Titel';
++$GLOBALS['t']['link_url'] = 'Link URL';
++$GLOBALS['t']['add_link'] = 'Voeg link toe';
++$GLOBALS['t']['err_link_title'] = 'Titel van de link is vereist';
++$GLOBALS['t']['err_link_url'] = 'URL van de link is vereist';
++$GLOBALS['t']['err_unique_link'] = 'Link URL bestaat al';
++$GLOBALS['t']['change_link_desc'] = 'Wijzig link';
++$GLOBALS['t']['no_links_found'] = 'Er werden geen links gevonden';
++$GLOBALS['t']['num_visits'] = 'Visits';
++
++// manage/pages.tpl
++$GLOBALS['t']['add_page'] = 'Voeg pagina toe';
++$GLOBALS['t']['page_title'] = 'Pagina titel';
++$GLOBALS['t']['page_body'] = 'Pagina inhoud';
++$GLOBALS['t']['change_page_desc'] = 'Wijzig pagina';
++$GLOBALS['t']['err_page_title'] = 'Pagina titel is vereist';
++$GLOBALS['t']['err_page_body'] = 'Pagina inhoud is vereist';
++$GLOBALS['t']['no_pages_found'] = 'Er werden geen pagina\'s gevonden';
++
++// manage/comments.tpl
++$GLOBALS['t']['date'] = 'Datum';
++$GLOBALS['t']['parent'] = 'Bovenliggend Item';
++$GLOBALS['t']['change_comment_desc'] = 'Wijzig commentaar';
++$GLOBALS['t']['mail'] = 'Email';
++$GLOBALS['t']['no_comments_found'] = 'Er werden geen commentaren gevonden';
++$GLOBALS['t']['no_spam_comments_found'] = 'Er werden geen spam commentaren gevonden';
++$GLOBALS['t']['posted_from'] = 'Gepost van het IP adres';
++$GLOBALS['t']['a_comments_spam'] = 'Spam commentaren';
++$GLOBALS['t']['mark_as_spam'] = 'spam';
++$GLOBALS['t']['mark_as_not_spam'] = 'niet spam';
++$GLOBALS['t']['is_spam'] = 'Spam commentaar';
++$GLOBALS['t']['ip_number'] = 'IP nummer';
++$GLOBALS['t']['spam_delete_desc'] = 'Spam commentaren worden automatisch verwijderd na 7 dagen.';
++$GLOBALS['t']['confirm_empty_spam'] = 'Bent u zeker dat u alle spam commentaren wil verwijderen?';
++$GLOBALS['t']['empty_spam_now'] = 'Verwijder nu alle spam commentaren.';
++$GLOBALS['t']['weight'] = 'Gewicht';
++
++// manage/config.tpl
++$GLOBALS['t']['cfg_db_settings'] = 'Database Instellingen';
++$GLOBALS['t']['cfg_db_host'] = 'Database Hostnaam';
++$GLOBALS['t']['cfg_db_name'] = 'Database Naam';
++$GLOBALS['t']['cfg_db_user'] = 'Database Gebruiker';
++$GLOBALS['t']['cfg_db_pass'] = 'Database Paswoord';
++$GLOBALS['t']['cfg_weblog_settings'] = 'Weblog Instellingen';
++$GLOBALS['t']['cfg_weblog_title'] = 'Weblog Titel';
++$GLOBALS['t']['cfg_weblog_description'] = 'Weblog Beschrijving';
++$GLOBALS['t']['cfg_weblog_entries_fp'] = 'Aantal items op de voorpagina';
++$GLOBALS['t']['cfg_weblog_skin'] = 'Weblog skin';
++$GLOBALS['t']['cfg_weblog_language'] = 'Weblog Taal';
++$GLOBALS['t']['cfg_weblog_date_format'] = 'Datum formaat';
++$GLOBALS['t']['cfg_notification'] = 'Notificatie Instellingen';
++$GLOBALS['t']['cfg_notification_email_comment'] = 'Email nieuwe commentaren';
++$GLOBALS['t']['cfg_notification_email_item'] = 'Email niewe items naar de site auteurs';
++$GLOBALS['t']['cfg_rss'] = 'Syndicatie Instellingen';
++$GLOBALS['t']['cfg_rss_max_syndicated_items'] = 'Aantal gesyndiceerde items';
++$GLOBALS['t']['err_db_host'] = 'Database Hostnaam is vereist';
++$GLOBALS['t']['err_db_name'] = 'Database Naam is vereist';
++$GLOBALS['t']['err_db_user'] = 'Database Gebruiker is vereist';
++$GLOBALS['t']['err_weblog_title'] = 'Weblog Titel is vereist';
++$GLOBALS['t']['err_weblog_entries_fp'] = 'Aantal items op de voorpagina is vereist';
++$GLOBALS['t']['err_weblog_entries_fp_num'] = 'Aantal items op de voorpagina moet een getal zijn';
++$GLOBALS['t']['err_max_syndicated_items'] = 'Aantal gesyndiceerde items is vereist';
++$GLOBALS['t']['err_max_syndicated_items_num'] = 'Aantal gesyndiceerde items moet een getal zijn';
++$GLOBALS['t']['change_config'] = 'Wijzig';
++$GLOBALS['t']['cfg_db_prefix'] = 'Database tabel prefix';
++$GLOBALS['t']['cfg_cache'] = 'Caching';
++$GLOBALS['t']['cfg_use_cache_comment'] = 'Cache publieke pagina\'s';
++$GLOBALS['t']['cfg_friendly_urls'] = 'Vriendelijke URLs';
++$GLOBALS['t']['cfg_spam_protection'] = 'Beveiliging tegen spam';
++$GLOBALS['t']['cfg_auto_close_items'] = 'Laat geen commentaren toe na x dagen';
++$GLOBALS['t']['err_auto_close_items'] = 'Laat geen commentaren toe na x dagen moet een getal zijn';
++$GLOBALS['t']['cfg_include_debug_info'] = 'Toon debugging informatie';
++$GLOBALS['t']['cfg_default_item_settings'] = 'Standaard waardes voor nieuwe posts';
++$GLOBALS['t']['cfg_weblog_google_analytics'] = '&lt;a href=&quot;<A HREF="http://www.google.com/analytics/">http://www.google.com/analytics/</A>&quot; target=&quot;_blank&quot;&gt;Google Analytics&lt;/a&gt; Account';
++$GLOBALS['t']['cfg_google_analytics'] = 'Google Analytics';
++$GLOBALS['t']['cfg_keep_stats'] = 'Houdt statistieken bij';
++$GLOBALS['t']['cfg_blocked_ips'] = 'Geblokkeerde IP adressen gescheiden door comma\'s. Je kan een sterretje gebruiken als wildcard.';
++$GLOBALS['t']['cfg_akismet_key'] = 'Akismet API key (&lt;a href=&quot;<A HREF="http://wordpress.com/signup/">http://wordpress.com/signup/</A>&quot; target=&quot;_blank&quot;&gt;hier te verkrijgen&lt;/a&gt;)';
++$GLOBALS['t']['cfg_max_img_size'] = 'Maximale beeldgrootte';
++$GLOBALS['t']['cfg_comment_interval'] = 'Commentaar interval in seconden';
++$GLOBALS['t']['err_comment_interval_num'] = 'Commentaar interval moet een getal zijn';
++
++// manage/item.tpl
++$GLOBALS['t']['item_title'] = 'Item Titel';
++$GLOBALS['t']['item_body'] = 'Item Inhoud';
++$GLOBALS['t']['item_body_more'] = 'Item Inhoud (uitgebreid)';
++$GLOBALS['t']['select_image'] = 'Selecteer Beeld';
++$GLOBALS['t']['view'] = 'toon';
++$GLOBALS['t']['add_item'] = 'Voeg item toe';
++$GLOBALS['t']['change_item_desc'] = 'Wijzig Item';
++$GLOBALS['t']['err_item_title'] = 'Item titel is vereist';
++$GLOBALS['t']['err_item_body'] = 'Item inhoud is vereist';
++$GLOBALS['t']['gallery'] = 'Foto\'s';
++$GLOBALS['t']['allow_comments'] = 'Laat commentaren toe';
++$GLOBALS['t']['auto_close_item'] = 'Sluit item automatisch ';
++if ( YDConfig::get( 'auto_close_items', '' ) != '' ) {
++    $GLOBALS['t']['auto_close_item'] .= 'na ' . YDConfig::get( 'auto_close_items', '' ) . ' dagen';
++}
++$GLOBALS['t']['is_draft'] = 'Concept (niet publiceren)';
++$GLOBALS['t']['draft'] = 'concept';
++$GLOBALS['t']['closed'] = 'gesloten';
++$GLOBALS['t']['active_items'] = 'actieve items';
++$GLOBALS['t']['drafts_items'] = 'concepten';
++$GLOBALS['t']['closed_items'] = 'gesloten items';
++
++// item_gallery.tpl
++$GLOBALS['t']['no_images_yet'] = 'Nog geen foto\'s';
++$GLOBALS['t']['image'] = 'foto';
++$GLOBALS['t']['images'] = 'foto\'s';
++$GLOBALS['t']['item'] = 'Item';
++$GLOBALS['t']['edit_meta'] = 'informatie';
++
++// manage/index.tpl
++$GLOBALS['t']['latest_items'] = 'Laatste items';
++$GLOBALS['t']['overview'] = 'Overzicht';
++
++// manage/dbbackup.tpl
++$GLOBALS['t']['a_db_backup'] = 'Databank backup';
++$GLOBALS['t']['bck_name'] = 'Databank backup bestandsnaam';
++$GLOBALS['t']['gz_compress'] = 'Comprimeer backup met GZip compressie';
++$GLOBALS['t']['backup'] = 'Backup';
++$GLOBALS['t']['err_bck_name'] = 'Databank backup bestandsnaam is vereist';
++$GLOBALS['t']['bck_name_comment'] = 'Gebruik &quot;%%DBNAME&quot; voor de databank naam en &lt;a href=&quot;<A HREF="http://www.php.net/strftime">http://www.php.net/strftime</A>&quot; target=&quot;_blank&quot;&gt;gelijk welke strftime optie&lt;/a&gt; voor de tijdsaanduiding. De extensie wordt automatisch toegevoegd. Alle andere tekst wordt behouden.';
++$GLOBALS['t']['bck_type'] = 'Backup type';
++$GLOBALS['t']['bck_full'] = 'Volledige backup (structuur en data)';
++$GLOBALS['t']['bck_structure_only'] = 'Enkel de structuur';
++$GLOBALS['t']['bck_data_only'] = 'Enkel de data';
++
++// manage/version_info.tpl
++$GLOBALS['t']['h_diagtools'] = 'Tools';
++$GLOBALS['t']['a_version_info'] = 'Auto Update';
++$GLOBALS['t']['version_check'] = 'Controleer Versie';
++$GLOBALS['t']['installed_version'] = 'Ge&iuml;nstalleerde versie';
++$GLOBALS['t']['development_version'] = 'Ontwikkel versie';
++$GLOBALS['t']['msg_correct_version'] = 'Er zijn geen nieuwere versies beschikbaar';
++$GLOBALS['t']['msg_install_update'] = 'Er zijn nieuwe versies beschikbaar';
++$GLOBALS['t']['development_changelog'] = 'Ontwikkel Logboek';
++$GLOBALS['t']['schema_version'] = 'Database schema versie';
++$GLOBALS['t']['installed_on'] = 'ge&iuml;nstalleerd op';
++
++?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-21 08:05:22 UTC (rev 2233)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-21 12:32:35 UTC (rev 2234)
+@@ -1,236 +1,242 @@
+-{include file=&quot;__mng_header.tpl&quot;}
+-
+-&lt;p class=&quot;title&quot;&gt;{t w=&quot;h_contents&quot;} &raquo; {t w=&quot;a_comments&quot;}
+-{if $item}&raquo; {$item.title}{/if}
+-&lt;/p&gt;
+-
+-{if $form.errors}
+-    &lt;p&gt;&lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowELG&quot;&gt;{t w=&quot;err_general&quot;}&lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;td class=&quot;adminRowEL&quot;&gt;
+-                {foreach from=$form.errors item=&quot;error&quot;}
+-                    {$error}&lt;br/&gt;
+-                {/foreach}
+-            &lt;/td&gt;
+-        &lt;/tr&gt;
+-    &lt;/table&gt;&lt;/p&gt;
+-{/if}
+-
+-{if $YD_ACTION == 'default'}
+-
+-    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-    {if $item}
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-                &raquo; &lt;a href=&quot;items.php?do=edit&amp;id={$item.id}&quot; style=&quot;font-weight: bold&quot;&gt;{t w=&quot;change_item_desc&quot;}&lt;/a&gt;
+-                ({$item.title})
+-                &nbsp;
+-                &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-
+-        &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-    {/if}
+-    &lt;tr&gt;
+-        &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-            {if $item}
+-                &raquo; {t w=&quot;a_comments&quot;}
+-            {else}
+-                &raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;
+-                    {if $filter == 'no_spam'}&lt;b&gt;{/if}{t w=&quot;a_comments&quot;}{if $filter == 'no_spam'}&lt;/b&gt;{/if}&lt;/a&gt;
+-                | &lt;a href=&quot;{$YD_SELF_SCRIPT}?filter=spam&quot;&gt;
+-                    {if $filter == 'spam'}&lt;b&gt;{/if}{t w=&quot;a_comments_spam&quot;}{if $filter == 'spam'}&lt;/b&gt;{/if}&lt;/a&gt;
+-            {/if}
+-        &lt;/th&gt;
+-    &lt;/tr&gt;
+-    {if $comments-&gt;set}
+-        {if $filter == 'no_spam'}
+-            &lt;tr&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;17%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;30%&quot;&gt;{t w=&quot;comment&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowR&quot; width=&quot;18%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+-            {foreach from=$comments-&gt;set item=&quot;comment&quot;}
+-                &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                        {$comment.created|date:'%Y/%m/%d %H:%M'}
+-                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+-                    &lt;/td&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                        {$comment.username}
+-                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+-                    &lt;/td&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {*{if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.comment|bbcode|strip_tags|truncate}&lt;/a&gt;
+-                        {if $comment.item_title}
+-                            &lt;br/&gt;
+-                            {t w=&quot;item&quot;}: {$comment.item_title}
+-                        {/if}
+-                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}*}
+-                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.item_title}&lt;/a&gt;
+-                        &lt;br/&gt;
+-                        {$comment.comment|bbcode|strip_tags|truncate}
+-                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+-                    &lt;/td&gt;
+-                    &lt;td class=&quot;adminRowR&quot;&gt;
+-                        &lt;a href=&quot;../item.php?id={$comment.item_id}#comment-{$comment.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+-                        |
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
+-                        |
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
+-                         onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
+-                        &lt;br/&gt;
+-                        {if $comment.is_spam}
+-                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_spam&quot;}&lt;/a&gt;
+-                        {/if}
+-                    &lt;/td&gt;
+-                &lt;/tr&gt;
+-            {/foreach}
+-            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {else}
+-            &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;4&quot;&gt;
+-                &lt;i&gt;{t w=&quot;spam_delete_desc&quot;}. &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptySpam&quot;
+-                 onClick=&quot;return confirm( '{t w=&quot;confirm_empty_spam&quot;}' );&quot;&gt;{t w=&quot;empty_spam_now&quot;}&lt;/a&gt;&lt;/i&gt;
+-            &lt;/td&gt;&lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;20%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot; width=&quot;12%&quot;&gt;{t w=&quot;ip_number&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowR&quot; width=&quot;33%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+-            {foreach from=$comments-&gt;set item=&quot;comment&quot;}
+-                &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {$comment.created|date:'%Y/%m/%d %H:%M:%S'}
+-                    &lt;/td&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {$comment.username}
+-                    &lt;/td&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;
+-                        {$comment.userip}
+-                    &lt;/td&gt;
+-                    &lt;td class=&quot;adminRowR&quot;&gt;
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
+-                        |
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
+-                         onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
+-                        |
+-                        {if $comment.is_spam}
+-                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
+-                        {else}
+-                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_spam&quot;}&lt;/a&gt;
+-                        {/if}
+-                    &lt;/td&gt;
+-                &lt;/tr&gt;
+-            {/foreach}
+-            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        {/if}
+-    {else}
+-        &lt;tr&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;7&quot;&gt;
+-                {if $filter == 'no_spam'}
+-                    {t w=&quot;no_comments_found&quot;}
+-                {else}
+-                    {t w=&quot;no_spam_comments_found&quot;}
+-                {/if}
+-            &lt;/td&gt;
+-        &lt;/tr&gt;
+-    {/if}
+-
+-    {if $item}
+-        &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-                &raquo; &lt;a href=&quot;items_gallery.php?id={$item.id}&quot; style=&quot;font-weight: bold;&quot;&gt;{t w=&quot;gallery&quot;}&lt;/a&gt;
+-                ({$item|@text_num_images:true})
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-    {/if}
+-    &lt;/table&gt;
+-
+-{/if}
+-
+-{if $YD_ACTION == 'edit'}
+-    {$form.tag}
+-        &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-            &lt;tr&gt;
+-                &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;change_comment_desc&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowLGR&quot;&gt;&raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;item&quot;}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;&lt;a href=&quot;items.php?do=edit&amp;id={$comment.item_id}&quot;&gt;&lt;b&gt;{$comment.item_title}&lt;/b&gt;&lt;/a&gt;&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;posted_from&quot;}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$comment.userip}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;User Agent&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$comment.useragent|default:'-'}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;Request URI&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$comment.userrequrl|default:'-'}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.username.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowC&quot;&gt;{$form.username.html}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.useremail.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowC&quot;&gt;{$form.useremail.html}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.userwebsite.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowC&quot;&gt;{$form.userwebsite.html}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;
+-                    {$form.comment.label_html}
+-                    &lt;br/&gt;
+-                    {$form.comment.html}
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.html}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_spam.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_spam.html}&lt;/td&gt;
+-            &lt;/tr&gt;
+-            &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
+-                    {$form._cmdSubmit.html}
+-                    {$form._cmdDelete.html}
+-                &lt;/td&gt;
+-            &lt;/tr&gt;
+-        &lt;/table&gt;
+-        {$form.id.html}
+-    {$form.endtag}
+-{/if}
+-
+-{include file=&quot;__mng_footer.tpl&quot;}
++{include file=&quot;__mng_header.tpl&quot;}
++
++&lt;p class=&quot;title&quot;&gt;{t w=&quot;h_contents&quot;} &raquo; {t w=&quot;a_comments&quot;}
++{if $item}&raquo; {$item.title}{/if}
++&lt;/p&gt;
++
++{if $form.errors}
++    &lt;p&gt;&lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++        &lt;tr&gt;
++            &lt;th class=&quot;adminRowELG&quot;&gt;{t w=&quot;err_general&quot;}&lt;/th&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;td class=&quot;adminRowEL&quot;&gt;
++                {foreach from=$form.errors item=&quot;error&quot;}
++                    {$error}&lt;br/&gt;
++                {/foreach}
++            &lt;/td&gt;
++        &lt;/tr&gt;
++    &lt;/table&gt;&lt;/p&gt;
++{/if}
++
++{if $YD_ACTION == 'default'}
++
++    &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++    {if $item}
++        &lt;tr&gt;
++            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
++                &raquo; &lt;a href=&quot;items.php?do=edit&amp;id={$item.id}&quot; style=&quot;font-weight: bold&quot;&gt;{t w=&quot;change_item_desc&quot;}&lt;/a&gt;
++                ({$item.title})
++                &nbsp;
++                &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;images/more_details.gif&quot; border=&quot;0&quot; /&gt;&lt;/a&gt;
++            &lt;/th&gt;
++        &lt;/tr&gt;
++
++        &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++    {/if}
++    &lt;tr&gt;
++        &lt;th class=&quot;adminRowLG&quot; colspan=&quot;8&quot;&gt;
++            {if $item}
++                &raquo; {t w=&quot;a_comments&quot;}
++            {else}
++                &raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;
++                    {if $filter == 'no_spam'}&lt;b&gt;{/if}{t w=&quot;a_comments&quot;}{if $filter == 'no_spam'}&lt;/b&gt;{/if}&lt;/a&gt;
++                | &lt;a href=&quot;{$YD_SELF_SCRIPT}?filter=spam&quot;&gt;
++                    {if $filter == 'spam'}&lt;b&gt;{/if}{t w=&quot;a_comments_spam&quot;}{if $filter == 'spam'}&lt;/b&gt;{/if}&lt;/a&gt;
++            {/if}
++        &lt;/th&gt;
++    &lt;/tr&gt;
++    {if $comments-&gt;set}
++        {if $filter == 'no_spam'}
++            &lt;tr&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;17%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;33%&quot;&gt;{t w=&quot;comment&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowR&quot; width=&quot;15%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            {foreach from=$comments-&gt;set item=&quot;comment&quot;}
++                &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        {$comment.created|date:'%Y/%m/%d %H:%M'}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        {$comment.username}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {*{if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.comment|bbcode|strip_tags|truncate}&lt;/a&gt;
++                        {if $comment.item_title}
++                            &lt;br/&gt;
++                            {t w=&quot;item&quot;}: {$comment.item_title}
++                        {/if}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}*}
++                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.item_title}&lt;/a&gt;
++                        &lt;br/&gt;
++                        {$comment.comment|bbcode|strip_tags|truncate}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowR&quot;&gt;
++                        &lt;a href=&quot;../item.php?id={$comment.item_id}#comment-{$comment.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
++                        |
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
++                        &lt;br/&gt;
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
++                         onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
++                        |
++                        {if $comment.is_spam}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
++                        {else}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_spam&quot;}&lt;/a&gt;
++                        {/if}
++                        &lt;br/&gt;
++                        {t w=&quot;weight&quot;}: {$comment.comment|strlen}
++                    &lt;/td&gt;
++                &lt;/tr&gt;
++            {/foreach}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;5&quot;&gt;
++                    &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
++                &lt;/td&gt;
++            &lt;/tr&gt;
++        {else}
++            &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;5&quot;&gt;
++                &lt;i&gt;{t w=&quot;spam_delete_desc&quot;}. &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptySpam&quot;
++                 onClick=&quot;return confirm( '{t w=&quot;confirm_empty_spam&quot;}' );&quot;&gt;{t w=&quot;empty_spam_now&quot;}&lt;/a&gt;&lt;/i&gt;
++            &lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;25%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;weight&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;ip_number&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowR&quot; width=&quot;30%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            {foreach from=$comments-&gt;set item=&quot;comment&quot;}
++                &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.created|date:'%Y/%m/%d %H:%M:%S'}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.comment|strlen}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.username}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.userip}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowR&quot;&gt;
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
++                        |
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
++                         onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
++                        |
++                        {if $comment.is_spam}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
++                        {else}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_spam&quot;}&lt;/a&gt;
++                        {/if}
++                    &lt;/td&gt;
++                &lt;/tr&gt;
++            {/foreach}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;5&quot;&gt;
++                    &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
++                &lt;/td&gt;
++            &lt;/tr&gt;
++        {/if}
++    {else}
++        &lt;tr&gt;
++            &lt;td class=&quot;adminRowL&quot; colspan=&quot;7&quot;&gt;
++                {if $filter == 'no_spam'}
++                    {t w=&quot;no_comments_found&quot;}
++                {else}
++                    {t w=&quot;no_spam_comments_found&quot;}
++                {/if}
++            &lt;/td&gt;
++        &lt;/tr&gt;
++    {/if}
++
++    {if $item}
++        &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
++                &raquo; &lt;a href=&quot;items_gallery.php?id={$item.id}&quot; style=&quot;font-weight: bold;&quot;&gt;{t w=&quot;gallery&quot;}&lt;/a&gt;
++                ({$item|@text_num_images:true})
++            &lt;/th&gt;
++        &lt;/tr&gt;
++    {/if}
++    &lt;/table&gt;
++
++{/if}
++
++{if $YD_ACTION == 'edit'}
++    {$form.tag}
++        &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++            &lt;tr&gt;
++                &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;change_comment_desc&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowLGR&quot;&gt;&raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;item&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;&lt;a href=&quot;items.php?do=edit&amp;id={$comment.item_id}&quot;&gt;&lt;b&gt;{$comment.item_title}&lt;/b&gt;&lt;/a&gt;&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;posted_from&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$comment.userip}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;User Agent&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$comment.useragent|default:'-'}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;Request URI&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$comment.userrequrl|default:'-'}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.username.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowC&quot;&gt;{$form.username.html}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.useremail.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowC&quot;&gt;{$form.useremail.html}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.userwebsite.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowC&quot;&gt;{$form.userwebsite.html}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;
++                    {$form.comment.label_html}
++                    &lt;br/&gt;
++                    {$form.comment.html}
++                &lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.html}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_spam.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_spam.html}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
++                    {$form._cmdSubmit.html}
++                    {$form._cmdDelete.html}
++                &lt;/td&gt;
++            &lt;/tr&gt;
++        &lt;/table&gt;
++        {$form.id.html}
++    {$form.endtag}
++{/if}
++
++{include file=&quot;__mng_footer.tpl&quot;}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000799.html">[ydf-devel] r2233 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000801.html">[ydf-devel] r2235 - in YDFramework2.0/trunk/examples/weblog: .	include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#800">[ date ]</a>
+              <a href="thread.html#800">[ thread ]</a>
+              <a href="subject.html#800">[ subject ]</a>
+              <a href="author.html#800">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

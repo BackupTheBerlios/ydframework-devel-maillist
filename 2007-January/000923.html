@@ -1,0 +1,611 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2330 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDSimpleCMS
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2330%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20.%0A%09YDSimpleCMS&In-Reply-To=%3C200701221121.l0MBLY8o006780%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000922.html">
+   <LINK REL="Next"  HREF="000924.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2330 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDSimpleCMS</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2330%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20.%0A%09YDSimpleCMS&In-Reply-To=%3C200701221121.l0MBLY8o006780%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2330 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDSimpleCMS">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Jan 22 12:21:34 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000922.html">[ydf-devel] r2329 - YDFramework2.0/trunk/scripts
+</A></li>
+        <LI>Next message: <A HREF="000924.html">[ydf-devel] r2331 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms	examples/simplecms/includes/modules
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#923">[ date ]</a>
+              <a href="thread.html#923">[ thread ]</a>
+              <a href="subject.html#923">[ subject ]</a>
+              <a href="author.html#923">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-22 12:21:34 +0100 (Mon, 22 Jan 2007)
+New Revision: 2330
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+Log:
+Added some missing includes for YDSimpleCMS.
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-22 08:11:59 UTC (rev 2329)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-22 11:21:34 UTC (rev 2330)
+@@ -0,0 +1,465 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Constants
++    define( 'YD_SIMPLECMS_ACTION_PREFIX',  'action_' );
++    define( 'YD_SIMPLECMS_MODULE_PREFIX',  'module_' );
++    define( 'YD_SIMPLECMS_MODULE_EXT',     '.php' );
++    define( 'YD_SIMPLECMS_MODULE_PATTERN', YD_SIMPLECMS_MODULE_PREFIX . '*' . YD_SIMPLECMS_MODULE_EXT );
++    define( 'YD_SIMPLECMS_MODULE_DIR',     dirname( YD_SELF_FILE ) . '/includes/modules' );
++    define( 'YD_SIMPLECMS_SKINS_DIR',      dirname( YD_SELF_FILE ) . '/includes/skins_' );
++
++    // Configuration
++    YDConfig::set( 'YD_AUTO_EXECUTE', false );
++
++    // Includes
++    YDInclude( 'YDForm.php' );
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDDatabase.php' );
++    YDInclude( 'YDTemplate.php' );
++    YDInclude( 'YDFileSystem.php' );
++    YDInclude( 'YDF2_process.php' );
++    YDInclude( 'YDSimpleCMS_CoreModules.php' );
++
++    // Register the database instance and prefix
++    YDDatabase::registerInstance(
++        'default', 'mysql',
++        YDConfig::get( 'db_name' ), YDConfig::get( 'db_user' ),
++        YDConfig::get( 'db_pass' ), YDConfig::get( 'db_host' )
++    );
++    YDConfig::set( 'YD_DB_TABLEPREFIX', YDConfig::get( 'db_prefix' ) );
++
++    // The global list with admin action
++    $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] = array();
++
++    // The database connection
++    $GLOBALS['db'] = YDDatabase::getNamedInstance();
++
++    // Override the template class
++    class YDSimpleCMSTemplate extends YDTemplate {
++
++        // The scope of the template
++        var $scope;
++
++        // The constructor
++        function YDSimpleCMSTemplate( $scope ) {
++
++            // Initialize the parent
++            $this-&gt;YDTemplate();
++
++            // Set the scope
++            $this-&gt;scope = $scope;
++
++        }
++
++        // Fetch the template using a master
++        function fetchWithMaster( $template='', $master='__master' ) {
++
++            // Set the variables
++            $this-&gt;template_dir = YD_SIMPLECMS_SKINS_DIR . $this-&gt;scope;
++            if ( $this-&gt;scope == 'public' ) {
++                $this-&gt;template_dir .= '/' . YDConfig::get( 'YD_SIMPLECMS_PUBLIC_SKIN', 'default' );
++            }
++
++            // Get the output
++            $output = $this-&gt;fetch( $template );
++
++            // Check if there is a __standard page
++            if ( is_file( $this-&gt;template_dir . '/' . $master . '.tpl' ) ) {
++                $standard = $this-&gt;fetch( $master );
++                $output = str_replace( '##content##', $output, $standard );
++            }
++
++            // Return the output
++            return $output;
++
++        }
++
++        // Fetch the template using a master
++        function displayWithMaster( $template='', $master='__master' ) {
++            echo( $this-&gt;fetchWithMaster( $template, $master ) );
++        }
++
++    }
++
++    // Define the CMS request class
++    class YDSimpleCMSPublicRequest extends YDRequest {
++
++        // Class variables
++        var $requestScope  = 'public';
++        var $defaultModule = 'page';
++
++        // Default action
++        function actionDefault() {
++
++            // Instantiate the module manager
++            YDGlobalTimerMarker( 'Instantiate module manager' );
++            $moduleManager = new YDSimpleCMSModuleManager();
++
++            // Load the modules
++            YDGlobalTimerMarker( 'Loading all modules' );
++            $moduleManager-&gt;loadAllModules();
++
++            // Get the parameters from the query string
++            $module = $this-&gt;getQueryStringParameter( 'module', $this-&gt;defaultModule );
++            $action = $this-&gt;getQueryStringParameter( 'action', 'show' );
++
++            // Run the module
++            YDGlobalTimerMarker( 'Running module' );
++            $moduleManager-&gt;runModule( $this-&gt;requestScope, $module, $action );
++
++        }
++
++    }
++
++    // Define the CMS request class
++    class YDSimpleCMSAdminRequest extends YDSimpleCMSPublicRequest {
++
++        // Class variables
++        var $requestScope  = 'admin';
++        var $defaultModule = 'admin';
++
++        // Constructor
++        function YDSimpleCMSAdminRequest() {
++
++            // Initialize the parent
++            $this-&gt;YDSimpleCMSPublicRequest();
++
++            // Indicate we require login
++            $this-&gt;setRequiresAuthentication( true );
++
++            // Instantiate the template object
++            $this-&gt;tpl = new YDSimpleCMSTemplate( 'admin' );
++
++            // Get the site id
++            $this-&gt;siteId = YDConfig::get( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
++
++            // The names of the cookies
++            $this-&gt;cookieNameUser = 'YD_SIMPLECMS_' . $this-&gt;siteId . '_USER';
++            $this-&gt;cookieNamePass = 'YD_SIMPLECMS_' . $this-&gt;siteId . '_PASS';
++
++        }
++
++        // Login function
++        function actionLogin() {
++
++            // Redirect to default action if already logged in
++            if ( $this-&gt;isAuthenticated() === true ) {
++                $this-&gt;forward( 'default' );
++                return;
++            }
++
++            // Create the login form
++            $form = new YDForm( 'loginForm' );
++            $form-&gt;addElement( 'text', 'loginName', t('username') );
++            $form-&gt;addElement( 'password', 'loginPass', t('password') );
++            $form-&gt;addElement( 'checkbox', 'loginRememberMe', t('remember_me') );
++            $form-&gt;addElement( 'submit', 'cmdSubmit', 'Login' );
++            $form-&gt;setDefault( 'loginRememberMe', true );
++
++            // Add the rules
++            $form-&gt;addFormRule( array( &amp; $this, 'checkLogin' ) );
++
++            // Process the form
++            if ( $form-&gt;validate() ) {
++
++                // Get the form values
++                $values = $form-&gt;getValues();
++
++                // Update the password
++                $values['loginPass'] = md5( $values['loginPass'] );
++
++                // Set the cookies
++                if ( $values['loginRememberMe'] === 1 ) {
++                    $this-&gt;setCookie( $this-&gt;cookieNameUser, $values['loginName'], false );
++                    $this-&gt;setCookie( $this-&gt;cookieNamePass, $values['loginPass'], false );
++                } else {
++                    $this-&gt;setCookie( $this-&gt;cookieNameUser, $values['loginName'], true );
++                    $this-&gt;setCookie( $this-&gt;cookieNamePass, $values['loginPass'], true );
++                }
++
++                // Forward to the main manage page
++                $this-&gt;redirectToAction();
++
++            }
++
++            // Add the form to the template
++            $this-&gt;tpl-&gt;assignForm( 'form', $form );
++
++            // Output the template
++            $this-&gt;tpl-&gt;displayWithMaster( 'login' );
++
++        }
++
++        // Logout action
++        function actionLogout() {
++            $this-&gt;setCookie( $this-&gt;cookieNamePass, null );
++            $this-&gt;redirectToAction( 'login' );
++        }
++
++        // Check for authentication
++        function isAuthenticated() {
++            $cookieUser = $this-&gt;getCookie( $this-&gt;cookieNameUser );
++            $cookiePass = $this-&gt;getCookie( $this-&gt;cookieNamePass );
++            if ( ! empty( $cookieUser ) &amp;&amp; ! empty( $cookiePass ) ) {
++                $fields = array( 'loginName' =&gt; $cookieUser, 'loginPass' =&gt; $cookiePass );
++                if ( $this-&gt;checkLogin( $fields, true ) === true ) {
++                    $this-&gt;authenticationSucceeded();
++                    return true;
++                }
++            }
++            return false;
++        }
++
++        // Redirect to the login if the authentication failed
++        function authenticationFailed() {
++            $this-&gt;forward( 'login' );
++        }
++
++        // Function to check the login
++        function checkLogin( $fields, $md5=false ) {
++            if ( $md5 === false ) {
++                $fields['loginPass'] = md5( $fields['loginPass'] );
++            }
++            $db = YDDatabase::getNamedInstance();
++            $result = $db-&gt;getRecord(
++                'SELECT * FROM #_users WHERE name = \'' . $db-&gt;escape( $fields['loginName'] ) . '\' AND password = \'' . $db-&gt;escape( $fields['loginPass'] ) . '\''
++            );
++            if ( $result === false ) {
++                return array( '__ALL__' =&gt; t( 'err_login_all' ) );
++            } else {
++                $GLOBALS['user'] = $result;
++                return true;
++            }
++        }
++
++    }
++
++    // Define a CMS module
++    class YDSimpleCMSModule extends YDBase {
++
++        // Class variables
++        var $name          = 'SimpleCMS Generic Module';
++        var $description   = 'Base module for all the SimpleCMS modules.';
++        var $version       = '1.0';
++        var $authorName    = 'Pieter Claerhout';
++        var $authorEmail   = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++        var $authorUrl     = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
++        var $manager       = null;
++        var $currentScope  = null;
++        var $currentAction = null;
++
++        // Constructor
++        function YDSimpleCMSModule( $manager ) {
++            $this-&gt;manager = &amp; $manager;
++            $this-&gt;tpl = new YDSimpleCMSTemplate( 'public' );
++        }
++
++        // Check if the module is required or not
++        function isRequired() {
++            return ! is_file( YD_SIMPLECMS_MODULE_DIR . '/' . $this-&gt;getClassName() . YD_SIMPLECMS_MODULE_EXT );
++        }
++
++        // Get the module name
++        function getModuleName() {
++            return substr( $this-&gt;getClassName(), strlen( YD_SIMPLECMS_MODULE_PREFIX ) );
++        }
++
++        // Display the module
++        function display( $name='' ) {
++
++            // Assign the standard variables
++            $this-&gt;tpl-&gt;assign( 'currentAction', $this-&gt;currentAction );
++            $this-&gt;tpl-&gt;assign( 'currentScope',  $this-&gt;currentScope );
++            $this-&gt;tpl-&gt;assign( 'adminMenu',     $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] );
++            if ( isset( $GLOBALS['user'] ) ) {
++                $this-&gt;tpl-&gt;assign( 'currentUser', $GLOBALS['user'] );
++            }
++
++            // Get the template name
++            if ( $name == '' ) {
++                $name = $this-&gt;getModuleName();
++            }
++
++            // Display the template
++            $this-&gt;tpl-&gt;displayWithMaster( $name );
++
++        }
++
++        // Run an action in the module
++        function runAction( $scope, $action ) {
++
++            // Get the function name
++            $moduleFunctionName = YD_SIMPLECMS_ACTION_PREFIX . $scope . '_' . $action;
++
++            // Check if the function exists
++            if ( ! $this-&gt;hasMethod( $moduleFunctionName ) ) {
++                YDSimpleCMSShowError( 'Module %s function not found: %s', $this-&gt;getModuleName(), $moduleFunctionName );
++            }
++
++            // Set the variables
++            $this-&gt;currentScope  = $scope;
++            $this-&gt;currentAction = $action;
++
++            // Execute the function
++            call_user_func( array( $this, $moduleFunctionName ) );
++
++        }
++
++    }
++
++    // The module manager class
++    class YDSimpleCMSModuleManager extends YDBase {
++
++        // Load the plugins
++        function loadAllModules() {
++
++            // Include the modules if any
++            if ( is_dir( YD_SIMPLECMS_MODULE_DIR ) ) {
++
++                // Convert it to a directory object
++                $modulesDir = new YDFSDirectory( YD_SIMPLECMS_MODULE_DIR );
++
++                // Load the modules
++                foreach ( $modulesDir-&gt;getContents( YD_SIMPLECMS_MODULE_PATTERN ) as $module ) {
++                    include_once( $module-&gt;getAbsolutePath() );
++                }
++
++            }
++
++        }
++
++        // Run a module
++        function runModule( $scope, $module, $action ) {
++
++            // Convert everything to lowercase
++            $scope  = strtolower( $scope );
++            $module = strtolower( $module );
++            $action = strtolower( $action );
++
++            // Get the classname for the module
++            $moduleClassName = YD_SIMPLECMS_MODULE_PREFIX . $module;
++
++            // Check if the class exists
++            if ( ! class_exists( $moduleClassName ) ) {
++                YDSimpleCMSShowError( 'Module class not found: %s', $moduleClassName );
++            }
++
++            // Create the class instance
++            $moduleInstance = new $moduleClassName( $this );
++
++            // Set the correct template scope
++            $moduleInstance-&gt;tpl-&gt;scope = $scope;
++
++            // Sort the admin menu items
++            if ( $scope == 'admin' ) {
++                ksort( $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] );
++                foreach ( $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] as $key=&gt;$val ) {
++                    if ( isset( $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'][$key]['children'] ) ) {
++                        ksort( $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'][$key]['children'] );
++                    }
++                }
++                $moduleInstance-&gt;tpl-&gt;assign( 'adminMenu', $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] );
++            }
++
++            // Create a link to ourselves
++            $moduleInstance-&gt;manager = &amp; $this;
++
++            // Run the action
++            $moduleInstance-&gt;runAction( $scope, $action );
++
++        }
++
++        // Get the list of modules
++        function getModuleList() {
++            $modules = array();
++            foreach ( get_declared_classes() as $class ) {
++                if ( substr( $class, 0, strlen( YD_SIMPLECMS_MODULE_PREFIX ) ) == YD_SIMPLECMS_MODULE_PREFIX ) {
++                    $modules[$class] = new $class( $this );
++                }
++            }
++            return $modules;
++        }
++
++    }
++
++    // Function to show an error
++    function YDSimpleCMSShowError() {
++        $args = func_get_args();
++        if ( sizeof( $args &gt; 0 ) ) {
++            $args[0] = '&lt;font color=&quot;red&quot;&gt;&lt;b&gt;ERROR:&lt;/b&gt; ' . $args[0] . '&lt;/font&gt;';
++        }
++        call_user_func_array( 'printf', $args );
++        die();
++    }
++
++    // Function to run a CMS app
++    function YDSimpleCMSRunRequest( $baseClass ) {
++        $baseClass = ( strtolower( $baseClass ) == 'public' ) ? 'YDSimpleCMSPublicRequest' : 'YDSimpleCMSAdminRequest';
++        $clsInst = new YDExecutor( $baseClass . '.php' );
++        @session_start();
++        $clsInst-&gt;execute();
++    }
++
++    // Function to add an admin menu item
++    function YDSimpleCMSAddAdminMenu( $title, $subtitle, $module, $action ) {
++
++        // Link to the menu items
++        $menu = &amp; $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'];
++
++        // Construct the URL
++        $url = YD_SELF_SCRIPT . '?module=' . $module . '&amp;action=' . $action;
++
++        // Add the first level if needed
++        if ( ! isset( $menu[$title] ) ) {
++            $menu[$title] = array();
++            $menu[$title]['title']    = $title;
++            $menu[$title]['children'] = array();
++        }
++
++        // Check if we have a subname or not
++        if ( $subtitle == null ) {
++            $menu[$title]['url'] = $url;
++        } else {
++            if ( ! isset( $menu[$title][ $action ] ) ) {
++                $menu[$title]['children'][$subtitle] = array();
++                $menu[$title]['children'][$subtitle]['title'] = $subtitle;
++                $menu[$title]['children'][$subtitle]['url']   = $url;
++            }
++        }
++
++    }
++
++    // Add menu items
++    YDSimpleCMSAddAdminMenu( 'Admin',   null,       'admin', 'show' );
++    YDSimpleCMSAddAdminMenu( 'Admin',   'Logout',   'admin', 'logout' );
++    YDSimpleCMSAddAdminMenu( 'Content', 'Pages',    'page',  'show' );
++    YDSimpleCMSAddAdminMenu( 'Options', 'Modules',  'admin', 'modules' );
++    YDSimpleCMSAddAdminMenu( 'Options', 'Settings', 'admin', 'settings' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-22 08:11:59 UTC (rev 2329)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-22 11:21:34 UTC (rev 2330)
+@@ -0,0 +1,60 @@
++&lt;?php
++
++    // The page module
++    class module_page extends YDSimpleCMSModule {
++
++        // Class variables
++        var $name        = 'SimpleCMS Page Module';
++        var $description = 'SimpleCMS module to manage pages.';
++        var $version     = '1.0';
++        var $authorName  = 'Pieter Claerhout';
++        var $authorEmail = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++        var $authorUrl   = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
++
++        // Public main function
++        function action_public_show() {
++            $this-&gt;display();
++        }
++
++        // Admin main function
++        function action_admin_show() {
++            $this-&gt;display();
++        }
++
++    }
++
++    // The admin module
++    class module_admin extends YDSimpleCMSModule {
++
++        // Class variables
++        var $name         = 'SimpleCMS Admin Module';
++        var $description  = 'SimpleCMS module to manage everything ;-)';
++        var $version      = '1.0';
++        var $authorName   = 'Pieter Claerhout';
++        var $authorEmail  = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++        var $authorUrl    = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
++
++        // Admin main function
++        function action_admin_show() {
++            $this-&gt;display();
++        }
++
++        // Admin logout function
++        function action_admin_logout() {
++            YDRequest::redirect( YD_SELF_SCRIPT . '?do=logout' );
++        }
++
++        // List the plugins
++        function action_admin_modules() {
++            $this-&gt;tpl-&gt;assign( 'modules', $this-&gt;manager-&gt;getModuleList() );
++            $this-&gt;display();
++        }
++
++        // The settings action
++        function action_admin_settings() {
++            $this-&gt;display();
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000922.html">[ydf-devel] r2329 - YDFramework2.0/trunk/scripts
+</A></li>
+	<LI>Next message: <A HREF="000924.html">[ydf-devel] r2331 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms	examples/simplecms/includes/modules
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#923">[ date ]</a>
+              <a href="thread.html#923">[ thread ]</a>
+              <a href="subject.html#923">[ subject ]</a>
+              <a href="author.html#923">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1734 - YDFramework2.0/trunk/scripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1734%20-%20YDFramework2.0/trunk/scripts&In-Reply-To=%3C200602271113.k1RBDg4q012113%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000148.html">
+   <LINK REL="Next"  HREF="000150.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1734 - YDFramework2.0/trunk/scripts</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1734%20-%20YDFramework2.0/trunk/scripts&In-Reply-To=%3C200602271113.k1RBDg4q012113%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1734 - YDFramework2.0/trunk/scripts">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 27 12:13:42 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000148.html">[ydf-devel] r1733 - YDFramework2.0/trunk/scripts
+</A></li>
+        <LI>Next message: <A HREF="000150.html">[ydf-devel] r1735 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#149">[ date ]</a>
+              <a href="thread.html#149">[ thread ]</a>
+              <a href="subject.html#149">[ subject ]</a>
+              <a href="author.html#149">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-27 12:13:42 +0100 (Mon, 27 Feb 2006)
+New Revision: 1734
+
+Added:
+   YDFramework2.0/trunk/scripts/make_weblog_release.bat
+Log:
+Added script to zip up the weblog application.
+
+Feature Request #1850
+
+Added: YDFramework2.0/trunk/scripts/make_weblog_release.bat
+===================================================================
+--- YDFramework2.0/trunk/scripts/make_weblog_release.bat	2006-02-27 11:07:28 UTC (rev 1733)
++++ YDFramework2.0/trunk/scripts/make_weblog_release.bat	2006-02-27 11:13:42 UTC (rev 1734)
+@@ -0,0 +1,124 @@
+<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">+ at echo</A> off
++
++rem Needs the following software:
++rem   - Doxygen
++rem   - xsltproc
++rem   - fop
++rem   - cscript
++rem   - tar
++rem   - gzip
++rem   - sed
++
++:config_settings
++set SVN_HOME=<A HREF="svn://svn.berlios.de/ydframework/YDFramework2.0">svn://svn.berlios.de/ydframework/YDFramework2.0</A>
++set BLDTYPE=
++set SVN_URL=
++set SVN_REV=
++set SVN_CMD=
++set ARC_NAME=YDFramework-
++
++:check_environment_svn_url
++if &quot;%2&quot; == &quot;&quot; goto error_missing_svn_url
++
++:check_environment_build_type
++if &quot;%1&quot; == &quot;&quot; goto error_missing_build_type
++if &quot;%1&quot; == &quot;--release&quot;  goto setup_buildtype_release
++if &quot;%1&quot; == &quot;--snapshot&quot; goto setup_buildtype_snapshot
++if &quot;%BLDTYPE%&quot; == &quot;&quot; goto error_wrong_build_type
++goto do_export
++
++:build_export
++if exist &quot;%ARC_NAME%&quot; ( rmdir /Q /S &quot;%ARC_NAME%&quot; )
++echo [task] Exporting SVN repository...
++%SVN_CMD%
++
++:build_docs
++pushd &quot;%ARC_NAME%&quot;
++
++:cleanup_build
++echo [task] Cleaning up the tree structure...
++del /Q &quot;doc\build_api.bat&quot; &gt; NUL
++del /Q &quot;doc\docs_api.dxy&quot; &gt; NUL
++del /Q &quot;doc\docs_api_footer.html&quot; &gt; NUL
++del /Q &quot;doc\RequestProcessing.vsd&quot; &gt; NUL
++del /Q &quot;YDFramework2\images\*.psd&quot; &gt; NUL
++del /Q &quot;scripts\*.bat&quot; &gt; NUL
++rmdir /Q /S &quot;scripts&quot;
++
++:create_build_number_file
++echo [task] Creating build revision file...
++sed &quot;s/'YD_FW_REVISION', 'unknown'/'YD_FW_REVISION', '%SVN_REV%'/g&quot; &quot;YDFramework2\YDF2_init.php&quot; &gt; &quot;YDFramework2\YDF2_init_fixed.php&quot;
++del /Q &quot;YDFramework2\YDF2_init.php&quot; &gt; NUL
++move /Y &quot;YDFramework2\YDF2_init_fixed.php&quot; &quot;YDFramework2\YDF2_init.php&quot;
++
++:create_weblog_archive
++echo [task] Creating archive of the weblog application...
++if exist &quot;..\%WARC_NAME%&quot; ( rmdir /Q /S &quot;..\%WARC_NAME%&quot; )
++mkdir &quot;..\%WARC_NAME%&quot;
++xcopy /E /Y /Q /S &quot;examples\weblog&quot; &quot;..\%WARC_NAME%&quot;
++mkdir &quot;..\%WARC_NAME%\include\YDFramework2&quot;
++xcopy /E /Y /Q /S &quot;YDFramework2&quot; &quot;..\%WARC_NAME%\include\YDFramework2&quot;
++cd &quot;..\%WARC_NAME%&quot;
++sed &quot;s/\/\.\.\/\.\.\/\YDFramework2/\/include\/YDFramework2/g&quot; install.php &gt; install_fixed.php
++del /Q &quot;install.php&quot; &gt; NUL
++move /Y &quot;install_fixed.php&quot; &quot;install.php&quot;
++cd &quot;include&quot;
++sed &quot;s/\/\.\.\/\.\.\/\.\.\/YDFramework2/\/YDFramework2/g&quot; &quot;YDWeblog_init.php&quot; &gt; &quot;YDWeblog_init_fixed.php&quot;
++del /Q &quot;YDWeblog_init.php&quot; &gt; NUL
++move /Y &quot;YDWeblog_init_fixed.php&quot; &quot;YDWeblog_init.php&quot;
++cd ..\..
++
++:create_archive_weblog
++echo [task] Creating .tar.gz archive of this weblog build...
++if exist &quot;%WARC_NAME%.tar&quot; ( del /Q &quot;%WARC_NAME%.tar&quot; &gt; NUL )
++tar cf &quot;%WARC_NAME%.tar&quot; &quot;%WARC_NAME%&quot;
++if exist &quot;%WARC_NAME%.tar.gz&quot; ( del /Q &quot;%WARC_NAME%.tar.gz&quot; &gt; NUL )
++gzip -9 &quot;%WARC_NAME%.tar&quot;
++
++:cleanup_build
++echo [task] Cleaning up the temporary build files...
++if exist &quot;%ARC_NAME%&quot; ( rmdir /Q /S &quot;%ARC_NAME%&quot; )
++if exist &quot;%WARC_NAME%&quot; ( rmdir /Q /S &quot;%WARC_NAME%&quot; )
++
++:finish_build
++echo [task] Finished the build!
++popd
++goto end
++
++:setup_buildtype_release
++echo [task] Setting up the build...
++set BLDTYPE=release
++set SVN_URL=&quot;%SVN_HOME%/tags/%2&quot;
++set ARC_NAME=%ARC_NAME%%2
++set WARC_NAME=YDWeblog-%2
++echo Build type: %BLDTYPE%
++echo SVN URL: %SVN_URL%
++set SVN_REV=%2
++set SVN_CMD=svn export %SVN_URL% %ARC_NAME%
++goto build_export
++
++:setup_buildtype_snapshot
++echo [task] Setting up the build...
++set BLDTYPE=snapshot
++set SVN_URL=&quot;%SVN_HOME%/trunk&quot;
++set SVN_REV=%2
++set ARC_NAME=%ARC_NAME%bld%2
++set WARC_NAME=YDWeblog-bld%2
++echo Build type: %BLDTYPE%
++echo SVN URL: %SVN_URL%
++set SVN_CMD=svn export -r &quot;%2&quot; %SVN_URL% &quot;%ARC_NAME%&quot;
++goto build_export
++
++:error_missing_build_type
++echo ERROR: The build type was not specified.
++goto end
++
++:error_wrong_build_type
++echo ERROR: The build type &quot;%1&quot; is not supported.
++goto end
++
++:error_missing_svn_url
++echo ERROR: The SVN path was not given as an argument.
++goto end
++
++:end
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000148.html">[ydf-devel] r1733 - YDFramework2.0/trunk/scripts
+</A></li>
+	<LI>Next message: <A HREF="000150.html">[ydf-devel] r1735 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#149">[ date ]</a>
+              <a href="thread.html#149">[ thread ]</a>
+              <a href="subject.html#149">[ subject ]</a>
+              <a href="author.html#149">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

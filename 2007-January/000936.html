@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2343 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2343%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701231449.l0NEnDU7014698%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000935.html">
+   <LINK REL="Next"  HREF="000937.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2343 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2343%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701231449.l0NEnDU7014698%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2343 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 15:49:13 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000935.html">[ydf-devel] r2342 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms
+</A></li>
+        <LI>Next message: <A HREF="000937.html">[ydf-devel] r2344 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#936">[ date ]</a>
+              <a href="thread.html#936">[ thread ]</a>
+              <a href="subject.html#936">[ subject ]</a>
+              <a href="author.html#936">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-23 15:49:12 +0100 (Tue, 23 Jan 2007)
+New Revision: 2343
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+Log:
+Updated the docstrings of YDDatabaseTree.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-23 11:02:11 UTC (rev 2342)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-23 14:49:12 UTC (rev 2343)
+@@ -37,6 +37,61 @@
+      *  This class implements a database tree as described on:
+      *  <A HREF="http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/">http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/</A>
+      *
++     *  Schema description
++     *
++     *  @code
++     *  CREATE TABLE nested_tree (
++     *      id int(11) NOT NULL auto_increment,
++     *      parent_id int(11) NOT NULL default '0',
++     *      title varchar(255) NOT NULL default '',
++     *      nleft int(11) NOT NULL default '0',
++     *      nright int(11) NOT NULL default '0',
++     *      nlevel int(11) NOT NULL default '0',
++     *      position int(11) NOT NULL default '0',
++     *      PRIMARY KEY  (id),
++     *      KEY nested_tree_parent_id (parent_id),
++     *      KEY nested_tree_nleft (nleft),
++     *      KEY nested_tree_nright (nright),
++     *      KEY nested_tree_nlevel (nlevel)
++     *  );
++     *  @endcode
++     *
++     *  Default values for testing
++     *
++     *  @code
++     *  INSERT INTO nested_tree VALUES (1,0,'General Resources',1,22,1,0);
++     *  INSERT INTO nested_tree VALUES (2,1,'Code Paste',2,3,2,0);
++     *  INSERT INTO nested_tree VALUES (3,1,'Documentation',4,5,2,0);
++     *  INSERT INTO nested_tree VALUES (4,1,'Books &amp; Publications',6,13,2,0);
++     *  INSERT INTO nested_tree VALUES (5,4,'Apache',7,8,3,0);
++     *  INSERT INTO nested_tree VALUES (6,4,'PostgreSQL',9,10,3,0);
++     *  INSERT INTO nested_tree VALUES (7,4,'MySQL',11,12,3,0);
++     *  INSERT INTO nested_tree VALUES (8,1,'Links',14,21,2,0);
++     *  INSERT INTO nested_tree VALUES (9,8,'Databases',15,16,3,0);
++     *  INSERT INTO nested_tree VALUES (10,8,'Generators',17,18,3,0);
++     *  INSERT INTO nested_tree VALUES (11,8,'Portals',19,20,3,0);
++     *  @endcode
++     *
++     *  Sample data dump
++     *
++     *  @code
++     *  +----+-----------+----------------------+-------+--------+--------+----------+
++     *  | id | parent_id | title                | nleft | nright | nlevel | position |
++     *  +----+-----------+----------------------+-------+--------+--------+----------+
++     *  |  1 |         0 | General Resources    |     1 |     22 |      1 |        0 |
++     *  |  2 |         1 | Code Paste           |     2 |      3 |      2 |        0 |
++     *  |  3 |         1 | Documentation        |     4 |      5 |      2 |        0 |
++     *  |  4 |         1 | Books &amp; Publications |     6 |     13 |      2 |        0 |
++     *  |  5 |         4 | Apache               |     7 |      8 |      3 |        0 |
++     *  |  6 |         4 | PostgreSQL           |     9 |     10 |      3 |        0 |
++     *  |  7 |         4 | MySQL                |    11 |     12 |      3 |        0 |
++     *  |  8 |         1 | Links                |    14 |     21 |      2 |        0 |
++     *  |  9 |         8 | Databases            |    15 |     16 |      3 |        0 |
++     *  | 10 |         8 | Generators           |    17 |     18 |      3 |        0 |
++     *  | 11 |         8 | Portals              |    19 |     20 |      3 |        0 |
++     *  +----+-----------+----------------------+-------+--------+--------+----------+
++     *  @endcode
++     *
+      *  @todo
+      *      Add support for joins so that you can link in other tables in the tree. Without this functionality, this
+      *      class is rather limited. We might need to give the table with the tree itself a common prefix so that we
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000935.html">[ydf-devel] r2342 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms
+</A></li>
+	<LI>Next message: <A HREF="000937.html">[ydf-devel] r2344 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#936">[ date ]</a>
+              <a href="thread.html#936">[ thread ]</a>
+              <a href="subject.html#936">[ subject ]</a>
+              <a href="author.html#936">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

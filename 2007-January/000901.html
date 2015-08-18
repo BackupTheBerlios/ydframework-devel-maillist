@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2309 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2309%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701132232.l0DMWld7031951%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000900.html">
+   <LINK REL="Next"  HREF="000902.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2309 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2309%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701132232.l0DMWld7031951%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2309 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 13 23:32:47 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000900.html">[ydf-devel] r2308 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000902.html">[ydf-devel] r2310 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#901">[ date ]</a>
+              <a href="thread.html#901">[ thread ]</a>
+              <a href="subject.html#901">[ subject ]</a>
+              <a href="author.html#901">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-13 23:32:07 +0100 (Sat, 13 Jan 2007)
+New Revision: 2309
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+Log:
+on YDDatabaseTree3:
+ - some cleanups
+ - added support for prefixes
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-13 19:09:46 UTC (rev 2308)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-13 22:32:07 UTC (rev 2309)
+@@ -140,36 +140,53 @@
+          *  @param $id      The ID of the node to fetch.
+          *  @param $field   (Optional) The unique field to select on. Defaults to id, which means that the ID field specified
+          *                  when the object was instantiated will be used.
++         *  @param $class   (optional) Relation name
++         *  @param $prefix  (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+          *  @returns An object containing the node's data, or false if node not found
+          */
+-        function getNode( $id, $field = null ) {
++        function getNode( $id, $field = null, $class = null, $prefix = false ) {
+ 
+ 			$this-&gt;resetAll();
+ 
+-			// if field not defined, field is id
+-			if ( is_null( $field ) ) $field = $this-&gt;__id;
+-	
+-			// set field
+-			$this-&gt;set( $field, $id );
+-
+             // get node
+-            return $this-&gt;_getNode();
++            return $this-&gt;_getNode( $id, $field, $class, $prefix );
+         }
+ 
+ 
+         /**
+          *  Helper method to fetch a node.
+          *
++         *  @param $id      The ID of the node to fetch.
++         *  @param $field   (optional) The unique field to select on. Defaults to id, which means that the ID field specified
++         *                             when the object was instantiated will be used.
++         *  @param $class   (optional) Relation name
++         *  @param $prefix  (optional) Adds the relation's vars as prefixes to the keys. Default: true.
++         *
+          *  @returns An object containing the node's data, or false if node not found
+          */
+-        function _getNode() {
++        function _getNode( $id, $field = null, $class = null, $prefix = true ) {
+ 
++			// if field not defined, field is id
++			if ( is_null( $field ) ) $field = $this-&gt;__id;
++	
++			// set local field
++			if ( is_null( $class ) ){
++
++				// set field value
++				$this-&gt;set( $field, $id );
++			}else{
++
++				// load relation and set field
++				$this-&gt;load( $class );
++				$this-&gt;$class-&gt;set( $field, $id );
++			}
++
+ 			// check results
+ 			if ( $this-&gt;findAll() == 0 ) return false;
+ 
+             // Execute the query and return the record
+-            return $this-&gt;getValues();
++            return $this-&gt;getValues( false, false, false, $prefix );
+         }
+ 
+ 
+@@ -280,14 +297,16 @@
+          *  Fetch the children of a node, or if no node is specified, fetch the top level items.
+          *
+          *  @param $id             The ID of the node to fetch child data for.
++         *  @param $includeSelf    (optional) Include self node in results. Default: false.
++         *  @param $prefix         (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+          *  @returns The children of the passed id
+          */
+-        function getChildren( $id, $includeSelf = false ){
++        function getChildren( $id, $includeSelf = false, $prefix = false ){
+ 
+ 			$this-&gt;resetAll();
+ 			
+-			return $this-&gt;_getChildren( $id, $includeSelf );
++			return $this-&gt;_getChildren( $id, $includeSelf, $prefix );
+         }
+ 
+ 
+@@ -295,10 +314,12 @@
+          *  Helper to fetch the children of a node, or if no node is specified, fetch the top level items.
+          *
+          *  @param $id             The ID of the node to fetch child data for.
++         *  @param $includeSelf    (optional) Include self node in results. Default: false.
++         *  @param $prefix         (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+          *  @returns The children of the passed id
+          */
+-        function _getChildren( $id, $includeSelf = false ){
++        function _getChildren( $id, $includeSelf = false, $prefix = false  ){
+ 
+             // get just children
+ 			if ( $includeSelf == false ) $this-&gt;where(       $this-&gt;__table_parent . ' = ' . intval( $id ) );
+@@ -306,7 +327,7 @@
+ 
+ 			$this-&gt;findAll();
+ 
+-			return $this-&gt;getResults();
++			return $this-&gt;getResults( false, false, false, $prefix );
+         }
+ 
+ 
+@@ -317,14 +338,15 @@
+          *
+          *  @param $id             The ID of the node to fetch child data for.
+          *  @param $includeSelf    (optional) Whether or not to include the passed node in the the results.
++         *  @param $prefix         (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+          *  @returns An array of each node to passed node
+          */
+-        function getPath( $id, $includeSelf=false ) {
++        function getPath( $id, $includeSelf = false, $prefix = false ) {
+ 
+ 			$this-&gt;resetAll();
+ 
+-			return $this-&gt;_getPath( $id, $includeSelf );
++			return $this-&gt;_getPath( $id, $includeSelf, $prefix );
+         }
+ 
+ 
+@@ -333,10 +355,11 @@
+          *
+          *  @param $id             The ID of the node to fetch child data for.
+          *  @param $includeSelf    (optional) Whether or not to include the passed node in the the results.
++         *  @param $prefix         (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+          *  @returns An array of each node to passed node
+          */
+-        function _getPath( $id, $includeSelf = false ) {
++        function _getPath( $id, $includeSelf = false, $prefix = false ) {
+ 
+             // Get the node
+             $node = $this-&gt;getNode( intval($id) ) ;
+@@ -355,7 +378,7 @@
+ 
+ 			$this-&gt;findAll();
+ 
+-			return $this-&gt;getResults();
++			return $this-&gt;getResults( false, false, false, $prefix );
+         }
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000900.html">[ydf-devel] r2308 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000902.html">[ydf-devel] r2310 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#901">[ date ]</a>
+              <a href="thread.html#901">[ thread ]</a>
+              <a href="subject.html#901">[ subject ]</a>
+              <a href="author.html#901">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

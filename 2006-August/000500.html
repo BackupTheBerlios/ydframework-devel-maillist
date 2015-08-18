@@ -1,0 +1,676 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1993 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1993%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608091533.k79FX6AT019653%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000499.html">
+   <LINK REL="Next"  HREF="000501.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1993 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1993%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608091533.k79FX6AT019653%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1993 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug  9 17:33:06 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000499.html">[ydf-devel] r1992 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000501.html">[ydf-devel] r1994 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#500">[ date ]</a>
+              <a href="thread.html#500">[ thread ]</a>
+              <a href="subject.html#500">[ subject ]</a>
+              <a href="author.html#500">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-09 17:32:52 +0200 (Wed, 09 Aug 2006)
+New Revision: 1993
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+Log:
+lots of clean ups in YDCM user management
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-08 15:54:33 UTC (rev 1992)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-09 15:32:52 UTC (rev 1993)
+@@ -80,20 +80,50 @@
+         /**
+          *  This function assigns an array of permissions to a user
+          *
+-         *  @param     $user_id              User id to get permissions
+-         *  @param     $permissions_to_add   Array with permissions to add
+-         *  @param     $permissions_to_del   Array with permissions to delete
++         *  @param     $user_id     User id to get permissions
++         *  @param     $parend_id   Parent id form permission comparation
++         *  @param     $values      Array with permissions
+          */
+-		function setPermissions( $user_id, $permissions_to_add, $permissions_to_del ){
++		function setPermissions( $user_id, $parent_id, $values ){
+ 
++			// init temp array permissions
++			$permissions_valid  = array();
++			$permissions_to_add = array();
++			$permissions_to_del = array();
++
++			// get parent permissions
++			$permissions_parent = $this-&gt;getPermissions( $parent_id );
++
++			// check $values if contains permissions that belong to its parent
++			foreach( $permissions_parent as $obj =&gt; $perms )
++				foreach( $perms as $p =&gt; $arr )
++					if( isset( $values[ $obj ][ $p ] ) &amp;&amp; $values[ $obj ][ $p ] == 'on' )
++						$permissions_valid[ $obj ][] = $p;
++
++			// get user permissions
++			$permissions_user = $this-&gt;getPermissions( $user_id );
++
++			// cycle current permissions to see the ones we need to delete
++			foreach( $permissions_user as $obj =&gt; $perms )
++				foreach( $perms as $p =&gt; $arr )
++					if ( !isset( $permissions_valid[ $obj ] ) || !in_array( $p, $permissions_valid[ $obj ] ) ) 
++						$permissions_to_del[ $obj ][] = $p;
++
++			// cycle current permissions to see the ones we need to add
++			foreach( $permissions_valid as $obj =&gt; $perms )
++				foreach( $perms as $p )
++					if ( !isset( $permissions[ $obj ][$p] ) )
++						$permissions_to_add[ $obj ][] = $p;
++
++
+ 			$p_add = 0;
+ 			$t_add = 0;
+ 
+ 			$p_del = 0;
+ 			$t_del = 0;
+ 
+-			// cycle permissions to add and insert them in db
+-			foreach ( $permissions_to_add as $obj =&gt; $perms )
++			// cycle permissions to delete and delete them from db
++			foreach ( $permissions_to_del as $obj =&gt; $perms )
+ 				foreach ( array_values( $perms ) as $p ){
+ 
+ 					$this-&gt;resetAll();
+@@ -101,12 +131,12 @@
+ 					$this-&gt;object         = $obj;
+ 					$this-&gt;object_action  = $p;
+ 
+-					if ($this-&gt;insert()) $p_add++;
+-					$t_add++;
++					if ($this-&gt;delete()) $p_del++;
++					$t_del++;
+ 				}
+ 
+-			// cycle permissions to delete and delete them from db
+-			foreach ( $permissions_to_del as $obj =&gt; $perms )
++			// cycle permissions to add and insert them in db
++			foreach ( $permissions_to_add as $obj =&gt; $perms )
+ 				foreach ( array_values( $perms ) as $p ){
+ 
+ 					$this-&gt;resetAll();
+@@ -114,8 +144,8 @@
+ 					$this-&gt;object         = $obj;
+ 					$this-&gt;object_action  = $p;
+ 
+-					if ($this-&gt;delete()) $p_del++;
+-					$t_del++;
++					if ($this-&gt;insert()) $p_add++;
++					$t_add++;
+ 				}
+ 
+ 			if ($p_add == $t_add &amp;&amp; $p_del == $t_del ) return true;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-08 15:54:33 UTC (rev 1992)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-09 15:32:52 UTC (rev 1993)
+@@ -95,33 +95,18 @@
+ 
+ 			// init permissions
+ 			$this-&gt;perm = new YDCMPermissions();
+-			
+-			$this-&gt;id = null;
+ 		}
+ 
+ 
+         /**
+-         *  This function sets the user id of this user object
+-         *
+-         *  @param $id  User id
+-         */
+-		function setId( $id ){
+-		
+-			$this-&gt;id = $id;
+-		}
+-
+-
+-        /**
+          *  This function returns all user permissions
+          *
+-         *  @param  $user_id (Optional) Custom user id to get permissions
++         *  @param  $user_id   User id to get permissions
+          *
+          *  @retuns  Associative array of permissions
+          */
+-		function getPermissions( $user_id = null ){
++		function getPermissions( $user_id ){
+ 		
+-			if ( is_null( $user_id ) ) $user_id = $this-&gt;id;
+-		
+ 			return $this-&gt;perm-&gt;getPermissions( $user_id );
+ 		}
+ 
+@@ -140,7 +125,7 @@
+ 			// if user is not valid we should return false
+ 			if ( $valid === false ) return false;
+ 
+-			// return user id found
++			// return user id found by $this-&gt;valid
+ 			return $this-&gt;user_id;
+ 		}
+ 
+@@ -148,11 +133,13 @@
+         /**
+          *  This function returns all sub users
+          *
++         *  @param  $user_id   User id to get permissions
++         *
+          *  @returns    all tree elements 
+          */
+-		function getTreeElements(){
++		function getTreeElements( $user_id ){
+ 
+-			return $this-&gt;tree-&gt;getDescendants( $this-&gt;id, true );
++			return $this-&gt;tree-&gt;getDescendants( $user_id, true );
+ 		}
+ 
+ 
+@@ -164,9 +151,9 @@
+          *
+          *  @returns    boolean flag
+          */
+-		function isDescendantOf( $id, $parent_id ){
++		function isDescendantOf( $user_id, $parent_id ){
+ 
+-			return $this-&gt;tree-&gt;isDescendantOf( intval( $id ), intval( $parent_id ) );
++			return $this-&gt;tree-&gt;isDescendantOf( intval( $user_id ), intval( $parent_id ) );
+ 		}
+ 
+ 
+@@ -174,7 +161,7 @@
+          *  This function checks if a username and password are valid
+          *
+          *  @param $username  User username
+-         *  @param $password  User password (if password length is smaller than 32 we must md5 it)
++         *  @param $password  User password (if password length is smaller than 32 we must md5 it, pwd form elements must have max 31)
+          *
+          *  @returns    true if valid, false otherwise
+          */
+@@ -213,12 +200,12 @@
+         /**
+          *  This function adds a new user based on form values
+          *
+-         *  @param $id          Static parent id
++         *  @param $parent_id   Parent id of this new node
+          *  @param $formvalues  Array with user attributes
+          *
+          *  @returns    true if updated, array with form errors otherwise
+          */
+-		function addUserForm( $id, $formvalues = array() ){
++		function addUserForm( $parent_id, $formvalues = array() ){
+ 
+ 			// check form validation
+ 			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+@@ -240,11 +227,13 @@
+ 			$values['login_end']    = YDStringUtil::formatDate( $this-&gt;form-&gt;getValue( 'login_end' ),   'datetimesql' );
+ 
+ 			// add user to YDUsers table
+-			return $this-&gt;tree-&gt;addNode( $values, $id );
++			$newID = $this-&gt;tree-&gt;addNode( $values, $parent_id );
++
++			// change user permissions
++			return $this-&gt;perm-&gt;setPermissions( $newID, $parent_id, $this-&gt;form-&gt;getValues() );
+ 		}
+ 
+ 
+-
+         /**
+          *  This function updates the current user attributes (ignoring passwords and statistics) using form values
+          *
+@@ -259,28 +248,16 @@
+ 			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+ 				return $this-&gt;form-&gt;getErrors();
+ 
+-			// get values
++			// get form values
+ 			$values = $this-&gt;form-&gt;getValues();
+ 
+-			// change user details and permissions based on general values
+-			// BEGIN :)
+-			$res1 = $this-&gt;changeUserPermissions( $id, $values );
+-			$res2 = $this-&gt;changeUserDetails( $id, $values );
+-			return $res1 + $res2;
+-			// COMMIT :)
+-		}
++			// we need parent fot setting user permissions
++			$details = $this-&gt;getUser( $id );
+ 
++			// change user permissions
++			$res1 = $this-&gt;perm-&gt;setPermissions( $id, $details[ 'parent_id' ], $values );
+ 
+-        /**
+-         *  This function updates the current user attributes
+-         *
+-         *  @param $id          Static user id
+-         *  @param $formvalues  Array with user attributes
+-         *
+-         *  @returns    true if updated, false otherwise
+-         */
+-		function changeUserDetails( $id, $values ){
+-
++			// change user details
+ 			$this-&gt;resetAll();
+ 
+ 			// set new values
+@@ -298,36 +275,6 @@
+ 		}
+ 
+ 
+-		function changeUserPermissions( $id, $values ){
+-
+-			// init temp array permissions
+-			$permissions_valid  = array();
+-			$permissions_to_add = array();
+-			$permissions_to_del = array();
+-
+-			// check $values if contains permissions that belong to its parent
+-			foreach( $this-&gt;permissions_parent as $obj =&gt; $perms )
+-				foreach( $perms as $p =&gt; $arr )
+-					if( isset( $values[ $obj ][ $p ] ) &amp;&amp; $values[ $obj ][ $p ] == 'on' )
+-						$permissions_valid[ $obj ][] = $p;
+-
+-			// cycle current permissions to see the ones we need to delete
+-			foreach( $this-&gt;permissions as $obj =&gt; $perms )
+-				foreach( $perms as $p =&gt; $arr )
+-					if ( !isset( $permissions_valid[ $obj ] ) || !in_array( $p, $permissions_valid[ $obj ] ) ) 
+-						$permissions_to_del[ $obj ][] = $p;
+-
+-			// cycle current permissions to see the ones we need to add
+-			foreach( $permissions_valid as $obj =&gt; $perms )
+-				foreach( $perms as $p )
+-					if ( !isset( $this-&gt;permissions[ $obj ][$p] ) )
+-						$permissions_to_add[ $obj ][] = $p;
+-
+-			// pass permissions to add and to delete
+-			return $this-&gt;perm-&gt;setPermissions( intval( $id ), $permissions_to_add, $permissions_to_del );
+-		}
+-
+-
+         /**
+          *  This function updates the user attributes using form values
+          *
+@@ -364,20 +311,25 @@
+ 		
+ 
+         /**
+-         *  This function creates an user details form
++         *  This function adds form elements for user detail management
+ 		 *
+-		 * @param $username   1: Username is a span, 2: Username is a text box
+-		 * @param $password   0: Password is not showed, 1: Password is showed
+-		 * @param $login      0: Login is span, 1: Login is editable
++		 * @param $username     (Optional) Flag that defines if the username is a box (editable) or a span for information only
++		 *                                 TRUE: is a box (editable); FALSE: is a span
++		 * 
++		 * @param $password     (Optional) Flag that defines if we want to include the password box
++		 *                                 TRUE: include password box; FALSE: don't include
++		 * 
++		 * @param $logindetails (Optional) Flag that defines if we login details are editable (eg: login schedule dates)
++		 *                                 TRUE: user details are editable; FALSE: user details are just information
+          */
+-		function addFormDetails( $username = 1, $password = 0, $login = 0 ){
++		function addFormDetails( $username = false, $password = false, $logindetails = false ){
+ 
+ 			// add username
+-			if ( $username == 1 ) $this-&gt;form-&gt;addElement( 'span',     'username', t('user_username') );
+-			else                  $this-&gt;form-&gt;addElement( 'text',     'username', t('user_username') );
++			if ( $username ) $this-&gt;form-&gt;addElement( 'text', 'username', t('user_username') );
++			else             $this-&gt;form-&gt;addElement( 'span', 'username', t('user_username') );
+ 
+ 			// add password
+-			if ( $password == 1 ) $this-&gt;form-&gt;addElement( 'password', 'password', t('user_password') );
++			if ( $password ) $this-&gt;form-&gt;addElement( 'password', 'password', t('user_password') );
+ 
+ 			// add name
+             $this-&gt;form-&gt;addElement( 'text',      'name',         t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
+@@ -402,8 +354,8 @@
+ 			$this-&gt;form-&gt;addRule(    'template',  'in_array',     t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
+ 
+ 			// add user details
+-			if ($login == 1){
+-				$this-&gt;form-&gt;addElement( 'select',         'state',       t('login_state'),          array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
++			if ( $logindetails ){
++				$this-&gt;form-&gt;addElement( 'select',         'state',       t('login_state'), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+ 				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
+ 				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_end',   t('login_end'));
+ 			}else{
+@@ -412,11 +364,11 @@
+ 				$this-&gt;form-&gt;addElement( 'span',           'login_end',   t('login_end') );
+ 			}
+ 
+-			$this-&gt;form-&gt;addElement( 'span', 'login_counter',t('login_counter') );
+-            $this-&gt;form-&gt;addElement( 'span', 'login_last',   t('login_last') );
+-            $this-&gt;form-&gt;addElement( 'span', 'login_current',t('login_current') );
+-            $this-&gt;form-&gt;addElement( 'span', 'created_user', t('created_user') );
+-            $this-&gt;form-&gt;addElement( 'span', 'created_date', t('created_date') );
++			$this-&gt;form-&gt;addElement( 'span', 'login_counter', t('login_counter') );
++            $this-&gt;form-&gt;addElement( 'span', 'login_last',    t('login_last') );
++            $this-&gt;form-&gt;addElement( 'span', 'login_current', t('login_current') );
++            $this-&gt;form-&gt;addElement( 'span', 'created_user',  t('created_user') );
++            $this-&gt;form-&gt;addElement( 'span', 'created_date',  t('created_date') );
+ 		}
+ 
+ 
+@@ -427,27 +379,27 @@
+          *    - $this-&gt;permissions_panret  parent permissions 
+          *    - $this-&gt;permissions_html    associative array with checkboxgroup html code
+          *
++         *  @param    $user_id                 User id to get defaults
++         *
+          *  @param    $userParentPermissions   (Optional) Boolean to compute avaiable parent permissions or user permissions
+          *                                      This will be used to create permissions for editing or when creating a subuser
+          *  
+          *  @returns  Associative array of objects and correspondent chechboxgoup html
+          */
+-		function addFormPermissions( $useParentPermissions = true ){
++		function addFormPermissions( $user_id, $useParentPermissions = true ){
+ 
+-			// get permissions from parent;
+-			$node = $this-&gt;getUser( $this-&gt;id );
+-
+-			// init user permissions and permissions html 
+-			$this-&gt;permissions      = $this-&gt;getPermissions();
++			// init permission html (checkboxgroups of actions groupby permission objects)
+ 			$this-&gt;permissions_html = array();
+ 
++			// get user details
++			$node = $this-&gt;getUser( $user_id );
++
++			// get user permissions
++			$permissions = $this-&gt;getPermissions( $user_id );
++
+ 			// check if we are editing or creating
+-			if ( $useParentPermissions ){
+-				$permissions_avaiable = $this-&gt;getPermissions( $node['parent_id'] );
+-				$this-&gt;permissions_parent = $permissions_avaiable;
+-			}else{
+-				$permissions_avaiable = $this-&gt;permissions;
+-			}
++			if ( $useParentPermissions ) $permissions_avaiable = $this-&gt;getPermissions( $node['parent_id'] );
++			else                         $permissions_avaiable = $this-&gt;getPermissions( $user_id );
+ 
+ 			// cycle parent permissions to create form checkboxgroup of this user
+ 			foreach( $permissions_avaiable as $obj =&gt; $perm ){
+@@ -464,7 +416,7 @@
+ 					$options[ $p['object_action' ] ] = t( $obj . '_' . $p['object_action' ] );
+ 
+ 					// check if this parent action belongs to the child too ( to select it )
+-					if ( $useParentPermissions &amp;&amp; isset( $this-&gt;permissions[ $obj ] ) &amp;&amp; in_array( $p['object_action' ], array_keys( $this-&gt;permissions[ $obj ] ) )){
++					if ( $useParentPermissions &amp;&amp; isset( $permissions[ $obj ] ) &amp;&amp; in_array( $p['object_action' ], array_keys( $permissions[ $obj ] ) )){
+ 						$selected[ $p['object_action' ] ] = 1;
+ 					}
+ 				}
+@@ -486,11 +438,13 @@
+ 
+ 
+         /**
+-         *  This function creates an user form for password changing
++         *  This function adds form elements for password changing
+          *
+-         * @param $oldpassword  0: don't include old password box; 1: include old password box
++         * @param $oldpassword  (Optional) Flag the defines if we should include a box with old password confirmation.
++         *                                 This box is used when the user wants to change its pass and not when we want to change another user pass
++         *                                 TRUE: include box; FALSE: don't include
+          */
+-		function addFormPassword( $oldpassword = 1 ){
++		function addFormPassword( $oldpassword = true ){
+ 
+ 			// add new password box
+             $this-&gt;form-&gt;addElement( 'password',    'new',          t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+@@ -508,13 +462,12 @@
+ 			$this-&gt;form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
+ 
+ 			// add old password box
+-			if ( $oldpassword == 1 ){
++			if ( $oldpassword ){
+             	$this-&gt;form-&gt;addElement( 'password', 'old',          t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
+ 				$this-&gt;form-&gt;addRule(    'old',      'required',     t('passwords are required') );
+ 				$this-&gt;form-&gt;addRule(    'old',      'maxlength',    t('passwords too big'), 31 );
+ 				$this-&gt;form-&gt;addRule(    'old',      'alphanumeric', t('passwords not alphanumeric') );
+ 			}
+-
+ 		}
+ 
+ 
+@@ -527,6 +480,7 @@
+          */
+ 		function getForm( $defaults = false ){
+ 
++			// check if we have form defaults and apply them
+ 			if ( is_array( $defaults ) ) $this-&gt;form-&gt;setDefaults( $defaults );
+ 
+ 			return $this-&gt;form;
+@@ -534,29 +488,29 @@
+ 
+ 
+         /**
+-         *  This function updates the current user password
++         *  This function updates the current user password using form values
+          *
+-         *  @param $oldpassword  Old user password
+-         *  @param $newpassword  New password
++         *  @param $formvalues  Array with 3 passwords (old, new and new_confirm)
+          *
+-         *  @returns    true if updated, false when old password is incorrect or user is invalid
++         *  @returns    true if updated, array with form errors, 0 if old password is incorrect
+          */
+-		function changeCurrentUserPassword( $oldpassword = '', $newpassword = '' ){
+-		
+-			// check if user is valid
+-			if ( !$this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ) ) return false;
++		function changeCurrentUserPasswordForm( $formvalues = array() ){
+ 
++			// check form validation
++			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
++				return $this-&gt;form-&gt;getErrors();
++
+ 			// reset values added from valid method
+-			$this-&gt;resetAll();
++			$this-&gt;resetValues();
+ 
+ 			// set new password
+-			$this-&gt;password = md5( $newpassword );
++			$this-&gt;password = md5( $this-&gt;form-&gt;getValue( 'new' ) );
+ 
+ 			// change only current user
+ 			// TODO: escape 'username'
+-			$this-&gt;where( 'username = &quot;' .      $_SERVER['PHP_AUTH_USER'] . '&quot;' );
+-			$this-&gt;where( 'password = &quot;' . md5( $_SERVER['PHP_AUTH_PW'] ) . '&quot;' );
+-			$this-&gt;where( 'password = &quot;' . md5( $oldpassword )            . '&quot;' );
++			$this-&gt;where( 'username = &quot;' .      $_SERVER['PHP_AUTH_USER']        . '&quot;' );
++			$this-&gt;where( 'password = &quot;' . md5( $_SERVER['PHP_AUTH_PW'] )        . '&quot;' );
++			$this-&gt;where( 'password = &quot;' . md5( $this-&gt;form-&gt;getValue( 'old' ) ) . '&quot;' );
+ 
+ 			// update user and get result
+ 			if ( $this-&gt;update() == 1 ) return true;
+@@ -566,40 +520,25 @@
+ 
+ 
+         /**
+-         *  This function updates the current user password using form values
++         *  This function updates a user password
+          *
+-         *  @param $formvalues  Array with 3 passwords (old, new and new_confirm)
++         *  @param $user_id     User id to update password
++         *  @param $formvalues  Array 2 passwords (new and new_confirm)
+          *
+-         *  @returns    true if updated, array with form errors, 0 if old password is incorrect
++         *  @returns    true if updated or array with form errors otherwise
+          */
+-		function changeCurrentUserPasswordForm( $formvalues = array() ){
++		function changeUserPasswordForm( $user_id, $formvalues ){
+ 
+ 			// check form validation
+ 			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+ 				return $this-&gt;form-&gt;getErrors();
+ 
+-			return $this-&gt;changeCurrentUserPassword( $this-&gt;form-&gt;getValue( 'old' ), $this-&gt;form-&gt;getValue( 'new' ) );
+-		}
+-
+-
+-        /**
+-         *  This function updates a user password
+-         *
+-         *  @param $newpassword  New password
+-         *
+-         *  @returns    true if updated, false when user is invalid
+-         */
+-		function changeUserPassword( $user_id, $newpassword ){
+-		
+-			// check if user is valid
+-			if ( !$this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ) ) return false;
+-
+-			// reset values added from valid method
++			// reset values
+ 			$this-&gt;resetAll();
+ 
+ 			// set new password
+ 			$this-&gt;user_id  = intval( $user_id );
+-			$this-&gt;password = md5( $newpassword );
++			$this-&gt;password = md5( $this-&gt;form-&gt;getValue( 'new' ) );
+ 
+ 			// update user and get result
+ 			if ( $this-&gt;update() == 1 ) return true;
+@@ -609,23 +548,6 @@
+ 
+ 
+         /**
+-         *  This function updates a user password
+-         *
+-         *  @param $formvalues  Array 2 passwords (new and new_confirm)
+-         *
+-         *  @returns    true if updated, array with form errors
+-         */
+-		function changeUserPasswordForm( $id = null, $formvalues = array() ){
+-
+-			// check form validation
+-			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+-				return $this-&gt;form-&gt;getErrors();
+-
+-			return $this-&gt;changeUserPassword( $id, $this-&gt;form-&gt;getValue( 'new' ) );
+-		}
+-
+-
+-        /**
+          *  This function return the current user attributes
+          *
+          *  @param      $translate   (Optional) Boolean that defines if result must be translated
+@@ -635,24 +557,22 @@
+ 		function getCurrentUser( $translate = false ){
+ 		
+ 			// get current user id
+-			return $this-&gt;getUser( $translate, $this-&gt;currentID() );
++			return $this-&gt;getUser( $this-&gt;currentID(), $translate );
+ 		}
+ 
+ 
+         /**
+          *  This function returns user attributes
+          *
++         *  @param      $id          User id to use (instead of internal)
+          *  @param      $translate   (Optional) Boolean that defines if result must be translated
+-         *  @param      $id          (Optional) Custom user id to use (instead of internal)
+          *
+          *  @returns    User details
+          */
+-		function getUser( $translate = false, $id = null ){
++		function getUser( $id, $translate = false ){
+ 
+ 			$this-&gt;resetValues();
+ 
+-			if ( is_null( $id ) ) $id = $this-&gt;id;
+-
+ 			// set user id
+ 			$this-&gt;user_id = intval( $id );
+ 
+@@ -684,9 +604,9 @@
+ 
+ 
+         /**
+-         *  This function updates user login details
++         *  This function updates current user login details
+          *
+-         *  @returns    true if user login details updated, false user is not valid or details not updated
++         *  @returns    true if user login details updated, false if user is not valid or details not updated
+          */
+ 		function updateLogin(){
+ 
+@@ -696,7 +616,8 @@
+ 			
+ 			// get current user id
+ 			$res = $this-&gt;currentID();
+-			
++
++			// check if user exists
+ 			if ( $res == false ) return false;
+ 			
+ 			// get all attributes
+@@ -716,7 +637,6 @@
+ 			
+ 			return false;
+ 		}
+-
+ 		
+     }
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000499.html">[ydf-devel] r1992 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000501.html">[ydf-devel] r1994 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#500">[ date ]</a>
+              <a href="thread.html#500">[ thread ]</a>
+              <a href="subject.html#500">[ subject ]</a>
+              <a href="author.html#500">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

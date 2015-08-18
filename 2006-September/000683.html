@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2161 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2161%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609231514.k8NFE2ft000619%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000682.html">
+   <LINK REL="Next"  HREF="000684.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2161 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2161%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609231514.k8NFE2ft000619%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2161 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep 23 17:14:02 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000682.html">[ydf-devel] r2160 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000684.html">[ydf-devel] Add new method YDAjax::getActualID( $id )
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#683">[ date ]</a>
+              <a href="thread.html#683">[ thread ]</a>
+              <a href="subject.html#683">[ subject ]</a>
+              <a href="author.html#683">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-23 17:14:02 +0200 (Sat, 23 Sep 2006)
+New Revision: 2161
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+Added an option to add an all link and cleaned up some old commented code.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-09-23 15:04:39 UTC (rev 2160)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-09-23 15:14:02 UTC (rev 2161)
+@@ -548,31 +548,9 @@
+          *  @returns    The browsebar as formatted HTML.
+          */
+         function getBrowseBar(
+-            $previousLabel='previous', $nextLabel='next', $style=YD_BROWSEBAR_SHORT, $currentLink=false
++            $previousLabel='previous', $nextLabel='next', $style=YD_BROWSEBAR_SHORT, $currentLink=false, $allLink=null
+         ) {
+ 
+-//            {if $users-&gt;totalPages &gt; 1}
+-//                &lt;tr&gt;&lt;td colspan=&quot;5&quot;&gt;
+-//                {if $users-&gt;page != 1}
+-//                    &lt;a href=&quot;{$users-&gt;getPreviousUrl()}&quot;&gt;{t w=&quot;previous&quot;}&lt;/a&gt;
+-//                {else}
+-//                    {t w=&quot;previous&quot;}
+-//                {/if}
+-//                {foreach from=$users-&gt;pages item=&quot;page&quot;}
+-//                    {if $page == $users-&gt;page}
+-//                        {$page}
+-//                    {else}
+-//                        &lt;a href=&quot;{$users-&gt;getPageUrl($page)}&quot;&gt;{$page}&lt;/a&gt;
+-//                    {/if}
+-//                {/foreach}
+-//                {if $users-&gt;page != $users-&gt;totalPages}
+-//                    &lt;a href=&quot;{$users-&gt;getNextUrl()}&quot;&gt;{t w=&quot;next&quot;}&lt;/a&gt;
+-//                {else}
+-//                    {t w=&quot;next&quot;}
+-//                {/if}
+-//                &lt;/td&gt;&lt;/tr&gt;
+-//            {/if}
+-
+             // Capture the HTML output
+             $html = '';
+ 
+@@ -611,6 +589,15 @@
+                 }
+             }
+ 
++            // Add an all link if need
++            if ( ! empty( $allLink ) ) {
++                $url = $this-&gt;url;
++                $url-&gt;deleteQueryVar( $this-&gt;pagevar );
++                $url-&gt;deleteQueryVar( $this-&gt;sizevar );
++                $url-&gt;setQueryVar( 'show', 'all' );
++                $html .= sprintf( '&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt; ', $url-&gt;getUri(), $allLink );
++            }
++
+             // Get the next link if any
+             if ( $this-&gt;page != $this-&gt;totalPages ) {
+                 $html .= sprintf( '&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt; ', $this-&gt;getNextUrl(), $nextLabel );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000682.html">[ydf-devel] r2160 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000684.html">[ydf-devel] Add new method YDAjax::getActualID( $id )
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#683">[ date ]</a>
+              <a href="thread.html#683">[ thread ]</a>
+              <a href="subject.html#683">[ subject ]</a>
+              <a href="author.html#683">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

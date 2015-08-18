@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2263 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2263%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage&In-Reply-To=%3C200612171311.kBHDBiFd019152%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000853.html">
+   <LINK REL="Next"  HREF="000855.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2263 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2263%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage&In-Reply-To=%3C200612171311.kBHDBiFd019152%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2263 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Dec 17 14:11:44 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000853.html">[ydf-devel] r2262 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000855.html">[ydf-devel] r2264 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#854">[ date ]</a>
+              <a href="thread.html#854">[ thread ]</a>
+              <a href="subject.html#854">[ subject ]</a>
+              <a href="author.html#854">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-12-17 14:11:43 +0100 (Sun, 17 Dec 2006)
+New Revision: 2263
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+Log:
+Fixes for:
+[ Feature Request #2898 ] Make max comment length configurable
+[ Feature Request #2899 ] Make max num of hyperlinks configurable
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-12-17 12:30:09 UTC (rev 2262)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-12-17 13:11:43 UTC (rev 2263)
+@@ -27,6 +27,9 @@
+         if ( ! isset( $values['dflt_is_draft'] ) ) {
+             $values['dflt_is_draft'] = false;
+         }
++        if ( empty( $values['db_pass'] ) ) {
++            $values['db_pass'] = YDConfig::get( 'db_pass', '' );
++        }
+ 
+         // Construct the new config text
+         $cfg = '&lt;?php' . &quot;\n\n&quot;;
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-12-17 12:30:09 UTC (rev 2262)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-12-17 13:11:43 UTC (rev 2263)
+@@ -90,8 +90,8 @@
+ $GLOBALS['t']['err_email'] = 'Email is missing or invalid';
+ $GLOBALS['t']['err_website'] = 'The website specified is not a valid URL';
+ $GLOBALS['t']['err_comment'] = 'Comment is required';
+-$GLOBALS['t']['err_comment_length'] = 'Comment cannot be more than 1500 characters';
+-$GLOBALS['t']['err_comment_links'] = 'Comment cannot contain more than 1 hyperlink';
++$GLOBALS['t']['err_comment_length'] = 'Comment cannot be more than ' . YDConfig::get( 'max_comment_length', 1500 ) . ' characters';
++$GLOBALS['t']['err_comment_links'] = 'Comment cannot contain more than ' . YDConfig::get( 'max_comment_links', 1 ) . ' hyperlink';
+ $GLOBALS['t']['with'] = 'for';
+ $GLOBALS['t']['item_closed'] = 'This item does not allow comments.';
+ $GLOBALS['t']['spam'] = 'Spam';
+@@ -264,6 +264,10 @@
+ $GLOBALS['t']['confirm_empty_spam'] = 'Are you sure you want to delete all spam comments?';
+ $GLOBALS['t']['empty_spam_now'] = 'Delete all spam comments now.';
+ $GLOBALS['t']['weight'] = 'Weight';
++$GLOBALS['t']['max_comment_length'] = 'Maximum lenght of comments';
++$GLOBALS['t']['err_max_comment_length'] = 'Maximum lenght of comment must be a number';
++$GLOBALS['t']['max_comment_links'] = 'Maximum number of hyperlinks in a comment';
++$GLOBALS['t']['err_max_comment_links'] = 'Maximum number of hyperlinks in a comment must be a number';
+ 
+ // manage/config.tpl
+ $GLOBALS['t']['cfg_db_settings'] = 'Database Settings';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-12-17 12:30:09 UTC (rev 2262)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-12-17 13:11:43 UTC (rev 2263)
+@@ -90,8 +90,8 @@
+ $GLOBALS['t']['err_email'] = 'Email is niet ingegeven of niet correct';
+ $GLOBALS['t']['err_website'] = 'De website is geen geldige URL';
+ $GLOBALS['t']['err_comment'] = 'Een commentaar is vereist';
+-$GLOBALS['t']['err_comment_length'] = 'Commentaar kan niet meer dan 1500 karakters bevatten';
+-$GLOBALS['t']['err_comment_links'] = 'Commentaar kan niet meer dan 1 hyperlink bevatten';
++$GLOBALS['t']['err_comment_length'] = 'Commentaar kan niet meer dan ' . YDConfig::get( 'max_comment_length', 1500 ) . ' karakters bevatten';
++$GLOBALS['t']['err_comment_links'] = 'Commentaar kan niet meer dan ' . YDConfig::get( 'max_comment_links', 1500 ) . ' hyperlink bevatten';
+ $GLOBALS['t']['with'] = 'bij';
+ $GLOBALS['t']['item_closed'] = 'Dit item laat geen commentaren toe.';
+ $GLOBALS['t']['spam'] = 'Spam';
+@@ -264,6 +264,10 @@
+ $GLOBALS['t']['confirm_empty_spam'] = 'Bent u zeker dat u alle spam commentaren wil verwijderen?';
+ $GLOBALS['t']['empty_spam_now'] = 'Verwijder nu alle spam commentaren.';
+ $GLOBALS['t']['weight'] = 'Gewicht';
++$GLOBALS['t']['max_comment_length'] = 'Maximum lengte van een commentaar';
++$GLOBALS['t']['err_max_comment_length'] = 'Maximum lengte van een commentaar moet een nummer zijn';
++$GLOBALS['t']['max_comment_links'] = 'Maximum aantal hyperlinks in een commentaar';
++$GLOBALS['t']['err_max_comment_links'] = 'Maximum aantal hyperlinks in een commentaar moet een nummer zijn';
+ 
+ // manage/config.tpl
+ $GLOBALS['t']['cfg_db_settings'] = 'Database Instellingen';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-12-17 12:30:09 UTC (rev 2262)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-12-17 13:11:43 UTC (rev 2263)
+@@ -74,8 +74,8 @@
+             $form-&gt;addRule( 'useremail',   'required',      t( 'err_email' ) );
+             $form-&gt;addRule( 'userwebsite', 'httpurl',       t( 'err_website' ) );
+             $form-&gt;addRule( 'comment',     'required',      t( 'err_comment' ) );
+-            $form-&gt;addRule( 'comment',     'maxlength',     t( 'err_comment_length' ), 1500 );
+-            $form-&gt;addRule( 'comment',     'maxhyperlinks', t( 'err_comment_links' ), 1 );
++            $form-&gt;addRule( 'comment',     'maxlength',     t( 'err_comment_length' ), YDConfig::get( 'max_comment_length', 1500 ) );
++            $form-&gt;addRule( 'comment',     'maxhyperlinks', t( 'err_comment_links' ), YDConfig::get( 'max_comment_links', 1 ) );
+ 
+             // Add the filters
+             $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-12-17 12:30:09 UTC (rev 2262)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-12-17 13:11:43 UTC (rev 2263)
+@@ -99,6 +99,8 @@
+             $form-&gt;addElement( 'textarea', 'blocked_ips', t( 'cfg_blocked_ips' ), array( 'class' =&gt; 'tfMNoMCE' ) );
+             $form-&gt;addElement( 'text', 'akismet_key', t( 'cfg_akismet_key' ), array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'text', 'comment_interval', t( 'cfg_comment_interval' ), array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'text', 'max_comment_length', t( 'max_comment_length' ), array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'text', 'max_comment_links', t( 'max_comment_links' ), array( 'class' =&gt; 'tfM' ) );
+ 
+             $form-&gt;addElement( 'submit', '_cmdSubmit', t('OK'), array( 'class' =&gt; 'button' ) );
+ 
+@@ -115,6 +117,8 @@
+             $form-&gt;addRule( 'max_syndicated_items', 'required', t( 'err_max_syndicated_items' ) );
+             $form-&gt;addRule( 'max_syndicated_items', 'numeric', t( 'err_max_syndicated_items_num' ) );
+             $form-&gt;addRule( 'comment_interval', 'numeric', t( 'err_comment_interval_num' ) );
++            $form-&gt;addRule( 'max_comment_length', 'numeric', t( 'err_max_comment_length' ) );
++            $form-&gt;addRule( 'max_comment_links', 'numeric', t( 'err_max_comment_links' ) );
+ 
+             // Add the filters
+             $form-&gt;addFilters( 
+@@ -177,6 +181,8 @@
+             $config['max_img_size_x']       = YDConfig::get( 'max_img_size_x',       '' );
+             $config['max_img_size_y']       = YDConfig::get( 'max_img_size_y',       '' );
+             $config['comment_interval']     = YDConfig::get( 'comment_interval',     10 );
++            $config['max_comment_length']   = YDConfig::get( 'max_comment_length',   1500 );
++            $config['max_comment_links']    = YDConfig::get( 'max_comment_links',    1 );
+ 
+             // Return the configuration
+             return $config;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-12-17 12:30:09 UTC (rev 2262)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-12-17 13:11:43 UTC (rev 2263)
+@@ -148,6 +148,14 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_comment_interval&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{$config.comment_interval|default:'-'}&lt;/td&gt;
+         &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;max_comment_length&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{$config.max_comment_length|default:'-'}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;max_comment_links&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{$config.max_comment_links|default:'-'}&lt;/td&gt;
++        &lt;/tr&gt;
+     &lt;/table&gt;
+     &lt;p&gt;&lt;input type=&quot;button&quot; class=&quot;button&quot; onClick=&quot;window.location='{$YD_SELF_SCRIPT}?do=edit';&quot; value=&quot;{t w=&quot;change_config&quot;}&quot; /&gt;
+ {/if}
+@@ -294,6 +302,14 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.comment_interval.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.comment_interval.html}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.max_comment_length.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.max_comment_length.html}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.max_comment_links.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.max_comment_links.html}&lt;/td&gt;
++            &lt;/tr&gt;
+         &lt;/table&gt;
+         &lt;p&gt;{$form._cmdSubmit.html}&lt;/p&gt;
+     {$form.endtag}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000853.html">[ydf-devel] r2262 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000855.html">[ydf-devel] r2264 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#854">[ date ]</a>
+              <a href="thread.html#854">[ thread ]</a>
+              <a href="subject.html#854">[ subject ]</a>
+              <a href="author.html#854">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2296 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2296%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20YDClasses/YDDatabaseDrivers&In-Reply-To=%3C200701061904.l06J4fJW028428%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000887.html">
+   <LINK REL="Next"  HREF="000889.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2296 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2296%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%0A%09YDClasses%20YDClasses/YDDatabaseDrivers&In-Reply-To=%3C200701061904.l06J4fJW028428%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2296 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses YDClasses/YDDatabaseDrivers">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan  6 20:04:41 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000887.html">[ydf-devel] r2295 - in YDFramework2.0/trunk/examples: . adobe_spry
+</A></li>
+        <LI>Next message: <A HREF="000889.html">[ydf-devel] r2297 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#888">[ date ]</a>
+              <a href="thread.html#888">[ thread ]</a>
+              <a href="subject.html#888">[ subject ]</a>
+              <a href="author.html#888">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-06 20:04:40 +0100 (Sat, 06 Jan 2007)
+New Revision: 2296
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+Log:
+Made a number of improvements to the SQL log:
+- The time that is spend for doing the query is now logged.
+- The complete stack trace for each SQL statement is logged as well so that you can easily find where the query was executed.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-03 12:51:22 UTC (rev 2295)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-06 19:04:40 UTC (rev 2296)
+@@ -1445,39 +1445,45 @@
+          *  This function will log the SQL statement to the debug log and keep track of the number of queries that were
+          *  executed. This will only happen if YD_DEBUG equals 1 or 2
+          *
+-         *  @param $sql The SQL statement to log.
++         *  @param $sql         The SQL statement to log.
++         *  @param $elapsed     (optional) The time the query needed to be executed.
+          *
+          *  @internal
+          */
+-        function _logSql( $sql ) {
++        function _logSql( $sql, $elapsed=null ) {
+ 
+             // Show debugging info if needed
+             if ( YDConfig::get( 'YD_DEBUG' ) == 1 || YDConfig::get( 'YD_DEBUG' ) == 2 ) {
+ 
+                 // Split the SQL in different lines
+-                $sql = str_ireplace( 'SELECT', 'SELECT', $sql );
+-                $sql = str_ireplace( 'UPDATE', 'UPDATE', $sql );
+-                $sql = str_ireplace( 'DELETE', 'DELETE', $sql );
+-                $sql = str_ireplace( 'INSERT', 'INSERT', $sql );
+-                $sql = str_ireplace( 'FROM', YD_CRLF . 'FROM', $sql );
+-                $sql = str_ireplace( 'INTO', YD_CRLF . 'INTO', $sql );
+-                $sql = str_ireplace( 'VALUES', YD_CRLF . 'VALUES', $sql );
+-                $sql = str_ireplace( 'LEFT JOIN', YD_CRLF . 'LEFT JOIN', $sql );
+-                $sql = str_ireplace( 'RIGHT JOIN', YD_CRLF . 'RIGHT JOIN', $sql );
+-                $sql = str_ireplace( 'INNER JOIN', YD_CRLF . 'INNER JOIN', $sql );
+-                $sql = str_ireplace( 'WHERE', YD_CRLF . 'WHERE', $sql );
+-                $sql = str_ireplace( 'ORDER BY', YD_CRLF . 'ORDER BY', $sql );
+-                $sql = str_ireplace( 'GROUP BY', YD_CRLF . 'GROUP BY', $sql );
+-                $sql = str_ireplace( 'LIMIT', YD_CRLF . 'LIMIT', $sql );
++                $sql = str_ireplace( ' SELECT ', ' SELECT ', $sql );
++                $sql = str_ireplace( ' UPDATE ', ' UPDATE ', $sql );
++                $sql = str_ireplace( ' DELETE ', ' DELETE ', $sql );
++                $sql = str_ireplace( ' INSERT ', ' INSERT ', $sql );
++                $sql = str_ireplace( ' FROM ', YD_CRLF . 'FROM ', $sql );
++                $sql = str_ireplace( ' INTO ', YD_CRLF . 'INTO ', $sql );
++                $sql = str_ireplace( ' VALUES ', YD_CRLF . 'VALUES ', $sql );
++                $sql = str_ireplace( ' LEFT JOIN ', YD_CRLF . 'LEFT JOIN ', $sql );
++                $sql = str_ireplace( ' RIGHT JOIN ', YD_CRLF . 'RIGHT JOIN ', $sql );
++                $sql = str_ireplace( ' INNER JOIN ', YD_CRLF . 'INNER JOIN ', $sql );
++                $sql = str_ireplace( ' WHERE ', YD_CRLF . 'WHERE ', $sql );
++                $sql = str_ireplace( ' ORDER BY ', YD_CRLF . 'ORDER BY ', $sql );
++                $sql = str_ireplace( ' GROUP BY ', YD_CRLF . 'GROUP BY ', $sql );
++                $sql = str_ireplace( ' LIMIT ', YD_CRLF . 'LIMIT ', $sql );
+ 
+                 // Get the backtrace
+                 $trace = debug_backtrace();
+ 
+                 // Format the SQL
+                 $sql_final = '';
++                foreach ( explode( YD_CRLF, YDDebugUtil::getStackTrace() ) as $line ) {
++                    $sql_final .= $line . YD_CRLF;
++                }
++                $sql_final .= 'SQL Statement:' . YD_CRLF;
+                 foreach ( explode( YD_CRLF, $sql ) as $line ) {
+-                    $sql_final .= '[' . $trace[2]['file'] . ':' . $trace[2]['line'] . '] ' . $line . YD_CRLF;
++                    $sql_final .= '    ' . $line . YD_CRLF;
+                 }
++                $sql_final .= YD_CRLF . 'SQL Query Time: ' . $elapsed . ' ms' . YD_CRLF;
+ 
+                 // Add it to the query log
+                 array_push( $GLOBALS['YD_SQL_QUERY'], $sql_final );
+@@ -1710,9 +1716,6 @@
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+             $sql = str_replace( ' `#_', ' `' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
+-            // Log the statement
+-            $this-&gt;_logSql( $sql );
+-
+             // Connect
+             $result = $this-&gt;connect();
+ 
+@@ -1724,6 +1727,9 @@
+                 trigger_error( mysql_error( $this-&gt;_conn ), YD_ERROR );
+             }
+ 
++            // Record the start time
++            $timer = new YDTimer();
++
+             // Execute the query
+             $result = @mysql_query( $sql, $this-&gt;_conn );
+ 
+@@ -1732,6 +1738,9 @@
+                 trigger_error( '[' . mysql_errno( $this-&gt;_conn ) . '] ' . mysql_error( $this-&gt;_conn ), YD_ERROR );
+             }
+ 
++            // Log the statement
++            $this-&gt;_logSql( $sql, $timer-&gt;getElapsed() );
++
+             // Return the result
+             return $result;
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-03 12:51:22 UTC (rev 2295)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-06 19:04:40 UTC (rev 2296)
+@@ -264,9 +264,6 @@
+             // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
+-            // Log the statement
+-            $this-&gt;_logSql( $sql );
+-
+             // Connect
+             $result = $this-&gt;connect();
+ 
+@@ -276,6 +273,9 @@
+                 trigger_error( $error['message'], YD_ERROR );
+             }
+ 
++            // Record the start time
++            $timer = new YDTimer();
++
+             // Create statement
+             $stmt = OCIParse( $this-&gt;_conn, $sql );
+ 
+@@ -297,6 +297,9 @@
+                 trigger_error( $error['message'], YD_ERROR );
+             }
+ 
++            // Log the statement
++            $this-&gt;_logSql( $sql, $timer-&gt;getElapsed() );
++
+             // Return the result
+             return $stmt;
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-03 12:51:22 UTC (rev 2295)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-06 19:04:40 UTC (rev 2296)
+@@ -196,9 +196,6 @@
+             // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
+-            // Log the SQL
+-            $this-&gt;_logSql( $sql );
+-
+             // Connect
+             $result = $this-&gt;connect();
+ 
+@@ -207,6 +204,9 @@
+                 trigger_error( pg_last_error(), YD_ERROR );
+             }
+ 
++            // Record the start time
++            $timer = new YDTimer();
++
+             // Perform the query
+             $result = @pg_query( $this-&gt;_conn, $sql );
+ 
+@@ -215,6 +215,9 @@
+                 trigger_error( pg_last_error( $this-&gt;conn ), YD_ERROR );
+             }
+ 
++            // Log the statement
++            $this-&gt;_logSql( $sql, $timer-&gt;getElapsed() );
++
+             // Return the result
+             return $result;
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-03 12:51:22 UTC (rev 2295)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-06 19:04:40 UTC (rev 2296)
+@@ -204,17 +204,14 @@
+             // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
+-            // Log the statement
+-            $this-&gt;_logSql( $sql );
+-
+-            // Connect
+-            $result = $this-&gt;connect();
+-
+             // Handle errors
+             if ( ! $result &amp;&amp; $this-&gt;_failOnError === true ) {
+                 trigger_error( $GLOBALS['YD_SQLITE_error'], YD_ERROR );
+             }
+ 
++            // Record the start time
++            $timer = new YDTimer();
++
+             // Execute the query
+             $result = @sqlite_query( $sql, $this-&gt;_conn );
+ 
+@@ -223,6 +220,9 @@
+                 trigger_error( sqlite_error_string( sqlite_last_error( $this-&gt;_conn ) ), YD_ERROR );
+             }
+ 
++            // Log the statement
++            $this-&gt;_logSql( $sql, $timer-&gt;getElapsed() );
++
+             // Return the result
+             return $result;
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-03 12:51:22 UTC (rev 2295)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-06 19:04:40 UTC (rev 2296)
+@@ -179,7 +179,7 @@
+                     $debug .= 'EXECUTED SQL QUERIES (' . sizeof( $GLOBALS['YD_SQL_QUERY'] ) . ' queries)' . YD_CRLF . YD_CRLF;
+                     foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
+                         foreach ( explode( YD_CRLF, trim( $query ) ) as $line ) {
+-                            $debug .= &quot;\t&quot; . ( $key+1 ) . ':' . &quot;\t&quot; . trim( $line ) . YD_CRLF;
++                            $debug .= &quot;\t[&quot; . ( $key+1 ) . ']' . &quot;\t&quot; . rtrim( $line ) . YD_CRLF;
+                         }
+                         $debug .= YD_CRLF;
+                     }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000887.html">[ydf-devel] r2295 - in YDFramework2.0/trunk/examples: . adobe_spry
+</A></li>
+	<LI>Next message: <A HREF="000889.html">[ydf-devel] r2297 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#888">[ date ]</a>
+              <a href="thread.html#888">[ thread ]</a>
+              <a href="subject.html#888">[ subject ]</a>
+              <a href="author.html#888">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

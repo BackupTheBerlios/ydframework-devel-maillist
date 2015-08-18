@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2067 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2067%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200609040324.k843OoBG001961%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000580.html">
+   <LINK REL="Next"  HREF="000582.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2067 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject</H1>
+    <B>david_db at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2067%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200609040324.k843OoBG001961%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2067 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject">david_db at mail.berlios.de
+       </A><BR>
+    <I>Mon Sep  4 05:24:50 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000580.html">[ydf-devel] r2066 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000582.html">[ydf-devel] r2068 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#581">[ date ]</a>
+              <a href="thread.html#581">[ thread ]</a>
+              <a href="subject.html#581">[ subject ]</a>
+              <a href="author.html#581">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-09-04 05:24:32 +0200 (Mon, 04 Sep 2006)
+New Revision: 2067
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+Log:
+Changed the behavior of YDDatabaseObject::reset() and YDDatabaseObject::resetAll() again. Now reset() clears the object's registered fields values, selects values, query values and results but not another custom variables. And resetAll() uses reset() and resetRelations() that executes a resetAll() in all relations objects.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-09-03 12:01:11 UTC (rev 2066)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-09-04 03:24:32 UTC (rev 2067)
+@@ -952,42 +952,6 @@
+         }
+ 
+         /**
+-         *  This function resets the information defined in relation objects.
+-         *
+-         *  @param $relation  (optional) The relation name. If empty, the last relations loaded.
+-         */
+-        function resetRelation( $relation='' ) {
+-
+-            $relations = $this-&gt;_last;
+-
+-            if ( strlen( $relation ) ) {
+-                $relations = array( $relation );
+-            }
+-
+-            foreach ( $relations as $relation ) {
+-
+-                $rel = &amp; $this-&gt;getRelation( $relation );
+-
+-                $f_var = $rel-&gt;getForeignVar();
+-                
+-                if ( isset( $this-&gt;$f_var ) ) {
+-                    $this-&gt;$f_var-&gt;reset();
+-                }
+-
+-                if ( $rel-&gt;isManyToMany() ) {
+-
+-                    $c_var = $rel-&gt;getCrossVar();
+-                    
+-                    if ( isset( $this-&gt;$c_var ) ) {
+-                        $this-&gt;$c_var-&gt;reset();
+-                    }
+-
+-                }
+-            }
+-
+-        }
+-
+-        /**
+          *  This function executes an INSERT query based on the values of the object.
+          *
+          *  @param $values_noquote  (optional) Associative array that defines values that
+@@ -1733,14 +1697,15 @@
+          *  This function resets all information in the object and relation objects.
+          */
+         function resetAll() {
+-            $this-&gt;reset( true );
++            $this-&gt;reset();
++			$this-&gt;resetRelations();
+         }
+ 
+         /**
+-         *  This function resets the object's values, any additional query value and
+-         *  any result remaining to be fetch.
++         *  This function resets the object's registered fields values, selects values, query values
++         *  and results remaining to be fetch.
+          */
+-        function reset( $all=false ) {
++        function reset() {
+             
+             // before reset callbacks
+             $res = $this-&gt;_executeCallbacks( 'reset', true );
+@@ -1749,12 +1714,7 @@
+                 return $res;
+             }
+             
+-			if ( $all ) {
+-				$this-&gt;resetObject();
+-				$this-&gt;resetRelations();
+-			} else {
+-				$this-&gt;resetValues();
+-			}
++			$this-&gt;resetValues();
+             $this-&gt;resetQuery();
+             $this-&gt;resetResults();
+             $this-&gt;resetCount();
+@@ -1795,25 +1755,25 @@
+             }
+ 			
+         }
++
++        /**
++         *  This function resets any query addition.
++         */
++        function resetQuery() {
++            $this-&gt;_query-&gt;reset();
++            $this-&gt;_all = true;
++        }
+         
+         /**
+-         *  This function resets the object.
++         *  This function resets the object completely.
+          */
+         function resetObject() {
+             
+-            $relation_vars = array();
+-			foreach ( $this-&gt;_relations as $rel ) {
+-				$relation_vars[] = $rel-&gt;getForeignVar();
+-				if ( $rel-&gt;isManyToMany() ) {
+-					$relation_vars[] = $rel-&gt;getCrossVar();
+-				}
+-			}
+-			
+-			$vars = get_object_vars( $this );
++            $vars = get_object_vars( $this );
+             
+             foreach ( $vars as $var =&gt; $value ) {
+                 
+-                if ( substr( $var, 0, 1 ) != '_' &amp;&amp; ! in_array( $var, $relation_vars ) ) {
++                if ( substr( $var, 0, 1 ) != '_' ) {
+                     unset( $this-&gt;$var );
+                 }
+                 
+@@ -1833,13 +1793,41 @@
+             }
+ 			
+ 		}
+-
++		
+         /**
+-         *  This function resets any query addition.
++         *  This function resets the information defined in relation objects.
++         *
++         *  @param $relation  (optional) The relation name. If empty, the last relations loaded.
+          */
+-        function resetQuery() {
+-            $this-&gt;_query-&gt;reset();
+-            $this-&gt;_all = true;
++        function resetRelation( $relation='' ) {
++
++            $relations = $this-&gt;_last;
++
++            if ( strlen( $relation ) ) {
++                $relations = array( $relation );
++            }
++
++            foreach ( $relations as $relation ) {
++
++                $rel = &amp; $this-&gt;getRelation( $relation );
++
++                $f_var = $rel-&gt;getForeignVar();
++                
++                if ( isset( $this-&gt;$f_var ) ) {
++                    $this-&gt;$f_var-&gt;resetAll();
++                }
++
++                if ( $rel-&gt;isManyToMany() ) {
++
++                    $c_var = $rel-&gt;getCrossVar();
++                    
++                    if ( isset( $this-&gt;$c_var ) ) {
++                        $this-&gt;$c_var-&gt;resetAll();
++                    }
++
++                }
++            }
++
+         }
+ 
+         /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000580.html">[ydf-devel] r2066 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000582.html">[ydf-devel] r2068 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#581">[ date ]</a>
+              <a href="thread.html#581">[ thread ]</a>
+              <a href="subject.html#581">[ subject ]</a>
+              <a href="author.html#581">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

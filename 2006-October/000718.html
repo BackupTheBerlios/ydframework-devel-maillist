@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDAjax and mootools
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20mootools&In-Reply-To=%3C20061018155527.43867.qmail%40web54010.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000717.html">
+   <LINK REL="Next"  HREF="000719.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDAjax and mootools</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20mootools&In-Reply-To=%3C20061018155527.43867.qmail%40web54010.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] YDAjax and mootools">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Wed Oct 18 17:55:27 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000717.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+        <LI>Next message: <A HREF="000719.html">[ydf-devel] YDAjax and mootools
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#718">[ date ]</a>
+              <a href="thread.html#718">[ thread ]</a>
+              <a href="subject.html#718">[ subject ]</a>
+              <a href="author.html#718">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I have modified YDAjax and YDAjaxEffects classes to
+use the new mootools 
+javascript framework from <A HREF="http://mootools.net/">http://mootools.net/</A> .
+
+The effects are more complex to setup internally but
+there is much 
+greater power and flexibility in mootools. Mootools is
+20kb compressed 
+whilst moo.fx is 8kb compressed.
+
+A tarball is attached.
+
+-rwxrw-r--  39011 2006-10-19 01:22
+./YDFramework2/addons/YDAjax/YDAjax.php
+-rwxr--r--   43422 2006-10-18 21:35 
+./YDFramework2/addons/YDAjax/js/mootools.svn.76.js
+-rwxr--r--  24000 2006-10-19 01:05 
+./YDFramework2/addons/YDAjax/js/mootools.svn.compressed.76.js
+
+This uses a configuration variable &quot;YD_AJAX_MOOTOOLS&quot;
+to enable mootools 
+instead of moo.fx. The change to YDAjax.php is quite
+minor. I changed 
+YDAjax.php so that the effects interface is compatible
+and hence the 
+existing effects example &quot;examples/ajax/image2.php&quot;
+works without 
+change. For an improved implementation and due to the
+size of the 
+mootools javascript file it would be better to link to
+its javascript 
+rather than embedding it directly. YDTemplate would
+need to be modified 
+to do this.
+
+I have not implemented &quot;fadesize&quot;. I have also not
+tested &quot;hide&quot;, &quot;show&quot; 
+and focus, however these don't rely on the effects
+library.
+
+The mootools is build 76 from the svn repository at
+mootools. I have 
+included compressed and uncompressed versions of the
+javascript since 
+the uncompressed file contains the license information
+(MIT style license).
+
+Regards,
+
+Graeme
+
+
+
+
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+<A HREF="http://mail.yahoo.com">http://mail.yahoo.com</A> 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ydmootools.tar.gz
+Type: application/gzip
+Size: 28561 bytes
+Desc: 1370806068-ydmootools.tar.gz
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061018/23769a15/attachment.bin">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061018/23769a15/attachment.bin</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000717.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+	<LI>Next message: <A HREF="000719.html">[ydf-devel] YDAjax and mootools
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#718">[ date ]</a>
+              <a href="thread.html#718">[ thread ]</a>
+              <a href="subject.html#718">[ subject ]</a>
+              <a href="author.html#718">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

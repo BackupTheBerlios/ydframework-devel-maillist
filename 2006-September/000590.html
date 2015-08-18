@@ -1,0 +1,741 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2076 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMUser
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2076%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent%3A%20.%0A%09languages%20languages/YDCMGroup%20languages/YDCMUser&In-Reply-To=%3C200609042108.k84L8Fl0027724%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000589.html">
+   <LINK REL="Next"  HREF="000591.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2076 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMUser</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2076%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent%3A%20.%0A%09languages%20languages/YDCMGroup%20languages/YDCMUser&In-Reply-To=%3C200609042108.k84L8Fl0027724%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2076 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMGroup languages/YDCMUser">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Sep  4 23:08:15 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000589.html">[ydf-devel] r2075 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000591.html">[ydf-devel] r2077 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#590">[ date ]</a>
+              <a href="thread.html#590">[ thread ]</a>
+              <a href="subject.html#590">[ subject ]</a>
+              <a href="author.html#590">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-04 23:07:28 +0200 (Mon, 04 Sep 2006)
+New Revision: 2076
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/pt.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/pt.php
+Removed:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php
+Log:
+modification on YDCMComponent:
+   - translated strings are now uniform
+   - YDCMGroup _saveFormDetails checks if update was made in userobject node too.
+   - YDCMGroup now uses state form element correctly
+   - added YDCMGroup translation strings
+   - simplification of adding forms for editing/creating users in YDCMUser
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -110,12 +110,10 @@
+          *  This method adds form elements for group editing
+ 		 *
+ 		 * @param $group_id     Group id to edit
+-		 *
+-		 * @param $editable     (Optional) Boolean flag that defines if elements are editable
+          */
+-		function addFormEdit( $group_id, $editable = true ){
++		function addFormEdit( $group_id ){
+ 
+-		 	return $this-&gt;_addFormDetails( $group_id, true, $editable );
++		 	return $this-&gt;_addFormDetails( $group_id, true );
+ 		}
+ 
+ 
+@@ -126,7 +124,7 @@
+          */
+ 		function addFormNew( $parent_group_id = null ){
+ 
+-		 	return $this-&gt;_addFormDetails( $parent_group_id, false, true );
++		 	return $this-&gt;_addFormDetails( $parent_group_id, false );
+ 		}
+ 		 
+ 		
+@@ -137,44 +135,38 @@
+          *                      If you will ADD a new group this is the parent id. Use NULL to add it to the root tree
+          *
+ 		 * @param $edit         TRUE: We are editing a group, FALSE: we are creating a group
+-		 *
+-		 * @param $editable     When editing a group, this boolean flag defines if form elements are editable (default true)
+          */
+-		function _addFormDetails( $id, $edit, $editable ){
++		function _addFormDetails( $id, $edit ){
+ 
+ 			YDInclude( 'YDForm.php' );
+ 
+ 			// init form
+ 			$this-&gt;_form = new YDForm( 'YDCMGroup' );
+ 
+-			// add name and drecription
+-			if ( $editable ){
+-				$this-&gt;_form-&gt;addElement( 'text',     'name',        t( 'group name' ) );
+-				$this-&gt;_form-&gt;addElement( 'textarea', 'description', t( 'group description' ), array( 'rows' =&gt; 4, 'cols' =&gt; 40 ) );
+-				$this-&gt;_form-&gt;addElement( 'select',   'state',       t( 'group state' ), array(), array( 0 =&gt; t( 'Blocked' ), 1 =&gt; t( 'Active' ) ) );
++			// add elements
++			$this-&gt;_form-&gt;addElement( 'text',     'name',        t( 'ydcmgroup label name' ) );
++			$this-&gt;_form-&gt;addElement( 'textarea', 'description', t( 'ydcmgroup label description' ), array( 'rows' =&gt; 4, 'cols' =&gt; 40 ) );
++			$this-&gt;_form-&gt;addElement( 'select',   'state',       t( 'ydcmgroup label state' ), array(), array( 0 =&gt; t( 'Blocked' ), 1 =&gt; t( 'Active' ) ) );
+ 
+-				$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkgroup' ), array( $edit, $id ) );
++			// add rules
++			$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkgroup' ), array( $edit, $id ) );
+ 
+-			}else{
+-				$this-&gt;_form-&gt;addElement( 'span', 'name',        t( 'group name' ) );
+-				$this-&gt;_form-&gt;addElement( 'span', 'description', t( 'group description' ) );
++
++			// if we are not editing a group, just add a submit button and return
++			if ( ! $edit ){
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmgroup label new' ) );
++				return;
+ 			}
+ 
+-			// if we are editing a group, set form defaults
+-			if ( $edit ){
++			// if we are editing, set defaults and add a submit button
++			$defaults = $this-&gt;getGroup( $id );
++			$this-&gt;_form-&gt;setDefaults( $defaults );
+ 
+-				// add submit button
+-				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'save' ) );
++			// state default is 'ydcmuserobject_state' because it's on userobject table
++			$this-&gt;_form-&gt;setDefault( 'state', $defaults[ 'ydcmuserobject_state' ] );
+ 
+-				// set form defaults based on user attributes
+-				$this-&gt;_form-&gt;setDefaults( $this-&gt;getGroup( $id ) );
+-
+-			}else{
+-
+-				// add submit button
+-				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'add' ) );
+-			}
+-
++			// add submit button
++			$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmgroup label save' ) );
+ 		}
+ 
+ 
+@@ -193,7 +185,7 @@
+ 			
+ 			if ( $this-&gt;find() == 0 ) return true;
+ 			
+-			return array( '__ALL__' =&gt; t( 'group exists' ) );
++			return array( '__ALL__' =&gt; t( 'ydcmgroup mess group exists' ) );
+ 		}
+ 
+ 
+@@ -254,7 +246,7 @@
+ 				$userobject = array();
+ 				$userobject['type']  = 'YDCMGroup';
+ 				$userobject['reference'] = $values[ 'name' ];
+-//				$userobject['state']     = $values[ 'state' ];
++				$userobject['state']     = $values[ 'state' ];
+ 
+ 				// update userobject
+ 				$uobj = new YDCMUserobject();
+@@ -270,11 +262,12 @@
+ 				$this-&gt;setValues( $group );
+ 				$this-&gt;where( 'group_id = '. $id ); 
+ 
+-				$res = $this-&gt;update();
++				// updated and sum lines afected to userobject lines afected
++				$res += $this-&gt;update();
+ 				
+-				// check update result and return
+-				if ( $res &gt; 0 ) return YDResult::ok( t( 'group details updated' ), $res );
+-				else            return YDResult::warning( t( 'group not updated' ), $res );
++				// check update from node update and from group update
++				if ( $res &gt; 0 ) return YDResult::ok( t( 'ydcmgroup mess details updated' ), $res );
++				else            return YDResult::warning( t( 'ydcmgroup mess details not updated' ), $res );
+ 
+ 			}else{
+ 
+@@ -282,12 +275,12 @@
+ 				$userobject = array();
+ 				$userobject['type']      = 'YDCMGroup';
+ 				$userobject['reference'] = $values[ 'name' ];
+-				$userobject['state']     = isset( $values[ 'state' ] ) ? $values[ 'state' ] : 0;
++				$userobject['state']     = $values[ 'state' ];
+ 
+ 				// check default parent id
+ 				if ( is_null( $id ) ) $id = 1;
+ 
+-				// TODO: check if group is valid (and, eg,  is not a user node)
++				// TODO: check if group is valid (and, eg, is not a user node)
+ 
+ 				// update userobject and get new id
+ 				$uobj = new YDCMUserobject();
+@@ -304,8 +297,8 @@
+ 				$this-&gt;setValues( $group );
+ 
+ 				// insert values
+-				if ( $this-&gt;insert() ) return YDResult::ok( t( 'group added' ), $res );
+-				else                   return YDResult::fatal( t( 'group not added' ), $res );
++				if ( $this-&gt;insert() ) return YDResult::ok( t( 'ydcmgroup mess created' ), $res );
++				else                   return YDResult::fatal( t( 'ydcmgroup mess impossible to create' ), $res );
+ 			}
+ 
+ 		}
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -31,7 +31,7 @@
+ 
+ 	// add translations directory
+ 	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
+-	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUsers/' );
++	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUser/' );
+ 
+ 	// add YDF libs needed by this class
+ 	YDInclude( 'YDDatabaseObject.php' );
+@@ -173,14 +173,11 @@
+          *  This method adds form elements for user editing
+ 		 *
+ 		 * @param $user_id      User id to edit
+-		 *
+-		 * @param $editable     Array with form element names that are editable
+-		 * @param $noneditable  (Optional) Array with form element names that are NOT editable
+-		 * @param $translate    (Optional) User details should be translated
++		 * @param $noneditable  (Optional) Array with form element names that are NOT editable (are spans).
+          */
+-		function addFormEdit( $id, $editable, $noneditable = array(), $translate = true ){
++		function addFormEdit( $id, $noneditable = array() ){
+ 
+-		 	return $this-&gt;_addFormDetails( $id, true, $editable, $noneditable, $translate );
++		 	return $this-&gt;_addFormDetails( $id, true, $noneditable );
+ 		}
+ 
+ 
+@@ -188,13 +185,10 @@
+          *  This method adds form elements for addind a new user
+ 		 *
+ 		 * @param $parent_id    Group id of this new user
+-		 * @param $editable     Array with form element names that are editable
+-		 * @param $noneditable  (Optional) Array with form element names that are NOT editable
+-		 * @param $translate    (Optional) User details should be translated
+          */
+-		function addFormNew( $id, $editable, $noneditable = array(), $translate = true ){
++		function addFormNew( $id ){
+ 
+-		 	return $this-&gt;_addFormDetails( $id, false, $editable, $noneditable, $translate );
++		 	return $this-&gt;_addFormDetails( $id, false );
+ 		}
+ 		 
+ 		
+@@ -203,14 +197,12 @@
+ 		 *
+ 		 * @param $id           If you will EDIT some user this is the user id to edit. On $edit (next argument) you must set TRUE
+          *                      If you will ADD a new user this is the parent id of the new user. On $edit (next argument) you must set FALSE
+-         *
+-		 * @param $editable     Array with form element names that are editable
+ 		 *
+ 		 * @param $noneditable  Array with form element names that are NOT editable
+ 		 *
+ 		 * @param $translate    User details should be translated
+          */
+-		function _addFormDetails( $id, $edit, $editable, $noneditable, $translate ){
++		function _addFormDetails( $id, $edit, $noneditable = array() ){
+ 
+ 			YDInclude( 'YDForm.php' );
+ 
+@@ -218,82 +210,77 @@
+ 			$this-&gt;_form = new YDForm( 'YDCMUsers' );
+ 
+ 			// check arguments
+-			if ( !is_array( $editable ) ) $editable = array( $editable );
+ 			if ( !is_array( $noneditable ) ) $noneditable = array( $noneditable );
+ 
+ 			// add username
+-			if ( in_array( 'username', $editable ) ){
+-				$this-&gt;_form-&gt;addElement( 'text', 'username', t('user_username') );
++			if ( in_array( 'username', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span', 'username', t( 'ydcmuser label username' ) );
++			}else{
++				$this-&gt;_form-&gt;addElement( 'text', 'username', t( 'ydcmuser label username' ) );
+ 				$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkuser' ), array( $edit, $id ) );
+-
+-			}else if ( in_array( 'username', $noneditable ) ){
+-				$this-&gt;_form-&gt;addElement( 'span', 'username', t('user_username') );
+ 			}
+ 
+-			// add password
+-			if ( in_array( 'password', $editable ) ){
+-				$this-&gt;_form-&gt;addElement( 'password', 'password', t('user_password') );				
+-			}
++			// add password box for new users or editing users
++			if ( ! $edit || ( $edit &amp;&amp; ! in_array( 'password', $noneditable ) ) )
++				$this-&gt;_form-&gt;addElement( 'password', 'password', t( 'ydcmuser label password' ) );				
+ 
+ 			// add state
+-			if ( in_array( 'state', $editable ) ){
+-				$this-&gt;_form-&gt;addElement( 'select',         'state',       t('login_state'), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+-				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
+-				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_end',   t('login_end'));
+-
+-			}else if ( in_array( 'state', $noneditable ) ){
+-				$this-&gt;_form-&gt;addElement( 'span',           'state',       t('login_state') );
+-				$this-&gt;_form-&gt;addElement( 'span',           'login_start', t('login_start') );
+-				$this-&gt;_form-&gt;addElement( 'span',           'login_end',   t('login_end') );
++			if ( in_array( 'state', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span',           'state',       t( 'ydcmuser label state' ) );
++				$this-&gt;_form-&gt;addElement( 'span',           'login_start', t( 'ydcmuser label login_start' ) );
++				$this-&gt;_form-&gt;addElement( 'span',           'login_end',   t( 'ydcmuser label login_end' ) );
++			}else{
++				$this-&gt;_form-&gt;addElement( 'select',         'state',       t( 'ydcmuser label state' ), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
++				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_start', t( 'ydcmuser label login_start' ) );
++				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_end',   t( 'ydcmuser label login_end' ) );
+ 			}
+ 
+ 			// add common user details
+-			if ( in_array( 'details', $editable ) ){
+-				$this-&gt;_form-&gt;addElement( 'text',      'name',          t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
+-				$this-&gt;_form-&gt;addElement( 'text',      'email',         t('user_email') );
+-				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t('user_other'),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
++			if ( in_array( 'details', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span',      'name',          t( 'ydcmuser label name' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'email',         t( 'ydcmuser label email' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'other',         t( 'ydcmuser label other' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'lang_id',       t( 'ydcmuser label language' ) );
++				$this-&gt;_form-&gt;addElement( 'span',      'template',      t( 'ydcmuser label template' ) );
++			}else{
++				$this-&gt;_form-&gt;addElement( 'text',      'name',          t( 'ydcmuser label name' ),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
++				$this-&gt;_form-&gt;addElement( 'text',      'email',         t( 'ydcmuser label email' ) );
++				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t( 'ydcmuser label other' ),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
+ 
+ 				$languages = new YDCMLanguages();
+ 				$languages = $languages-&gt;active();
+-				$this-&gt;_form-&gt;addElement( 'select',    'lang_id',       t('user_language'), array(), $languages );
++				$this-&gt;_form-&gt;addElement( 'select',    'lang_id',       t( 'ydcmuser label language' ), array(), $languages );
+ 
+ 				$templates = new YDCMTemplates();
+-    	        $this-&gt;_form-&gt;addElement( 'select',    'template',      t('user_template'), array(), $templates-&gt;admin_templates() );
++    	        $this-&gt;_form-&gt;addElement( 'select',    'template',      t( 'ydcmuser label template' ), array(), $templates-&gt;admin_templates() );
+ 
+-				$this-&gt;_form-&gt;addRule( 'name',        'maxlength',      t('name too big'),  255 );
+-				$this-&gt;_form-&gt;addRule( 'email',       'email',          t('email not valid') );
+-				$this-&gt;_form-&gt;addRule( 'other',       'maxlength',      t('other too big'), 5000 );
+-				$this-&gt;_form-&gt;addRule( 'language_id', 'in_array',       t('language not valid'), array_keys( $languages ) );
+-				$this-&gt;_form-&gt;addRule( 'template',    'in_array',       t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
+-
+-			}else if ( in_array( 'details', $noneditable ) ){
+-				$this-&gt;_form-&gt;addElement( 'span',      'name',          t('user_name') );
+-				$this-&gt;_form-&gt;addElement( 'span',      'email',         t('user_email') );
+-				$this-&gt;_form-&gt;addElement( 'span',      'other',         t('user_other') );
+-				$this-&gt;_form-&gt;addElement( 'span',      'lang_id',       t('user_language') );
+-				$this-&gt;_form-&gt;addElement( 'span',      'template',      t('user_template') );
++				$this-&gt;_form-&gt;addRule( 'name',        'maxlength',      t( 'ydcmuser mess name too big' ),  255 );
++				$this-&gt;_form-&gt;addRule( 'email',       'email',          t( 'ydcmuser mess email not valid' ) );
++				$this-&gt;_form-&gt;addRule( 'other',       'maxlength',      t( 'ydcmuser mess other too big' ), 5000 );
++				$this-&gt;_form-&gt;addRule( 'language_id', 'in_array',       t( 'ydcmuser mess language not valid' ), array_keys( $languages ) );
++				$this-&gt;_form-&gt;addRule( 'template',    'in_array',       t( 'ydcmuser mess template not valid' ), array_keys( $templates-&gt;admin_templates() ) );
+ 			}
+ 
+-			// add access information
+-			if ( in_array( 'access', $noneditable ) ){
+-				$this-&gt;_form-&gt;addElement( 'span', 'login_counter', t('login_counter') );
+-    	        $this-&gt;_form-&gt;addElement( 'span', 'login_last',    t('login_last') );
+-    	        $this-&gt;_form-&gt;addElement( 'span', 'login_current', t('login_current') );
++			// add access information when editing
++			if ( $edit ) {
++				$this-&gt;_form-&gt;addElement( 'span', 'login_counter', t( 'ydcmuser label login_counter' ) );
++   	        	$this-&gt;_form-&gt;addElement( 'span', 'login_last',    t( 'ydcmuser label login_last' ) );
++   	        	$this-&gt;_form-&gt;addElement( 'span', 'login_current', t( 'ydcmuser label login_current' ) );
+ 			}
+ 
+ 			// if we are editing a user it's a good idea to set form defaults with user node attributes
+ 			if ( $edit ){
+ 
+ 				// add submit button
+-				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'save' ) );
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmuser label save' ) );
+ 
+ 				// set form defaults based on user attributes
+-				$this-&gt;_form-&gt;setDefaults( $this-&gt;getUser( $id, $translate ) );
++				$this-&gt;_form-&gt;setDefaults( $this-&gt;getUser( $id ) );
+ 
+ 			}else{
+ 
+ 				// add submit button
+-				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'add' ) );
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'ydcmuser label new' ) );
+ 
+ 				// when adding a user, if login_end date exists we setup 7 days interval
+ 				if ( $this-&gt;_form-&gt;isElement( 'login_end' ) )
+@@ -317,7 +304,7 @@
+ 			
+ 			if ( $this-&gt;find() == 0 ) return true;
+ 			
+-			return array( '__ALL__' =&gt; t( 'username exists' ) );
++			return array( '__ALL__' =&gt; t( 'ydcmuser mess username exists' ) );
+ 		}
+ 
+ 
+@@ -406,8 +393,8 @@
+ 				$res = $this-&gt;update();
+ 				
+ 				// check update result and return
+-				if ( $res &gt; 0 ) return YDResult::ok( t( 'user details updated' ), $res );
+-				else            return YDResult::warning( t( 'user not updated' ), $res );
++				if ( $res &gt; 0 ) return YDResult::ok( t( 'ydcmuser mess updated' ), $res );
++				else            return YDResult::warning( t( 'ydcmuser mess impossible to update' ), $res );
+ 
+ 			}else{
+ 
+@@ -446,8 +433,8 @@
+ 				$this-&gt;setValues( $user );
+ 
+ 				// insert values
+-				if ( $this-&gt;insert() ) return YDResult::ok( t( 'user added' ), $res );
+-				else                   return YDResult::fatal( t( 'user not added' ), $res );
++				if ( $this-&gt;insert() ) return YDResult::ok( t( 'ydcmuser mess created' ), $res );
++				else                   return YDResult::fatal( t( 'ydcmuser mess impossible to create' ), $res );
+ 			}
+ 
+ 		}
+@@ -467,28 +454,20 @@
+ 			// init form
+ 			$this-&gt;_form = new YDForm( 'YDCMUsers' );
+ 
+-			// add new password box
+-            $this-&gt;_form-&gt;addElement( 'password',    'new',          t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+-			$this-&gt;_form-&gt;addRule(    'new',         'required',     t('passwords are required') );
+-			$this-&gt;_form-&gt;addRule(    'new',         'maxlength',    t('passwords too big'), 31 );
+-			$this-&gt;_form-&gt;addRule(    'new',         'alphanumeric', t('passwords not alphanumeric') );
++			// add old password box
++			if ( $oldpassword )
++            	$this-&gt;_form-&gt;addElement( 'password', 'old',          t('ydcmuser label old password'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
+ 
+-			// add new_confirm password box
+-            $this-&gt;_form-&gt;addElement( 'password',    'new_confirm',  t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+-			$this-&gt;_form-&gt;addRule(    'new_confirm', 'required',     t('passwords are required') );
+-			$this-&gt;_form-&gt;addRule(    'new_confirm', 'maxlength',    t('passwords too big'), 31 );
+-			$this-&gt;_form-&gt;addRule(    'new_confirm', 'alphanumeric', t('passwords not alphanumeric') );
++			// add password boxes
++            $this-&gt;_form-&gt;addElement( 'password',    'new',          t('ydcmuser label new password'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++            $this-&gt;_form-&gt;addElement( 'password',    'new_confirm',  t('ydcmuser label confirm password'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+ 
++			$this-&gt;_form-&gt;addRule(    '__ALL__',     'required',     t('ydcmuser mess passwords are required') );
++			$this-&gt;_form-&gt;addRule(    '__ALL__',     'maxlength',    t('ydcmuser mess passwords too big'), 31 );
++			$this-&gt;_form-&gt;addRule(    '__ALL__',     'alphanumeric', t('ydcmuser mess passwords not alphanumeric') );
++
+ 			// add compare rule to new password and confirmation password
+ 			$this-&gt;_form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
+-
+-			// add old password box
+-			if ( $oldpassword ){
+-            	$this-&gt;_form-&gt;addElement( 'password', 'old',          t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
+-				$this-&gt;_form-&gt;addRule(    'old',      'required',     t('passwords are required') );
+-				$this-&gt;_form-&gt;addRule(    'old',      'maxlength',    t('passwords too big'), 31 );
+-				$this-&gt;_form-&gt;addRule(    'old',      'alphanumeric', t('passwords not alphanumeric') );
+-			}
+ 		}
+ 
+ 
+@@ -517,8 +496,8 @@
+ 			$this-&gt;where( 'user_id = ' . intval( $user_id ) );
+ 
+ 			// update user and get result
+-			if ( $this-&gt;update() == 1 ) return YDResult::ok( t('user password updated') );
+-			else                        return YDResult::fatal( t('password not updated') );
++			if ( $this-&gt;update() == 1 ) return YDResult::ok( t('ydcmuser mess password updated') );
++			else                        return YDResult::fatal( t('ydcmuser mess password not updated') );
+ 		}
+ 
+ 
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/en.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -0,0 +1,25 @@
++&lt;?php
++
++// PERMISSIONS
++$GLOBALS['t']['ydcmgroup perm properties'] = 'See properties';
++$GLOBALS['t']['ydcmgroup perm create']     = 'Create';
++$GLOBALS['t']['ydcmgroup perm delete']     = 'Delete';
++$GLOBALS['t']['ydcmgroup perm edit']       = 'Edit';
++
++
++// FORM LABELS
++$GLOBALS['t']['ydcmgroup label name']        = 'Name';
++$GLOBALS['t']['ydcmgroup label description'] = 'Description';
++$GLOBALS['t']['ydcmgroup label state']       = 'State';
++$GLOBALS['t']['ydcmgroup label new']         = 'Create group';
++$GLOBALS['t']['ydcmgroup label save']        = 'Save group';
++
++
++// FORM RULES/ERRORS/MESSAGES
++$GLOBALS['t']['ydcmgroup mess group exists']         = 'Group name already exists';
++$GLOBALS['t']['ydcmgroup mess details updated']      = 'Group details updated';
++$GLOBALS['t']['ydcmgroup mess details not updated']  = 'No updates were made';
++$GLOBALS['t']['ydcmgroup mess created']              = 'New group created';
++$GLOBALS['t']['ydcmgroup mess impossible to create'] = 'Impossible to create group';
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/pt.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMGroup/pt.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -0,0 +1,25 @@
++&lt;?php
++
++// PERMISSIONS
++$GLOBALS['t']['ydcmgroup perm properties'] = 'Ver propriedades';
++$GLOBALS['t']['ydcmgroup perm create']     = 'Criar';
++$GLOBALS['t']['ydcmgroup perm delete']     = 'Eliminar';
++$GLOBALS['t']['ydcmgroup perm edit']       = 'Editar';
++
++
++// FORM LABELS
++$GLOBALS['t']['ydcmgroup label name']        = 'Nome';
++$GLOBALS['t']['ydcmgroup label description'] = 'Descri&ccedil;&atilde;o';
++$GLOBALS['t']['ydcmgroup label state']       = 'Estado';
++$GLOBALS['t']['ydcmgroup label new']         = 'Criar grupo';
++$GLOBALS['t']['ydcmgroup label save']        = 'Guardar grupo';
++
++
++// FORM RULES/ERRORS/MESSAGES
++$GLOBALS['t']['ydcmgroup mess group exists']         = 'O nome do grupo j&aacute; existe';
++$GLOBALS['t']['ydcmgroup mess details updated']      = 'Grupo actualizado';
++$GLOBALS['t']['ydcmgroup mess details not updated']  = 'N&atilde;o foram feitas actualiza&ccedil;&otilde;es';
++$GLOBALS['t']['ydcmgroup mess created']              = 'Novo grupo criado';
++$GLOBALS['t']['ydcmgroup mess impossible to create'] = 'Imposs&iacute;vel criar grupo';
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/en.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -0,0 +1,53 @@
++&lt;?php
++
++// PERMISSIONS
++$GLOBALS['t']['ydcmuser perm properties'] = 'See properties';
++$GLOBALS['t']['ydcmuser perm create']     = 'Create';
++$GLOBALS['t']['ydcmuser perm delete']     = 'Delete';
++$GLOBALS['t']['ydcmuser perm edit']       = 'Edit';
++
++// FORM LABELS
++$GLOBALS['t']['ydcmuser label username'] = 'Username';
++$GLOBALS['t']['ydcmuser label password'] = 'Password';
++$GLOBALS['t']['ydcmuser label name'] = 'Name';
++$GLOBALS['t']['ydcmuser label email'] = 'Email';
++$GLOBALS['t']['ydcmuser label other'] = 'Other';
++$GLOBALS['t']['ydcmuser label language'] = 'Language';
++$GLOBALS['t']['ydcmuser label template'] = 'Template';
++$GLOBALS['t']['ydcmuser label state'] = 'Login';
++$GLOBALS['t']['ydcmuser label login_start'] = 'Login start date';
++$GLOBALS['t']['ydcmuser label login_end'] = 'Login end date';
++$GLOBALS['t']['ydcmuser label login_counter'] = 'Total of logins';
++$GLOBALS['t']['ydcmuser label login_last'] = 'Last login date';
++$GLOBALS['t']['ydcmuser label login_current'] = 'Current login date';
++$GLOBALS['t']['ydcmuser label new'] = 'Create user';
++$GLOBALS['t']['ydcmuser label save'] = 'Save user';
++	// password form
++$GLOBALS['t']['ydcmuser label old password'] = 'Old password';
++$GLOBALS['t']['ydcmuser label new password'] = 'New password';
++$GLOBALS['t']['ydcmuser label confirm password'] = 'Confirm password';
++
++
++// FORM RULES/ERRORS/MESSAGES
++$GLOBALS['t']['ydcmuser mess username exists'] = 'Username already exists';
++$GLOBALS['t']['ydcmuser mess updated'] = 'User details updated';
++$GLOBALS['t']['ydcmuser mess impossible to update'] = 'Was not possible to update user';
++$GLOBALS['t']['ydcmuser mess created'] = 'New user created';
++$GLOBALS['t']['ydcmuser mess impossible to create'] = 'Was not possible to create user';
++$GLOBALS['t']['ydcmuser mess email not valid'] = 'Email is not valid';
++$GLOBALS['t']['ydcmuser mess language not valid'] = 'Language is not valid';
++$GLOBALS['t']['ydcmuser mess template not valid'] = 'Template is not valid';
++	// password form
++$GLOBALS['t']['ydcmuser mess passwords are required'] = 'All passwords are required';
++$GLOBALS['t']['ydcmuser mess passwords too big'] = 'All passwords must not exceed 31 characters';
++$GLOBALS['t']['ydcmuser mess passwords not alphanumeric'] = 'All passwords must be alphanumeric';
++$GLOBALS['t']['ydcmuser mess password updated'] = 'User password updated';
++$GLOBALS['t']['ydcmuser mess password not updated'] = 'User password not updated';
++
++// OTHER
++$GLOBALS['t']['ydcmuser administrator and move children up'] = 'Administrator and move children up';
++$GLOBALS['t']['ydcmuser administrator and children'] = 'Administrator and children';
++$GLOBALS['t']['ydcmuser children only'] = 'Children only';
++$GLOBALS['t']['ydcmuser add group'] = 'Add group';
++$GLOBALS['t']['ydcmuser change password'] = 'Change password';
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/pt.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUser/pt.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -0,0 +1,53 @@
++&lt;?php
++
++// PERMISSIONS
++$GLOBALS['t']['ydcmuser perm properties'] = 'Ver propriedades';
++$GLOBALS['t']['ydcmuser perm create']     = 'Criar';
++$GLOBALS['t']['ydcmuser perm delete']     = 'Eliminar';
++$GLOBALS['t']['ydcmuser perm edit']       = 'Editar';
++
++// FORM LABELS
++$GLOBALS['t']['ydcmuser label username'] = 'Username';
++$GLOBALS['t']['ydcmuser label password'] = 'Password';
++$GLOBALS['t']['ydcmuser label name'] = 'Nome';
++$GLOBALS['t']['ydcmuser label email'] = 'Email';
++$GLOBALS['t']['ydcmuser label other'] = 'Outras informa&ccedil;&otilde;es';
++$GLOBALS['t']['ydcmuser label language'] = 'Idioma';
++$GLOBALS['t']['ydcmuser label template'] = 'Template';
++$GLOBALS['t']['ydcmuser label state'] = 'Login';
++$GLOBALS['t']['ydcmuser label login_start'] = 'Data inicial de login';
++$GLOBALS['t']['ydcmuser label login_end'] = 'Data final de login';
++$GLOBALS['t']['ydcmuser label login_counter'] = 'Total of login';
++$GLOBALS['t']['ydcmuser label login_last'] = '&Uacute;ltimo acesso';
++$GLOBALS['t']['ydcmuser label login_current'] = 'Acesso actual';
++$GLOBALS['t']['ydcmuser label new'] = 'Criar utilizador';
++$GLOBALS['t']['ydcmuser label save'] = 'Guardar utilizador';
++	// password form
++$GLOBALS['t']['ydcmuser label old password'] = 'Password actual';
++$GLOBALS['t']['ydcmuser label new password'] = 'Nova password';
++$GLOBALS['t']['ydcmuser label confirm password'] = 'Confirme nova password';
++
++
++// FORM RULES/ERRORS/MESSAGES
++$GLOBALS['t']['ydcmuser mess username exists'] = 'O utilizador j&aacute; existe';
++$GLOBALS['t']['ydcmuser mess updated'] = 'Utilizador modificado';
++$GLOBALS['t']['ydcmuser mess impossible to update'] = 'N&atilde;o foi poss&iacute;vel actualizar o utilizador';
++$GLOBALS['t']['ydcmuser mess created'] = 'Novo utilizador criado';
++$GLOBALS['t']['ydcmuser mess impossible to create'] = 'N&atilde;o foi poss&iacute;vel criar o utilizador';
++$GLOBALS['t']['ydcmuser mess email not valid'] = 'O email n&atilde;o &eacute; v&aacute;lido';
++$GLOBALS['t']['ydcmuser mess language not valid'] = 'O idioma n&atilde;o &eacute; v&aacute;lido';
++$GLOBALS['t']['ydcmuser mess template not valid'] = 'O template n&atilde;o &eacute; v&aacute;lido';
++	// password form
++$GLOBALS['t']['ydcmuser mess passwords are required'] = 'Todas as passwords s&atilde;o obrigat&oacute;rias';
++$GLOBALS['t']['ydcmuser mess passwords too big'] = 'As passwords n&atilde;o podem exceder os 31 characteres';
++$GLOBALS['t']['ydcmuser mess passwords not alphanumeric'] = 'As passwords t&ecirc;m de ser alfanum&eacute;ricas';
++$GLOBALS['t']['ydcmuser mess password updated'] = 'Passwords actualizadas';
++$GLOBALS['t']['ydcmuser mess password not updated'] = 'As passwords n&atilde; foram actualizadas';
++
++// OTHER
++$GLOBALS['t']['ydcmuser administrator and move children up'] = 'Utilizador e mover grupos para cima';
++$GLOBALS['t']['ydcmuser administrator and children'] = 'Administrador e grupos';
++$GLOBALS['t']['ydcmuser children only'] = 'Apenas os sub-grupos';
++$GLOBALS['t']['ydcmuser add group'] = 'Criar grupo';
++$GLOBALS['t']['ydcmuser change password'] = 'Alterar password';
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -30,7 +30,6 @@
+ $GLOBALS['t']['add'] = 'Add';
+ $GLOBALS['t']['add component'] = 'Add component';
+ $GLOBALS['t']['add user'] = 'Add user';
+-$GLOBALS['t']['add group'] = 'Add group';
+ $GLOBALS['t']['move'] = 'Move';
+ $GLOBALS['t']['move up'] = 'Move up';
+ $GLOBALS['t']['move down'] = 'Move down';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php	2006-09-04 18:53:41 UTC (rev 2075)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php	2006-09-04 21:07:28 UTC (rev 2076)
+@@ -30,7 +30,6 @@
+ $GLOBALS['t']['add'] = 'Adicionar';
+ $GLOBALS['t']['add component'] = 'Adicionar component';
+ $GLOBALS['t']['add user'] = 'Adicionar utilizador';
+-$GLOBALS['t']['add group'] = 'Adicionar grupo';
+ $GLOBALS['t']['move'] = 'Mover';
+ $GLOBALS['t']['move up'] = 'Mover para cima';
+ $GLOBALS['t']['move down'] = 'Mover para baixo';
+@@ -43,6 +42,10 @@
+ $GLOBALS['t']['administrator'] = 'Administrador';
+ $GLOBALS['t']['administrators'] = 'Administradores';
+ 
++$GLOBALS['t']['published'] = 'Publicado';
++$GLOBALS['t']['not published'] = 'N&#227;o publicado';
++$GLOBALS['t']['schedule'] = 'Calend&aacute;rio';
++
+ $GLOBALS['t']['translate'] = 'Traduzir';
+ $GLOBALS['t']['translate to'] = 'Traduzir para';
+ 
+@@ -60,9 +63,5 @@
+ $GLOBALS['t']['user management'] = 'Gest&atilde;o de utilizadores';
+ $GLOBALS['t']['general configuration'] = 'Configura&ccedil;&atilde;o geral';
+ 
+-
+-
+-
+-
+ $GLOBALS['t']['form errors'] = 'Erros no formulario';
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000589.html">[ydf-devel] r2075 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000591.html">[ydf-devel] r2077 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#590">[ date ]</a>
+              <a href="thread.html#590">[ thread ]</a>
+              <a href="subject.html#590">[ subject ]</a>
+              <a href="author.html#590">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

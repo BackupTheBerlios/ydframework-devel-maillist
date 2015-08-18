@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2367 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default	examples/simplecms/resources
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2367%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%0A%09examples/simplecms/includes/skins_admin%0A%09examples/simplecms/includes/skins_public/default%0A%09examples/simplecms/resources&In-Reply-To=%3C200701251302.l0PD2eF6023709%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000959.html">
+   <LINK REL="Next"  HREF="000961.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2367 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default	examples/simplecms/resources</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2367%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%0A%09examples/simplecms/includes/skins_admin%0A%09examples/simplecms/includes/skins_public/default%0A%09examples/simplecms/resources&In-Reply-To=%3C200701251302.l0PD2eF6023709%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2367 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default	examples/simplecms/resources">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Jan 25 14:02:40 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000959.html">[ydf-devel] r2366 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000961.html">[ydf-devel] r2368 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#960">[ date ]</a>
+              <a href="thread.html#960">[ thread ]</a>
+              <a href="subject.html#960">[ subject ]</a>
+              <a href="author.html#960">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-25 14:02:29 +0100 (Thu, 25 Jan 2007)
+New Revision: 2367
+
+Added:
+   YDFramework2.0/trunk/examples/simplecms/resources/YDSimpleCMS.css
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl
+Log:
+Updated the master template for the admin site of the YDSimpleCMS package.
+
+Also changed:
+- Assignment of the generic variables now happens in the template class instead of in the request/module class.
+- Added CSS classes to the login form.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-25 09:13:05 UTC (rev 2366)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-25 13:02:29 UTC (rev 2367)
+@@ -52,6 +52,9 @@
+     define( YD_SIMPLECMS_PACKAGE_NAME . '_SCOPE_ADMIN',    'admin' );
+     define( YD_SIMPLECMS_PACKAGE_NAME . '_SITE_LANGUAGE',  YD_SIMPLECMS_PACKAGE_NAME . '_SITE_LANGUAGE' );
+ 
++    // Versions and numbers
++    define( YD_SIMPLECMS_PACKAGE_NAME . '_NAME', 'Yellow Duck Content Manager' );
++
+     // Configuration
+     YDConfig::set( 'YD_AUTO_EXECUTE', false );
+ 
+@@ -166,8 +169,8 @@
+                 // Set the right locale
+                 YDLocale::set( $lang );
+ 
+-                YDDebugUtil::dump( $language, 'language' );
+-                YDDebugUtil::dump( $languages, 'languages' );
++                //YDDebugUtil::dump( $language, 'language' );
++                //YDDebugUtil::dump( $languages, 'languages' );
+ 
+             }
+ 
+@@ -233,6 +236,9 @@
+          *  @param  $action     The module action that is linked to this menu item.
+          *
+          *  @static
++         *
++         *  @todo
++         *      Should become a member of the YDSimpleCMSModule class instead.
+          */
+         function addAdminMenu( $title, $subtitle, $module, $action ) {
+ 
+@@ -417,6 +423,14 @@
+          */
+         function fetchWithMaster( $template='', $master='__master' ) {
+ 
++            // Add the standard variables
++            $this-&gt;assign( YD_SIMPLECMS_PACKAGE_NAME . '_NAME', YD_SIMPLECMS_NAME );
++            $this-&gt;assign( 'adminMenu',     YDSimpleCMS::getAdminMenu() );
++            if ( YDSimpleCMS::getCurrentUser() ) {
++                $this-&gt;assign( 'currentUser', YDSimpleCMS::getCurrentUser() );
++            }
++            $this-&gt;assign( 'currentScope', YDSimpleCMS::getScope() );
++
+             // Get the current scope
+             $scope = YDSimpleCMS::getScope();
+ 
+@@ -560,10 +574,10 @@
+ 
+             // Create the login form
+             $form = new YDForm( 'loginForm' );
+-            $form-&gt;addElement( 'text', 'loginName', t('username') );
+-            $form-&gt;addElement( 'password', 'loginPass', t('password') );
++            $form-&gt;addElement( 'text', 'loginName', t('username'), array( 'class'=&gt;'tfL' ) );
++            $form-&gt;addElement( 'password', 'loginPass', t('password'), array( 'class'=&gt;'tfL' ) );
+             $form-&gt;addElement( 'checkbox', 'loginRememberMe', t('remember_me') );
+-            $form-&gt;addElement( 'submit', 'cmdSubmit', 'Login' );
++            $form-&gt;addElement( 'submit', 'cmdSubmit', 'Login', array( 'class'=&gt;'button' ) );
+             $form-&gt;setDefault( 'loginRememberMe', true );
+ 
+             // Add the rules
+@@ -769,10 +783,6 @@
+         function display( $name='' ) {
+             $this-&gt;tpl-&gt;assign( 'currentAction', $this-&gt;currentAction );
+             $this-&gt;tpl-&gt;assign( 'currentScope',  $this-&gt;currentScope );
+-            $this-&gt;tpl-&gt;assign( 'adminMenu',     YDSimpleCMS::getAdminMenu() );
+-            if ( YDSimpleCMS::getCurrentUser() ) {
+-                $this-&gt;tpl-&gt;assign( 'currentUser', YDSimpleCMS::getCurrentUser() );
+-            }
+             $name = ( $name == '' ) ? $this-&gt;getModuleName() : $name;
+             $this-&gt;tpl-&gt;displayWithMaster( $name );
+         }
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl	2007-01-25 09:13:05 UTC (rev 2366)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl	2007-01-25 13:02:29 UTC (rev 2367)
+@@ -2,48 +2,80 @@
+ 
+ &lt;head&gt;
+ 
+-    &lt;title&gt;{$title}&lt;/title&gt;
++    &lt;title&gt;{$YD_SIMPLECMS_NAME}&lt;/title&gt;
+ 
+-    {literal}&lt;style&gt;
+-        td { vertical-align: top; }
+-    &lt;/style&gt;{/literal}
++    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;resources/YDSimpleCMS.css&quot; /&gt;
+ 
+ &lt;/head&gt;
+ 
+-&lt;body&gt;
++&lt;body marginwidth=&quot;0&quot; marginheight=&quot;0&quot; bgcolor=&quot;#FFFFFF&quot; bottommargin=&quot;0&quot; leftmargin=&quot;0&quot; rightmargin=&quot;0&quot; topmargin=&quot;0&quot;&gt;
+ 
+-    &lt;table width=&quot;100%&quot; border=&quot;1&quot;&gt;
+-    {if $currentUser}
+-        &lt;tr&gt;
+-            &lt;td colspan=&quot;2&quot;&gt;
+-                {$currentUser.name} | &lt;a href=&quot;{$YD_SELF_SCRIPT}?module=admin&amp;action=logout&quot;&gt;{t w=&quot;logout&quot;}&lt;/a&gt;
+-            &lt;/td&gt;
+-        &lt;/tr&gt;
+-    {/if}
++    &lt;table width=&quot;100%&quot; height=&quot;100%&quot; cellspacing=&quot;0&quot; cellpadding=&quot;18&quot; border=&quot;0&quot;&gt;
+     &lt;tr&gt;
+-        &lt;td width=&quot;240&quot;&gt;
++        &lt;td class=&quot;topRow&quot; colspan=&quot;2&quot;&gt;
++            &lt;p class=&quot;title&quot;&gt;{$YD_SIMPLECMS_NAME}&lt;/p&gt;
++        &lt;/td&gt;
++    &lt;/tr&gt;
++    &lt;tr&gt;
++        &lt;td class=&quot;langRowL&quot;&gt;
++            &lt;p class=&quot;langRow&quot;&gt;
++                &nbsp;
++            &lt;/p&gt;
++        &lt;/td&gt;
++        &lt;td class=&quot;langRowR&quot;&gt;
++            &lt;p class=&quot;langRow&quot;&gt;
++                {if $currentUser}
++                    {$currentUser.name}
++                    [
++                    &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=logout&quot; class=&quot;langRow&quot;&gt;{t w=&quot;logout&quot;}&lt;/a&gt;
++                    |
++                    &lt;a href=&quot;index.php&quot; class=&quot;langRow&quot;&gt;{t w=&quot;view_site&quot;}&lt;/a&gt;
++                    ]
++                {else}
++                    &nbsp;
++                {/if}
++            &lt;/p&gt;
++        &lt;/td&gt;
++    &lt;/tr&gt;
++    &lt;tr&gt;
++        &lt;td class=&quot;leftCol&quot;&gt;
+             {if $currentUser}
++                &lt;table width=&quot;100%&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+                 {foreach from=$adminMenu item=&quot;menuItem&quot;}
+-                    &lt;p&gt;
+-                        {if $menuItem.url}
+-                            &lt;a href=&quot;{$menuItem.url}&quot;&gt;&lt;b&gt;{$menuItem.title}&lt;/b&gt;&lt;/a&gt;
+-                        {else}
+-                            &lt;b&gt;{$menuItem.title}&lt;/b&gt;
+-                        {/if}
+-                        {foreach from=$menuItem.children item=&quot;menuSubItem&quot;}
+-                            &lt;br/&gt;
+-                            {if $menuSubItem.url}
+-                                &lt;a href=&quot;{$menuSubItem.url}&quot;&gt;{$menuSubItem.title}&lt;/a&gt;
++                &lt;tr&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        &lt;p&gt;
++                            {if $menuItem.url}
++                                &lt;a href=&quot;{$menuItem.url}&quot;&gt;&lt;b&gt;{$menuItem.title}&lt;/b&gt;&lt;/a&gt;
+                             {else}
+-                                {$menuSubItem.title}
++                                &lt;b&gt;{$menuItem.title}&lt;/b&gt;
+                             {/if}
+-                        {/foreach}
+-                    &lt;/p&gt;
++                            {foreach from=$menuItem.children item=&quot;menuSubItem&quot;}
++                                &lt;br/&gt;
++                                {if $menuSubItem.url}
++                                    &lt;a href=&quot;{$menuSubItem.url}&quot;&gt;{$menuSubItem.title}&lt;/a&gt;
++                                {else}
++                                    {$menuSubItem.title}
++                                {/if}
++                            {/foreach}
++                        &lt;/p&gt;
++                    &lt;/td&gt;
++                &lt;/tr&gt;
+                 {/foreach}
++                &lt;/table&gt;
++            {else}
++                &nbsp;
+             {/if}
+         &lt;/td&gt;
+-        &lt;td&gt;
++        &lt;td align=&quot;left&quot; valign=&quot;top&quot;&gt;
+             ##content##
++            &lt;p class=&quot;subline&quot;&gt;
++                &amp;nbsp&lt;br/&gt;
++                {t w=&quot;powered_by&quot;} &lt;a href=&quot;{$YD_FW_HOMEPAGE}&quot; class=&quot;subline&quot; target=&quot;_blank&quot;&gt;{$YD_FW_NAME}&lt;/a&gt;
++                {t w=&quot;version&quot;} {$YD_FW_VERSION}.
++                &lt;br/&gt;
++                {$YD_FW_COPYRIGHT}
++            &lt;/p&gt;
+         &lt;/td&gt;
+     &lt;/tr&gt;
+     &lt;/table&gt;
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl	2007-01-25 09:13:05 UTC (rev 2366)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/admin.tpl	2007-01-25 13:02:29 UTC (rev 2367)
+@@ -1,22 +1,6 @@
+ {if $currentAction == 'show'}
+     &lt;h1&gt;Admin Home&lt;/h1&gt;
+-    {foreach from=$adminMenu item=&quot;menuItem&quot;}
+-        &lt;p&gt;
+-            {if $menuItem.url}
+-                &lt;a href=&quot;{$menuItem.url}&quot;&gt;&lt;b&gt;{$menuItem.title}&lt;/b&gt;&lt;/a&gt;
+-            {else}
+-                &lt;b&gt;{$menuItem.title}&lt;/b&gt;
+-            {/if}
+-            {foreach from=$menuItem.children item=&quot;menuSubItem&quot;}
+-                &lt;br/&gt;
+-                {if $menuSubItem.url}
+-                    &lt;a href=&quot;{$menuSubItem.url}&quot;&gt;{$menuSubItem.title}&lt;/a&gt;
+-                {else}
+-                    {$menuSubItem.title}
+-                {/if}
+-            {/foreach}
+-        &lt;/p&gt;
+-    {/foreach}
++    &lt;p&gt;Welcome&lt;/p&gt;
+ {/if}
+ 
+ {if $currentAction == 'modules'}
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl	2007-01-25 09:13:05 UTC (rev 2366)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/login.tpl	2007-01-25 13:02:29 UTC (rev 2367)
+@@ -1,7 +1,7 @@
+ &lt;h1&gt;{t w=&quot;please_login&quot;}&lt;/h1&gt;
+ 
+ {if $form.errors}
+-    &lt;p style=&quot;color: red&quot;&gt;
++    &lt;p class=&quot;error&quot;&gt;
+         {foreach from=$form.errors item=error}
+             {$error}&lt;br&gt;
+         {/foreach}
+@@ -9,21 +9,24 @@
+ {/if}
+ 
+ {$form.tag}
+-    &lt;p&gt;
+-        {$form.loginName.label}
+-        &lt;br&gt;
+-        {$form.loginName.html}
+-    &lt;/p&gt;
+-    &lt;p&gt;
+-        {$form.loginPass.label}
+-        &lt;br&gt;
+-        {$form.loginPass.html}
+-    &lt;/p&gt;
+-    &lt;p&gt;
+-        {$form.loginRememberMe.html}
+-        {$form.loginRememberMe.label}
+-    &lt;/p&gt;
+-    &lt;p&gt;
+-        {$form.cmdSubmit.html}
+-    &lt;/p&gt;
++    &lt;table width=&quot;480&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
++        &lt;tr&gt;
++            &lt;th class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;
++                {t w=&quot;please_login&quot;}
++            &lt;/th&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;160&quot;&gt;{$form.loginName.label}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;320&quot;&gt;{$form.loginName.html}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{$form.loginPass.label}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{$form.loginPass.html}&lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;&nbsp;&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{$form.loginRememberMe.html} {$form.loginRememberMe.label}&lt;/td&gt;
++        &lt;/tr&gt;
++    &lt;/table&gt;
++    &lt;p&gt;{$form.cmdSubmit.html}&lt;/p&gt;
+ {$form.endtag}
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl	2007-01-25 09:13:05 UTC (rev 2366)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl	2007-01-25 13:02:29 UTC (rev 2367)
+@@ -7,6 +7,9 @@
+ &lt;/head&gt;
+ 
+ &lt;body&gt;
++    {if $currentScope eq YD_SIMPLECMS_SCOPE_PUBLIC}
++        &lt;a href=&quot;admin.php&quot; class=&quot;langRow&quot;&gt;administer site&lt;/a&gt;
++    {/if}
+     {if $currentUser}
+         &lt;p&gt;
+             {$currentUser.name} | &lt;a href=&quot;{$YD_SELF_SCRIPT}?action=logout&quot;&gt;{t w=&quot;logout&quot;}&lt;/a&gt;
+
+Added: YDFramework2.0/trunk/examples/simplecms/resources/YDSimpleCMS.css
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/resources/YDSimpleCMS.css	2007-01-25 09:13:05 UTC (rev 2366)
++++ YDFramework2.0/trunk/examples/simplecms/resources/YDSimpleCMS.css	2007-01-25 13:02:29 UTC (rev 2367)
+@@ -0,0 +1,38 @@
++SELECT, INPUT, TEXTAREA, BODY, P, .normal, LI, TD	{
++	font-family: Georgia, Arial, Helvetica, Geneva, Swiss, Verdana;
++}
++body, p, .normal, li, td, th, h2	{ color: #000031; font-size: 10pt; line-height: 16pt; }
++h2 { font-weight: bold; }
++a			{ color: #000066; text-decoration: underline; font-weight: normal; cursor: pointer; }
++.image	{ border:1px; border-color: #000066; color: #000066; border-style: solid; }
++p.title, h1	{ font-size: 150%; font-weight: normal; color: darkred; }
++.subline	{ color: gray; font-size: 8pt; }
++.disabled	{ color: gray; }
++.error		{ color: red; font-weight: bold; }
++input.tfS	{ width: 30px; }
++input.tfL	{ width: 320px; }
++input.tfM	{ width: 100%; }
++textarea.taM	{ width: 100%; height: 200px; }
++textarea.bbtextarea	{ width: 660; height: 250px; font-family: &quot;Lucida Sans Typewriter&quot;, &quot;Andale Mono&quot;, &quot;Courier New&quot;, &quot;Courier&quot;; font-size: 9pt; }
++td.bbtoolbar	{ background-color: #EEEEEE; }
++select.tfS	{ width: 200px; }
++select.tfM	{ width: 100%; }
++input.button	{ width: 120px; color: white; background-color: darkred; font-weight: bold; }
++td, th	{ vertical-align: top }
++th	{ font-weight: bold; }
++td.adminRowL, th.adminRowL	{ border-bottom: 1px solid #DDDDDD; padding-top: 4px; padding-bottom: 4px; text-align: left; }
++td.adminRowC, th.adminRowC	{ border-bottom: 1px solid #DDDDDD; padding-top: 4px; padding-bottom: 4px; text-align: center; }
++td.adminRowR, th.adminRowR	{ border-bottom: 1px solid #DDDDDD; padding-top: 4px; padding-bottom: 4px; text-align: right; }
++table	{ border-width: 0px; }
++td.topRow	{ background-color: #CCCCCC; padding-bottom: 8px; }
++p.langRow, a.langRow	{ color: white; }
++td.langRowL	{ background-color: darkred; padding-top: 2px; padding-bottom: 2px; padding-right: 0px; text-align: left; }
++td.langRowR	{ background-color: darkred; padding-top: 2px; padding-bottom: 2px; padding-left: 0px; text-align: right; }
++td.langRowE	{ background-color: #000066; padding: 2px; padding-left: 4px; }
++td.leftCol	{ background-color: #EEEEEE; width: 200px; height: 100%; }
++table.adminGraph	{ background-color: darkred; }
++a.leftColSelected	{ color: darkred; font-weight: bold; }
++a.leftColUnselected	{ font-weight: bold; }
++a.yes	{ color: green; }
++a.no	{ color: red; }
++a.helpLink	{ cursor: pointer; }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000959.html">[ydf-devel] r2366 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000961.html">[ydf-devel] r2368 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#960">[ date ]</a>
+              <a href="thread.html#960">[ thread ]</a>
+              <a href="subject.html#960">[ subject ]</a>
+              <a href="author.html#960">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2357 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2357%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701241413.l0OEDfM3025944%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000949.html">
+   <LINK REL="Next"  HREF="000951.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2357 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2357%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701241413.l0OEDfM3025944%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2357 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Jan 24 15:13:41 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000949.html">[ydf-devel] r2356 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples
+</A></li>
+        <LI>Next message: <A HREF="000951.html">[ydf-devel] r2358 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#950">[ date ]</a>
+              <a href="thread.html#950">[ thread ]</a>
+              <a href="subject.html#950">[ subject ]</a>
+              <a href="author.html#950">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-24 15:13:33 +0100 (Wed, 24 Jan 2007)
+New Revision: 2357
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+Log:
+Added some more docstrings to YDSimpleCMS.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-24 14:12:42 UTC (rev 2356)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-24 14:13:33 UTC (rev 2357)
+@@ -22,6 +22,16 @@
+     */
+ 
+     /**
++     *  @todo
++     *      Add multiple levels of templates so that you can have default templates which can be overridden (ala cakephp)
++     *
++     *  @todo
++     *      Add configuration option to define the error handling function. By default, it should just render an _error
++     *      template with the debug stacktrace and so on. By overridding the template, you can customize it.
++     *
++     *  @todo
++     *      Add options to supply multiple templates for each object type (e.g. page.tpl, page_homepage.tpl, ...)
++     *
+      *  @addtogroup YDSimpleCMS Addons - Simple CMS
+      */
+ 
+@@ -121,7 +131,7 @@
+         /**
+          *  This is a static function that will run a request.
+          *
+-         *  @param  $scope  The scope in which the request needs to run. You can choose between 
++         *  @param  $scope  The scope in which the request needs to run. You can choose between
+          *                  YD_SIMPLECMS_SCOPE_PUBLIC and YD_SIMPLECMS_SCOPE_ADMIN. If you choose
+          *                  YD_SIMPLECMS_SCOPE_ADMIN, authentication will be enforced, with YD_SIMPLECMS_SCOPE_PUBLIC,
+          *                  it's not.
+@@ -294,7 +304,7 @@
+             return $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME][$var];
+ 
+         }
+-        
++
+         /**
+          *  This function sets a YDSimpleCMS variable.
+          *
+@@ -342,7 +352,7 @@
+ 
+             // Get the current scope
+             $scope = YDSimpleCMS::getScope();
+-            
++
+             // Set the variables
+             $this-&gt;template_dir = YD_SIMPLECMS_SKINS_DIR . $scope;
+             if ( $scope == YD_SIMPLECMS_SCOPE_PUBLIC ) {
+@@ -378,7 +388,7 @@
+         }
+ 
+     }
+-    
++
+     /**
+      *  Define the SimpleCMS request class. This is the base classes for all requests in the framework.
+      *
+@@ -407,7 +417,7 @@
+ 
+             // Initialize the parent
+             $this-&gt;YDRequest();
+-            
++
+             // Setup the default module based on the current scope
+             if ( YDSimpleCMS::getScope() == YD_SIMPLECMS_SCOPE_PUBLIC ) {
+                 $this-&gt;defaultModule = 'page';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000949.html">[ydf-devel] r2356 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples
+</A></li>
+	<LI>Next message: <A HREF="000951.html">[ydf-devel] r2358 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#950">[ date ]</a>
+              <a href="thread.html#950">[ thread ]</a>
+              <a href="subject.html#950">[ subject ]</a>
+              <a href="author.html#950">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

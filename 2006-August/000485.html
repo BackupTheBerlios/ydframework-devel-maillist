@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] child elements of non-block elements need to be wrapped	by div if modified using YDAjax::addResult()
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20child%20elements%20of%20non-block%20elements%20need%20to%20be%20wrapped%0A%09by%20div%20if%20modified%20using%20YDAjax%3A%3AaddResult%28%29&In-Reply-To=%3C20060806144521.71102.qmail%40web54009.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000484.html">
+   <LINK REL="Next"  HREF="000486.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] child elements of non-block elements need to be wrapped	by div if modified using YDAjax::addResult()</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20child%20elements%20of%20non-block%20elements%20need%20to%20be%20wrapped%0A%09by%20div%20if%20modified%20using%20YDAjax%3A%3AaddResult%28%29&In-Reply-To=%3C20060806144521.71102.qmail%40web54009.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] child elements of non-block elements need to be wrapped	by div if modified using YDAjax::addResult()">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Sun Aug  6 16:45:21 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000484.html">[ydf-devel] r1981 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000486.html">[ydf-devel] child elements of non-block elements need to be wrapped by div if modified using YDAjax::addResult()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#485">[ date ]</a>
+              <a href="thread.html#485">[ thread ]</a>
+              <a href="subject.html#485">[ subject ]</a>
+              <a href="author.html#485">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Hi,
+
+I was having a great deal of trouble with YDajax powered formscontaining &quot;span&quot; elements that need to modified usingYDAjax::addResult. The top two elements of my YDAjax-based forms werespans with ids &quot;section_title&quot; and &quot;section_errors&quot;. The formprocessing of each form updates the span &quot;section_errors&quot; with yes-noconfirmation buttons, status or error messages using YDAjax::addResult.
+
+The problem was that the &quot;section_errors&quot; element was not beingmodified in IE. Once I worked out how to activate the xajax debuggervia YellowDuck config variable, I found that IE was generating theerror &quot;Unknown Runtime Error&quot;. After some fiddly debugging and researchI found this hint at the cause of the problem: <A HREF="http://integralpath.blogs.com/thinkingoutloud/2006/03/innerhtml_and_n.html">http://integralpath.blogs.com/thinkingoutloud/2006/03/innerhtml_and_n.html</A>
+
+The eventual solution was to convert the span form elements to div(i.e. block) elements since they are contained within a form which is anon-block element. The current build of YellowDuck does not support&quot;div&quot; elements. This is fixed by copying the following methods from&quot;YDFormElement_Span&quot; to &quot;YDFormElement_Div&quot;.
+
+        /**
+         *    This function returns the default javascript event ofthis element
+         */
+        function getJSEvent(){ 
+
+            return 'onclick';
+        }
+
+
+        /**
+         *    This function gets an element value using javascript
+         *
+         *    @param $options        (optional) The options for theelment.
+         */
+        function getJS( $options = null ){ 
+
+            // return js code
+            return 'return document.getElementById(&quot;' .$this-&gt;getAttribute('id') . '&quot;).innerHTML;';
+        }
+
+
+        /**
+         *    This function sets an element value using javascript
+         *
+         *    @param $result        The result value
+         *    @param $attribute    (optional) Element attribute
+         *    @param $options        (optional) The options for theelment.
+         */
+        function setJS( $result, $attribute = null, $options = null ){ 
+
+            // if atribute event is not defined we must create adefault one
+            if (is_null( $attribute )) $attribute = 'innerHTML';
+
+            // if result is an array we should export to a valid jsstring
+            if (is_array( $result )) $result = str_replace( &quot;\n&quot;,&quot;&lt;br&gt;&quot;, var_export( $result, true ) ) ;
+
+            // assign result to form element using the id
+            return 'document.getElementById(&quot;' .$this-&gt;getAttribute( 'id' ) . '&quot;).' . $attribute . ' = &quot;' . $result. '&quot;;';
+        }
+
+Now that I have made the change in YDFormElement_Div, my ajax-poweredforms are working. Ihave checked this in Firefox 1.5.0.2, IE 6.0, IE 7.0 (Beta 3), Safari2.0.2 and Opera 9.01. It works in all of these browsers, however I amhaving a problem with Opera duplicating some content generated viaYDajax (a problem for another day).
+
+Regards,
+
+Graeme
+
+
+ 		
+---------------------------------
+Do you Yahoo!?
+ Get on board. You're invited to try the new Yahoo! Mail Beta.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060806/c1246ef0/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060806/c1246ef0/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000484.html">[ydf-devel] r1981 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000486.html">[ydf-devel] child elements of non-block elements need to be wrapped by div if modified using YDAjax::addResult()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#485">[ date ]</a>
+              <a href="thread.html#485">[ thread ]</a>
+              <a href="subject.html#485">[ subject ]</a>
+              <a href="author.html#485">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2122 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2122%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples&In-Reply-To=%3C200609130850.k8D8oRxn008387%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000640.html">
+   <LINK REL="Next"  HREF="000642.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2122 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2122%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%0A%09examples&In-Reply-To=%3C200609130850.k8D8oRxn008387%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2122 - in YDFramework2.0/trunk: YDFramework2/YDClasses	examples">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Sep 13 10:50:27 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000640.html">[ydf-devel] r2121 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000642.html">[ydf-devel] r2123 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#641">[ date ]</a>
+              <a href="thread.html#641">[ thread ]</a>
+              <a href="subject.html#641">[ subject ]</a>
+              <a href="author.html#641">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-13 10:50:26 +0200 (Wed, 13 Sep 2006)
+New Revision: 2122
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/examples/database1.php
+Log:
+Added YDDatabaseDriver::prepareSql.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-09-13 08:31:28 UTC (rev 2121)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-09-13 08:50:26 UTC (rev 2122)
+@@ -1066,6 +1066,58 @@
+         }
+ 
+         /**
++         *  Function to prepare an SQL statement with parameters. The parameters start counting from 1.
++         
++         *  This works as follows:
++         *
++         *  \code
++         *  $sql = 'SELECT * FROM comments WHERE id = :1 and author = :2'
++         *  \endcode
++         *
++         *  After a function call as follows:
++         *
++         *  \code
++         *  prepareSql( $sql, 1, 'Pieter Claerhout' );
++         *  \endcode
++         *
++         *  The SQL statement becomes:
++         *
++         *  \code
++         *  SELECT * FROM comments WHERE id = '1' and author = 'Pieter Claerhout'
++         *  \endcode
++         *
++         *  All the arguments are automatically escaped.
++         *
++         *  @returns A prepared SQL statement
++         */
++        function prepareSql() {
++
++            // Check that we have at least one argument (the SQL statement)
++            $numargs = func_num_args();
++            if ( $numargs &lt; 1 ) {
++                trigger_error( &quot;The function prepareSql needs at least 1 parameter.&quot;, YD_ERROR );
++            }
++
++            // Get the list of arguments
++            $args = func_get_args();
++
++            // First element is the SQL statement itself
++            $sql = array_shift( $args );
++
++            // Reset the indexes on the arguments
++            $args = array_values( $args );
++
++            // Update the SQL statement
++            foreach ( $args as $key =&gt; $arg ) {
++                $sql = str_replace( ':' . ($key+1), $this-&gt;escapeSql( $arg ), $sql );
++            }
++
++            // Return the SQL statement
++            return $sql;
++
++        }
++
++        /**
+          *  Format the $date in the format the database accepts. The $date parameter can be a Unix integer timestamp or
+          *  an ISO format Y-m-d. Uses the fmtDate field, which holds the format to use. If null or false or '' is passed
+          *  in, it will be converted to an SQL null.
+
+Modified: YDFramework2.0/trunk/examples/database1.php
+===================================================================
+--- YDFramework2.0/trunk/examples/database1.php	2006-09-13 08:31:28 UTC (rev 2121)
++++ YDFramework2.0/trunk/examples/database1.php	2006-09-13 08:50:26 UTC (rev 2122)
+@@ -33,6 +33,12 @@
+ 
+             // Test string escaping
+             YDDebugUtil::dump( $db-&gt;escape( &quot;Pieter's Framework&quot; ), '$db-&gt;escape' );
++            YDDebugUtil::dump(
++                $db-&gt;prepareSql(
++                    'SELECT * FROM comments WHERE id = :1 and author = :2', 1, &quot;Pieter's Author&quot;
++                ),
++                '$db-&gt;prepareSql'
++            );
+ 
+             // Test timestamps
+             YDDebugUtil::dump( $db-&gt;getDate(), 'getDate()' );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000640.html">[ydf-devel] r2121 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000642.html">[ydf-devel] r2123 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#641">[ date ]</a>
+              <a href="thread.html#641">[ thread ]</a>
+              <a href="subject.html#641">[ subject ]</a>
+              <a href="author.html#641">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

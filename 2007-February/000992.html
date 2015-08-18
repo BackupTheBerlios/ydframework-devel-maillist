@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2398 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2398%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200702072331.l17NVCEY009286%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000991.html">
+   <LINK REL="Next"  HREF="000993.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2398 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2398%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200702072331.l17NVCEY009286%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2398 - YDFramework2.0/trunk/YDFramework2">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Feb  8 00:31:12 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000991.html">[ydf-devel] r2397 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000993.html">[ydf-devel] r2399 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#992">[ date ]</a>
+              <a href="thread.html#992">[ thread ]</a>
+              <a href="subject.html#992">[ subject ]</a>
+              <a href="author.html#992">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-02-08 00:30:53 +0100 (Thu, 08 Feb 2007)
+New Revision: 2398
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+better gettext reg expression for t()
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-02-07 23:27:51 UTC (rev 2397)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-02-07 23:30:53 UTC (rev 2398)
+@@ -305,8 +305,8 @@
+         }
+ 
+ 		// check gettext patern
+-		if ( ereg ( &quot;^\_\([\'\&quot;](.*)[\'\&quot;]\)$&quot;, $t, $res ) ){
+-			$out = gettext( $res[1] );
++		if ( preg_match ( &quot;/^\_\((\&quot;|.{2})(.+)(\&quot;|.{2})\)$/&quot;, $t, $res ) ){
++			$out = gettext( $res[2] );
+ 		}else{
+ 			$t = strtolower( $t );
+ 			$out = ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;#$t#&quot; );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000991.html">[ydf-devel] r2397 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000993.html">[ydf-devel] r2399 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#992">[ date ]</a>
+              <a href="thread.html#992">[ thread ]</a>
+              <a href="subject.html#992">[ subject ]</a>
+              <a href="author.html#992">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

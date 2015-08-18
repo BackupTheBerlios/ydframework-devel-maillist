@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseObject indirect relations
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject%20indirect%20relations&In-Reply-To=%3C12260be20602181504p35c5af88ga6276069057996a3%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000101.html">
+   <LINK REL="Next"  HREF="000103.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseObject indirect relations</H1>
+    <B>David Bittencourt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject%20indirect%20relations&In-Reply-To=%3C12260be20602181504p35c5af88ga6276069057996a3%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] YDDatabaseObject indirect relations">muitocomplicado at gmail.com
+       </A><BR>
+    <I>Sun Feb 19 00:04:32 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000101.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+        <LI>Next message: <A HREF="000103.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#102">[ date ]</a>
+              <a href="thread.html#102">[ thread ]</a>
+              <a href="subject.html#102">[ subject ]</a>
+              <a href="author.html#102">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>The class can't do this the way you are doing.
+
+Another way is treating the people table as a cross table using a
+many-to-many relation.
+
+$rel =&amp; $this-&gt;registerRelation( 'people_car', true, 'car', 'people' );
+$rel-&gt;setLocalKey( 'id_people' );
+$rel-&gt;setCrossLocalKey( 'id_people' );
+$rel-&gt;setCrossForeignKey( 'id_car' );
+$rel-&gt;setForeignKey( 'id_car' );
+$rel-&gt;setCrossVar( 'people' );
+$rel-&gt;setForeignVar( 'car' );
+
+$phone = YDDatabaseObject::getInstance( 'Phones' );
+
+$phone-&gt;load( 'people_car' );
+$phone-&gt;people-&gt;beautiful = 1;
+$phone-&gt;car-&gt;active = 1;
+
+$phone-&gt;find( 'people_car' );
+
+The structure in the object isn't exactly the structure described, but does
+the trick.
+
+-db
+
+
+On 2/18/06, Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Hi
+</I>&gt;<i>
+</I>&gt;<i> Imagine this &quot;strange&quot; example: I have an db scheme that have 3 tables:
+</I>&gt;<i> Cars, People, Phones.
+</I>&gt;<i> Table Cars has:  id_car (int key), description (string), active (0 or 1)
+</I>&gt;<i> Table People has:  id_people (int key), id_car (points to table Cars),
+</I>&gt;<i> name (string), beautiful (0 or 1)
+</I>&gt;<i> Table Phones has:  id_phone (int key), id_people  (points to table
+</I>&gt;<i> People), description (string)
+</I>&gt;<i>
+</I>&gt;<i> This means that: we can define phones, each phone belongs to just one
+</I>&gt;<i> person, each person belongs to one car and each car can be active or not.
+</I>&gt;<i>
+</I>&gt;<i> So we have the next relations:
+</I>&gt;<i>
+</I>&gt;<i> relation &quot;phone&quot; in class Phones and in class People:
+</I>&gt;<i> * Table Phones (id_phone) &lt;-----&gt; Table People (id_people)
+</I>&gt;<i>
+</I>&gt;<i> relation &quot;car&quot; in class People and class Cars:
+</I>&gt;<i> * Table People (id_people) -----&gt; Table Cars (id_car)
+</I>&gt;<i>
+</I>&gt;<i> Now, how can we get all Phones that belong to beautiful persons that are
+</I>&gt;<i> in an &quot;active&quot; cars?
+</I>&gt;<i>
+</I>&gt;<i> I have tryied the next solution, but YDDatabaseObject seems ignoring
+</I>&gt;<i> relations that are indirectly connected to Phones table:
+</I>&gt;<i>
+</I>&gt;<i> $phone = YDDatabaseObject::getInstance( 'Phones' );
+</I>&gt;<i>
+</I>&gt;<i> $phone-&gt;load('people');
+</I>&gt;<i> $phone-&gt;people-&gt;beautiful = 1;
+</I>&gt;<i> $phone-&gt;people-&gt;load('car');
+</I>&gt;<i> $phone-&gt;people-&gt;car-&gt;active = 1;
+</I>&gt;<i>
+</I>&gt;<i> $phone-&gt;findAll();
+</I>&gt;<i>
+</I>&gt;<i> Is this possible or just a bug?
+</I>&gt;<i>
+</I>&gt;<i> Francisco Azevedo
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060218/c2ae4f64/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060218/c2ae4f64/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000101.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+	<LI>Next message: <A HREF="000103.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#102">[ date ]</a>
+              <a href="thread.html#102">[ thread ]</a>
+              <a href="subject.html#102">[ subject ]</a>
+              <a href="author.html#102">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

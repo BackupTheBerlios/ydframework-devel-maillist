@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2022 -	YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2022%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump&In-Reply-To=%3C200608161511.k7GFBMln000410%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000528.html">
+   <LINK REL="Next"  HREF="000530.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2022 -	YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2022%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump&In-Reply-To=%3C200608161511.k7GFBMln000410%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2022 -	YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 16 17:11:22 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000528.html">[ydf-devel] r2021 - in YDFramework2.0/trunk/YDFramework2: YDClasses	YDClasses/YDCMComponent addons/YDCMLink addons/YDCMPage
+</A></li>
+        <LI>Next message: <A HREF="000530.html">[ydf-devel] r2023 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#529">[ date ]</a>
+              <a href="thread.html#529">[ thread ]</a>
+              <a href="subject.html#529">[ subject ]</a>
+              <a href="author.html#529">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-16 17:11:22 +0200 (Wed, 16 Aug 2006)
+New Revision: 2022
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+Log:
+The default characterset is now no longer included in the mysql database exports as it fails the import on some systems.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-08-16 09:52:56 UTC (rev 2021)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-08-16 15:11:22 UTC (rev 2022)
+@@ -199,15 +199,39 @@
+             // get creation statement of a specific table
+             $record = $this-&gt;dbinstance-&gt;getRecord( &quot;SHOW CREATE TABLE `&quot;. $table . &quot;`&quot; );
+ 
+-            $content = $record['create table'] . $separator;
++            // Get the statement
++            $content = $record['create table'];
++
++            // Strip out the default character set (as it fails the import on some systems).
++            $pos = strpos( $content, ' DEFAULT CHARSET=' );
++            if ( $pos !== false ) {
++                $content = substr( $content, 0, $pos );
++            }
++
++            // Add the separator
++            $content = $content . $separator;
+             
+             // return only the statement
+             if (!$this-&gt;useComments) return $content;
+ 
+             return &quot;\n\n--\n-- Table struture of '&quot;. $table .&quot;'\n--\n\n&quot;. $content;
+         } 
+-      
++
+         /**
++         *  Helper function to strip a piece of text from the end of a table
++         *
++         *  @param  $text   The text to strip from
++         *  @param  $strip  The text to strip
++         */
++        function _stripFromEnd( $text, $strip ) {
++            $pos = strpos( $text, strip );
++            if ( $pos !== false ) {
++                $text = substr( $text, 0, $pos );
++            }
++            return $text;
++        }
++
++        /**
+          *  This function returns all insert statements as a string for each row of a table
+          *
+          *  @param $table       Table name
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000528.html">[ydf-devel] r2021 - in YDFramework2.0/trunk/YDFramework2: YDClasses	YDClasses/YDCMComponent addons/YDCMLink addons/YDCMPage
+</A></li>
+	<LI>Next message: <A HREF="000530.html">[ydf-devel] r2023 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#529">[ date ]</a>
+              <a href="thread.html#529">[ thread ]</a>
+              <a href="subject.html#529">[ subject ]</a>
+              <a href="author.html#529">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

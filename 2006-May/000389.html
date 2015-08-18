@@ -1,0 +1,1203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1924 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent YDCMComponent/languages YDCMComponent/languages/YDCMUsers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1924%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDCMComponent%20YDCMComponent/languages%20YDCMComponent/languages/YDCMUsers&In-Reply-To=%3C200605090944.k499iUOh030792%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000394.html">
+   <LINK REL="Next"  HREF="000390.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1924 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent YDCMComponent/languages YDCMComponent/languages/YDCMUsers</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1924%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDCMComponent%20YDCMComponent/languages%20YDCMComponent/languages/YDCMUsers&In-Reply-To=%3C200605090944.k499iUOh030792%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1924 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent YDCMComponent/languages YDCMComponent/languages/YDCMUsers">ximian at berlios.de
+       </A><BR>
+    <I>Tue May  9 11:44:30 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000394.html">[ydf-devel] YDF Weblog
+</A></li>
+        <LI>Next message: <A HREF="000390.html">[ydf-devel] r1925 - YDFramework2.0/trunk/YDFramework2/addons/YDCMPage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#389">[ date ]</a>
+              <a href="thread.html#389">[ thread ]</a>
+              <a href="subject.html#389">[ subject ]</a>
+              <a href="author.html#389">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-09 11:43:55 +0200 (Tue, 09 May 2006)
+New Revision: 1924
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMAudit.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLanguages.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTemplates.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php
+Removed:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMAudit/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLanguages/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTemplates/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree/
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers/
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+Log:
+big YDCMComponent optimization. 
+- instead of including all modules we only define the path to include them only when needed
+- new static method to get internal YDCMComponent modules
+- generic translations are part of YDCMComponent instead of YDCMLanguages
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMAudit.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMAudit.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMAudit.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,60 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    class YDCMAudit extends YDDatabaseObject {
++    
++        function YDCMAudit() {
++        
++			// init database object
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMAudit' );
++
++            // register custom key
++            $this-&gt;registerKey( 'audit_id', true );
++
++            // register custom fields
++			$this-&gt;registerField( 'user_id' );
++			$this-&gt;registerField( 'date' );
++			$this-&gt;registerField( 'object' );
++			$this-&gt;registerField( 'object_action' );
++			$this-&gt;registerField( 'object_id' );
++
++			// register custom relation
++            $relUsers = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
++			$relUsers-&gt;setLocalKey( 'user_id' );
++            $relUsers-&gt;setForeignKey( 'user_id' );
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLanguages.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLanguages.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLanguages.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,99 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++
++    class YDCMLanguages extends YDDatabaseObject {
++
++        function YDCMLanguages() {
++        
++			// init DB object
++            $this-&gt;YDDatabaseObject();
++
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMLanguages' );
++
++            // define custom key
++            $this-&gt;registerKey( 'language_id', true );
++
++			// Fields
++			$this-&gt;registerField( 'name' );
++			$this-&gt;registerField( 'active' );
++			$this-&gt;registerField( 'visitors_default' );
++			$this-&gt;registerField( 'admin_default' );
++
++			// we don't have relations from here (just TO here, and we don't need to define that)
++		}
++
++
++        /**
++         *  This function returns all active languages
++         *
++         *  @returns    Array of languages, eg: array( 'en' =&gt; 'English', 'pt' =&gt; ... )
++         */
++		function active(){
++		
++			// reset values
++			$this-&gt;resetValues();
++
++			// we want only results where active is 1
++			$this-&gt;active = 1;
++
++			// find all languages
++			$this-&gt;find();
++
++			// return results as array
++			return $this-&gt;getResultsAsAssocArray( 'language_id', 'name' );
++		}
++
++
++        /**
++         *  This function returns the default language for content creation
++         *
++         *  @returns    Language code, eg: 'en'. or false
++         */
++		function adminDefault(){
++		
++			// reset values
++			$this-&gt;resetValues();
++
++			// we want the result where admin default is 1
++			$this-&gt;admin_default = 1;
++			$this-&gt;limit( 1 );
++			
++			// find language
++			if ( $this-&gt;find() == 1 ) return $this-&gt;language_id;
++			
++			return false;
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMLocks.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,58 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    class YDCMLocks extends YDDatabaseObject {
++    
++        function YDCMLocks() {
++        
++			// init component as non default
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMLocks' );
++
++            // register custom fields
++			$this-&gt;registerField( 'content_id' );
++			$this-&gt;registerField( 'user_id' );
++
++			// register custom relations
++            $relTree = &amp; $this-&gt;registerRelation( 'YDCMTree', false, 'YDCMTree' );
++			$relTree-&gt;setLocalKey( 'content_id' );
++            $relTree-&gt;setForeignKey( 'content_id' );
++
++            $relUsers = &amp; $this-&gt;registerRelation( 'YDCMUsers', false, 'YDCMUsers' );
++			$relUsers-&gt;setLocalKey( 'user_id' );
++            $relUsers-&gt;setForeignKey( 'user_id' );
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTemplates.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTemplates.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTemplates.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,160 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// set admin template directory (without template name directory)
++	YDConfig::set( 'YDCMTEMPLATES_ADMIN_PATH', YD_SELF_DIR, false );
++
++	// set admin template name
++	YDConfig::set( 'YDCMTEMPLATES_ADMIN_TEMPLATE', '', false );
++
++	// set visitors template directory (without template name directory)
++	YDConfig::set( 'YDCMTEMPLATES_VISITORS_PATH', YD_SELF_DIR, false );
++
++	// set visitors template name
++	YDConfig::set( 'YDCMTEMPLATES_VISITORS_TEMPLATE', '', false );
++
++	// set template pack ( a pH technology )
++	YDConfig::set( 'YDCMTEMPLATES_PACK', false, false );
++
++
++	// this is a very special component because don't have any DB table (that's way do not extends YDCMComponent)
++    class YDCMTemplates {
++
++        function YDCMTemplates() {
++        
++			$this-&gt;admin_path        = YDConfig::get( 'YDCMTEMPLATES_ADMIN_PATH' );
++			$this-&gt;admin_template    = YDConfig::get( 'YDCMTEMPLATES_ADMIN_TEMPLATE' );
++			$this-&gt;visitors_path     = YDConfig::get( 'YDCMTEMPLATES_VISITORS_PATH' );
++			$this-&gt;visitors_template = YDConfig::get( 'YDCMTEMPLATES_VISITORS_TEMPLATE' );
++			$this-&gt;template_pack     = YDConfig::get( 'YDCMTEMPLATES_PACK' );
++		}
++
++
++        /**
++         *  This function returns all possible templates for administration side
++         *
++         *  @returns    Associative array of templates, eg: array( 'Default' =&gt; 'Default', 'orange' =&gt; ... )
++         */
++		function admin_templates(){
++		
++			return $this-&gt;__getFiles( $this-&gt;admin_path );
++		}
++
++
++        /**
++         *  This function return the template name of administration side
++         *
++         *  @returns    Template name
++         */
++		function admin_template(){
++		
++			return $this-&gt;admin_template;
++		}
++
++
++        /**
++         *  This function return the full template path of administration side
++         *
++         *  @param $subdir  (Optional) template subdirectory
++         *
++         *  @returns    full path
++         */
++		function admin_complete( $subdir = '' ){
++		
++			return $this-&gt;admin_path . '/' . $this-&gt;admin_template . '/' . $subdir;
++		}
++
++
++        /**
++         *  This function return the template pack
++         *
++         *  @returns    full path
++         */
++		function template_pack(){
++		
++			return $this-&gt;template_pack;
++		}
++
++
++        /**
++         *  This function returns all possible templates for visitors side
++         *
++         *  @returns    Associative array of templates, eg: array( 'Default' =&gt; 'Default', 'orange' =&gt; ... )
++         */
++		function visitors_templates(){
++		
++			return $this-&gt;__getFiles( $this-&gt;visitors_path );
++		}
++
++
++        /**
++         *  This function return the template name of administration side
++         *
++         *  @returns    Template name
++         */
++		function visitors_template(){
++		
++			return $this-&gt;visitors_template;
++		}
++
++
++        /**
++         *  This function return the full template path of visitors side
++         *
++         *  @param $subdir  (Optional) template subdirectory
++         *
++         *  @returns    full path
++         */
++		function visitors_complete( $subdir = '' ){
++		
++			return $this-&gt;visitors_path . '/' . $this-&gt;visitors_template . '/' . $subdir;
++		}
++
++
++        /**
++         *  This private function returns all filenames of a directory
++         *
++         *  @returns    Array of filenames, eg: array( 'default' =&gt; 'Default', 'orange' =&gt; ... )
++         */
++		function __getFiles( $dir ){
++		
++			// init directories
++			$directories = array();
++
++			// init template directory
++			$dir = new YDFSDirectory( $dir );
++			
++			// compute directories array
++			foreach( $dir-&gt;getContents( '!.*', '', 'YDFSDirectory' ) as $d )
++				$directories[ $d ] = $d;
++
++			return $directories;
++		}
++
++    }
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,90 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++
++    class YDCMTree extends YDDatabaseObject {
++    
++        function YDCMTree() {
++        
++			// init component as non default
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMTree' );
++
++            // register custom key
++            $this-&gt;registerKey( 'content_id', true );
++
++			// register fields	
++			$this-&gt;registerField( 'parent_id' );
++			$this-&gt;registerField( 'type' );
++			$this-&gt;registerField( 'state' );
++			$this-&gt;registerField( 'reference' );
++			$this-&gt;registerField( 'access' );			
++			$this-&gt;registerField( 'searcheable' );			
++			$this-&gt;registerField( 'published_date_start' );
++			$this-&gt;registerField( 'published_date_end' );			
++			$this-&gt;registerField( 'candrag' );
++			$this-&gt;registerField( 'candrop' );
++		}
++
++
++        /**
++         *  This function checks if elements are valid drag&amp;dropable
++         *
++         *  @param $x  Id of dragable node
++         *
++         *  @param $y  Id of dropable node
++
++         *  @returns    false if elements are invalid, an associative array with node information
++         */
++		function getDragDropElements( $x, $y ){
++		
++			// check if elements are numeric
++			if ( !is_numeric( $x ) || !is_numeric( $y ) ) return false;
++		
++			// reset old values and get current table	
++			$this-&gt;resetValues();
++
++			// set custom where to get those 2 elements
++			$this-&gt;where( '((content_id = ' . intval( $x ) . ' AND candrag = 1) OR (content_id = ' . intval( $y ) . ' AND candrop = 1))' );
++
++			// we must get always 2 elements otherwise they were not valid
++			if ( $this-&gt;find() != 2 ) return false;
++
++			// return associative array
++			return $this-&gt;getResultsAsAssocArray( 'content_id' );
++		}
++
++
++	}
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,387 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// add local translation directory
++	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUsers/' );
++
++	// set user form name
++	YDConfig::set( 'YDCMUSERS_FORMUSER', 'YDCMUsersForm', false );
++
++	// set password form name
++	YDConfig::set( 'YDCMUSERS_FORMPASSWORD', 'YDCMUsersFormPassword', false );
++
++
++    class YDCMUsers extends YDDatabaseObject {
++    
++        function YDCMUsers() {
++        
++			// init DB object
++            $this-&gt;YDDatabaseObject();
++
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMUsers' );
++
++            // register custom key
++            $this-&gt;registerKey( 'user_id', true );
++
++			// register custom fields
++			$this-&gt;registerField( 'parent_id' );
++			$this-&gt;registerField( 'nleft' );
++			$this-&gt;registerField( 'nright' );
++			$this-&gt;registerField( 'nlevel' );
++			$this-&gt;registerField( 'username' );
++			$this-&gt;registerField( 'password' );
++			$this-&gt;registerField( 'name' );
++			$this-&gt;registerField( 'email' );			
++			$this-&gt;registerField( 'other' );			
++			$this-&gt;registerField( 'language_id' );
++			$this-&gt;registerField( 'state' );			
++			$this-&gt;registerField( 'login_start' );
++			$this-&gt;registerField( 'login_end' );
++			$this-&gt;registerField( 'login_counter' );			
++			$this-&gt;registerField( 'login_last' );
++			$this-&gt;registerField( 'login_current' );
++			$this-&gt;registerField( 'created_user' );
++			$this-&gt;registerField( 'created_date' );
++
++			// custom relations
++            $relLocks = &amp; $this-&gt;registerRelation( 'YDCMLocks', false, 'YDCMLocks' );
++			$relLocks-&gt;setLocalKey( 'user_id' );
++            $relLocks-&gt;setForeignKey( 'user_id' );
++			$relLocks-&gt;setForeignJoin( 'LEFT' );
++			
++            $relLanguages = &amp; $this-&gt;registerRelation( 'YDCMLanguages', false, 'YDCMLanguages' );
++			$relLanguages-&gt;setLocalKey( 'language_id' );
++            $relLanguages-&gt;setForeignKey( 'language_id' );
++
++			// setup tree (NOT USED YET)
++			$this-&gt;tree = new YDDatabaseTree( 'default', 'YDCMUsers', 'content_id', 'parent_id', 'parent_id' );
++		}
++
++
++        /**
++         *  This function returns the id of the current user
++         *
++         *  @returns    User id if user exists, false otherwise
++         */
++		function currentID(){
++		
++			// reset user values
++			$this-&gt;resetValues();
++		
++			// check if user is valid and get user id ( YDCMUsers::valid does it )
++			$valid = $this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
++
++			// if user is not valid we should return false
++			if ( $valid === false ) return false;
++
++			// return user id found
++			return $this-&gt;user_id;
++		}
++
++        /**
++         *  This function checks if a username and password are valid
++         *
++         *  @param $username  User username
++         *  @param $password  User password (if password length is smaller than 32 we must md5 it)
++         *
++         *  @returns    true if valid, false otherwise
++         */
++		function valid( $username = '', $password = '' ){
++
++			// teste username and password rules
++			if (!YDValidateRules::alphanumeric(	$username))			return false;
++			if (!YDValidateRules::maxlength(	$username, 100))	return false;
++			if (!YDValidateRules::alphanumeric(	$password))			return false;
++			if (!YDValidateRules::maxlength(	$password, 32))		return false;
++
++			// reset values
++			$this-&gt;resetValues();
++
++			// set username
++			$this-&gt;username = $username;
++
++			// if password is not in md5 format we must set it
++			if ( strlen( $password ) != 32 ) $password = md5( $password );
++
++			// set password
++			$this-&gt;password = $password;
++			
++			// check user state based on state and/or user login schedule
++			$now = YDStringUtil::formatDate( time(), 'datetimesql' );
++
++			$this-&gt;where( '(state = 1 OR (state = 2 AND login_start &lt; &quot;' . $now . '&quot; AND login_end &gt; &quot;' . $now . '&quot;))' );
++
++			// test if we get just one user
++			if ( $this-&gt;find() == 1 ) return true;
++
++			return false;
++		}
++		
++		
++        /**
++         *  This function updates the current user attributes (ignoring passwords and statistics)
++         *
++         *  @param $values  User attributes as array
++         *
++         *  @returns    true if updated, false if current user is not valid
++         */
++		function changeCurrentUser( $values ){
++		
++			$this-&gt;resetValues();
++
++			// check if user is valid
++			$valid = $this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
++
++			if ( $valid === false ) return false;
++
++			// reset values added from valid method
++			$this-&gt;resetValues();
++
++			// set new values
++			$this-&gt;name        = $values['name'];
++			$this-&gt;email       = $values['email'];
++			$this-&gt;other       = $values['other'];
++			$this-&gt;language_id = $values['language_id'];
++			$this-&gt;template    = $values['template'];
++
++			$this-&gt;where( 'username = &quot;' .      $_SERVER['PHP_AUTH_USER'] . '&quot;' );
++			$this-&gt;where( 'password = &quot;' . md5( $_SERVER['PHP_AUTH_PW'] ) . '&quot;' );
++
++			// return update result
++			if ( $this-&gt;update() == 1 ) return true;
++			
++			return false;
++		}
++
++
++        /**
++         *  This function updates the current user attributes (ignoring passwords and statistics) using form values
++         *
++         *  @param $formvalues  Array with user attributes
++         *
++         *  @returns    true if updated, array with form errors otherwise
++         */
++		function changeCurrentUserForm( $formvalues = array() ){
++
++			// get user YDForm object
++			$form = $this-&gt;getFormUser();
++
++			// check form validation
++			if ( !$form-&gt;validate( $formvalues ) )
++				return $form-&gt;getErrors();
++
++			return $this-&gt;changeCurrentUser( $form-&gt;getValues() );
++		}
++		
++
++        /**
++         *  This function return the user form
++         *
++         *  @returns    form object
++         */
++		function getFormUser(){
++
++			// include languages and templates lib
++			YDInclude( 'YDCMLanguages.php' );
++			YDInclude( 'YDCMTemplates.php' );
++
++			// create languages and templates object
++			$languages = new YDCMLanguages();
++			$templates = new YDCMTemplates();
++
++			// create form object
++            $form = new YDForm( YDConfig::get( 'YDCMUSERS_FORMUSER' ) );
++
++	        $form-&gt;addElement( 'span',      'username',     t('user_username') );
++            $form-&gt;addElement( 'text',      'name',         t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
++            $form-&gt;addElement( 'text',      'email',        t('user_email') );
++            $form-&gt;addElement( 'textarea',  'other',        t('user_other'),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
++            $form-&gt;addElement( 'select',    'language_id',  t('user_language'), array(), $languages-&gt;active() );
++            $form-&gt;addElement( 'select',    'template',     t('user_template'), array(), $templates-&gt;admin_templates() );
++            $form-&gt;addElement( 'span',      'login_start',  t('login_start') );
++            $form-&gt;addElement( 'span',      'login_end',    t('login_end') );
++            $form-&gt;addElement( 'span',      'login_counter',t('login_counter') );
++            $form-&gt;addElement( 'span',      'login_last',   t('login_last') );
++            $form-&gt;addElement( 'span',      'login_current',t('login_current') );
++            $form-&gt;addElement( 'span',      'created_user', t('created_user') );
++            $form-&gt;addElement( 'span',      'created_date', t('created_date') );
++
++			// add rules
++			$form-&gt;addRule( 'name',        'maxlength', t('name too big'),       255 );
++			$form-&gt;addRule( 'email',       'email',     t('email not valid') );
++			$form-&gt;addRule( 'other',       'maxlength', t('other too big'),      5000 );
++			$form-&gt;addRule( 'language_id', 'in_array',  t('language not valid'), array_keys( $languages-&gt;active() ) );
++			$form-&gt;addRule( 'template',    'in_array',  t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
++
++			return $form;
++		}
++
++
++        /**
++         *  This function updates the current user password
++         *
++         *  @param $oldpassword  Old user password
++         *  @param $newpassword  New password
++         *
++         *  @returns    true if updated, false when old password is incorrect or user is invalid
++         */
++		function changeCurrentUserPassword( $oldpassword = '', $newpassword = '' ){
++		
++			$this-&gt;resetValues();
++
++			// check if user is valid
++			$valid = $this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
++
++			if ( $valid === false ) return false;
++
++			// reset values added from valid method
++			$this-&gt;resetValues();
++
++			// set new password
++			$this-&gt;password = md5( $newpassword );
++
++			// change only current user
++			$this-&gt;where( 'username = &quot;' .      $_SERVER['PHP_AUTH_USER'] . '&quot;' );
++			$this-&gt;where( 'password = &quot;' . md5( $_SERVER['PHP_AUTH_PW'] ) . '&quot;' );
++			$this-&gt;where( 'password = &quot;' . md5( $oldpassword )            . '&quot;' );
++
++			// update user and get result
++			if ( $this-&gt;update() == 1 ) return true;
++
++			return false;
++		}
++
++
++        /**
++         *  This function updates the current user password using form values
++         *
++         *  @param $formvalues  Array with 3 passwords (old, new and new_confirm)
++         *
++         *  @returns    true if updated, array with form errors, 0 if old password is incorrect
++         */
++		function changeCurrentUserPasswordForm( $formvalues = array() ){
++
++			// get password form
++			$form = $this-&gt;getFormPassword();
++
++			// check form validation
++			if ( !$form-&gt;validate( $formvalues ) )
++				return $form-&gt;getErrors();
++
++			return $this-&gt;changeCurrentUserPassword( $form-&gt;getValue( 'old' ), $form-&gt;getValue( 'new' ) );
++		}
++
++
++        /**
++         *  This function return the form of password changing
++         *
++         *  @returns    form object
++         */
++		function getFormPassword(){
++
++			// create form object
++            $form = new YDForm( YDConfig::get( 'YDCMUSERS_FORMPASSWORD' ) );
++
++			// add form elements
++            $form-&gt;addElement( 'password', 'old',         t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
++            $form-&gt;addElement( 'password', 'new',         t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++            $form-&gt;addElement( 'password', 'new_confirm', t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++
++			// add rules
++			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'required',     t('passwords are required') );
++			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'maxlength',    t('passwords too big'), 31 );
++			$form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'alphanumeric', t('passwords not alphanumeric') );
++
++			// add compare rule
++			$form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
++
++			return $form;
++		}
++
++
++        /**
++         *  This function return the current user attributes
++         *
++         *  @returns    current user id
++         */
++		function getCurrentUser(){
++		
++			$this-&gt;resetValues();
++			
++			// get current user id
++			$this-&gt;user_id = $this-&gt;currentID();
++			
++			// get all attributes
++			$this-&gt;find();
++
++			// return values
++			return $this-&gt;getValues();
++		}
++
++
++        /**
++         *  This function updates user login details
++         *
++         *  @returns    true if user login details updated, false user is not valid or details not updated
++         */
++		function updateLogin(){
++
++			YDInclude( 'YDUtil.php' );
++
++			$this-&gt;resetValues();
++			
++			// get current user id
++			$res = $this-&gt;currentID();
++			
++			if ( $res == false ) return false;
++			
++			// get all attributes
++			$this-&gt;find();
++
++			// increase login value
++			$this-&gt;login_counter ++;
++
++			// set last login date
++			$this-&gt;login_last = $this-&gt;login_current;
++
++			// set current login
++			$this-&gt;login_current = YDStringUtil::formatDate( time(), 'datetimesql' );
++
++			// return update result
++			if ( $this-&gt;update() == 1 ) return true;
++			
++			return false;
++		}
++
++		
++    }
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,48 @@
++&lt;?php
++
++// USER FORM
++$GLOBALS['t']['user_username'] = 'Username';
++$GLOBALS['t']['user_name'] = 'Name';
++$GLOBALS['t']['user_email'] = 'Email';
++$GLOBALS['t']['user_other'] = 'Other';
++$GLOBALS['t']['user_language'] = 'Language';
++$GLOBALS['t']['user_template'] = 'Template';
++$GLOBALS['t']['login_start'] = 'Login start date';
++$GLOBALS['t']['login_end'] = 'Login end date';
++$GLOBALS['t']['login_counter'] = 'Total of logins';
++$GLOBALS['t']['login_last'] = 'Last login date';
++$GLOBALS['t']['login_current'] = 'Current login date';
++$GLOBALS['t']['created_user'] = 'Created by';
++$GLOBALS['t']['created_date'] = 'Created in';
++
++// USER FORM RULES
++$GLOBALS['t']['name too big'] = 'Name is too big';
++$GLOBALS['t']['email not valid'] = 'Email is not valid';
++$GLOBALS['t']['other too big'] = 'Other informations about the user are to big';
++$GLOBALS['t']['language not valid'] = 'Language is not valid';
++$GLOBALS['t']['template not valid'] = 'Template is not valid';
++
++// PASSWORD FORM
++$GLOBALS['t']['password_old'] = 'Current password';
++$GLOBALS['t']['password_new'] = 'New password';
++$GLOBALS['t']['password_new_confirm'] = 'Confirm new password';
++
++// PASSWORD FORM RULES
++$GLOBALS['t']['passwords are required'] = 'All passwords are required';
++$GLOBALS['t']['passwords dont match'] = 'Passwords do not match';
++$GLOBALS['t']['passwords too big'] = 'There is at least one password too big';
++$GLOBALS['t']['passwords not alphanumeric'] = 'All passwords must be alphanumeric';
++
++// OTHER
++$GLOBALS['t']['passwords'] = 'Passwords';
++$GLOBALS['t']['change password'] = 'Change password';
++$GLOBALS['t']['personal info'] = 'Personal informations';
++$GLOBALS['t']['access'] = 'Access';
++$GLOBALS['t']['old password is incorrect'] = 'Current password is incorrect';
++$GLOBALS['t']['user password updated'] = 'Password is updated';
++$GLOBALS['t']['user is incorrect'] = 'Current user is not valid';
++$GLOBALS['t']['user details updated'] = 'User details updated';
++$GLOBALS['t']['password not updated'] = 'Password was not updated';
++$GLOBALS['t']['user not updated'] = 'User was not updated';
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,48 @@
++&lt;?php
++
++// USER FORM
++$GLOBALS['t']['user_username'] = 'Username';
++$GLOBALS['t']['user_name'] = 'Nome';
++$GLOBALS['t']['user_email'] = 'Email';
++$GLOBALS['t']['user_other'] = 'Outras informa&ccedil;oes';
++$GLOBALS['t']['user_language'] = 'Idioma';
++$GLOBALS['t']['user_template'] = 'Template';
++$GLOBALS['t']['login_start'] = 'Data para inicio de login';
++$GLOBALS['t']['login_end'] = 'Data em que o login expira';
++$GLOBALS['t']['login_counter'] = 'Total de logins';
++$GLOBALS['t']['login_last'] = 'Data do &uacute;ltimo login';
++$GLOBALS['t']['login_current'] = 'Data do login actual';
++$GLOBALS['t']['created_user'] = 'Criado por';
++$GLOBALS['t']['created_date'] = 'Criado em';
++
++// USER FORM RULES
++$GLOBALS['t']['name too big'] = 'O nome &eacute; demasiado grande';
++$GLOBALS['t']['email not valid'] = 'O email n&atilde;o &eacute; v&aacute;lido';
++$GLOBALS['t']['other too big'] = 'As informa&ccedil;&otilde;es adicionais s&atilde;o demasiado grandes';
++$GLOBALS['t']['language not valid'] = 'O idioma n&atilde;o &eacute; v&aacute;lido';
++$GLOBALS['t']['template not valid'] = 'O template n&atilde;o &eacute; v&aacute;lido';
++
++// PASSWORD FORM
++$GLOBALS['t']['password_old'] = 'Password actual';
++$GLOBALS['t']['password_new'] = 'Nova password';
++$GLOBALS['t']['password_new_confirm'] = 'Confirme a nova password';
++
++// PASSWORD FORM RULES
++$GLOBALS['t']['passwords are required'] = 'Todas as passwords s&atilde;o obrigat&oacute;rias';
++$GLOBALS['t']['passwords dont match'] = 'As passwords n&atilde;o s&atilde;o iguais';
++$GLOBALS['t']['passwords too big'] = 'Existe pelo menos uma password demasiado grande';
++$GLOBALS['t']['passwords not alphanumeric'] = 'As password t&ecirc;em de ser alfanum&eacute;ricas';
++
++// OTHER
++$GLOBALS['t']['passwords'] = 'Passwords';
++$GLOBALS['t']['change password'] = 'Modificar a password';
++$GLOBALS['t']['personal info'] = 'Configura&ccedil;&otilde;es pessoais';
++$GLOBALS['t']['access'] = 'Acesso';
++$GLOBALS['t']['old password is incorrect'] = 'A password actual &eacute; incorrecta';
++$GLOBALS['t']['user password updated'] = 'A password foi actualizada';
++$GLOBALS['t']['user is incorrect'] = 'O utilizador actual &eacute; incorrecto';
++$GLOBALS['t']['user details updated'] = 'Informa&ccedil;&otilde;es do utilizador actualizadas';
++$GLOBALS['t']['password not updated'] = 'A password n&atilde;o foi actualizada';
++$GLOBALS['t']['user not updated'] = 'O utilizador n&atilde;o foi actualizado';
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,20 @@
++&lt;?php
++
++$GLOBALS['t']['save'] = 'Save';
++$GLOBALS['t']['close'] = 'Close';
++$GLOBALS['t']['open'] = 'Open';
++$GLOBALS['t']['help'] = 'Help';
++$GLOBALS['t']['back'] = 'Back';
++$GLOBALS['t']['not applicable'] = 'Not applicable';
++$GLOBALS['t']['yes'] = 'Yes';
++$GLOBALS['t']['no'] = 'No';
++$GLOBALS['t']['schedule'] = 'Schedule';
++$GLOBALS['t']['delete'] = 'Delete';
++$GLOBALS['t']['toggle state'] = 'Toggle state';
++$GLOBALS['t']['public'] = 'Public';
++$GLOBALS['t']['private'] = 'Private';
++$GLOBALS['t']['not allowed'] = 'Not allowed';
++
++$GLOBALS['t']['add page'] = 'Add page';
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -0,0 +1,20 @@
++&lt;?php
++
++$GLOBALS['t']['save'] = 'Guardar';
++$GLOBALS['t']['close'] = 'Fechar';
++$GLOBALS['t']['open'] = 'Abrir';
++$GLOBALS['t']['help'] = 'Ajuda';
++$GLOBALS['t']['back'] = 'Voltar';
++$GLOBALS['t']['not applicable'] = 'N&atilde;o aplic&aacute;vel';
++$GLOBALS['t']['yes'] = 'Sim';
++$GLOBALS['t']['no'] = 'N&atilde;o';
++$GLOBALS['t']['schedule'] = 'Calend&aacute;rio';
++$GLOBALS['t']['delete'] = 'Eliminar';
++$GLOBALS['t']['toggle state'] = 'Inverter estado';
++$GLOBALS['t']['public'] = 'P&uacute;blico';
++$GLOBALS['t']['private'] = 'Privado';
++$GLOBALS['t']['not allowed'] = 'N&atilde;o permitido';
++
++$GLOBALS['t']['add page'] = 'Adicionar p&aacute;gina';
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-05-08 14:47:48 UTC (rev 1923)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-05-09 09:43:55 UTC (rev 1924)
+@@ -30,15 +30,13 @@
+     YDInclude( 'YDDatabaseObject.php' );
+ 	YDInclude( 'YDDatabaseTree.php' );
+ 
+-	// include core YDCM libs
+-	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMUsers/YDCMUsers.php' );
+-	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMTree/YDCMTree.php' );
+-	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMLocks/YDCMLocks.php' );
+-	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMAudit/YDCMAudit.php' );
+-	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMTemplates/YDCMTemplates.php' );
+-	require_once( dirname( __FILE__ ) . '/YDCMComponent/YDCMLanguages/YDCMLanguages.php' );
++	// set core libs directory
++    YDConfig::set( 'YD_DBOBJECT_PATH', dirname( __FILE__ ) . '/YDCMComponent/');
+ 
++	// add generic translation directory
++	YDLocale::addDirectory( dirname( __FILE__ ) . '/YDCMComponent/languages/' );
+ 
++
+     class YDCMComponent extends YDDatabaseObject {
+ 
+         function YDCMComponent( $name, $standardComponent = true ) {
+@@ -100,6 +98,23 @@
+ 
+ 
+         /**
++         *  This static function returns an YDCMComponent module
++         *
++         *  @returns    an module object
++         */
++		function module( $name ){
++
++			// include lib
++			// TODO: check is name is a valid lib name
++			require_once( YDConfig::get( 'YD_DBOBJECT_PATH' ) . '/' . $name . '.php' );
++
++			// return class
++			return new $name();
++		}
++
++
++
++        /**
+          *  This function returns all elements (except root)
+          *
+          *  @returns    all tree elements 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000394.html">[ydf-devel] YDF Weblog
+</A></li>
+	<LI>Next message: <A HREF="000390.html">[ydf-devel] r1925 - YDFramework2.0/trunk/YDFramework2/addons/YDCMPage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#389">[ date ]</a>
+              <a href="thread.html#389">[ thread ]</a>
+              <a href="subject.html#389">[ subject ]</a>
+              <a href="author.html#389">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2312 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2312%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701161211.l0GCBTCn008755%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000903.html">
+   <LINK REL="Next"  HREF="000905.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2312 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2312%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701161211.l0GCBTCn008755%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2312 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 16 13:11:29 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000903.html">[ydf-devel] r2311 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000905.html">[ydf-devel] r2313 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#904">[ date ]</a>
+              <a href="thread.html#904">[ thread ]</a>
+              <a href="subject.html#904">[ subject ]</a>
+              <a href="author.html#904">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-16 13:11:28 +0100 (Tue, 16 Jan 2007)
+New Revision: 2312
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php
+   YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl
+Log:
+Added the option to remove the request information from bad behaviour.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-14 18:24:01 UTC (rev 2311)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-16 12:11:28 UTC (rev 2312)
+@@ -968,29 +968,31 @@
+         function getBadBehaviorRequestsCount() {
+             $settings = bb2_read_settings();
+             return $this-&gt;db-&gt;getValueByName(
+-                &quot;SELECT COUNT(*) AS COUNT FROM &quot; . $settings['log_table'] . &quot; WHERE `key` NOT LIKE '00000000'&quot;
++                &quot;SELECT COUNT(*) AS COUNT FROM #_bad_behavior WHERE `key` NOT LIKE '00000000'&quot;
+                 , 'count'
+             );
+         }
+ 
+         // Get the bad behavior requests
+         function getBadBehaviorRequests() {
+-            $settings = bb2_read_settings();
+-            return $this-&gt;db-&gt;getRecords( &quot;SELECT * FROM &quot; . $settings['log_table'] . &quot; WHERE `key` NOT LIKE '00000000' ORDER BY DATE DESC&quot; );
++            return $this-&gt;db-&gt;getRecords( &quot;SELECT * FROM #_bad_behavior WHERE `key` NOT LIKE '00000000' ORDER BY DATE DESC&quot; );
+         }
+ 
+         // Get the bad behavior request by it's id
+         function getBadBehaviorRequestById( $id ) {
+-            $settings = bb2_read_settings();
+-            return $this-&gt;db-&gt;getRecord( &quot;SELECT * FROM &quot; . $settings['log_table'] . &quot; WHERE id = &quot; . $this-&gt;str( $id ) );
++            return $this-&gt;db-&gt;getRecord( &quot;SELECT * FROM #_bad_behavior WHERE id = &quot; . $this-&gt;str( $id ) );
+         }
+ 
+         // Get the bad behavior post requests
+         function getBadBehaviorPostRequests() {
+-            $settings = bb2_read_settings();
+-            return $this-&gt;db-&gt;getRecords( &quot;SELECT * FROM &quot; . $settings['log_table'] . &quot; WHERE request_method = 'POST' ORDER BY DATE DESC&quot; );
++            return $this-&gt;db-&gt;getRecords( &quot;SELECT * FROM #_bad_behavior WHERE request_method = 'POST' ORDER BY DATE DESC&quot; );
+         }
+ 
++        // Delete the bad behavior requests
++        function emptyBadBehaviour() {
++            $this-&gt;db-&gt;executeSql( 'DELETE FROM #_bad_behavior' );
++        }
++
+         // Function to resize an uploaded image. Takes a YDFSImage object as it's argument
+         function resizeUploadedImage( $image ) {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-14 18:24:01 UTC (rev 2311)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-16 12:11:28 UTC (rev 2312)
+@@ -392,5 +392,7 @@
+ $GLOBALS['t']['user_agent'] = 'User Agent';
+ $GLOBALS['t']['request_entity'] = 'Request Entity';
+ $GLOBALS['t']['key'] = 'Key';
++$GLOBALS['t']['confirm_empty_bb'] = 'Are you sure you want to delete all request information?';
++$GLOBALS['t']['empty_bb_now'] = 'Delete all request information now.';
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-14 18:24:01 UTC (rev 2311)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-16 12:11:28 UTC (rev 2312)
+@@ -392,5 +392,7 @@
+ $GLOBALS['t']['user_agent'] = 'User Agent';
+ $GLOBALS['t']['request_entity'] = 'Request Entiteit';
+ $GLOBALS['t']['key'] = 'Code';
++$GLOBALS['t']['confirm_empty_bb'] = 'Bent u zeker dat u alle request informatie wil verwijderen?';
++$GLOBALS['t']['empty_bb_now'] = 'Verwijder nu alle request informatie.';
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php	2007-01-14 18:24:01 UTC (rev 2311)
++++ YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php	2007-01-16 12:11:28 UTC (rev 2312)
+@@ -54,6 +54,12 @@
+ 
+         }
+ 
++        // Empty the request information
++        function actionEmptyBadBehaviour() {
++            $this-&gt;weblog-&gt;emptyBadBehaviour();
++            $this-&gt;redirect( YD_SELF_SCRIPT );
++        }
++
+     }
+ 
+     // Process the request
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl	2007-01-14 18:24:01 UTC (rev 2311)
++++ YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl	2007-01-16 12:11:28 UTC (rev 2312)
+@@ -19,6 +19,10 @@
+                         &raquo; {t w=&quot;post_requests&quot;}
+                     &lt;/th&gt;
+                 &lt;/tr&gt;
++                &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;5&quot;&gt;
++                    &lt;i&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptyBadBehaviour&quot;
++                     onClick=&quot;return confirm( '{t w=&quot;confirm_empty_bb&quot;}' );&quot;&gt;{t w=&quot;empty_bb_now&quot;}&lt;/a&gt;&lt;/i&gt;
++                &lt;/td&gt;&lt;/tr&gt;
+                 &lt;tr&gt;
+                     &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+                     &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;ip&quot;}&lt;/th&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000903.html">[ydf-devel] r2311 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000905.html">[ydf-devel] r2313 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#904">[ date ]</a>
+              <a href="thread.html#904">[ thread ]</a>
+              <a href="subject.html#904">[ subject ]</a>
+              <a href="author.html#904">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

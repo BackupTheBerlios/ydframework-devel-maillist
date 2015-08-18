@@ -1,0 +1,363 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2230 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2230%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200611201925.kAKJPNw0016817%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000792.html">
+   <LINK REL="Next"  HREF="000794.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2230 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2230%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200611201925.kAKJPNw0016817%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2230 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 20 20:25:23 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000792.html">[ydf-devel] r2229 - YDFramework2.0/trunk/examples/cm
+</A></li>
+        <LI>Next message: <A HREF="000794.html">[ydf-devel] r2231 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#793">[ date ]</a>
+              <a href="thread.html#793">[ thread ]</a>
+              <a href="subject.html#793">[ subject ]</a>
+              <a href="author.html#793">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-20 20:25:23 +0100 (Mon, 20 Nov 2006)
+New Revision: 2230
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+Updated the comments management interface to show a better view of the spam comments.
+Included the new YDAkismet::submitHam and YDAkismet::submitSpam functions.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-20 19:17:20 UTC (rev 2229)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-20 19:25:23 UTC (rev 2230)
+@@ -132,6 +132,25 @@
+             $sql = 'DELETE FROM #_comments WHERE is_spam = 1 AND created &lt; (unix_timestamp()-604800)';
+             $this-&gt;db-&gt;executeSql( $sql );
+ 
++            // Check against akismet if a key is there
++            if ( YDConfig::get( 'akismet_key', '' ) != '' ) {
++
++                // Include the YDAkismet addon
++                include_once( YD_DIR_HOME_ADD . '/YDAkismet/YDAkismet.php' );
++
++                // Get the URL of the weblog
++                $weblog_url = dirname( YDRequest::getCurrentUrl( true ) ) . '/';
++
++                // Initialize YDAkismet
++                $this-&gt;akismet = new YDAkismet( $weblog_url, YDConfig::get( 'akismet_key', '' ) );
++
++            } else {
++
++                // No akismet
++                $this-&gt;akismet = null;
++
++            }
++
+         }
+ 
+         // Get the schema version
+@@ -541,17 +560,8 @@
+             // Check against akismet if a key is there
+             if ( YDConfig::get( 'akismet_key', '' ) != '' ) {
+ 
+-                // Include the YDAkismet addon
+-                include_once( YD_DIR_HOME_ADD . '/YDAkismet/YDAkismet.php' );
+-
+-                // Get the URL of the weblog
+-                $weblog_url = dirname( YDRequest::getCurrentUrl( true ) ) . '/';
+-
+-                // Initialize YDAkismet
+-                $akismet = new YDAkismet( $weblog_url, YDConfig::get( 'akismet_key', '' ) );
+-
+                 // Check if it's spam or not
+-                $result = $akismet-&gt;checkComment(
++                $result = $this-&gt;akismet-&gt;checkComment(
+                     $values['comment'], $values['username'], $values['useremail'], $values['userwebsite'],
+                     $values['userip'], $values['useragent']
+                 );
+@@ -603,22 +613,50 @@
+ 
+         // Update a comment and mark it as spam
+         function updateCommentAsSpam( $comment_id ) {
++
++            // Update the comment
+             $comment = $this-&gt;getCommentById( $comment_id );
+             $comment['is_spam'] = 1;
+             unset( $comment['item_title'] );
+             $this-&gt;updateComment( $comment );
+             $sql = 'UPDATE #_items SET num_comments = num_comments-1 WHERE id = ' . $this-&gt;str( $comment['item_id'] );
+             $this-&gt;db-&gt;executeSql( $sql );
++
++            // Check against akismet if a key is there
++            if ( YDConfig::get( 'akismet_key', '' ) != '' ) {
++
++                // Submit as spam
++                $this-&gt;akismet-&gt;submitSpam(
++                    $comment['comment'], $comment['username'], $comment['useremail'], $comment['userwebsite'],
++                    $comment['userip'], $comment['useragent']
++                );
++
++            }
++
+         }
+ 
+         // Update a comment and unmark it as spam
+         function updateCommentAsNotSpam( $comment_id ) {
++
++            // Update the comment
+             $comment = $this-&gt;getCommentById( $comment_id );
+             $comment['is_spam'] = 0;
+             unset( $comment['item_title'] );
+             $this-&gt;updateComment( $comment );
+             $sql = 'UPDATE #_items SET num_comments = num_comments+1 WHERE id = ' . $this-&gt;str( $comment['item_id'] );
+             $this-&gt;db-&gt;executeSql( $sql );
++
++            // Check against akismet if a key is there
++            if ( YDConfig::get( 'akismet_key', '' ) != '' ) {
++
++                // Submit as ham
++                $this-&gt;akismet-&gt;submitHam(
++                    $comment['comment'], $comment['username'], $comment['useremail'], $comment['userwebsite'],
++                    $comment['userip'], $comment['useragent']
++                );
++
++            }
++
+         }
+ 
+         // Delete a comment
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-20 19:17:20 UTC (rev 2229)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-20 19:25:23 UTC (rev 2230)
+@@ -256,6 +256,8 @@
+ $GLOBALS['t']['mark_as_spam'] = 'mark as spam';
+ $GLOBALS['t']['mark_as_not_spam'] = 'mark as not spam';
+ $GLOBALS['t']['is_spam'] = 'Spam comment';
++$GLOBALS['t']['ip_number'] = 'IP number';
++$GLOBALS['t']['spam_delete_desc'] = 'Spam comments are automatically deleted after 7 days.';
+ 
+ // manage/config.tpl
+ $GLOBALS['t']['cfg_db_settings'] = 'Database Settings';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-20 19:17:20 UTC (rev 2229)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-20 19:25:23 UTC (rev 2230)
+@@ -256,6 +256,8 @@
+ $GLOBALS['t']['mark_as_spam'] = 'markeer als spam';
+ $GLOBALS['t']['mark_as_not_spam'] = 'markeer als niet spam';
+ $GLOBALS['t']['is_spam'] = 'Spam commentaar';
++$GLOBALS['t']['ip_number'] = 'IP nummer';
++$GLOBALS['t']['spam_delete_desc'] = 'Spam commentaren worden automatisch verwijderd na 7 dagen.';
+ 
+ // manage/config.tpl
+ $GLOBALS['t']['cfg_db_settings'] = 'Database Instellingen';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-20 19:17:20 UTC (rev 2229)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-20 19:25:23 UTC (rev 2230)
+@@ -47,61 +47,103 @@
+         &lt;/th&gt;
+     &lt;/tr&gt;
+     {if $comments-&gt;set}
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowL&quot; width=&quot;17%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowL&quot; width=&quot;30%&quot;&gt;{t w=&quot;comment&quot;}&lt;/th&gt;
+-            &lt;th class=&quot;adminRowR&quot; width=&quot;18%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+-        {foreach from=$comments-&gt;set item=&quot;comment&quot;}
+-            &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;
+-                    {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                    {$comment.created|date:'%Y/%m/%d %H:%M'}
+-                    {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+-                &lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;
+-                    {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                    {$comment.username}
+-                    {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
+-                &lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;
+-                    {*{if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                    &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.comment|bbcode|strip_tags|truncate}&lt;/a&gt;
+-                    {if $comment.item_title}
++        {if $filter == 'no_spam'}
++            &lt;tr&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;17%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;30%&quot;&gt;{t w=&quot;comment&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowR&quot; width=&quot;18%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            {foreach from=$comments-&gt;set item=&quot;comment&quot;}
++                &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        {$comment.created|date:'%Y/%m/%d %H:%M'}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        {$comment.username}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {*{if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.comment|bbcode|strip_tags|truncate}&lt;/a&gt;
++                        {if $comment.item_title}
++                            &lt;br/&gt;
++                            {t w=&quot;item&quot;}: {$comment.item_title}
++                        {/if}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}*}
++                        {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.item_title}&lt;/a&gt;
+                         &lt;br/&gt;
+-                        {t w=&quot;item&quot;}: {$comment.item_title}
+-                    {/if}
+-                    {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}*}
+-                    {if $comment.item_is_draft eq '1'}&lt;i&gt;{/if}
+-                    &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{$comment.item_title}&lt;/a&gt;
+-                    &lt;br/&gt;
+-                    {$comment.comment|bbcode|strip_tags|truncate}
+-                    {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
++                        {$comment.comment|bbcode|strip_tags|truncate}
++                        {if $comment.item_is_draft eq '1'}&lt;/i&gt;{/if}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowR&quot;&gt;
++                        &lt;a href=&quot;../item.php?id={$comment.item_id}#comment-{$comment.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
++                        |
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
++                        |
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
++                         onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
++                        &lt;br/&gt;
++                        {if $comment.is_spam}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
++                        {else}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_spam&quot;}&lt;/a&gt;
++                        {/if}
++                    &lt;/td&gt;
++                &lt;/tr&gt;
++            {/foreach}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
++                    &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
+                 &lt;/td&gt;
+-                &lt;td class=&quot;adminRowR&quot;&gt;
+-                    &lt;a href=&quot;../item.php?id={$comment.item_id}#comment-{$comment.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+-                    |
+-                    &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
+-                    |
+-                    &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
+-                     onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
+-                    &lt;br/&gt;
+-                    {if $comment.is_spam}
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
+-                    {else}
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_spam&quot;}&lt;/a&gt;
+-                    {/if}
++            &lt;/tr&gt;
++        {else}
++            &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;4&quot;&gt;&lt;i&gt;{t w=&quot;spam_delete_desc&quot;}&lt;/i&gt;&lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;17%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;ip_number&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowR&quot; width=&quot;33%&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            {foreach from=$comments-&gt;set item=&quot;comment&quot;}
++                &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot; {if $comment.item_is_draft eq '1'}style=&quot;color: gray&quot;{/if}&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.created|date:'%Y/%m/%d %H:%M'}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.username}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.userip}
++                    &lt;/td&gt;
++                    &lt;td class=&quot;adminRowR&quot;&gt;
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
++                        |
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
++                         onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
++                        |
++                        {if $comment.is_spam}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
++                        {else}
++                            &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_spam&quot;}&lt;/a&gt;
++                        {/if}
++                    &lt;/td&gt;
++                &lt;/tr&gt;
++            {/foreach}
++            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
++                    &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
+                 &lt;/td&gt;
+             &lt;/tr&gt;
+-        {/foreach}
+-        &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;{$comments-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+-        &lt;tr&gt;
+-            &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;4&quot;&gt;
+-                &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$comments-&gt;totalRows}&lt;/p&gt;
+-            &lt;/td&gt;
+-        &lt;/tr&gt;
++        {/if}
+     {else}
+         &lt;tr&gt;
+             &lt;td class=&quot;adminRowL&quot; colspan=&quot;7&quot;&gt;{t w=&quot;no_comments_found&quot;}&lt;/td&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000792.html">[ydf-devel] r2229 - YDFramework2.0/trunk/examples/cm
+</A></li>
+	<LI>Next message: <A HREF="000794.html">[ydf-devel] r2231 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#793">[ date ]</a>
+              <a href="thread.html#793">[ thread ]</a>
+              <a href="subject.html#793">[ subject ]</a>
+              <a href="author.html#793">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

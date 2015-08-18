@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2364 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2364%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms/includes&In-Reply-To=%3C200701241858.l0OIw9a9021963%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000956.html">
+   <LINK REL="Next"  HREF="000958.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2364 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2364%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms/includes&In-Reply-To=%3C200701241858.l0OIw9a9021963%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2364 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Jan 24 19:58:09 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000956.html">[ydf-devel] r2363 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+        <LI>Next message: <A HREF="000958.html">[ydf-devel] r2365 - YDFramework2.0/trunk/doc_src
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#957">[ date ]</a>
+              <a href="thread.html#957">[ thread ]</a>
+              <a href="subject.html#957">[ subject ]</a>
+              <a href="author.html#957">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-24 19:58:01 +0100 (Wed, 24 Jan 2007)
+New Revision: 2364
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/examples/simplecms/includes/config.php
+Log:
+Added initial support for language checking, but it needs to be cleaned up and integrated with YDRequest if possible.
+
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-24 18:46:12 UTC (rev 2363)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-24 18:58:01 UTC (rev 2364)
+@@ -50,6 +50,7 @@
+     define( YD_SIMPLECMS_PACKAGE_NAME . '_SKINS_DIR',      dirname( YD_SELF_FILE ) . '/includes/skins_' );
+     define( YD_SIMPLECMS_PACKAGE_NAME . '_SCOPE_PUBLIC',   'public' );
+     define( YD_SIMPLECMS_PACKAGE_NAME . '_SCOPE_ADMIN',    'admin' );
++    define( YD_SIMPLECMS_PACKAGE_NAME . '_SITE_LANGUAGE',  YD_SIMPLECMS_PACKAGE_NAME . '_SITE_LANGUAGE' );
+ 
+     // Configuration
+     YDConfig::set( 'YD_AUTO_EXECUTE', false );
+@@ -124,6 +125,50 @@
+                 // Set the default scope
+                 $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['scope'] = YD_SIMPLECMS_SCOPE_PUBLIC;
+ 
++                // Get the site Id
++                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['siteId'] = YDConfig::get( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
++
++                // Create a browser information object
++                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['browserInfo'] = new YDBrowserInfo();
++                $browserInfo = &amp; $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['browserInfo'];
++
++                // -- Negotiate the language --
++                // Set the list of languages and the default language
++                $language = YDConfig::get( 'site_default_lang', '' );
++                $languages = array();
++
++                // Get the current URL
++                $url = new YDUrl( YDRequest::getNormalizedCurrentUrl() );
++
++                // Get the list of languages
++                foreach ( array_slice( YDConfig::get( 'site_languages', array() ), 0, 4 ) as $key=&gt;$lang ) {
++                    if ( ! empty( $lang[0] ) ) {
++                        $lang[0] = strtolower( $lang[0] );
++                        $url-&gt;setQueryVar( 'lang', $lang[0] );
++                        $languages[ $lang[0] ] = array(
++                            'name' =&gt; $lang[1], 'idx' =&gt; $key + 1, 'code' =&gt; $lang[0], 'url' =&gt; $url-&gt;getUrl(),
++                        );
++                    }
++                }
++
++                // Get the current language
++                $languages = array_keys( $languages );
++                $lang = $browserInfo-&gt;getLanguage( $languages );
++                $languageCookieName = YD_SIMPLECMS_PACKAGE_NAME . '_' . YDSimpleCms::getSiteId() . '_LANG';
++                if ( YDRequest::getCookie( $languageCookieName, '', $languages ) != '' ) {
++                    $lang = YDRequest::getCookie( $languageCookieName, '', $languages );
++                }
++                //if ( $this-&gt;getQueryStringParameter( 'lang', '', $languages ) != '' ) {
++                //    $lang = $this-&gt;getQueryStringParameter( 'lang', '', $languages );
++                //}
++                $lang = strtolower( $lang );
++
++                // Set the right locale
++                YDLocale::set( $lang );
++
++                YDDebugUtil::dump( $language, 'language' );
++                YDDebugUtil::dump( $languages, 'languages' );
++
+             }
+ 
+         }
+@@ -281,6 +326,17 @@
+         }
+ 
+         /**
++         *  This function returns a YDBrowserInfo object for the current request.
++         *
++         *  @returns    Returns a YDBrowserInfo object for the current request.
++         *
++         *  @static
++         */
++        function &amp; getBrowserInfo() {
++            return YDSimpleCMS::getVar( 'browserInfo' );
++        }
++
++        /**
+          *  This function returns one of the named variables from the global CMS scope.
+          *
+          *  @param  $var    The name of the variable you want to retrieve.
+@@ -306,6 +362,17 @@
+         }
+ 
+         /**
++         *  This function returns the current site ID.
++         *
++         *  @returns    Returns the current site ID.
++         *
++         *  @static
++         */
++        function getSiteId() {
++            return YDSimpleCMS::getVar( 'siteId' );
++        }
++
++        /**
+          *  This function sets a YDSimpleCMS variable.
+          *
+          *  @param  $var    The variable to set.
+@@ -432,11 +499,11 @@
+             $this-&gt;tpl = new YDSimpleCMSTemplate();
+ 
+             // Get the site id
+-            $this-&gt;siteId = YDConfig::get( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
++            $this-&gt;siteId = YDSimpleCMS::getSiteId();
+ 
+             // The names of the cookies
+-            $this-&gt;cookieNameUser = 'YD_SIMPLECMS_' . $this-&gt;siteId . '_USER';
+-            $this-&gt;cookieNamePass = 'YD_SIMPLECMS_' . $this-&gt;siteId . '_PASS';
++            $this-&gt;cookieNameUser = YD_SIMPLECMS_PACKAGE_NAME . '_' . $this-&gt;siteId . '_USER';
++            $this-&gt;cookieNamePass = YD_SIMPLECMS_PACKAGE_NAME . '_' . $this-&gt;siteId . '_PASS';
+ 
+         }
+ 
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/config.php	2007-01-24 18:46:12 UTC (rev 2363)
++++ YDFramework2.0/trunk/examples/simplecms/includes/config.php	2007-01-24 18:58:01 UTC (rev 2364)
+@@ -1,13 +1,27 @@
+ &lt;?php
+ 
++    // The generic settings
+     YDConfig::set( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
+     YDConfig::set( 'YD_DEBUG', 2 );
+     YDConfig::set( 'YD_SIMPLECMS_PUBLIC_SKIN', 'default' );
+ 
++    // The database settings
+     YDConfig::set( 'db_host',   'localhost' );
+     YDConfig::set( 'db_name',   'ydsimplecms' );
+     YDConfig::set( 'db_user',   'root' );
+     YDConfig::set( 'db_pass',   '' );
+     YDConfig::set( 'db_prefix', 'cms_' );
+ 
++    // The defintion of the languages for the website
++    YDConfig::set(
++        'site_languages',
++        array(
++            1 =&gt; array( 'nl', 'Nederlands' ),
++            2 =&gt; array( 'fr', 'Fran&ccedil;ais' ),
++            3 =&gt; array( 'en', 'English' ),
++            4 =&gt; array( '', '' ),
++        )
++    );
++    YDConfig::set( 'site_default_lang', 'en' );
++
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000956.html">[ydf-devel] r2363 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+	<LI>Next message: <A HREF="000958.html">[ydf-devel] r2365 - YDFramework2.0/trunk/doc_src
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#957">[ date ]</a>
+              <a href="thread.html#957">[ thread ]</a>
+              <a href="subject.html#957">[ subject ]</a>
+              <a href="author.html#957">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

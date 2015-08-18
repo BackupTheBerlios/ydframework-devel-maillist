@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2354 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2354%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701232001.l0NK16Sn018606%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000946.html">
+   <LINK REL="Next"  HREF="000948.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2354 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2354%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701232001.l0NK16Sn018606%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2354 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 21:01:06 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000946.html">[ydf-devel] r2353 -	YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default
+</A></li>
+        <LI>Next message: <A HREF="000948.html">[ydf-devel] r2355 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#947">[ date ]</a>
+              <a href="thread.html#947">[ thread ]</a>
+              <a href="subject.html#947">[ subject ]</a>
+              <a href="author.html#947">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-23 21:01:03 +0100 (Tue, 23 Jan 2007)
+New Revision: 2354
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+Log:
+Cleaned up some documentation strings.
+
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 20:00:13 UTC (rev 2353)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 20:01:03 UTC (rev 2354)
+@@ -58,19 +58,8 @@
+      *
+      *  @todo
+      *      Add the following functions:
+-     *          - initialize(): checks against $GLOBALS['YD_SIMPLECMS'] to see if we are initialized. If not, we need
+-     *             tostill initialize the cms package. Initializing means:
+-     *              - Setup the database connection under $GLOBALS['YD_SIMPLECMS']['db']
+-     *              - Negotiate the languages for public and admin under $GLOBALS['YD_SIMPLECMS']['languages']
+-     *              - Initializes the module manager under $GLOBALS['YD_SIMPLECMS']['moduleManager']
+      *          - getLanguages(): returns $GLOBALS['YD_SIMPLECMS']['languages'], but issues initialize first if not done
+      *            yet (to make sure we are initialized properly).
+-     *          - getDatabase(): returns $GLOBALS['YD_SIMPLECMS']['db'], but issues initialize first if not done yet (to
+-     *            make sure we are initialized properly).
+-     *          - getModuleManager(): returns $GLOBALS['YD_SIMPLECMS']['moduleManager'], but issues initialize first if
+-     *            not done yet (to make sure we are initialized properly).
+-     *          - isInitialized(): returns a boolean indicating if the CMS package was initialized or not.
+-     *          - initializeIfNeeded(): shortcut for checking isInitialized and then doing initialize if needed.
+      *      \n
+      *      We could do all this in the request class, but that would mean the modules will not have access to it. This
+      *      way, we kind of make a pseudo singleton class that can be accessed from anywhere in the code.
+@@ -87,6 +76,7 @@
+          *      - Adds a module manager instance under $GLOBALS['YD_SIMPLECMS']['moduleManager']
+          *      - Adds a array under $GLOBALS['YD_SIMPLECMS']['adminMenu'] to keep track of the admin menu
+          *      - Adds a null value under $GLOBALS['YD_SIMPLECMS']['user'] to keep track of the current user
++         *      - Stores the current scope in $GLOBALS['YD_SIMPLECMS']['scope']
+          *
+          *  Even if you call this function multiple times, the initialization will only be done once.
+          *
+@@ -164,10 +154,9 @@
+         }
+ 
+         /**
+-         *  This function will show an error for the CMS application.
++         *  This function will show an error for the CMS application. The parameters that are supported are the same
++         *  ones as the sprintf and printf functions.
+          *
+-         *  The parameters that are supported are the same ones as the sprintf and printf functions.
+-         *
+          *  @static
+          */
+         function showError() {
+@@ -629,8 +618,6 @@
+ 
+         /**
+          *  The class constructor the the YDSimpleCMSModule class.
+-         *
+-         *  @param  $manager    A reference to the module manager instance that loaded this module.
+          */
+         function YDSimpleCMSModule() {
+             $this-&gt;tpl = new YDSimpleCMSTemplate();
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-23 20:00:13 UTC (rev 2353)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS_CoreModules.php	2007-01-23 20:01:03 UTC (rev 2354)
+@@ -32,20 +32,46 @@
+      */
+     class module_page extends YDSimpleCMSModule {
+ 
+-        // Class variables
++        /**
++         *  The nice name of the CMS module.
++         */
+         var $name        = 'SimpleCMS Page Module';
++
++        /**
++         *  The full description of the CMS module.
++         */
+         var $description = 'SimpleCMS module to manage pages.';
+-        var $version     = '1.0';
+-        var $authorName  = 'Pieter Claerhout';
+-        var $authorEmail = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
+-        var $authorUrl   = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
+ 
+-        // Public main function
++        /**
++         *  The version number of the CMS module.
++         */
++        var $version       = '1.0';
++
++        /**
++         *  The name of the author of the CMS module.
++         */
++        var $authorName    = 'Pieter Claerhout';
++
++        /**
++         *  The email address of the author of the CMS module.
++         */
++        var $authorEmail   = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++
++        /**
++         *  The website address of the author of the CMS module.
++         */
++        var $authorUrl     = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
++
++        /**
++         *  This is the default public action which currently just displays the template.
++         */
+         function action_public_show() {
+             $this-&gt;display();
+         }
+ 
+-        // Admin main function
++        /**
++         *  This is the default admin action for the page module.
++         */
+         function action_admin_show() {
+             $this-&gt;display();
+         }
+@@ -59,27 +85,55 @@
+      */
+     class module_admin extends YDSimpleCMSModule {
+ 
+-        // Class variables
++        /**
++         *  The nice name of the CMS module.
++         */
+         var $name         = 'SimpleCMS Admin Module';
++
++        /**
++         *  The full description of the CMS module.
++         */
+         var $description  = 'SimpleCMS module to manage everything ;-)';
+-        var $version      = '1.0';
+-        var $authorName   = 'Pieter Claerhout';
+-        var $authorEmail  = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
+-        var $authorUrl    = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
+ 
+-        // Admin main function
++        /**
++         *  The version number of the CMS module.
++         */
++        var $version       = '1.0';
++
++        /**
++         *  The name of the author of the CMS module.
++         */
++        var $authorName    = 'Pieter Claerhout';
++
++        /**
++         *  The email address of the author of the CMS module.
++         */
++        var $authorEmail   = '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++
++        /**
++         *  The website address of the author of the CMS module.
++         */
++        var $authorUrl     = '<A HREF="http://www.yellowduck.be">http://www.yellowduck.be</A>';
++
++        /**
++         *  This is the default admin action for the admin module.
++         */
+         function action_admin_show() {
+             $this-&gt;display();
+         }
+ 
+-        // List the plugins
++        /**
++         *  This action will list all the plugins which are available on the system.
++         */
+         function action_admin_modules() {
+             $moduleManager = &amp; YDSimpleCMS::getModuleManager();
+             $this-&gt;tpl-&gt;assign( 'modules', $moduleManager-&gt;getModuleList() );
+             $this-&gt;display();
+         }
+ 
+-        // The settings action
++        /**
++         *  This action will allow you to change the settings.
++         */
+         function action_admin_settings() {
+             $this-&gt;display();
+         }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000946.html">[ydf-devel] r2353 -	YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default
+</A></li>
+	<LI>Next message: <A HREF="000948.html">[ydf-devel] r2355 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#947">[ date ]</a>
+              <a href="thread.html#947">[ thread ]</a>
+              <a href="subject.html#947">[ subject ]</a>
+              <a href="author.html#947">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

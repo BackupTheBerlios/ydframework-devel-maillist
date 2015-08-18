@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1953 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1953%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200607031123.k63BNtQg026903%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000435.html">
+   <LINK REL="Next"  HREF="000437.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1953 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1953%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200607031123.k63BNtQg026903%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1953 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Mon Jul  3 13:23:55 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000435.html">[ydf-devel] r1952 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDCMComponent YDClasses/YDCMComponent/languages addons/YDCMLink addons/YDCMPage
+</A></li>
+        <LI>Next message: <A HREF="000437.html">[ydf-devel] r1954 - in YDFramework2.0/trunk/examples/weblog: . include include/languages manage skins/default tiny_mce tiny_mce/langs tiny_mce/plugins tiny_mce/plugins/fullscreen tiny_mce/plugins/fullscreen/images tiny_mce/plugins/fullscreen/langs tiny_mce/plugins/imgselector tiny_mce/plugins/imgselector/images tiny_mce/themes tiny_mce/themes/advanced tiny_mce/themes/advanced/css tiny_mce/themes/advanced/docs tiny_mce/themes/advanced/docs/en tiny_mce/themes/advanced/docs/en/images tiny_mce/themes/advanced/docs/nl tiny_mce/themes/advanced/docs/nl/images tiny_mce/themes/advanced/images tiny_mce/themes/advanced/images/xp tiny_mce/themes/advanced/jscripts tiny_mce/themes/advanced/langs tiny_mce/utils
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#436">[ date ]</a>
+              <a href="thread.html#436">[ thread ]</a>
+              <a href="subject.html#436">[ subject ]</a>
+              <a href="author.html#436">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-07-03 13:23:42 +0200 (Mon, 03 Jul 2006)
+New Revision: 1953
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+Log:
+fixed previous YDDatabaseTree update
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-07-03 11:15:11 UTC (rev 1952)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2006-07-03 11:23:42 UTC (rev 1953)
+@@ -169,18 +169,6 @@
+         }
+ 
+         /**
+-         *  Delete a field
+-         *
+-         *  @param  $name   The name of the field that should be deleted
+-         */
+-        function delField( $name ) {
+-            if ( ! in_array( $name, $this-&gt;fields ) ) {
+-                unset( $this-&gt;fields[ $name ] );
+-            }
+-        }
+-
+-
+-        /**
+          *  Add a number of fields to the list of fields to will get returned by this class.
+          *
+          *  @param  $names   The name of the field that should be added.
+@@ -353,7 +341,7 @@
+          *
+          *  @returns An array of each node to passed node
+          */
+-        function getPath( $id=0, $includeSelf=false, $customTable = null, $customWhere = null ) {
++        function getPath( $id=0, $includeSelf=false ) {
+ 
+             // Get the ID field
+             $idField = $this-&gt;fields['id'];
+@@ -366,25 +354,16 @@
+                 return array();
+             }
+ 
+-			// check if we have a custom where clause
+-			if ( is_null( $customWhere ) ) $where = '';
+-			else                           $where = ' and ' . $customWhere;
+-
+-			// check if we have a custom table
+-			if ( !is_null( $customTable ) ) $table = $customTable;
+-			else                            $table = $this-&gt;table;
+-
+-
+             // Include ourselves?
+             if ( $includeSelf ) {
+                 $query = sprintf(
+-                    'select %s from %s where nleft &lt;= %d and nright &gt;= %d %s order by nlevel',
+-                    $this-&gt;_getFieldsAsString(), $table, $node['nleft'], $node['nright'], $where
++                    'select %s from %s where nleft &lt;= %d and nright &gt;= %d order by nlevel',
++                    $this-&gt;_getFieldsAsString(), $this-&gt;table, $node['nleft'], $node['nright']
+                 );
+             } else {
+                 $query = sprintf(
+-                    'select %s from %s where nleft &lt; %d and nright &gt; %d %s order by nlevel',
+-                    $this-&gt;_getFieldsAsString(), $table, $node['nleft'], $node['nright'], $where
++                    'select %s from %s where nleft &lt; %d and nright &gt; %d order by nlevel',
++                    $this-&gt;_getFieldsAsString(), $this-&gt;table, $node['nleft'], $node['nright']
+                 );
+             }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000435.html">[ydf-devel] r1952 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDCMComponent YDClasses/YDCMComponent/languages addons/YDCMLink addons/YDCMPage
+</A></li>
+	<LI>Next message: <A HREF="000437.html">[ydf-devel] r1954 - in YDFramework2.0/trunk/examples/weblog: . include include/languages manage skins/default tiny_mce tiny_mce/langs tiny_mce/plugins tiny_mce/plugins/fullscreen tiny_mce/plugins/fullscreen/images tiny_mce/plugins/fullscreen/langs tiny_mce/plugins/imgselector tiny_mce/plugins/imgselector/images tiny_mce/themes tiny_mce/themes/advanced tiny_mce/themes/advanced/css tiny_mce/themes/advanced/docs tiny_mce/themes/advanced/docs/en tiny_mce/themes/advanced/docs/en/images tiny_mce/themes/advanced/docs/nl tiny_mce/themes/advanced/docs/nl/images tiny_mce/themes/advanced/images tiny_mce/themes/advanced/images/xp tiny_mce/themes/advanced/jscripts tiny_mce/themes/advanced/langs tiny_mce/utils
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#436">[ date ]</a>
+              <a href="thread.html#436">[ thread ]</a>
+              <a href="subject.html#436">[ subject ]</a>
+              <a href="author.html#436">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2041 - YDFramework2.0/trunk/examples/cm/backend
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2041%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200608231523.k7NFN5aj013842%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000550.html">
+   <LINK REL="Next"  HREF="000552.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2041 - YDFramework2.0/trunk/examples/cm/backend</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2041%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200608231523.k7NFN5aj013842%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2041 - YDFramework2.0/trunk/examples/cm/backend">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 23 17:23:05 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000550.html">[ydf-devel] r2040 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDCMComponent YDCMComponent/languages	YDCMComponent/languages/YDCMPage YDCMComponent/languages/YDCMUsers
+</A></li>
+        <LI>Next message: <A HREF="000552.html">[ydf-devel] r2042 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#551">[ date ]</a>
+              <a href="thread.html#551">[ thread ]</a>
+              <a href="subject.html#551">[ subject ]</a>
+              <a href="author.html#551">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-23 17:22:34 +0200 (Wed, 23 Aug 2006)
+New Revision: 2041
+
+Modified:
+   YDFramework2.0/trunk/examples/cm/backend/userdetails.php
+Log:
+userdetails YDCM example updated for new YDCM dir structure
+
+Modified: YDFramework2.0/trunk/examples/cm/backend/userdetails.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/backend/userdetails.php	2006-08-23 15:11:13 UTC (rev 2040)
++++ YDFramework2.0/trunk/examples/cm/backend/userdetails.php	2006-08-23 15:22:34 UTC (rev 2041)
+@@ -2,6 +2,8 @@
+ 
+     include_once( dirname( __FILE__ ) . '/../cm.php' );
+ 
++	YDInclude( 'YDCMUsers.php' );
++
+     // Class definition
+     class userdetails extends cm {
+ 
+@@ -12,7 +14,7 @@
+             $this-&gt;cm();
+ 
+ 			// create a user object
+-			$this-&gt;users = YDCMComponent::module( 'YDCMUsers' );
++			$this-&gt;users = new YDCMUsers();
+         }
+ 
+ 
+@@ -20,17 +22,18 @@
+         function actionDefault() {
+ 
+ 			// get user id 101 details and display them
+-			YDDebugUtil::dump( $this-&gt;users-&gt;getUser( 101, true ) );
++			YDDebugUtil::dump( $this-&gt;users-&gt;getUser( 101, true ), '$this-&gt;users-&gt;getUser( 101, true )' );
+         }
+ 
+ 
+         // Edit user example
+         function actionEdit() {
+ 
+-			// add form of user 101. User cannot edit username, cannot see password, cannot see login details, can edit user details, cannot see access info, cannot see permissions
++			// add editing form of user 101.
++			// user cannot edit username, cannot see password, cannot see login details, can edit user details, cannot see access info, cann edit permissions
+ 			$this-&gt;users-&gt;addFormEdit( 101, false, null, null, true, null, true );
+ 
+-			// get user form and add a custom submit button
++			// get form
+ 			$form = &amp; $this-&gt;users-&gt;getForm();
+ 
+ 			// if form is not submitted just show it
+@@ -40,7 +43,7 @@
+ 			$result = $this-&gt;users-&gt;saveFormEdit( 101, 100 );
+ 
+ 			// check if result is a array (form error messages)
+-			if( is_array( $result ) ) return $form-&gt;display();
++			if ( is_array( $result ) ) return $form-&gt;display();
+ 
+ 			// if update was sucessfull, show ok message in current language
+ 			if ( $result == 1 ) return print( t( 'user details updated' ) );
+@@ -53,10 +56,11 @@
+ 		// this action will add a new sub-user of the root (super-administrator: id 100)
+ 		function actionNew(){
+ 
+-			// add element as child of user 100. User can edit username, can edit password, can edit login details, can edit user details, cannot see access info, can edit permissions
++			// add form for adding a new user as child of user 100. 
++			// user can edit username, can edit password, can edit login details, can edit user details, cannot see access info, can edit permissions
+ 			$this-&gt;users-&gt;addFormNew( 100, true, true, true, true, null, true );
+ 
+-			// get form and add a custom submition button
++			// get form
+ 			$form = &amp; $this-&gt;users-&gt;getForm();
+ 
+ 			// if form is not submitted just show it
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000550.html">[ydf-devel] r2040 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDCMComponent YDCMComponent/languages	YDCMComponent/languages/YDCMPage YDCMComponent/languages/YDCMUsers
+</A></li>
+	<LI>Next message: <A HREF="000552.html">[ydf-devel] r2042 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#551">[ date ]</a>
+              <a href="thread.html#551">[ thread ]</a>
+              <a href="subject.html#551">[ subject ]</a>
+              <a href="author.html#551">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

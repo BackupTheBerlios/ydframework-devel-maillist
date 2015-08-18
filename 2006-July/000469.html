@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDate::getYear
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDate%3A%3AgetYear&In-Reply-To=%3C12260be20607182331t612c8d58hc9c386abfca2bf8%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000468.html">
+   <LINK REL="Next"  HREF="000470.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDate::getYear</H1>
+    <B>David Bittencourt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDate%3A%3AgetYear&In-Reply-To=%3C12260be20607182331t612c8d58hc9c386abfca2bf8%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] YDDate::getYear">muitocomplicado at gmail.com
+       </A><BR>
+    <I>Wed Jul 19 08:31:09 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000468.html">[ydf-devel] YDDate::getYear
+</A></li>
+        <LI>Next message: <A HREF="000470.html">[ydf-devel] YDDate::getYear
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#469">[ date ]</a>
+              <a href="thread.html#469">[ thread ]</a>
+              <a href="subject.html#469">[ subject ]</a>
+              <a href="author.html#469">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>The adds functions are for adding a number of days, hours, etc, to the
+current date and is not intended to set a date.
+
+You set the date like this
+
+$date-&gt;day = 1;
+$date-&gt;month = 2;
+$date-&gt;year = 2006;
+
+$date-&gt;addYear( 2 ); // result: 01/02/2008
+
+Notice that the getDayName, getMonthName are specific to return the day and
+month as strings like January, Monday, etc and not it's value 1, 2.
+
+So if you want getYear we must add setYear that is different from addYear,
+and so on...
+
+That's not difficult to do, but will add a lot of documentation code that
+will increase the file's size.
+
+I know that in good OO we don't access the objects variables directly, but
+this was easier.
+
+Well, I don't need it, but if you think that this will be better, I can add
+it.
+
+-db
+
+On 7/18/06, Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Hi db
+</I>&gt;<i>
+</I>&gt;<i> &gt; If I do that I will have to create getDay, getMonth, getHours,
+</I>&gt;<i> &gt; getMinutes and getSeconds. Also the setters, setDay, setMonth, etc.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The idea is to use the variables directly and not fill the code with
+</I>&gt;<i> &gt; more functions.
+</I>&gt;<i>
+</I>&gt;<i> I see. But let me explain my point of view.
+</I>&gt;<i> In the YDDate there are add's for almost any date element:
+</I>&gt;<i>
+</I>&gt;<i>         $date-&gt;addSecond( 70 )
+</I>&gt;<i>         $date-&gt;addMinute( 80 )
+</I>&gt;<i>         $date-&gt;addHour( 24 )
+</I>&gt;<i>         $date-&gt;addDay( 40 )
+</I>&gt;<i>         $date-&gt;addMonth( 1 )
+</I>&gt;<i>         $date-&gt;addYear( -20 )
+</I>&gt;<i>
+</I>&gt;<i> but there get's too.. but no year:
+</I>&gt;<i>
+</I>&gt;<i>         $date-&gt;getDayName()
+</I>&gt;<i>         $date-&gt;getDayName( true )
+</I>&gt;<i>         $date-&gt;getMonthName()
+</I>&gt;<i>
+</I>&gt;<i> .. that's way i talk about some 'getYear'. Maybe something like:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>         function getYear(){ return $this-&gt;year; }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> regards
+</I>&gt;<i> Francisco A
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://bat.berlios.de/mailman/listinfo/ydframework-devel">http://bat.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060719/e3a05cba/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060719/e3a05cba/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000468.html">[ydf-devel] YDDate::getYear
+</A></li>
+	<LI>Next message: <A HREF="000470.html">[ydf-devel] YDDate::getYear
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#469">[ date ]</a>
+              <a href="thread.html#469">[ thread ]</a>
+              <a href="subject.html#469">[ subject ]</a>
+              <a href="author.html#469">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

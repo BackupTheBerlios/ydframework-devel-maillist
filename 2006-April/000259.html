@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1828 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1828%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200604042158.k34LwhvB005847%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000258.html">
+   <LINK REL="Next"  HREF="000260.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1828 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1828%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200604042158.k34LwhvB005847%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1828 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at berlios.de
+       </A><BR>
+    <I>Tue Apr  4 23:58:43 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000258.html">[ydf-devel] r1827 - in YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . js
+</A></li>
+        <LI>Next message: <A HREF="000260.html">[ydf-devel] r1829 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#259">[ date ]</a>
+              <a href="thread.html#259">[ thread ]</a>
+              <a href="subject.html#259">[ subject ]</a>
+              <a href="author.html#259">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-04 23:58:43 +0200 (Tue, 04 Apr 2006)
+New Revision: 1828
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+YDAjax small fixes
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-04-04 15:41:53 UTC (rev 1827)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-04-04 21:58:43 UTC (rev 1828)
+@@ -333,11 +333,7 @@
+ 				return $this-&gt;registerCatchAllFunction( array( $serverFunction[1], $serverFunction[0], $serverFunction[1] ) );
+ 
+ 		 	if( !is_array( $options ) ) $options = array( $options );
+-
+-			// register function in xajax if not on reponse
+-			if ( !$this-&gt;onResponse )
+-				$this-&gt;registerFunction( array( $serverFunction[1], $serverFunction[0], $serverFunction[1] ) );
+-		 
++	 
+ 			// serverFunction must be an array with a class and the method (get function name)
+ 			$functionName = $this-&gt;computeFunction( $formElementName, $serverFunction, $arguments, $options, $effects );
+ 
+@@ -369,6 +365,10 @@
+ 
+ 		function computeFunction( $formElementName, $serverFunction, $arguments = null, $options = null, $effects = null ){ 
+ 
++			// register function in xajax if not on reponse
++			if ( !$this-&gt;onResponse )
++				$this-&gt;registerFunction( array( $serverFunction[1], $serverFunction[0], $serverFunction[1] ) );
++
+ 			if( !$this-&gt;onResponse ) $serverFunctionName = $serverFunction[1];
+ 			else                     $serverFunctionName = $serverFunction;
+ 
+@@ -529,7 +529,7 @@
+ 					$jsfunction = $this-&gt;prefix . 'get' . $elem-&gt;getName();
+ 
+ 					// add javascript function code to custom js (to be included in template head)
+-					if ( !$this-&gt;onResponse ) $this-&gt;customjs[$jsfunction] = $js;
++					if ( !$this-&gt;onResponse ) $this-&gt;customjs[$jsfunction . '()' ] = $js;
+ 					else                      $this-&gt;response-&gt;addScript( $jsfunction . '=function(){' . $js . '}' );
+ 					
+ 					// add function name to arguments list
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000258.html">[ydf-devel] r1827 - in YDFramework2.0/trunk/YDFramework2/addons/YDAjax: . js
+</A></li>
+	<LI>Next message: <A HREF="000260.html">[ydf-devel] r1829 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#259">[ date ]</a>
+              <a href="thread.html#259">[ thread ]</a>
+              <a href="subject.html#259">[ subject ]</a>
+              <a href="author.html#259">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

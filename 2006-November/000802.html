@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Propose for a YD language repository
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Propose%20for%20a%20YD%20language%20repository&In-Reply-To=%3C45631859.4020401%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000801.html">
+   <LINK REL="Next"  HREF="000804.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Propose for a YD language repository</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Propose%20for%20a%20YD%20language%20repository&In-Reply-To=%3C45631859.4020401%40fusemail.com%3E"
+       TITLE="[ydf-devel] Propose for a YD language repository">francisco at fusemail.com
+       </A><BR>
+    <I>Tue Nov 21 16:16:41 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000801.html">[ydf-devel] r2235 - in YDFramework2.0/trunk/examples/weblog: .	include/languages
+</A></li>
+        <LI>Next message: <A HREF="000804.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#802">[ date ]</a>
+              <a href="thread.html#802">[ thread ]</a>
+              <a href="subject.html#802">[ subject ]</a>
+              <a href="author.html#802">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Pieter, Hi all
+
+In our applications, it's common to have the option for more than one 
+language. This requires that we have translation files with translated 
+strings, eg, YDWeblog has translation files and my simple application 
+(based on the YDCM draft) too.
+
+I propose to have a YDF repository of translated strings.
+The good on this is that that, in our applications, we can use that 
+strings (we don't need to reinvent the wheel every time) and these 
+strings can be automatically translated/updated (because we have 
+contributors in different languages).
+
+Apart from that, i propose to define a common way for those strings. 
+Here goes my ideas:
+
+  - create a YDF directory for translations (eg: YDFramework2/translations)
+
+  - create a subdirectory for each context.
+Eg, for strings related to users, create a 
+YDFramework2/translations/users/ directory. For generic strings (eg: 
+'add', 'delete') create a generic directory 
+YDFramework2/translations/generic/
+
+  - for each language we have a file inside each directory. Eg, if we 
+have english and portuguese we would have in users translation directory 
+these files:
+YDFramework2/translations/users/en.php
+YDFramework2/translations/users/pt.php
+or
+YDFramework2/translations/users/language_en.php
+YDFramework2/translations/users/language_pt.php
+
+  - inside each file we could have a structure to define:
+* permissions
+* labels
+* return messages (that can be ok messages, error or form errors)
+
+I propose that a string should start by the context name, then type and 
+then name.
+Eg, in users,
+permissions could be:
+  $GLOBALS['t']['users perm edit'] = ...
+  $GLOBALS['t']['users perm delete'] = ...
+
+labels could be:
+  $GLOBALS['t']['users label username'] = ...
+  $GLOBALS['t']['users label email'] = ...
+
+messages could be:
+  $GLOBALS['t']['users mess deleteok'] = ...
+  $GLOBALS['t']['users mess emailnotvalid'] = ...
+
+
+This can be a huge help for all developers, they only need to use the 
+directory they want ( first defining the current language with 
+YDLocale::set() and then including the directory with 
+YDLocale::addDirectory() ), and if a string is missing, it can be added 
+and translated to other languages in a short time.
+Of course, in this initial phase, the port can be time consuming, but i 
+think its a good practice.
+
+
+What do you think?
+
+regards
+Francisco A
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000801.html">[ydf-devel] r2235 - in YDFramework2.0/trunk/examples/weblog: .	include/languages
+</A></li>
+	<LI>Next message: <A HREF="000804.html">[ydf-devel] Propose for a YD language repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#802">[ date ]</a>
+              <a href="thread.html#802">[ thread ]</a>
+              <a href="subject.html#802">[ subject ]</a>
+              <a href="author.html#802">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

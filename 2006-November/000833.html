@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2243 - in YDFramework2.0/trunk/examples/weblog: .	include/languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2243%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include/languages&In-Reply-To=%3C200611271500.kARF07NB014928%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000832.html">
+   <LINK REL="Next"  HREF="000834.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2243 - in YDFramework2.0/trunk/examples/weblog: .	include/languages</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2243%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include/languages&In-Reply-To=%3C200611271500.kARF07NB014928%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2243 - in YDFramework2.0/trunk/examples/weblog: .	include/languages">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 27 16:00:07 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000832.html">[ydf-devel] YDDatabaseObject bug
+</A></li>
+        <LI>Next message: <A HREF="000834.html">[ydf-devel] r2244 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#833">[ date ]</a>
+              <a href="thread.html#833">[ thread ]</a>
+              <a href="subject.html#833">[ subject ]</a>
+              <a href="author.html#833">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-27 16:00:07 +0100 (Mon, 27 Nov 2006)
+New Revision: 2243
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+Log:
+Changed the maximum length of comments to 1500 instead of 2048.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-26 18:15:02 UTC (rev 2242)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-27 15:00:07 UTC (rev 2243)
+@@ -90,7 +90,7 @@
+ $GLOBALS['t']['err_email'] = 'Email is missing or invalid';
+ $GLOBALS['t']['err_website'] = 'The website specified is not a valid URL';
+ $GLOBALS['t']['err_comment'] = 'Comment is required';
+-$GLOBALS['t']['err_comment_length'] = 'Comment cannot be more than 2048 characters';
++$GLOBALS['t']['err_comment_length'] = 'Comment cannot be more than 1500 characters';
+ $GLOBALS['t']['err_comment_links'] = 'Comment cannot contain more than 1 hyperlink';
+ $GLOBALS['t']['with'] = 'for';
+ $GLOBALS['t']['item_closed'] = 'This item does not allow comments.';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-26 18:15:02 UTC (rev 2242)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-27 15:00:07 UTC (rev 2243)
+@@ -90,7 +90,7 @@
+ $GLOBALS['t']['err_email'] = 'Email is niet ingegeven of niet correct';
+ $GLOBALS['t']['err_website'] = 'De website is geen geldige URL';
+ $GLOBALS['t']['err_comment'] = 'Een commentaar is vereist';
+-$GLOBALS['t']['err_comment_length'] = 'Commentaar kan niet meer dan 2048 karakters bevatten';
++$GLOBALS['t']['err_comment_length'] = 'Commentaar kan niet meer dan 1500 karakters bevatten';
+ $GLOBALS['t']['err_comment_links'] = 'Commentaar kan niet meer dan 1 hyperlink bevatten';
+ $GLOBALS['t']['with'] = 'bij';
+ $GLOBALS['t']['item_closed'] = 'Dit item laat geen commentaren toe.';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-11-26 18:15:02 UTC (rev 2242)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-11-27 15:00:07 UTC (rev 2243)
+@@ -74,7 +74,7 @@
+             $form-&gt;addRule( 'useremail',   'required',      t( 'err_email' ) );
+             $form-&gt;addRule( 'userwebsite', 'httpurl',       t( 'err_website' ) );
+             $form-&gt;addRule( 'comment',     'required',      t( 'err_comment' ) );
+-            $form-&gt;addRule( 'comment',     'maxlength',     t( 'err_comment_length' ), 2048 );
++            $form-&gt;addRule( 'comment',     'maxlength',     t( 'err_comment_length' ), 1500 );
+             $form-&gt;addRule( 'comment',     'maxhyperlinks', t( 'err_comment_links' ), 1 );
+ 
+             // Add the filters
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000832.html">[ydf-devel] YDDatabaseObject bug
+</A></li>
+	<LI>Next message: <A HREF="000834.html">[ydf-devel] r2244 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#833">[ date ]</a>
+              <a href="thread.html#833">[ thread ]</a>
+              <a href="subject.html#833">[ subject ]</a>
+              <a href="author.html#833">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

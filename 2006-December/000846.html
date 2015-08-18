@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2255 - YDFramework2.0/trunk/examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2255%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200612171128.kBHBSwpq000716%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000845.html">
+   <LINK REL="Next"  HREF="000847.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2255 - YDFramework2.0/trunk/examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2255%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200612171128.kBHBSwpq000716%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2255 - YDFramework2.0/trunk/examples/weblog/manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Dec 17 12:28:58 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000845.html">[ydf-devel] r2254 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000847.html">[ydf-devel] r2256 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#846">[ date ]</a>
+              <a href="thread.html#846">[ thread ]</a>
+              <a href="subject.html#846">[ subject ]</a>
+              <a href="author.html#846">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-12-17 12:28:58 +0100 (Sun, 17 Dec 2006)
+New Revision: 2255
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+When you now edit comment spam, you can't change anything but you can now see the contents properly.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-12-10 00:40:52 UTC (rev 2254)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-12-17 11:28:58 UTC (rev 2255)
+@@ -133,7 +133,7 @@
+                         {$comment.userip}
+                     &lt;/td&gt;
+                     &lt;td class=&quot;adminRowR&quot;&gt;
+-                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$comment.id}&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+                         |
+                         &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$comment.id}&quot;
+                          onClick=&quot;return YDConfirmDelete( '{$comment.comment|bbcode|strip_tags|strip|truncate|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
+@@ -183,7 +183,13 @@
+         &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+             &lt;tr&gt;
+                 &lt;th class=&quot;adminRowLG&quot;&gt;&raquo; {t w=&quot;change_comment_desc&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowLGR&quot;&gt;&raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;&lt;/th&gt;
++                &lt;th class=&quot;adminRowLGR&quot;&gt;
++                    {if $comment.is_spam}
++                        &raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}?filter=spam&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;
++                    {else}
++                        &raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;
++                    {/if}
++                &lt;/th&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;item&quot;}&lt;/td&gt;
+@@ -203,31 +209,76 @@
+             &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.username.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowC&quot;&gt;{$form.username.html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $comment.is_spam}
++                        {$comment.username|default:'-'}
++                    {else}
++                        {$form.username.html}
++                    {/if}
++                &lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.useremail.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowC&quot;&gt;{$form.useremail.html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $comment.is_spam}
++                        {$comment.useremail|default:'-'}
++                    {else}
++                        {$form.useremail.html}
++                    {/if}
++                &lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.userwebsite.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowC&quot;&gt;{$form.userwebsite.html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $comment.is_spam}
++                        {$comment.userwebsite|default:'-'}
++                    {else}
++                        {$form.userwebsite.html}
++                    {/if}
++                &lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
+-                &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;
+-                    {$form.comment.label_html}
+-                    &lt;br/&gt;
+-                    {$form.comment.html}
+-                &lt;/td&gt;
++                {if $comment.is_spam}
++                    &lt;td class=&quot;adminRowL&quot;&gt;{$form.comment.label_html}&lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.comment|htmlentities|default:'-'}
++                    &lt;/td&gt;
++                {else}
++                    &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot;&gt;
++                        {$form.comment.label_html}
++                        &lt;br/&gt;
++                        {$form.comment.html}
++                    &lt;/td&gt;
++                {/if}
+             &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.created.html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $comment.is_spam}
++                        {$comment.created|date:'%Y/%m/%d %H:%M:%S'}
++                    {else}
++                        {$form.created.html}
++                    {/if}
++                &lt;/td&gt;
+             &lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_spam.label_html}&lt;/td&gt;
+-                &lt;td class=&quot;adminRowL&quot;&gt;{$form.is_spam.html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;
++                    {if $comment.is_spam}
++                        &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=mark_as_not_spam&amp;id={$comment.id}&quot;&gt;{t w=&quot;mark_as_not_spam&quot;}&lt;/a&gt;
++                    {else}
++                        {$form.is_spam.html}
++                    {/if}
++                &lt;/td&gt;
+             &lt;/tr&gt;
++            {if $comment.is_spam}
++                &lt;tr&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;weight&quot;}&lt;/td&gt;
++                    &lt;td class=&quot;adminRowL&quot;&gt;
++                        {$comment.comment|strlen}
++                    &lt;/td&gt;
++                &lt;/tr&gt;
++            {/if}
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowL&quot; colspan=&quot;2&quot; style=&quot;border: 0px;&quot;&gt;
+                     {$form._cmdSubmit.html}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000845.html">[ydf-devel] r2254 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000847.html">[ydf-devel] r2256 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#846">[ date ]</a>
+              <a href="thread.html#846">[ thread ]</a>
+              <a href="subject.html#846">[ subject ]</a>
+              <a href="author.html#846">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

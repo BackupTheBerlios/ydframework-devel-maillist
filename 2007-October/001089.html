@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2495 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2495%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200710172234.l9HMYkv1024575%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001088.html">
+   <LINK REL="Next"  HREF="001090.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2495 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2495%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200710172234.l9HMYkv1024575%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2495 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Oct 18 00:34:46 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001088.html">[ydf-devel] r2494 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="001090.html">[ydf-devel] r2496 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1089">[ date ]</a>
+              <a href="thread.html#1089">[ thread ]</a>
+              <a href="subject.html#1089">[ subject ]</a>
+              <a href="author.html#1089">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-10-18 00:34:36 +0200 (Thu, 18 Oct 2007)
+New Revision: 2495
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+NEW: validation rule 'safe' to check XSS code
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-10-15 12:46:44 UTC (rev 2494)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-10-17 22:34:36 UTC (rev 2495)
+@@ -196,6 +196,7 @@
+             $this-&gt;registerRule( 'country', array( 'YDValidateRules', 'country' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'state', array( 'YDValidateRules', 'state' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'checkboxgroupvalues', array( 'YDValidateRules', 'checkboxgroupvalues' ), 'YDValidateRules.php' );
++            $this-&gt;registerRule( 'safe', array( 'YDValidateRules', 'safe' ), 'YDValidateRules.php' );
+ 
+             // Add the filters
+             $this-&gt;registerFilter( 'trim', 'trim' );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-10-15 12:46:44 UTC (rev 2494)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-10-17 22:34:36 UTC (rev 2495)
+@@ -890,6 +890,19 @@
+             }
+         }
+ 
++
++        /**
++         *	This function returns true if the variable value is a safe html (do not contain possible XSS html code).
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	No options.
++         */
++        function safe( $val, $opts = array() ) {
++            require_once( YD_DIR_HOME . '/3rdparty/safehtml/classes/safehtml.php' );
++            $_safehtml = new safehtml();
++            return ( $_safehtml-&gt;parse( $val ) === $val );
++        }
++
+     }
+ 
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001088.html">[ydf-devel] r2494 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="001090.html">[ydf-devel] r2496 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1089">[ date ]</a>
+              <a href="thread.html#1089">[ thread ]</a>
+              <a href="subject.html#1089">[ subject ]</a>
+              <a href="author.html#1089">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

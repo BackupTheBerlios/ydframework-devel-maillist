@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2294 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2294%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701031250.l03Co4pY014860%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000885.html">
+   <LINK REL="Next"  HREF="000887.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2294 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2294%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701031250.l03Co4pY014860%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2294 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Jan  3 13:50:04 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000885.html">[ydf-devel] r2293 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000887.html">[ydf-devel] r2295 - in YDFramework2.0/trunk/examples: . adobe_spry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#886">[ date ]</a>
+              <a href="thread.html#886">[ thread ]</a>
+              <a href="subject.html#886">[ subject ]</a>
+              <a href="author.html#886">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-03 13:50:04 +0100 (Wed, 03 Jan 2007)
+New Revision: 2294
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+Log:
+Added the toXml function in YDArrayUtil.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-02 13:22:31 UTC (rev 2293)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-03 12:50:04 UTC (rev 2294)
+@@ -307,47 +307,74 @@
+          *                                  'full'   returns: array( -11 =&gt; '(GMT -11:00) Nome, Midway Island, Samoa', -10 =&gt; ...
+          *  @static
+          */
+-		function getGMT( $format = null ){
++        function getGMT( $format = null ){
++            $gmts = array(
++                '-11'   =&gt; array( '(GMT -11:00)', 'Nome, Midway Island, Samoa' ),
++                '-10'   =&gt; array( '(GMT -10:00)', 'Hawaii' ),
++                 '-9'   =&gt; array( '(GMT  -9:00)', 'Alaska' ),
++                 '-8'   =&gt; array( '(GMT  -8:00)', 'Pacific Time' ),
++                 '-7'   =&gt; array( '(GMT  -7:00)', 'Mountain Time' ),
++                 '-6'   =&gt; array( '(GMT  -6:00)', 'Central Time, Mexico City' ),
++                 '-5'   =&gt; array( '(GMT  -5:00)', 'Eastern Time, Bogota, Lima, Quito' ),
++                 '-4'   =&gt; array( '(GMT  -4:00)', 'Atlantic Time, Caracas, La Paz' ),
++                 '-3.5' =&gt; array( '(GMT  -3:30)', 'Newfoundland' ),
++                 '-3'   =&gt; array( '(GMT  -3:00)', 'Brazil, Buenos Aires, Georgetown, Falkland Is.' ),
++                 '-2'   =&gt; array( '(GMT  -2:00)', 'Mid-Atlantic, Ascention Is., St Helena' ),
++                 '-1'   =&gt; array( '(GMT  -1:00)', 'Azores, Cape Verde Islands' ),
++                  '0'   =&gt; array( '(GMT   0:00)', 'Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia' ),
++                  '1'   =&gt; array( '(GMT  +1:00)', 'Berlin, Brussels, Copenhagen, Madrid, Paris, Rome' ),
++                  '2'   =&gt; array( '(GMT  +2:00)', 'Kaliningrad, South Africa, Warsaw' ),
++                  '3'   =&gt; array( '(GMT  +3:00)', 'Baghdad, Riyadh, Moscow, Nairobi' ),
++                  '2.5' =&gt; array( '(GMT  +3:30)', 'Tehran' ),
++                  '4'   =&gt; array( '(GMT  +4:00)', 'Abu Dhabi, Baku, Muscat, Tbilisi' ),
++                  '4.5' =&gt; array( '(GMT  +4:30)', 'Kabul' ),
++                  '5'   =&gt; array( '(GMT  +5:00)', 'Islamabad, Karachi, Tashkent' ),
++                  '5.5' =&gt; array( '(GMT  +5:30)', 'Bombay, Calcutta, Madras, New Delhi' ),
++                  '6'   =&gt; array( '(GMT  +6:00)', 'Almaty, Colombo, Dhaka' ),
++                  '7'   =&gt; array( '(GMT  +7:00)', 'Bangkok, Hanoi, Jakarta' ),
++                  '8'   =&gt; array( '(GMT  +8:00)', 'Beijing, Hong Kong, Perth, Singapore, Taipei' ),
++                  '9'   =&gt; array( '(GMT  +9:00)', 'Osaka, Sapporo, Seoul, Tokyo, Yakutsk' ),
++                  '9.5' =&gt; array( '(GMT  +9:30)', 'Adelaide, Darwin' ),
++                 '10'   =&gt; array( '(GMT +10:00)', 'Melbourne, Papua New Guinea, Sydney, Vladivostok' ),
++                 '11'   =&gt; array( '(GMT +11:00)', 'Magadan, New Caledonia, Solomon Islands' ),
++                 '12'   =&gt; array( '(GMT +12:00)', 'Auckland, Wellington, Fiji, Marshall Island' )
++            );
++            if ( is_null( $format ) ) {
++                return $gmts;
++            }
++            foreach( $gmts as $t =&gt; $arr ){
++                if ( $format == 'simple' ) $gmts[ $t ] = $arr[ 0 ];
++                else                       $gmts[ $t ] = $arr[ 0 ] . ' ' . $arr[ 1 ];
++            }
++            return $gmts;
++        }
+ 
+-			$gmts = array(	'-11'   =&gt; array( '(GMT -11:00)', 'Nome, Midway Island, Samoa' ),
+-							'-10'   =&gt; array( '(GMT -10:00)', 'Hawaii' ),
+-							 '-9'   =&gt; array( '(GMT  -9:00)', 'Alaska' ),
+-							 '-8'   =&gt; array( '(GMT  -8:00)', 'Pacific Time' ),
+-							 '-7'   =&gt; array( '(GMT  -7:00)', 'Mountain Time' ),
+-							 '-6'   =&gt; array( '(GMT  -6:00)', 'Central Time, Mexico City' ),
+-							 '-5'   =&gt; array( '(GMT  -5:00)', 'Eastern Time, Bogota, Lima, Quito' ),
+-							 '-4'   =&gt; array( '(GMT  -4:00)', 'Atlantic Time, Caracas, La Paz' ),
+-							 '-3.5' =&gt; array( '(GMT  -3:30)', 'Newfoundland' ),
+-							 '-3'   =&gt; array( '(GMT  -3:00)', 'Brazil, Buenos Aires, Georgetown, Falkland Is.' ),
+-							 '-2'   =&gt; array( '(GMT  -2:00)', 'Mid-Atlantic, Ascention Is., St Helena' ),
+-							 '-1'   =&gt; array( '(GMT  -1:00)', 'Azores, Cape Verde Islands' ),
+-							  '0'   =&gt; array( '(GMT   0:00)', 'Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia' ),
+-							  '1'   =&gt; array( '(GMT  +1:00)', 'Berlin, Brussels, Copenhagen, Madrid, Paris, Rome' ),
+-							  '2'   =&gt; array( '(GMT  +2:00)', 'Kaliningrad, South Africa, Warsaw' ),
+-							  '3'   =&gt; array( '(GMT  +3:00)', 'Baghdad, Riyadh, Moscow, Nairobi' ),
+-							  '2.5' =&gt; array( '(GMT  +3:30)', 'Tehran' ),
+-							  '4'   =&gt; array( '(GMT  +4:00)', 'Abu Dhabi, Baku, Muscat, Tbilisi' ),
+-							  '4.5' =&gt; array( '(GMT  +4:30)', 'Kabul' ),
+-							  '5'   =&gt; array( '(GMT  +5:00)', 'Islamabad, Karachi, Tashkent' ),
+-						      '5.5' =&gt; array( '(GMT  +5:30)', 'Bombay, Calcutta, Madras, New Delhi' ),
+-							  '6'   =&gt; array( '(GMT  +6:00)', 'Almaty, Colombo, Dhaka' ),
+-							  '7'   =&gt; array( '(GMT  +7:00)', 'Bangkok, Hanoi, Jakarta' ),
+-							  '8'   =&gt; array( '(GMT  +8:00)', 'Beijing, Hong Kong, Perth, Singapore, Taipei' ),
+-							  '9'   =&gt; array( '(GMT  +9:00)', 'Osaka, Sapporo, Seoul, Tokyo, Yakutsk' ),
+-							  '9.5' =&gt; array( '(GMT  +9:30)', 'Adelaide, Darwin' ),
+-							 '10'   =&gt; array( '(GMT +10:00)', 'Melbourne, Papua New Guinea, Sydney, Vladivostok' ),
+-							 '11'   =&gt; array( '(GMT +11:00)', 'Magadan, New Caledonia, Solomon Islands' ),
+-							 '12'   =&gt; array( '(GMT +12:00)', 'Auckland, Wellington, Fiji, Marshall Island' ) );
+-			
+-			if ( is_null( $format ) ) return $gmts;
++        /**
++         *  This function will convert a database result array to XML
++         *
++         *  @param $array      The input array.
++         *
++         *  @returns       The array as an XML string.
++         *
++         *  @static
++         */
++        function toXml( $array ) {
++            $out = '';
++            foreach ( $array as $record ) {
++                $out .= sprintf( '&lt;row&gt;' );
++                foreach ( $record as $key=&gt;$val ) {
++                    if ( is_numeric( $val ) ) {
++                        $out .= sprintf( '&lt;%s&gt;%s&lt;/%s&gt;', $key, $val, $key );
++                    } else {
++                        $out .= sprintf( '&lt;%s&gt;&lt;![CDATA[%s]]&gt;&lt;/%s&gt;', $key, $val, $key );
++                    }
++                }
++                $out .= sprintf( '&lt;/row&gt;' );
++            }
++            $out = sprintf( '&lt;root&gt;%s&lt;/root&gt;', $out );
++            return '&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;' . $out;
++        }
+ 
+-			foreach( $gmts as $t =&gt; $arr ){
+-				if ( $format == 'simple' ) $gmts[ $t ] = $arr[ 0 ];
+-				else                       $gmts[ $t ] = $arr[ 0 ] . ' ' . $arr[ 1 ];
+-			}
+-
+-			return $gmts;
+-		}
+     }
+ 
+     /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000885.html">[ydf-devel] r2293 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000887.html">[ydf-devel] r2295 - in YDFramework2.0/trunk/examples: . adobe_spry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#886">[ date ]</a>
+              <a href="thread.html#886">[ thread ]</a>
+              <a href="subject.html#886">[ subject ]</a>
+              <a href="author.html#886">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

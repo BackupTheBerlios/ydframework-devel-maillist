@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1837 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1837%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604052142.k35LgPqZ001869%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000267.html">
+   <LINK REL="Next"  HREF="000269.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1837 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1837%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200604052142.k35LgPqZ001869%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1837 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at berlios.de
+       </A><BR>
+    <I>Wed Apr  5 23:42:25 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000267.html">[ydf-devel] r1836 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+        <LI>Next message: <A HREF="000269.html">[ydf-devel] r1838 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#268">[ date ]</a>
+              <a href="thread.html#268">[ thread ]</a>
+              <a href="subject.html#268">[ subject ]</a>
+              <a href="author.html#268">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-05 23:42:24 +0200 (Wed, 05 Apr 2006)
+New Revision: 1837
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+Log:
+new static method YDPath::getFreeSpace that returns the free disk space of a path
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-04-05 16:52:51 UTC (rev 1836)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2006-04-05 21:42:24 UTC (rev 1837)
+@@ -197,6 +197,35 @@
+         /**
+          *	@param $path	Path of the file or directory.
+          *
++         *	@param $format	(Optional) Boolean that defines if free space should be returned as bytes or formated
++         *
++         *	@param $decimals (Optional) Decimals to use when free space is formated
++         *
++         *	@returns	The number of bytes available on the specified path
++         *
++         *	@static
++         */
++        function getFreeSpace( $path, $format = false, $decimals = 1 ) {
++
++            // get free disk space on the path
++            $space = disk_free_space( $path );
++
++            // return number of bytes if we don't want to format
++            if ( $format == false ) return $space;
++
++            // include util lib
++            YDInclude( 'YDUtil.php' );
++
++            // return formated string
++            return YDStringUtil::formatFilesize( $space, $decimals );
++        }
++
++
++
++
++        /**
++         *	@param $path	Path of the file or directory.
++         *
+          *	@returns	The extension of the specified path string
+          *
+          *	@static
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000267.html">[ydf-devel] r1836 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+	<LI>Next message: <A HREF="000269.html">[ydf-devel] r1838 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#268">[ date ]</a>
+              <a href="thread.html#268">[ thread ]</a>
+              <a href="subject.html#268">[ subject ]</a>
+              <a href="author.html#268">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

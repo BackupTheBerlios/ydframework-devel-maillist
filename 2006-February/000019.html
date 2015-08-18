@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1649 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1649%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200602091346.k19DkXWZ007913%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000018.html">
+   <LINK REL="Next"  HREF="000021.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1649 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1649%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200602091346.k19DkXWZ007913%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1649 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at berlios.de
+       </A><BR>
+    <I>Thu Feb  9 14:46:33 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000018.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+        <LI>Next message: <A HREF="000021.html">[ydf-devel] Re: Bug/Feature Request database
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-02-09 14:46:09 +0100 (Thu, 09 Feb 2006)
+New Revision: 1649
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+response effects can be assigned to simple html ids and not only form elements
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-02-09 12:12:58 UTC (rev 1648)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-02-09 13:46:09 UTC (rev 1649)
+@@ -427,10 +427,21 @@
+ 
+ 			// initialize js to send
+ 			$js = '';
++
++			// test if effect id is a form element
++			if ( $this-&gt;form-&gt;isElement( $effect-&gt;getId() ) ){
++				
++				// get element
++				$elem = &amp; $this-&gt;form-&gt;getElement( $effect-&gt;getId() );		
++
++				// element id
++				$id = $elem-&gt;getAttribute( 'id' );
++			}else{
++			
++				// if effect id is not a form element then its a html id
++				$id = $effect-&gt;getId();
++			}
+ 		
+-			// element id
+-			$id = $this-&gt;form-&gt;getName() .'_'. $effect-&gt;getId();
+-		
+ 			// if some html id has not already an effect applyed we must send effect header
+ 			if (!in_array( $effect-&gt;getVariable(), $this-&gt;effects ))
+ 				$js = $effect-&gt;getJSHead( $id );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000018.html">[ydf-devel] simplify YDDatabase usage even more
+</A></li>
+	<LI>Next message: <A HREF="000021.html">[ydf-devel] Re: Bug/Feature Request database
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

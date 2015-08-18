@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061118142953.31695.qmail%40web54002.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000773.html">
+   <LINK REL="Next"  HREF="000779.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C20061118142953.31695.qmail%40web54002.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Sat Nov 18 15:29:53 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000773.html">[ydf-devel] r2214 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000779.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#774">[ date ]</a>
+              <a href="thread.html#774">[ thread ]</a>
+              <a href="subject.html#774">[ subject ]</a>
+              <a href="author.html#774">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>    Francisco Azevedo wrote:
+  
+Well, some fixes (related to addNode) were already done.. but in currentYDDatabaseTree3 (shame on me.. i didn't update YDDT2).
+Ok.
+  
+Graeme, i saw your fixes but i think we could have some problems too.I have fixed YDDatabaseTree3::moveNode.One think i would like to tell too is that i would prefer to delete YDDatabaseTree2 and use YDDatabaseTree3 since they use the same algorithmbut YDDatabaseTree3 is far the best implementation.So, please use YDDatabaseTree3 :)  
+I am switching my code to YDDatabaseTree3 (build 2214). I have had alook at the code and suggest some improvements and have identified somebugs.
+  
+   suggestion: move the methods escapeSql and escapeSqlArray toYDDatabaseObject since they would be useful there too.  
+   suggestion: there needs to be a method like the oldYDDatabaseTree that gets the tree as a traversed tree (I have had anattempt to implement this in the attached code, however it is not veryefficient). The method is YDDatabaseTree3::getTraversedTree()
+    
+   bug in build 2214: line 668 of YDDatabaseTree3.php - need to addstatement????:
+$new_lineage         = $new_parent_node[ $this-&gt;__lineage ] .$new_parent_id . '/';
+    
+   bug in build 2214: line 698 of YDDatabaseTree3.php -$this-&gt;_linage should be $this-&gt;lineage  
+   bug in build 2214: moveNode doesn't work for moving position of anode in the same parent or moving a node to a new parent.
+  
+I have copied the original test harness for database trees and createda new one called database_tree3.php. This uses YDDatabaseTree3 and hassome methods for testing moveNode. This is attached.
+
+There are still more problems with YDDatabaseTree3::moveNode. I haven'tbeen able to get it to work. The code results in positions of elementsbeing set to 0 which isn't right. I have attached a HTML file so youcan see node 362 (originally position 5) that now has position 0 afterI moved node 363 which was at position 6.
+      
+    * *positionDecrementNode( $id, $lock_branch = true )* - decrease the      position of the specified node within the current branch. If      lock_branch is set to false and the node's current position is 1      then the node will move up to the position one less than the      parent's position in the parent level.    
+    
+Yes, but i'm confused. :)Afaik, all your methods are difference forms of move, right?  
+Yes
+  
+So, with a original tree like:.+- A|+- B|  +- X|  +- Y|  |  +- G|  +- L|+- C   +- DSo, positionDecrementNode( X, false ) will result in:.+- A|+- X+- B|  +- Y|  |  +- G|  +- L|+- C   +- D  
+Yes
+  
+
+      
+    * *positionIncrementNode( $id, $lock_branch = true )* - increase the      position of the specified node within the current branch. If      lock_branch is set to false and the node's current position is the      highest in the current branch then the node will move up to the      position one greater than the parent's position in the parent level.    
+    
+So, with a original tree like:.+- A|+- B|  +- X|  +- Y|  |  +- G|  +- L|+- C   +- DSo, positionIncrementNode( G, false ) will result in:.+- A|+- B|  +- X|  +- Y|  +- G|  +- L|+- C   +- D  
+Yes
+  
+.. this sounds very strange to me.. but ok.  
+      
+    * *levelPromoteNode( $id )* - reduce the level of the specified node      by 1 and the position will be set to the position of the parent      node plus one.    
+    
+So, with a original tree like:.+- A|+- B|  +- X|  +- Y|  |  +- G|  +- L|+- C   +- DSo, levelPromoteNode( X ) will result in:.+- A|+- B|  +- Y|  |  +- G|  +- L|+- X|+- C   +- D  
+Yes
+  
+but.. should the position be PARENT - one ..(instead of +) ?  
+No. I think it is correct the way you have &quot;drawn&quot; it.
+  
+
+      
+    * *levelDemoteNode( $id )* - increase the level of the specified      node by making the node a child of its brother node (the brother      node with position one less than the subject node's original      position).    
+    
+So, with a original tree like:.+- A|+- B|  +- X|  +- Y|  |  +- G|  +- L|+- C   +- DSo, levelDemoteNode( Y ) will result in:.+- A|+- B|  +- X|  |  +- Y|  |     +- G|  +- L|+- C   +- DGraeme, my personal opinion is that these methods have &quot;strange&quot; resultsin some contexts and all can be done using the moveNode with some testsbefore.. but should we implement them in YDDT3?  
+These would only be implemented in YDDT3. Without these methods,position has to be manually calculated when moving a node from onebranch to the next. The simplicity of the parameter list means you onlyneed to know the id of the node you are moving and the direction youwant to move it (up, down, promote, demote). I can see these would beuseful in managing hierarchical blog categories, permission groups orstructured list data like multi-level menus.
+
+  
+Btw, please test YDDT3 moveNode and addNode.  
+
+Using the test harness, I am quite satisfied that addNode is workingquite well. moveNode still needs more work. One thing that you need toclarify in the comments for moveNode is whether moveNode is designedfor moving a node and all its children or whether it should only beused to move leaf nodes.
+
+Regards,
+
+Graeme
+
+
+ 
+---------------------------------
+Sponsored Link
+
+   Mortgage rates as low as 4.625% - $150,000 loan for $579 a month. Intro-*Terms
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment.html</A>&gt;
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment-0001.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment-0001.html</A>&gt;
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment-0002.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment-0002.html</A>&gt;
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment-0003.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/69e9313a/attachment-0003.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000773.html">[ydf-devel] r2214 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000779.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#774">[ date ]</a>
+              <a href="thread.html#774">[ thread ]</a>
+              <a href="subject.html#774">[ subject ]</a>
+              <a href="author.html#774">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

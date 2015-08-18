@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2298 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2298%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701071340.l07DedxD007480%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000889.html">
+   <LINK REL="Next"  HREF="000891.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2298 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2298%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701071340.l07DedxD007480%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2298 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan  7 14:40:39 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000889.html">[ydf-devel] r2297 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+</A></li>
+        <LI>Next message: <A HREF="000891.html">[ydf-devel] r2299 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#890">[ date ]</a>
+              <a href="thread.html#890">[ thread ]</a>
+              <a href="subject.html#890">[ subject ]</a>
+              <a href="author.html#890">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-07 14:40:38 +0100 (Sun, 07 Jan 2007)
+New Revision: 2298
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+Added a template modifier that converts and url to an absolute url.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-07 13:37:26 UTC (rev 2297)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-07 13:40:38 UTC (rev 2298)
+@@ -80,6 +80,7 @@
+                 $this-&gt;register_modifier( 'date_format', 'YDTemplate_modifier_date_format' );
+                 $this-&gt;register_modifier( 'dump', 'YDTemplate_modifier_dump' );
+                 $this-&gt;register_modifier( 'bbcode', 'YDTemplate_modifier_bbcode' );
++                $this-&gt;register_modifier( 'absoluteurl', 'YDTemplate_modifier_absoluteurl' );
+ 
+                 // Register the custom functions
+                 $this-&gt;register_function( 't', 'YDTemplate_function_t' );
+@@ -560,6 +561,17 @@
+     }
+ 
+     /**
++     *	This template modifier converts an url to an absolute one
++     *
++     *  @param  $url   The url to convert
++     *
++     *  @returns    The url formatted as an absolute url.
++     */
++    function YDTemplate_modifier_absoluteurl( $url ) {
++        return YDUrl::makeLinkAbsolute( $url );
++    }
++
++    /**
+      *	This template modifier formats a numeric value to a human readable file size.
+      *
+      *  @param  $size   The numeric value to format.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000889.html">[ydf-devel] r2297 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+</A></li>
+	<LI>Next message: <A HREF="000891.html">[ydf-devel] r2299 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#890">[ date ]</a>
+              <a href="thread.html#890">[ thread ]</a>
+              <a href="subject.html#890">[ subject ]</a>
+              <a href="author.html#890">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1708%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C306340e00602240523s59dcc66fo%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000120.html">
+   <LINK REL="Next"  HREF="000139.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>ydf poi</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1708%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C306340e00602240523s59dcc66fo%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include">ydfpoi at gmail.com
+       </A><BR>
+    <I>Fri Feb 24 14:23:01 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000120.html">[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000139.html">[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#137">[ date ]</a>
+              <a href="thread.html#137">[ thread ]</a>
+              <a href="subject.html#137">[ subject ]</a>
+              <a href="author.html#137">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Pieter,
+
+In order to work as intended, the YDWeblogAdminRequest::_getCookiePath
+function has to be flipped as follows:
+
+replace line 347:
+$cookiePath = str_replace( '\\', '/', rtrim( $cookiePath, '/' ) );
+
+with this new line:
+$cookiePath = rtrim( str_replace( '\\', '/', $cookiePath ), '/' );
+
+Kind regards
+
+2006/2/21, pclaerhout at BerliOS &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pclaerhout at berlios.de</A>&gt;:
+&gt;<i> Author: pclaerhout
+</I>&gt;<i> Date: 2006-02-21 09:04:45 +0100 (Tue, 21 Feb 2006)
+</I>&gt;<i> New Revision: 1708
+</I>&gt;<i>
+</I>&gt;<i> Modified:
+</I>&gt;<i>    YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+</I>&gt;<i> Log:
+</I>&gt;<i> Fixed the YDWeblogAdminRequest::_getCookiePath function so that it returns a valid path in all cases.
+</I>&gt;<i> It now strips unneeded characters and makes sure the path ends with a forward slash.
+</I>&gt;<i> If the path is empty, it now correctly return the root (single forward slash).
+</I>&gt;<i>
+</I>&gt;<i> [...]
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>
+
+--
+po&#239;
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000120.html">[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000139.html">[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#137">[ date ]</a>
+              <a href="thread.html#137">[ thread ]</a>
+              <a href="subject.html#137">[ subject ]</a>
+              <a href="author.html#137">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

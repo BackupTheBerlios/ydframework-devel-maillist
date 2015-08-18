@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseObject bug
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject%20bug&In-Reply-To=%3C1164660184.v2.fusewebmail-15630%40f%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000834.html">
+   <LINK REL="Next"  HREF="000836.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseObject bug</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseObject%20bug&In-Reply-To=%3C1164660184.v2.fusewebmail-15630%40f%3E"
+       TITLE="[ydf-devel] YDDatabaseObject bug">francisco at fusemail.com
+       </A><BR>
+    <I>Mon Nov 27 21:43:04 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000834.html">[ydf-devel] r2244 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000836.html">[ydf-devel] r2245 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#835">[ date ]</a>
+              <a href="thread.html#835">[ thread ]</a>
+              <a href="subject.html#835">[ subject ]</a>
+              <a href="author.html#835">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> The problem is that when i create the users YDObject extension i cannot
+</I>&gt;<i> register the second relation:
+</I>&gt;<i>
+</I>&gt;<i> $rel = &amp; $this-&gt;registerRelation( 'company_shop', false, 'companies' );
+</I>&gt;<i> $rel-&gt;setLocalKey( 'company_shop' );
+</I>&gt;<i> $rel-&gt;setForeignKey( 'id' );
+</I>&gt;<i>
+</I>&gt;<i> $rel = &amp; $this-&gt;registerRelation( 'company_rep', false, 'companies' );
+</I>&gt;<i> $rel-&gt;setLocalKey( 'company_rep' );
+</I>&gt;<i> $rel-&gt;setForeignKey( 'id' );
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> It says 'companies' is already in use. Of course is in use but i want to
+</I>&gt;<i> get all details of repair companies too when finding users:
+</I>
+
+That's because i didn't use setForeignVar().
+
+
+$rel = &amp; $this-&gt;registerRelation( 'company_shop', false, 'companies' );
+$rel-&gt;setLocalKey( 'company_shop' );
+$rel-&gt;setForeignKey( 'id' );
+$rel-&gt;setForeignVar( 'shop' );
+
+$rel = &amp; $this-&gt;registerRelation( 'company_rep', false, 'companies' );
+$rel-&gt;setLocalKey( 'company_rep' );
+$rel-&gt;setForeignKey( 'id' );
+$rel-&gt;setForeignVar( 'repair' );
+
+
+Francisco A
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000834.html">[ydf-devel] r2244 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000836.html">[ydf-devel] r2245 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#835">[ date ]</a>
+              <a href="thread.html#835">[ thread ]</a>
+              <a href="subject.html#835">[ subject ]</a>
+              <a href="author.html#835">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

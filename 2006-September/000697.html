@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2168 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2168%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200609271903.k8RJ3APf026526%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000696.html">
+   <LINK REL="Next"  HREF="000698.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2168 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2168%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200609271903.k8RJ3APf026526%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2168 - YDFramework2.0/trunk/YDFramework2">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Sep 27 21:03:10 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000696.html">[ydf-devel] r2167 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000698.html">[ydf-devel] r2169 -	YDFramework2.0/trunk/YDFramework2/addons/YDBBCode
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#697">[ date ]</a>
+              <a href="thread.html#697">[ thread ]</a>
+              <a href="subject.html#697">[ subject ]</a>
+              <a href="author.html#697">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-27 21:03:10 +0200 (Wed, 27 Sep 2006)
+New Revision: 2168
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+Fixed an error in the t function where sprintf was trying to replace % it shouldn't.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-09-27 18:48:23 UTC (rev 2167)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-09-27 19:03:10 UTC (rev 2168)
+@@ -268,7 +268,7 @@
+             return '';
+         }
+         $t = strtolower( $t );
+-        $out = ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;%$t%&quot; );
++        $out = ( array_key_exists( $t, $GLOBALS['t'] ) ? $GLOBALS['t'][$t] : &quot;&lt;font color=\&quot;red\&quot;&gt;%%$t%%&lt;/font&gt;&quot; );
+         array_unshift( $params, $out );
+         return call_user_func_array( 'sprintf', $params );
+     }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000696.html">[ydf-devel] r2167 - in YDFramework2.0/trunk/YDFramework2: .	YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000698.html">[ydf-devel] r2169 -	YDFramework2.0/trunk/YDFramework2/addons/YDBBCode
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#697">[ date ]</a>
+              <a href="thread.html#697">[ thread ]</a>
+              <a href="subject.html#697">[ subject ]</a>
+              <a href="author.html#697">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

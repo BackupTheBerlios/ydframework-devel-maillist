@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1976 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1976%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200607261610.k6QGAWQW019294%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000470.html">
+   <LINK REL="Next"  HREF="000472.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1976 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1976%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200607261610.k6QGAWQW019294%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1976 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Jul 26 18:10:32 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000470.html">[ydf-devel] YDDate::getYear
+</A></li>
+        <LI>Next message: <A HREF="000472.html">[ydf-devel] r1977 - in YDFramework2.0/trunk/YDFramework2: YDClasses	YDClasses/YDCMComponent YDClasses/YDCMComponent/languages	YDClasses/YDCMComponent/languages/YDCMUsers	YDClasses/YDFormElements addons/YDCMHelpdesk addons/YDCMLink	addons/YDCMPage addons/YDCMRootmenu
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#471">[ date ]</a>
+              <a href="thread.html#471">[ thread ]</a>
+              <a href="subject.html#471">[ subject ]</a>
+              <a href="author.html#471">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-07-26 18:10:19 +0200 (Wed, 26 Jul 2006)
+New Revision: 1976
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+YDForm::getErrors now returns only unique error messages
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-07-17 22:49:40 UTC (rev 1975)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-07-26 16:10:19 UTC (rev 1976)
+@@ -701,9 +701,7 @@
+          *  This function returns all active error messages
+          *
+          *  @param $asString  (Optional) Boolean value that defines if we want a string or an array
+-         *
+-         *  @param $separator  (Optional) String that separates all messages (used when we want errors as string)
+-         *
++         *  @param $separator  (Optional) String that separates all messages (used when we want errors as string)         *
+          *  @param $initial  (Optional) String to prepend to all messages (used when we want errors as string)
+          *
+          *  @returns    An array/string containing all active error messages
+@@ -711,7 +709,7 @@
+         function getErrors( $asString = false, $separator = &quot;\n&quot;, $initial = '' ) {
+ 
+             // get form errors
+-            $errors = array_values( $this-&gt;_errors );
++            $errors = array_unique( array_values( $this-&gt;_errors ) );
+ 
+             // if we want a string, we must implode with custom separator and use initial string
+             if ( $asString ) $errors = $initial . implode( $separator, $errors );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000470.html">[ydf-devel] YDDate::getYear
+</A></li>
+	<LI>Next message: <A HREF="000472.html">[ydf-devel] r1977 - in YDFramework2.0/trunk/YDFramework2: YDClasses	YDClasses/YDCMComponent YDClasses/YDCMComponent/languages	YDClasses/YDCMComponent/languages/YDCMUsers	YDClasses/YDFormElements addons/YDCMHelpdesk addons/YDCMLink	addons/YDCMPage addons/YDCMRootmenu
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#471">[ date ]</a>
+              <a href="thread.html#471">[ thread ]</a>
+              <a href="subject.html#471">[ subject ]</a>
+              <a href="author.html#471">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

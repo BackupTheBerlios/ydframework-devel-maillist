@@ -1,0 +1,313 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2342 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2342%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms&In-Reply-To=%3C200701231102.l0NB2C6x019545%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000934.html">
+   <LINK REL="Next"  HREF="000936.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2342 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2342%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms&In-Reply-To=%3C200701231102.l0NB2C6x019545%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2342 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 12:02:12 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000934.html">[ydf-devel] r2341 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000936.html">[ydf-devel] r2343 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#935">[ date ]</a>
+              <a href="thread.html#935">[ thread ]</a>
+              <a href="subject.html#935">[ subject ]</a>
+              <a href="author.html#935">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-23 12:02:11 +0100 (Tue, 23 Jan 2007)
+New Revision: 2342
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/examples/simplecms/admin.php
+   YDFramework2.0/trunk/examples/simplecms/index.php
+Log:
+Introduced the following new constants:
+- YD_SIMPLECMS_SCOPE_PUBLIC
+- YD_SIMPLECMS_SCOPE_ADMIN
+
+Did some refactoring as well to use these constants on the code.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 08:36:20 UTC (rev 2341)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-23 11:02:11 UTC (rev 2342)
+@@ -51,10 +51,7 @@
+      *      the template)
+      *
+      *  @todo
+-     *      Make the run method a static method of the request class
+-     *
+-     *  @todo
+-     *      make login module based?
++     *      Make login module based?
+      */
+ 
+     // Check if the framework is loaded
+@@ -69,6 +66,8 @@
+     define( 'YD_SIMPLECMS_MODULE_PATTERN', YD_SIMPLECMS_MODULE_PREFIX . '*' . YD_SIMPLECMS_MODULE_EXT );
+     define( 'YD_SIMPLECMS_MODULE_DIR',     dirname( YD_SELF_FILE ) . '/includes/modules' );
+     define( 'YD_SIMPLECMS_SKINS_DIR',      dirname( YD_SELF_FILE ) . '/includes/skins_' );
++    define( 'YD_SIMPLECMS_SCOPE_PUBLIC',   'public' );
++    define( 'YD_SIMPLECMS_SCOPE_ADMIN',    'admin' );
+ 
+     // Configuration
+     YDConfig::set( 'YD_AUTO_EXECUTE', false );
+@@ -77,13 +76,13 @@
+     $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] = array();
+ 
+     // Includes
+-    YDInclude( 'YDForm.php' );
+-    YDInclude( 'YDRequest.php' );
+-    YDInclude( 'YDDatabase.php' );
+-    YDInclude( 'YDTemplate.php' );
+-    YDInclude( 'YDFileSystem.php' );
+-    YDInclude( 'YDF2_process.php' );
+-    YDInclude( 'YDSimpleCMS_CoreModules.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDForm.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDRequest.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDDatabase.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDTemplate.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDFileSystem.php' );
++    include_once( YD_DIR_HOME . '/YDF2_process.php' );
++    include_once( dirname( __FILE__ ) . '/YDSimpleCMS_CoreModules.php' );
+ 
+     /**
+      *  This is the global YDSimpleCMS class that houses all cms related functions.
+@@ -95,22 +94,39 @@
+         /**
+          *  This is a static function that will run a request.
+          *
+-         *  @param  $scope  The scope in which the request needs to run. You can choose between public and admin. If you
+-         *                  choose admin, authentication will be enforced, with public, it's not.
++         *  @param  $scope  The scope in which the request needs to run. You can choose between 
++         *                  YD_SIMPLECMS_SCOPE_PUBLIC and YD_SIMPLECMS_SCOPE_ADMIN. If you choose
++         *                  YD_SIMPLECMS_SCOPE_ADMIN, authentication will be enforced, with YD_SIMPLECMS_SCOPE_PUBLIC,
++         *                  it's not.
+          *
+          *  @static
+-         *
+-         *  @todo
+-         *      Replace scope with a defined constant (YD_SIMPLECMS_SCOPE_PUBLIC and YD_SIMPLECMS_SCOPE_ADMIN)
+          */
+         function run( $scope ) {
+-            $baseClass = ( strtolower( $scope ) == 'public' ) ? 'YDSimpleCMSPublicRequest' : 'YDSimpleCMSAdminRequest';
++            $baseClass = ( strtolower( $scope ) == YD_SIMPLECMS_SCOPE_PUBLIC ) ? 'YDSimpleCMSPublicRequest' : 'YDSimpleCMSAdminRequest';
+             $clsInst = new YDExecutor( $baseClass . '.php' );
+             @session_start();
+             $clsInst-&gt;execute();
+         }
+ 
+         /**
++         *  This is a static function that will run a public request.
++         *
++         *  @static
++         */
++        function runPublicRequest() {
++            YDSimpleCMS::run( YD_SIMPLECMS_SCOPE_PUBLIC );
++        }
++
++        /**
++         *  This is a static function that will run an admin request.
++         *
++         *  @static
++         */
++        function runAdminRequest() {
++            YDSimpleCMS::run( YD_SIMPLECMS_SCOPE_ADMIN );
++        }
++
++        /**
+          *  This function will show an error for the CMS application.
+          *
+          *  The parameters that are supported are the same ones as the sprintf and printf functions.
+@@ -209,14 +225,15 @@
+         /**
+          *  The scope which is going to be used for the template.
+          *
+-         *  Can be either public or admin.
++         *  Can be either YD_SIMPLECMS_SCOPE_PUBLIC or YD_SIMPLECMS_SCOPE_ADMIN.
+          */
+         var $scope;
+ 
+         /**
+          *  The class constructor the the YDSimpleCMSTemplate class.
+          *
+-         *  @param  $scope  The scope which is going to be used for the template. Can be either public or admin.
++         *  @param  $scope  The scope which is going to be used for the template. Can be either
++         *                  YD_SIMPLECMS_SCOPE_PUBLIC or YD_SIMPLECMS_SCOPE_ADMIN.
+          */
+         function YDSimpleCMSTemplate( $scope ) {
+ 
+@@ -244,7 +261,7 @@
+ 
+             // Set the variables
+             $this-&gt;template_dir = YD_SIMPLECMS_SKINS_DIR . $this-&gt;scope;
+-            if ( $this-&gt;scope == 'public' ) {
++            if ( $this-&gt;scope == YD_SIMPLECMS_SCOPE_PUBLIC ) {
+                 $this-&gt;template_dir .= '/' . YDConfig::get( 'YD_SIMPLECMS_PUBLIC_SKIN', 'default' );
+             }
+ 
+@@ -290,9 +307,9 @@
+         /**
+          *  The scope which is going to be used for the template.
+          *
+-         *  Can be either public or admin.
++         *  Can be either YD_SIMPLECMS_SCOPE_PUBLIC or YD_SIMPLECMS_SCOPE_ADMIN.
+          */
+-        var $requestScope  = 'public';
++        var $requestScope  = YD_SIMPLECMS_SCOPE_PUBLIC;
+ 
+         /**
+          *  The default module for the request class.
+@@ -344,9 +361,9 @@
+         /**
+          *  The scope which is going to be used for the template.
+          *
+-         *  Can be either public or admin.
++         *  Can be either YD_SIMPLECMS_SCOPE_PUBLIC or YD_SIMPLECMS_SCOPE_ADMIN.
+          */
+-        var $requestScope  = 'admin';
++        var $requestScope  = YD_SIMPLECMS_SCOPE_ADMIN;
+ 
+         /**
+          *  The default module for the request class.
+@@ -369,7 +386,7 @@
+             $this-&gt;setRequiresAuthentication( true );
+ 
+             // Instantiate the template object
+-            $this-&gt;tpl = new YDSimpleCMSTemplate( 'admin' );
++            $this-&gt;tpl = new YDSimpleCMSTemplate( YD_SIMPLECMS_SCOPE_ADMIN );
+ 
+             // Get the site id
+             $this-&gt;siteId = YDConfig::get( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
+@@ -546,7 +563,7 @@
+         /**
+          *  The current scope of the CMS module.
+          *
+-         *  Currently, the value can only be public or admin.
++         *  Currently, the value can only be YD_SIMPLECMS_SCOPE_PUBLIC or YD_SIMPLECMS_SCOPE_ADMIN.
+          */
+         var $currentScope  = null;
+ 
+@@ -562,7 +579,7 @@
+          */
+         function YDSimpleCMSModule( $manager ) {
+             $this-&gt;manager = &amp; $manager;
+-            $this-&gt;tpl = new YDSimpleCMSTemplate( 'public' );
++            $this-&gt;tpl = new YDSimpleCMSTemplate( YD_SIMPLECMS_SCOPE_PUBLIC );
+         }
+ 
+         /**
+@@ -606,7 +623,7 @@
+          *  This function will output the template associated with this module. It will also assign the following
+          *  standard variables to the template instance:
+          *      - currentAction: the name of the current action
+-         *      - currentScope: the current scope of the module ('public' or 'admin')
++         *      - currentScope: the current scope of the module (YD_SIMPLECMS_SCOPE_PUBLIC or YD_SIMPLECMS_SCOPE_ADMIN)
+          *      - adminMenu: an array containing all the menus and menu items for the admin section.
+          *      - currentUser: the full user details for the user which is currently logged in. If no user is logged in,
+          *                     this variable will contain a null value.
+@@ -629,7 +646,8 @@
+          *
+          *  This function gets triggered by the module manager when this one wants to trigger an action.
+          *
+-         *  @param  $scope  The scope in which to run the action.
++         *  @param  $scope  The scope in which to run the action. Can be YD_SIMPLECMS_SCOPE_PUBLIC or
++         *                  YD_SIMPLECMS_SCOPE_ADMIN
+          *  @param  $action The action to run.
+          */
+         function runAction( $scope, $action ) {
+@@ -673,7 +691,8 @@
+          *      This function should only be called after the loadAllModules function has been executed. If not, this
+          *      function will fail as the include files are not loaded yet.
+          *
+-         *  @param  $scope  The scope in which to run the module and action. Can be 'public' or 'admin'.
++         *  @param  $scope  The scope in which to run the module and action. Can be YD_SIMPLECMS_SCOPE_PUBLIC or
++         *                  YD_SIMPLECMS_SCOPE_ADMIN.
+          *  @param  $module The name of the module to run.
+          *  @param  $action The name of the action to run.
+          */
+@@ -699,7 +718,7 @@
+             $moduleInstance-&gt;tpl-&gt;scope = $scope;
+ 
+             // Sort the admin menu items
+-            if ( $scope == 'admin' ) {
++            if ( $scope == YD_SIMPLECMS_SCOPE_ADMIN ) {
+                 ksort( $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] );
+                 foreach ( $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] as $key=&gt;$val ) {
+                     if ( isset( $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'][$key]['children'] ) ) {
+
+Modified: YDFramework2.0/trunk/examples/simplecms/admin.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/admin.php	2007-01-23 08:36:20 UTC (rev 2341)
++++ YDFramework2.0/trunk/examples/simplecms/admin.php	2007-01-23 11:02:11 UTC (rev 2342)
+@@ -4,6 +4,6 @@
+     include_once( dirname( __FILE__ ) . '/includes/YDSimpleCMSApp.php' );
+ 
+     // Run the CMS request
+-    YDSimpleCMS::run( 'admin' );
++    YDSimpleCMS::runAdminRequest();
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/simplecms/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/index.php	2007-01-23 08:36:20 UTC (rev 2341)
++++ YDFramework2.0/trunk/examples/simplecms/index.php	2007-01-23 11:02:11 UTC (rev 2342)
+@@ -4,6 +4,6 @@
+     include_once( dirname( __FILE__ ) . '/includes/YDSimpleCMSApp.php' );
+ 
+     // Run the CMS request
+-    YDSimpleCMS::run( 'public' );
++    YDSimpleCMS::runPublicRequest();
+ 
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000934.html">[ydf-devel] r2341 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000936.html">[ydf-devel] r2343 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#935">[ date ]</a>
+              <a href="thread.html#935">[ thread ]</a>
+              <a href="subject.html#935">[ subject ]</a>
+              <a href="author.html#935">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

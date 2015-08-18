@@ -1,0 +1,309 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1988 - YDFramework2.0/trunk/examples/database_object
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1988%20-%20YDFramework2.0/trunk/examples/database_object&In-Reply-To=%3C200608080539.k785devp016519%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000494.html">
+   <LINK REL="Next"  HREF="000496.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1988 - YDFramework2.0/trunk/examples/database_object</H1>
+    <B>david_db at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1988%20-%20YDFramework2.0/trunk/examples/database_object&In-Reply-To=%3C200608080539.k785devp016519%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1988 - YDFramework2.0/trunk/examples/database_object">david_db at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  8 07:39:40 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000494.html">[ydf-devel] r1987 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery
+</A></li>
+        <LI>Next message: <A HREF="000496.html">[ydf-devel] r1989 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#495">[ date ]</a>
+              <a href="thread.html#495">[ thread ]</a>
+              <a href="subject.html#495">[ subject ]</a>
+              <a href="author.html#495">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-08-08 07:39:34 +0200 (Tue, 08 Aug 2006)
+New Revision: 1988
+
+Modified:
+   YDFramework2.0/trunk/examples/database_object/index.php
+Log:
+Fixed YDDatabaseObject examples.
+
+Modified: YDFramework2.0/trunk/examples/database_object/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/database_object/index.php	2006-08-08 00:34:59 UTC (rev 1987)
++++ YDFramework2.0/trunk/examples/database_object/index.php	2006-08-08 05:39:34 UTC (rev 1988)
+@@ -1,13 +1,21 @@
+ &lt;?php
+ 
+     include_once( dirname( __FILE__ ) . '/includes/config.php' );
+-
++    
+     class index extends YDDatabaseObjectRequest {
+         
+         function index() {
+             $this-&gt;YDDatabaseObjectRequest();
+         }
+         
++        function getLastYDSqlQuery() {
++            $arr = explode( &quot;\r\n&quot;, end( $GLOBALS['YD_SQL_QUERY'] ) );
++            foreach ( $arr as $k =&gt; $str ) {
++                $arr[$k] = preg_replace( &quot;/^(\[.*\])/&quot;, &quot;&quot;, trim( $str ) );
++            }
++            return implode( '', $arr );
++        }
++        
+         function actionGroups() {
+             
+             $group = YDDatabaseObject::getInstance( 'group' );
+@@ -19,7 +27,7 @@
+             $group-&gt;insert();
+             
+             $this-&gt;template-&gt;assign( 'group1', $group );
+-            $this-&gt;template-&gt;assign( 'group1_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'group1_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;reset();
+             $group-&gt;name = 'Group B';
+@@ -27,7 +35,7 @@
+             $group-&gt;insert();
+             
+             $this-&gt;template-&gt;assign( 'group2', $group );
+-            $this-&gt;template-&gt;assign( 'group2_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'group2_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;reset();
+             $group-&gt;name = 'Group C';
+@@ -35,7 +43,7 @@
+             $group-&gt;insert();
+             
+             $this-&gt;template-&gt;assign( 'group3', $group );
+-            $this-&gt;template-&gt;assign( 'group3_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'group3_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;reset();
+             $group-&gt;name = 'Group D';
+@@ -43,7 +51,7 @@
+             $group-&gt;insert();
+             
+             $this-&gt;template-&gt;assign( 'group4', $group );
+-            $this-&gt;template-&gt;assign( 'group4_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'group4_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;reset(); // resets all data
+             $group-&gt;find();
+@@ -54,7 +62,7 @@
+             }
+             
+             $this-&gt;template-&gt;assign( 'find1_results', implode( '', $results ) );
+-            $this-&gt;template-&gt;assign( 'find1_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'find1_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;reset(); // resets all data
+             $group-&gt;active = 0;
+@@ -66,14 +74,14 @@
+             }
+             
+             $this-&gt;template-&gt;assign( 'find2_results', implode( '', $results ) );
+-            $this-&gt;template-&gt;assign( 'find2_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'find2_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;active = 1;
+             $group-&gt;update();
+-            $this-&gt;template-&gt;assign( 'group4_update_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'group4_update_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;delete();
+-            $this-&gt;template-&gt;assign( 'group4_delete_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'group4_delete_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $group-&gt;reset(); // resets all data
+             $group-&gt;find();
+@@ -106,7 +114,7 @@
+             $user-&gt;is_admin = 1;
+             $user-&gt;birthday = 19700516;
+             $user-&gt;insert(); // {$insert1_sql}
+-            $this-&gt;template-&gt;assign( 'insert1_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert1_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user-&gt;reset();
+             $user-&gt;name = 'User B';
+@@ -115,7 +123,7 @@
+             $user-&gt;is_admin = 0;
+             $user-&gt;birthday = 19500516;
+             $user-&gt;insert(); // {$insert2_sql}
+-            $this-&gt;template-&gt;assign( 'insert2_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert2_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user-&gt;reset();
+             $user-&gt;name = 'User C';
+@@ -123,7 +131,7 @@
+             $user-&gt;country = 'Colombia';
+             $user-&gt;birthday = 19811120;
+             $user-&gt;insert(); // {$insert3_sql}
+-            $this-&gt;template-&gt;assign( 'insert3_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert3_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user-&gt;reset();
+             $user-&gt;name = 'User A';
+@@ -141,7 +149,7 @@
+             $this-&gt;template-&gt;assign( 'age_value', 'age = ' . $user-&gt;get( 'age' ) );
+             
+             $user-&gt;update();
+-            $this-&gt;template-&gt;assign( 'update1_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'update1_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $this-&gt;template-&gt;display( 'users' );
+             
+@@ -176,49 +184,49 @@
+             $phone-&gt;number = '1111-1111';
+             $phone-&gt;ord = 1;
+             $phone-&gt;insert(); // {$insert1_sql}
+-            $this-&gt;template-&gt;assign( 'insert1_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert1_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;number = '1222-2222';
+             $phone-&gt;ord = 2; 
+             $phone-&gt;insert(); // {$insert2_sql}
+-            $this-&gt;template-&gt;assign( 'insert2_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert2_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;number = '1333-3333';
+             $phone-&gt;ord = 3;
+             $phone-&gt;insert(); // {$insert3_sql}
+-            $this-&gt;template-&gt;assign( 'insert3_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert3_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;user_id = 2;
+             $phone-&gt;number = '2444-4444';
+             $phone-&gt;ord = 1;
+             $phone-&gt;insert(); // {$insert4_sql}
+-            $this-&gt;template-&gt;assign( 'insert4_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert4_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;number = '2555-5555';
+             $phone-&gt;ord = 2; 
+             $phone-&gt;insert(); // {$insert5_sql}
+-            $this-&gt;template-&gt;assign( 'insert5_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert5_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;number = '2666-6666';
+             $phone-&gt;ord = 3;
+             $phone-&gt;insert(); // {$insert6_sql}
+-            $this-&gt;template-&gt;assign( 'insert6_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert6_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;user_id = 3;
+             $phone-&gt;number = '3777-7777';
+             $phone-&gt;ord = 1;
+             $phone-&gt;insert(); // {$insert7_sql}
+-            $this-&gt;template-&gt;assign( 'insert7_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert7_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;number = '3888-8888';
+             $phone-&gt;ord = 2; 
+             $phone-&gt;insert(); // {$insert8_sql}
+-            $this-&gt;template-&gt;assign( 'insert8_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert8_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $phone-&gt;number = '3999-9999';
+             $phone-&gt;ord = 3;
+             $phone-&gt;insert(); // {$insert9_sql}
+-            $this-&gt;template-&gt;assign( 'insert9_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert9_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user-&gt;id = 1;
+             $user-&gt;find( 'phone' );
+@@ -261,45 +269,45 @@
+             $user_group-&gt;joined = 20050515;
+             $user_group-&gt;active = 1;
+             $user_group-&gt;insert(); // {$insert1_sql}
+-            $this-&gt;template-&gt;assign( 'insert1_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert1_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user_group-&gt;group_id = 2;
+             $user_group-&gt;joined = 20050513;
+             $user_group-&gt;active = 1;
+             $user_group-&gt;insert(); // {$insert2_sql}
+-            $this-&gt;template-&gt;assign( 'insert2_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert2_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user_group-&gt;group_id = 3;
+             $user_group-&gt;joined = 20050514;
+             $user_group-&gt;active = 0;
+             $user_group-&gt;insert(); // {$insert3_sql}
+-            $this-&gt;template-&gt;assign( 'insert3_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert3_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user_group-&gt;user_id = 2;
+             $user_group-&gt;group_id = 1;
+             $user_group-&gt;joined = 20050412;
+             $user_group-&gt;active = 0;
+             $user_group-&gt;insert(); // {$insert4_sql}
+-            $this-&gt;template-&gt;assign( 'insert4_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert4_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user_group-&gt;group_id = 3;
+             $user_group-&gt;joined = 20050830;
+             $user_group-&gt;active = 1;
+             $user_group-&gt;insert(); // {$insert5_sql}
+-            $this-&gt;template-&gt;assign( 'insert5_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert5_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user_group-&gt;user_id = 3;
+             $user_group-&gt;group_id = 2;
+             $user_group-&gt;joined = 20040101;
+             $user_group-&gt;active = 1;
+             $user_group-&gt;insert(); // {$insert6_sql}
+-            $this-&gt;template-&gt;assign( 'insert6_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert6_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user_group-&gt;group_id = 3;
+             $user_group-&gt;joined = 20051225;
+             $user_group-&gt;active = 1;
+             $user_group-&gt;insert(); // {$insert7_sql}
+-            $this-&gt;template-&gt;assign( 'insert7_sql', end( $GLOBALS['YD_SQL_QUERY'] ) );
++            $this-&gt;template-&gt;assign( 'insert7_sql', $this-&gt;getLastYDSqlQuery() );
+             
+             $user-&gt;id = 1;
+             $user-&gt;find( 'group' );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000494.html">[ydf-devel] r1987 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery
+</A></li>
+	<LI>Next message: <A HREF="000496.html">[ydf-devel] r1989 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#495">[ date ]</a>
+              <a href="thread.html#495">[ thread ]</a>
+              <a href="subject.html#495">[ subject ]</a>
+              <a href="author.html#495">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

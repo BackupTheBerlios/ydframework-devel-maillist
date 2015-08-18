@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseTree2  :)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree2%20%20%3A%29&In-Reply-To=%3C454E184E.7050006%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000740.html">
+   <LINK REL="Next"  HREF="000744.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseTree2  :)</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree2%20%20%3A%29&In-Reply-To=%3C454E184E.7050006%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDDatabaseTree2  :)">francisco at fusemail.com
+       </A><BR>
+    <I>Sun Nov  5 17:58:54 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000740.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+        <LI>Next message: <A HREF="000744.html">[ydf-devel] YDDatabaseTree2 :)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#741">[ date ]</a>
+              <a href="thread.html#741">[ thread ]</a>
+              <a href="subject.html#741">[ subject ]</a>
+              <a href="author.html#741">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi all
+
+I have created a new YDDatabaseTree. This is not a YDDatabaseTree 
+extension but a new tree management implementation with a different 
+algorithm.
+
+The main difference is.. speed! and position support!  ;)
+
+Let's see the differences in more details:
+
+
+Columns used:
+	- on YDDT:  id, parent, nleft, nright, nlevel
+	- on YDDT2; id, parent,       lineage,  level, position
+
+	on YDDT2, the control part is done with 'lineage' instead of
+	          'nleft' and 'nright'
+
+
+Qty of queries:
+
+on selects:
+	- all algorithms only use 1 or 2 sql queries to get results.
+
+on adding a node in a table with 1000 nodes already:
+	- YDDT uses more than 1000 queries
+	  (because it needs to rebuild the table)
+	- YDDT2 uses 2 sql queries
+
+on moving a node in a table with 1000 nodes already
+	- YDDT: uses more than 1000 queries
+	        don't have support for position
+	- YDDT2 uses 4 sql queries (with position support)
+
+on deleting a node in a table with 100 nodes already:
+	- YDDT uses more than 1000 queries
+	  (because it needs to rebuild the table)
+	- YDDT2 uses 2 sql queries
+	  (and, if table type InnoDB, children are deleted automaticaly)
+
+So, where is the magic.. basically YDDT2 uses what i called the 
+'lineage' instead of 'nleft' and 'nright'. Lineage is the id path to the 
+node.
+Eg, imagine a tree like:
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- C
+</I>|<i>     +- X
+</I>
+
+The lineages are:
+
+.
++- A  lineage: //
+|<i>
+</I>+- B  lineage: //
+|<i>  +- C  lineage: //B/
+</I>|<i>     +- X  lineage: //B/C/
+</I>
+
+Lineage always start with '//', then contains all parent id nodes 
+separated by '/' and has an '/' in the end.
+
+
+This means that each node info is only dependent of the parent, i mean, 
+the only &quot;rebuild&quot; that is need on node operations is to update some 
+lineage's (but not all like in YDDT).. and in opposition to YDDT, this 
+simple &quot;rebuild&quot; can be done in just 1 sql query in YDDT2.
+
+I will put this new class in YDF in next days (maybe tomorrow).
+
+To be a perfect class, i think the YDDT2 should be done using 
+YDDatabaseObject (currently it uses the common YDDatabase methods).
+The problem is that i don't know how to do some things using 
+YDDatabaseObject.. maybe db can help me here..
+
+Db, how can i:
+- unregister a key?
+- unregister a field?
+- currently in a UPDATE, i can set values like:
+	$dbo-&gt;resetValues();
+	$dbo-&gt;set( 'xpto', 3 );
+	$dbo-&gt;update();
+
+	but.. how can i define expressions?
+	On YDDT2 i have this sql:
+	UPDATE *table* SET REPLACE(...) WHERE ...
+
+	Can i (??) do something like:
+	$dbo-&gt;resetValues();
+	$dbo-&gt;set( 'REPLACE(...)' );
+	$dbo-&gt;where( ... )
+	$dbo-&gt;update();
+
+	if not, how can i do this?
+
+
+Anyway, what do you think?
+
+
+regards
+Francisco A
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000740.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+	<LI>Next message: <A HREF="000744.html">[ydf-devel] YDDatabaseTree2 :)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#741">[ date ]</a>
+              <a href="thread.html#741">[ thread ]</a>
+              <a href="subject.html#741">[ subject ]</a>
+              <a href="author.html#741">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

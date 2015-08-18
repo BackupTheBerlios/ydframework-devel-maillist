@@ -1,0 +1,798 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1984 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDCMComponent YDClasses/YDCMComponent/languages	YDClasses/YDCMComponent/languages/YDCMUsers	addons/YDCMPage/languages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1984%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%09YDClasses/YDCMComponent%20YDClasses/YDCMComponent/languages%0A%09YDClasses/YDCMComponent/languages/YDCMUsers%0A%09addons/YDCMPage/languages&In-Reply-To=%3C200608071626.k77GQrFd002142%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000490.html">
+   <LINK REL="Next"  HREF="000492.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1984 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDCMComponent YDClasses/YDCMComponent/languages	YDClasses/YDCMComponent/languages/YDCMUsers	addons/YDCMPage/languages</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1984%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%09YDClasses/YDCMComponent%20YDClasses/YDCMComponent/languages%0A%09YDClasses/YDCMComponent/languages/YDCMUsers%0A%09addons/YDCMPage/languages&In-Reply-To=%3C200608071626.k77GQrFd002142%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1984 - in YDFramework2.0/trunk/YDFramework2:	YDClasses/YDCMComponent YDClasses/YDCMComponent/languages	YDClasses/YDCMComponent/languages/YDCMUsers	addons/YDCMPage/languages">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug  7 18:26:53 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000490.html">[ydf-devel] r1983 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+        <LI>Next message: <A HREF="000492.html">[ydf-devel] r1985 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#491">[ date ]</a>
+              <a href="thread.html#491">[ thread ]</a>
+              <a href="subject.html#491">[ subject ]</a>
+              <a href="author.html#491">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-07 18:25:58 +0200 (Mon, 07 Aug 2006)
+New Revision: 1984
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/pt.php
+Log:
+mostly YDCM user management changes
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -1,7 +1,7 @@
+ &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot; ?&gt;
+ &lt;DBMODEL Version=&quot;4.0&quot;&gt;
+ &lt;SETTINGS&gt;
+-&lt;GLOBALSETTINGS ModelName=&quot;YDCM scheme&quot; IDModel=&quot;0&quot; IDVersion=&quot;0&quot; VersionStr=&quot;1.0.0.0&quot; Comments=&quot;&quot; UseVersionHistroy=&quot;1&quot; AutoIncVersion=&quot;1&quot; DatabaseType=&quot;MySQL&quot; ZoomFac=&quot;74.00&quot; XPos=&quot;466&quot; YPos=&quot;71&quot; DefaultDataType=&quot;5&quot; DefaultTablePrefix=&quot;0&quot; DefSaveDBConn=&quot;&quot; DefSyncDBConn=&quot;&quot; DefQueryDBConn=&quot;&quot; Printer=&quot;&quot; HPageCount=&quot;4.0&quot; PageAspectRatio=&quot;1.440892512336408&quot; PageOrientation=&quot;1&quot; PageFormat=&quot;A4 (210x297 mm, 8.26x11.7 inches)&quot; SelectedPages=&quot;&quot; UsePositionGrid=&quot;1&quot; PositionGridX=&quot;20&quot; PositionGridY=&quot;20&quot; TableNameInRefs=&quot;0&quot; DefaultTableType=&quot;0&quot; ActivateRefDefForNewRelations=&quot;1&quot; FKPrefix=&quot;&quot; FKPostfix=&quot;&quot; CreateFKRefDefIndex=&quot;0&quot; DBQuoteCharacter=&quot;`&quot; CreateSQLforLinkedObjects=&quot;0&quot; DefModelFont=&quot;Tahoma&quot; CanvasWidth=&quot;4096&quot; CanvasHeight=&quot;2842&quot; /&gt;
++&lt;GLOBALSETTINGS ModelName=&quot;YDCM scheme&quot; IDModel=&quot;0&quot; IDVersion=&quot;0&quot; VersionStr=&quot;1.0.0.0&quot; Comments=&quot;&quot; UseVersionHistroy=&quot;1&quot; AutoIncVersion=&quot;1&quot; DatabaseType=&quot;MySQL&quot; ZoomFac=&quot;74.00&quot; XPos=&quot;89&quot; YPos=&quot;71&quot; DefaultDataType=&quot;5&quot; DefaultTablePrefix=&quot;0&quot; DefSaveDBConn=&quot;&quot; DefSyncDBConn=&quot;&quot; DefQueryDBConn=&quot;&quot; Printer=&quot;&quot; HPageCount=&quot;4.0&quot; PageAspectRatio=&quot;1.440892512336408&quot; PageOrientation=&quot;1&quot; PageFormat=&quot;A4 (210x297 mm, 8.26x11.7 inches)&quot; SelectedPages=&quot;&quot; UsePositionGrid=&quot;1&quot; PositionGridX=&quot;20&quot; PositionGridY=&quot;20&quot; TableNameInRefs=&quot;0&quot; DefaultTableType=&quot;0&quot; ActivateRefDefForNewRelations=&quot;1&quot; FKPrefix=&quot;&quot; FKPostfix=&quot;&quot; CreateFKRefDefIndex=&quot;0&quot; DBQuoteCharacter=&quot;`&quot; CreateSQLforLinkedObjects=&quot;0&quot; DefModelFont=&quot;Tahoma&quot; CanvasWidth=&quot;4096&quot; CanvasHeight=&quot;2842&quot; /&gt;
+ &lt;DATATYPEGROUPS&gt;
+ &lt;DATATYPEGROUP Name=&quot;Numeric Types&quot; Icon=&quot;1&quot; /&gt;
+ &lt;DATATYPEGROUP Name=&quot;Date and Time Types&quot; Icon=&quot;2&quot; /&gt;
+@@ -258,13 +258,13 @@
+ &lt;/SETTINGS&gt;
+ &lt;METADATA&gt;
+ &lt;REGIONS&gt;
++&lt;REGION ID=&quot;1621&quot; RegionName=&quot;MASTER COMPONENT ( content management )&quot; XPos=&quot;140&quot; YPos=&quot;120&quot; Width=&quot;620&quot; Height=&quot;720&quot; RegionColor=&quot;3&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;50&quot; /&gt;
++&lt;REGION ID=&quot;1620&quot; RegionName=&quot;Link component ( YDCMLink )&quot; XPos=&quot;1460&quot; YPos=&quot;440&quot; Width=&quot;260&quot; Height=&quot;140&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;50&quot; /&gt;
++&lt;REGION ID=&quot;1619&quot; RegionName=&quot;Page component ( YDCMPage )&quot; XPos=&quot;1460&quot; YPos=&quot;120&quot; Width=&quot;260&quot; Height=&quot;260&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;49&quot; /&gt;
++&lt;REGION ID=&quot;1615&quot; RegionName=&quot;Helpdesk component ( YDCMHelpdesk )&quot; XPos=&quot;1460&quot; YPos=&quot;940&quot; Width=&quot;520&quot; Height=&quot;380&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;46&quot; /&gt;
++&lt;REGION ID=&quot;1613&quot; RegionName=&quot;Guestbook component ( YDCMGuestbook )&quot; XPos=&quot;1460&quot; YPos=&quot;640&quot; Width=&quot;260&quot; Height=&quot;240&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;45&quot; /&gt;
++&lt;REGION ID=&quot;1635&quot; RegionName=&quot;Portal Statistics ( YDCMStatistics )&quot; XPos=&quot;660&quot; YPos=&quot;880&quot; Width=&quot;280&quot; Height=&quot;220&quot; RegionColor=&quot;2&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;51&quot; /&gt;
+ &lt;REGION ID=&quot;1789&quot; RegionName=&quot;MASTER COMPONENT ( user management )&quot; XPos=&quot;760&quot; YPos=&quot;120&quot; Width=&quot;580&quot; Height=&quot;720&quot; RegionColor=&quot;2&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;39&quot; /&gt;
+-&lt;REGION ID=&quot;1635&quot; RegionName=&quot;Portal Statistics ( YDCMStatistics )&quot; XPos=&quot;660&quot; YPos=&quot;880&quot; Width=&quot;280&quot; Height=&quot;220&quot; RegionColor=&quot;2&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;51&quot; /&gt;
+-&lt;REGION ID=&quot;1613&quot; RegionName=&quot;Guestbook component ( YDCMGuestbook )&quot; XPos=&quot;1460&quot; YPos=&quot;640&quot; Width=&quot;260&quot; Height=&quot;240&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;45&quot; /&gt;
+-&lt;REGION ID=&quot;1615&quot; RegionName=&quot;Helpdesk component ( YDCMHelpdesk )&quot; XPos=&quot;1460&quot; YPos=&quot;940&quot; Width=&quot;520&quot; Height=&quot;380&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;46&quot; /&gt;
+-&lt;REGION ID=&quot;1619&quot; RegionName=&quot;Page component ( YDCMPage )&quot; XPos=&quot;1460&quot; YPos=&quot;120&quot; Width=&quot;260&quot; Height=&quot;260&quot; RegionColor=&quot;1&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;49&quot; /&gt;
+-&lt;REGION ID=&quot;1620&quot; RegionName=&quot;Link component ( YDCMLink )&quot; XPos=&quot;1460&quot; YPos=&quot;440&quot; Width=&quot;260&quot; Height=&quot;140&quot; RegionColor=&quot;5&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;50&quot; /&gt;
+-&lt;REGION ID=&quot;1621&quot; RegionName=&quot;MASTER COMPONENT ( content management )&quot; XPos=&quot;140&quot; YPos=&quot;120&quot; Width=&quot;620&quot; Height=&quot;720&quot; RegionColor=&quot;3&quot; TablePrefix=&quot;0&quot; TableType=&quot;0&quot; OverwriteTablePrefix=&quot;0&quot; OverwriteTableType=&quot;0&quot; Comments=&quot;&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;50&quot; /&gt;
+ &lt;/REGIONS&gt;
+ &lt;TABLES&gt;
+ &lt;TABLE ID=&quot;1158&quot; Tablename=&quot;YDCMAudit&quot; PrevTableName=&quot;admin_log&quot; XPos=&quot;1100&quot; YPos=&quot;620&quot; TableType=&quot;0&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;2&quot; &gt;
+@@ -1030,13 +1030,13 @@
+ &lt;/TABLE&gt;
+ &lt;TABLE ID=&quot;1771&quot; Tablename=&quot;YDCMPermissions&quot; PrevTableName=&quot;Table_14&quot; XPos=&quot;800&quot; YPos=&quot;620&quot; TableType=&quot;0&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;37&quot; &gt;
+ &lt;COLUMNS&gt;
+-&lt;COLUMN ID=&quot;1781&quot; ColName=&quot;permission_id&quot; PrevColName=&quot;&quot; Pos=&quot;7&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;COLUMN ID=&quot;1781&quot; ColName=&quot;permission_id&quot; PrevColName=&quot;&quot; Pos=&quot;7&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1773&quot; ColName=&quot;user_id&quot; PrevColName=&quot;&quot; Pos=&quot;0&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;(10)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;1&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
++&lt;COLUMN ID=&quot;1773&quot; ColName=&quot;user_id&quot; PrevColName=&quot;&quot; Pos=&quot;0&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;(10)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;1&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMPermissions.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -0,0 +1,128 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++
++    class YDCMPermissions extends YDDatabaseObject {
++    
++        function YDCMPermissions() {
++
++			// init component as non default
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMPermissions' );
++
++            // register custom key
++            $this-&gt;registerKey( 'permission_id', true );
++
++			// register fields	
++			$this-&gt;registerField( 'object' );
++			$this-&gt;registerField( 'object_action' );
++			$this-&gt;registerField( 'object_id' );
++			$this-&gt;registerField( 'schedule' );
++			$this-&gt;registerField( 'date_start' );
++			$this-&gt;registerField( 'date_end' );
++
++			// add static relations
++			$this-&gt;registerField( 'user_id' );
++       		$rel = &amp; $this-&gt;registerRelation( 'YDCMPermissions', false, 'YDCMPermissions' );
++			$rel-&gt;setLocalKey( 'user_id' );
++			$rel-&gt;setForeignKey( 'user_id' );
++		}
++
++
++        /**
++         *  This function return an array of permissions
++         *
++         *  @param     $user_id   User id to get permissions
++		 *
++         *  @returns    An array with all permission groupby object
++         */
++		function getPermissions( $user_id ){
++		
++			$this-&gt;resetValues();
++			$this-&gt;user_id = intval( $user_id );
++
++			$this-&gt;find();
++
++			return $this-&gt;getResultsAsAssocArray( array( 'object', 'object_action' ) );
++		}
++
++
++        /**
++         *  This function assigns an array of permissions to a user
++         *
++         *  @param     $user_id              User id to get permissions
++         *  @param     $permissions_to_add   Array with permissions to add
++         *  @param     $permissions_to_del   Array with permissions to delete
++         */
++		function setPermissions( $user_id, $permissions_to_add, $permissions_to_del ){
++
++			$p_add = 0;
++			$t_add = 0;
++
++			$p_del = 0;
++			$t_del = 0;
++
++			// cycle permissions to add and insert them in db
++			foreach ( $permissions_to_add as $obj =&gt; $perms )
++				foreach ( array_values( $perms ) as $p ){
++
++					$this-&gt;resetAll();
++					$this-&gt;user_id        = $user_id;
++					$this-&gt;object         = $obj;
++					$this-&gt;object_action  = $p;
++
++					if ($this-&gt;insert()) $p_add++;
++					$t_add++;
++				}
++
++			// cycle permissions to delete and delete them from db
++			foreach ( $permissions_to_del as $obj =&gt; $perms )
++				foreach ( array_values( $perms ) as $p ){
++
++					$this-&gt;resetAll();
++					$this-&gt;user_id        = $user_id;
++					$this-&gt;object         = $obj;
++					$this-&gt;object_action  = $p;
++
++					if ($this-&gt;delete()) $p_del++;
++					$t_del++;
++				}
++
++			if ($p_add == $t_add &amp;&amp; $p_del == $t_del ) return true;
++			
++			return false;
++		}
++
++}
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -26,6 +26,10 @@
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++
++	// add permissions lib
++	require_once( dirname( __FILE__ ) . '/YDCMPermissions.php' );
++
+ 	// add local translation directory
+ 	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUsers/' );
+ 
+@@ -88,6 +92,11 @@
+ 
+ 			// init user form
+ 			$this-&gt;form = new YDForm( 'YDCMUsers' );
++
++			// init permissions
++			$this-&gt;perm = new YDCMPermissions();
++			
++			$this-&gt;id = null;
+ 		}
+ 
+ 
+@@ -103,6 +112,25 @@
+ 
+ 
+         /**
++         *  This function returns all user permissions
++         *
++         *  @param  $user_id (Optional) Custom user id to get permissions
++         *
++         *  @retuns  Associative array of permissions
++         */
++		function getPermissions( $user_id = null ){
++		
++//			require_once( dirname( __FILE__ ) . '/YDCMPermissions.php' );
++
++//			$permissions = new YDCMPermissions();
++		
++			if ( is_null( $user_id ) ) $user_id = $this-&gt;id;
++		
++			return $this-&gt;perm-&gt;getPermissions( $user_id );
++		}
++
++
++        /**
+          *  This function returns the id of the current user
+          */
+ 		function currentID(){
+@@ -133,6 +161,20 @@
+ 
+ 
+         /**
++         *  This function returns all sub users
++         *
++         *  @param      $id          User id to test if id descendant
++         *  @param      $parent_id   Parent id
++         *
++         *  @returns    boolean flag
++         */
++		function isDescendantOf( $id, $parent_id ){
++
++			return $this-&gt;tree-&gt;isDescendantOf( intval( $id ), intval( $parent_id ) );
++		}
++
++
++        /**
+          *  This function checks if a username and password are valid
+          *
+          *  @param $username  User username
+@@ -170,46 +212,93 @@
+ 
+ 			return false;
+ 		}
+-		
+-		
++
++
+         /**
+-         *  This function updates the current user attributes (ignoring passwords and statistics)
++         *  This function updates the current user attributes (ignoring passwords and statistics) using form values
+          *
+-         *  @param $values  User attributes as array
++         *  @param $id          Static user id
++         *  @param $formvalues  Array with user attributes
+          *
+-         *  @returns    true if updated, false if current user is not valid
++         *  @returns    true if updated, array with form errors otherwise
+          */
+-		function changeCurrentUser( $values ){
+-		
+-			$this-&gt;resetValues();
++		function changeUserForm( $id, $formvalues = array() ){
+ 
+-			// check if user is valid
+-			$valid = $this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
++			// check form validation
++			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
++				return $this-&gt;form-&gt;getErrors();
+ 
+-			if ( $valid === false ) return false;
++			// get values
++			$values = $this-&gt;form-&gt;getValues();
+ 
+-			// reset values added from valid method
+-			$this-&gt;resetValues();
++			// change user details and permissions based on general values
++			// BEGIN :)
++			$res1 = $this-&gt;changeUserPermissions( $id, $values );
++			$res2 = $this-&gt;changeUserDetails( $id, $values );
++			return $res1 + $res2;
++			// COMMIT :)
++		}
+ 
++
++        /**
++         *  This function updates the current user attributes
++         *
++         *  @param $id          Static user id
++         *  @param $formvalues  Array with user attributes
++         *
++         *  @returns    true if updated, false otherwise
++         */
++		function changeUserDetails( $id, $values ){
++
++			$this-&gt;resetAll();
++
+ 			// set new values
+-			$this-&gt;name        = $values['name'];
+-			$this-&gt;email       = $values['email'];
+-			$this-&gt;other       = $values['other'];
+-			$this-&gt;language_id = $values['language_id'];
+-			$this-&gt;template    = $values['template'];
++			$this-&gt;setValues( $values );
+ 
+-			$this-&gt;where( 'username = &quot;' .      $_SERVER['PHP_AUTH_USER'] . '&quot;' );
+-			$this-&gt;where( 'password = &quot;' . md5( $_SERVER['PHP_AUTH_PW'] ) . '&quot;' );
++			// overwrite id
++			$this-&gt;user_id = intval( $id );
+ 
++			// parse dates
++			$this-&gt;login_start = YDStringUtil::formatDate( $values[ 'login_start' ], 'datetimesql' );
++			$this-&gt;login_end   = YDStringUtil::formatDate( $values[ 'login_end' ],   'datetimesql' );
++
+ 			// return update result
+-			if ( $this-&gt;update() == 1 ) return true;
+-			
+-			return false;
++			return $this-&gt;update();
+ 		}
+ 
+ 
++		function changeUserPermissions( $id, $values ){
++
++			// init temp array permissions
++			$permissions_valid  = array();
++			$permissions_to_add = array();
++			$permissions_to_del = array();
++
++			// check $values if contains permissions that belong to its parent
++			foreach( $this-&gt;permissions_parent as $obj =&gt; $perms )
++				foreach( $perms as $p =&gt; $arr )
++					if( isset( $values[ $obj ][ $p ] ) &amp;&amp; $values[ $obj ][ $p ] == 'on' )
++						$permissions_valid[ $obj ][] = $p;
++
++			// cycle current permissions to see the ones we need to delete
++			foreach( $this-&gt;permissions as $obj =&gt; $perms )
++				foreach( $perms as $p =&gt; $arr )
++					if ( !isset( $permissions_valid[ $obj ] ) || !in_array( $p, $permissions_valid[ $obj ] ) ) 
++						$permissions_to_del[ $obj ][] = $p;
++
++			// cycle current permissions to see the ones we need to add
++			foreach( $permissions_valid as $obj =&gt; $perms )
++				foreach( $perms as $p )
++					if ( !isset( $this-&gt;permissions[ $obj ][$p] ) )
++						$permissions_to_add[ $obj ][] = $p;
++
++			// pass permissions to add and to delete
++			return $this-&gt;perm-&gt;setPermissions( intval( $id ), $permissions_to_add, $permissions_to_del );
++		}
++
++
+         /**
+-         *  This function updates the current user attributes (ignoring passwords and statistics) using form values
++         *  This function updates the user attributes using form values
+          *
+          *  @param $formvalues  Array with user attributes
+          *
+@@ -221,8 +310,26 @@
+ 			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+ 				return $this-&gt;form-&gt;getErrors();
+ 
+-			return $this-&gt;changeCurrentUser( $this-&gt;form-&gt;getValues() );
++			// check if user is valid
++			$valid = $this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
++
++			if ( $valid === false ) return false;
++
++			// reset values added from valid method
++			$this-&gt;resetValues();
++
++			// set new values
++			$this-&gt;setValues( $this-&gt;form-&gt;getValues() );
++
++			$this-&gt;where( 'username = &quot;' .      $_SERVER['PHP_AUTH_USER'] . '&quot;' );
++			$this-&gt;where( 'password = &quot;' . md5( $_SERVER['PHP_AUTH_PW'] ) . '&quot;' );
++
++			// return update result
++			if ( $this-&gt;update() == 1 ) return true;
++			
++			return false;
+ 		}
++
+ 		
+ 
+         /**
+@@ -230,8 +337,9 @@
+ 		 *
+ 		 * @param $username   1: Username is a span, 2: Username is a text box
+ 		 * @param $password   0: Password is not showed, 1: Password is showed
++		 * @param $login      0: Login is span, 1: Login is editable
+          */
+-		function addFormDetails( $username = 1, $password = 0 ){
++		function addFormDetails( $username = 1, $password = 0, $login = 0 ){
+ 
+ 			// add username
+ 			if ( $username == 1 ) $this-&gt;form-&gt;addElement( 'span',     'username', t('user_username') );
+@@ -263,9 +371,17 @@
+ 			$this-&gt;form-&gt;addRule(    'template',  'in_array',     t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
+ 
+ 			// add user details
+-            $this-&gt;form-&gt;addElement( 'span', 'login_start',  t('login_start') );
+-            $this-&gt;form-&gt;addElement( 'span', 'login_end',    t('login_end') );
+-            $this-&gt;form-&gt;addElement( 'span', 'login_counter',t('login_counter') );
++			if ($login == 1){
++				$this-&gt;form-&gt;addElement( 'select',         'state',       t('login_state'),          array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
++				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
++				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_end',   t('login_end'));
++			}else{
++				$this-&gt;form-&gt;addElement( 'span',           'state',       t('login_state') );
++				$this-&gt;form-&gt;addElement( 'span',           'login_start', t('login_start') );
++				$this-&gt;form-&gt;addElement( 'span',           'login_end',   t('login_end') );
++			}
++
++			$this-&gt;form-&gt;addElement( 'span', 'login_counter',t('login_counter') );
+             $this-&gt;form-&gt;addElement( 'span', 'login_last',   t('login_last') );
+             $this-&gt;form-&gt;addElement( 'span', 'login_current',t('login_current') );
+             $this-&gt;form-&gt;addElement( 'span', 'created_user', t('created_user') );
+@@ -274,34 +390,98 @@
+ 
+ 
+         /**
++         *  This function adds checkbox groups about permissions and gets all translations.
++         *  It generates 2 private variables 
++         *    - $this-&gt;permissions as db permissions 
++         *    - $this-&gt;permissions_html as associative array with checkboxgroup html code
++         *
++         *  @returns  Associative array of objects and correspondent chechboxgoup
++         */
++		function addFormPermissions(){
++
++			// get permissions from parent;
++			$node = $this-&gt;getUser( $this-&gt;id );
++
++			// init user permissions and permissions html 
++			$this-&gt;permissions      = $this-&gt;getPermissions();
++			$this-&gt;permissions_html = array();
++
++			// init parent permissions
++			$this-&gt;permissions_parent = $this-&gt;getPermissions( $node['parent_id'] );
++
++			// cycle parent permissions to create form checkboxgroup of this user
++			foreach( $this-&gt;permissions_parent as $obj =&gt; $perm ){
++
++				// get permission translations of this component
++				YDLocale::addDirectory( YD_DIR_HOME_ADD . '/' . $obj . '/languages/' );
++
++				// init checkboxgroup options
++				$options  = array();
++				$selected = array();
++
++				// cycle all permissions of this object to create checkboxgroup options array
++				foreach( $perm as $p ){
++					$options[ $p['object_action' ] ] = t( $obj . '_' . $p['object_action' ] );
++
++					// check if this parent action belongs to the child too ( to select it )
++					if ( isset( $this-&gt;permissions[ $obj ] ) &amp;&amp; in_array( $p['object_action' ], array_keys( $this-&gt;permissions[ $obj ] ) )){
++						$selected[ $p['object_action' ] ] = 1;
++					}
++				}
++
++				// add object checkbox
++				$this-&gt;form-&gt;addElement( 'checkboxgroup', $obj, $obj, array(), $options );
++				
++				// add default for this checkboxgroup
++				$this-&gt;form-&gt;setDefault( $obj, $selected );
++
++				// get element html
++				$el = &amp; $this-&gt;form-&gt;getElement( $obj );
++				
++				// store html permissions
++				$this-&gt;permissions_html[ $obj . ' s' ][] = $el-&gt;toHtml();
++			}
++
++		}
++
++
++        /**
+          *  This function creates an user form for password changing
+          *
+          * @param $oldpassword  0: don't include old password box; 1: include old password box
+          */
+ 		function addFormPassword( $oldpassword = 1 ){
+ 
+-			// add old password box
+-			if ( $oldpassword == 1 )
+-            	$this-&gt;form-&gt;addElement( 'password', 'old',         t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
++			// add new password box
++            $this-&gt;form-&gt;addElement( 'password',    'new',          t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++			$this-&gt;form-&gt;addRule(    'new',         'required',     t('passwords are required') );
++			$this-&gt;form-&gt;addRule(    'new',         'maxlength',    t('passwords too big'), 31 );
++			$this-&gt;form-&gt;addRule(    'new',         'alphanumeric', t('passwords not alphanumeric') );
+ 
+-			// add new password box and confirmation box
+-            $this-&gt;form-&gt;addElement( 'password', 'new',         t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+-            $this-&gt;form-&gt;addElement( 'password', 'new_confirm', t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++			// add new_confirm password box
++            $this-&gt;form-&gt;addElement( 'password',    'new_confirm',  t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++			$this-&gt;form-&gt;addRule(    'new_confirm', 'required',     t('passwords are required') );
++			$this-&gt;form-&gt;addRule(    'new_confirm', 'maxlength',    t('passwords too big'), 31 );
++			$this-&gt;form-&gt;addRule(    'new_confirm', 'alphanumeric', t('passwords not alphanumeric') );
+ 
+-			// add rules to all passwords
+-			$this-&gt;form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'required',     t('passwords are required') );
+-			$this-&gt;form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'maxlength',    t('passwords too big'), 31 );
+-			$this-&gt;form-&gt;addRule( array( 'old', 'new', 'new_confirm' ), 'alphanumeric', t('passwords not alphanumeric') );
+-
+ 			// add compare rule to new password and confirmation password
+ 			$this-&gt;form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
++
++			// add old password box
++			if ( $oldpassword == 1 ){
++            	$this-&gt;form-&gt;addElement( 'password', 'old',          t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
++				$this-&gt;form-&gt;addRule(    'old',      'required',     t('passwords are required') );
++				$this-&gt;form-&gt;addRule(    'old',      'maxlength',    t('passwords too big'), 31 );
++				$this-&gt;form-&gt;addRule(    'old',      'alphanumeric', t('passwords not alphanumeric') );
++			}
++
+ 		}
+ 
+ 
+         /**
+          *  This returns the user form
+          *
+-         *  @param $defaults  (Optional) default values to apply in form
++         *  @param $defaults  (Optional) default values array to apply in form
+          *
+          *  @returns    YDForm object
+          */
+@@ -363,22 +543,76 @@
+ 
+ 
+         /**
++         *  This function updates a user password
++         *
++         *  @param $newpassword  New password
++         *
++         *  @returns    true if updated, false when user is invalid
++         */
++		function changeUserPassword( $user_id, $newpassword ){
++		
++			// check if user is valid
++			if ( !$this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ) ) return false;
++
++			// reset values added from valid method
++			$this-&gt;resetAll();
++
++			// set new password
++			$this-&gt;user_id  = intval( $user_id );
++			$this-&gt;password = md5( $newpassword );
++
++			// update user and get result
++			if ( $this-&gt;update() == 1 ) return true;
++
++			return false;
++		}
++
++
++        /**
++         *  This function updates a user password
++         *
++         *  @param $formvalues  Array 2 passwords (new and new_confirm)
++         *
++         *  @returns    true if updated, array with form errors
++         */
++		function changeUserPasswordForm( $id = null, $formvalues = array() ){
++
++			// check form validation
++			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
++				return $this-&gt;form-&gt;getErrors();
++
++			return $this-&gt;changeUserPassword( $id, $this-&gt;form-&gt;getValue( 'new' ) );
++		}
++
++
++        /**
+          *  This function return the current user attributes
+          *
+-         *  @returns    current user id
++         *  @param      $translate   (Optional) Boolean that defines if result must be translated
++         *
++         *  @returns    User details
+          */
+ 		function getCurrentUser( $translate = false ){
+ 		
+ 			// get current user id
+-			return $this-&gt;getUser( $this-&gt;currentID(), $translate );
+-
++			return $this-&gt;getUser( $translate, $this-&gt;currentID() );
+ 		}
+ 
+ 
+-		function getUser( $id, $translate = false ){
++        /**
++         *  This function returns user attributes
++         *
++         *  @param      $translate   (Optional) Boolean that defines if result must be translated
++         *  @param      $id          (Optional) Custom user id to use (instead of internal)
++         *
++         *  @returns    User details
++         */
++		function getUser( $translate = false, $id = null ){
+ 
+ 			$this-&gt;resetValues();
+ 
++			if ( is_null( $id ) ) $id = $this-&gt;id;
++
+ 			// set user id
+ 			$this-&gt;user_id = intval( $id );
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/en.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -8,6 +8,7 @@
+ $GLOBALS['t']['user_other'] = 'Other';
+ $GLOBALS['t']['user_language'] = 'Language';
+ $GLOBALS['t']['user_template'] = 'Template';
++$GLOBALS['t']['login_state'] = 'Login';
+ $GLOBALS['t']['login_start'] = 'Login start date';
+ $GLOBALS['t']['login_end'] = 'Login end date';
+ $GLOBALS['t']['login_counter'] = 'Total of logins';
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/YDCMUsers/pt.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -8,6 +8,7 @@
+ $GLOBALS['t']['user_other'] = 'Outras informa&ccedil;oes';
+ $GLOBALS['t']['user_language'] = 'Idioma';
+ $GLOBALS['t']['user_template'] = 'Template';
++$GLOBALS['t']['login_state'] = 'Login';
+ $GLOBALS['t']['login_start'] = 'Data para inicio de login';
+ $GLOBALS['t']['login_end'] = 'Data em que o login expira';
+ $GLOBALS['t']['login_counter'] = 'Total de logins';
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/en.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -1,6 +1,10 @@
+ &lt;?php
+ 
++// components
+ $GLOBALS['t']['ydcmpage'] = 'Page';
++$GLOBALS['t']['ydcmpage s'] = 'Pages';
++$GLOBALS['t']['ydcmrootmenu'] = 'Menu';
++$GLOBALS['t']['ydcmrootmenu s'] = 'Menus';
+ 
+ $GLOBALS['t']['save'] = 'Save';
+ $GLOBALS['t']['close'] = 'Close';
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/languages/pt.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -1,6 +1,10 @@
+ &lt;?php
+ 
+-$GLOBALS['t']['YDCMPage'] = 'P&aacute;gina';
++// components
++$GLOBALS['t']['ydcmpage'] = 'P&aacute;gina';
++$GLOBALS['t']['ydcmpage s'] = 'P&aacute;ginas';
++$GLOBALS['t']['ydcmrootmenu'] = 'Menu';
++$GLOBALS['t']['ydcmrootmenu s'] = 'Menus';
+ 
+ $GLOBALS['t']['save'] = 'Guardar';
+ $GLOBALS['t']['close'] = 'Fechar';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/en.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/en.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -1,5 +1,9 @@
+ &lt;?php
++// PERMISSIONS
++$GLOBALS['t']['ydcmpage_create'] = 'Create';
++$GLOBALS['t']['ydcmpage_delete'] = 'Delete';
+ 
++
+ // PAGE FORM
+ $GLOBALS['t']['page_reference'] = 'Reference';
+ $GLOBALS['t']['page_title'] = 'Title';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/pt.php	2006-08-07 13:56:51 UTC (rev 1983)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMPage/languages/pt.php	2006-08-07 16:25:58 UTC (rev 1984)
+@@ -1,5 +1,9 @@
+ &lt;?php
++// PERMISSIONS
++$GLOBALS['t']['ydcmpage_create'] = 'Criar';
++$GLOBALS['t']['ydcmpage_delete'] = 'Eliminar';
+ 
++
+ // PAGE FORM
+ $GLOBALS['t']['page_reference'] = 'Refer&ecirc;ncia';
+ $GLOBALS['t']['page_title'] = 'Titulo';
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000490.html">[ydf-devel] r1983 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+	<LI>Next message: <A HREF="000492.html">[ydf-devel] r1985 -	YDFramework2.0/trunk/examples/weblog/include/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#491">[ date ]</a>
+              <a href="thread.html#491">[ thread ]</a>
+              <a href="subject.html#491">[ subject ]</a>
+              <a href="author.html#491">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1660 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1660%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602102141.k1ALfsvP005267%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000049.html">
+   <LINK REL="Next"  HREF="000053.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1660 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1660%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602102141.k1ALfsvP005267%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1660 - YDFramework2.0/trunk/YDFramework2/YDClasses">david_db at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 22:41:54 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000049.html">[ydf-devel] r1659 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000053.html">[ydf-devel] r1661 - YDFramework2.0/trunk/doc_src
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#50">[ date ]</a>
+              <a href="thread.html#50">[ thread ]</a>
+              <a href="subject.html#50">[ subject ]</a>
+              <a href="author.html#50">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-02-10 22:41:41 +0100 (Fri, 10 Feb 2006)
+New Revision: 1660
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+Added config YD_TEMPLATE_DIR to YDTemplate - request #1727
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-02-10 20:03:51 UTC (rev 1659)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2006-02-10 21:41:41 UTC (rev 1660)
+@@ -36,6 +36,7 @@
+ 
+     // Configure the default for this class
+     YDConfig::set( 'YD_TEMPLATE_ENGINE', 'smarty', false );
++    YDConfig::set( 'YD_TEMPLATE_DIR', YD_SELF_DIR, false );
+ 
+     // Use the right class implementation
+     if ( strtolower( YDConfig::get( 'YD_TEMPLATE_ENGINE', 'smarty' ) == 'smarty' ) ) {
+@@ -58,7 +59,7 @@
+                 $this-&gt;Smarty();
+ 
+                 // Set the default template directory
+-                $this-&gt;template_dir = YD_SELF_DIR;
++                $this-&gt;template_dir = YDConfig::get( 'YD_TEMPLATE_DIR', YD_SELF_DIR );
+ 
+                 $this-&gt;compile_dir = YD_DIR_TEMP;
+                 $this-&gt;use_sub_dirs = false;
+@@ -309,7 +310,7 @@
+                 $this-&gt;YDBase();
+ 
+                 // Set the default template directory
+-                $this-&gt;template_dir = YD_SELF_DIR;
++                $this-&gt;template_dir = YDConfig::get( 'YD_TEMPLATE_DIR', YD_SELF_DIR );
+ 
+                 // The variables to use
+                 $this-&gt;vars = array();
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000049.html">[ydf-devel] r1659 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000053.html">[ydf-devel] r1661 - YDFramework2.0/trunk/doc_src
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#50">[ date ]</a>
+              <a href="thread.html#50">[ thread ]</a>
+              <a href="subject.html#50">[ subject ]</a>
+              <a href="author.html#50">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

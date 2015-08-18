@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1711 - YDFramework2.0/trunk/examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1711%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200602211545.k1LFjkLA025879%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000123.html">
+   <LINK REL="Next"  HREF="000125.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1711 - YDFramework2.0/trunk/examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1711%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200602211545.k1LFjkLA025879%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1711 - YDFramework2.0/trunk/examples/weblog/manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 21 16:45:46 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000123.html">[ydf-devel] r1710 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000125.html">[ydf-devel] r1712 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#124">[ date ]</a>
+              <a href="thread.html#124">[ thread ]</a>
+              <a href="subject.html#124">[ subject ]</a>
+              <a href="author.html#124">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-21 16:45:45 +0100 (Tue, 21 Feb 2006)
+New Revision: 1711
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/categories.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/images.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/links.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+Log:
+Updated the management interface to shown/hide the browser bars properly. This was changed since our last change in the YDRecordSet class.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/categories.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/categories.tpl	2006-02-21 13:55:46 UTC (rev 1710)
++++ YDFramework2.0/trunk/examples/weblog/manage/categories.tpl	2006-02-21 15:45:45 UTC (rev 1711)
+@@ -20,7 +20,7 @@
+ {if $YD_ACTION == 'default'}
+ 
+     {capture assign=&quot;browsebar&quot;}
+-        {if $categories-&gt;pages}
++        {if $categories-&gt;totalPages &gt; 1}
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowR&quot; colspan=&quot;3&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-02-21 13:55:46 UTC (rev 1710)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-02-21 15:45:45 UTC (rev 1711)
+@@ -22,7 +22,7 @@
+ {if $YD_ACTION == 'default'}
+ 
+     {capture assign=&quot;browsebar&quot;}
+-        {if $comments-&gt;pages}
++        {if $comments-&gt;totalPages &gt; 1}
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/images.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/images.tpl	2006-02-21 13:55:46 UTC (rev 1710)
++++ YDFramework2.0/trunk/examples/weblog/manage/images.tpl	2006-02-21 15:45:45 UTC (rev 1711)
+@@ -20,7 +20,7 @@
+ {if $YD_ACTION == 'default'}
+ 
+     {capture assign=&quot;browsebar&quot;}
+-        {if $images-&gt;pages}
++        {if $images-&gt;totalPages &gt; 1}
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-02-21 13:55:46 UTC (rev 1710)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.tpl	2006-02-21 15:45:45 UTC (rev 1711)
+@@ -20,7 +20,7 @@
+ {if $YD_ACTION == 'default'}
+ 
+     {capture assign=&quot;browsebar&quot;}
+-        {if $items-&gt;pages}
++        {if $items-&gt;totalPages &gt; 1}
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl	2006-02-21 13:55:46 UTC (rev 1710)
++++ YDFramework2.0/trunk/examples/weblog/manage/items_gallery.tpl	2006-02-21 15:45:45 UTC (rev 1711)
+@@ -20,9 +20,9 @@
+ {if $YD_ACTION == 'default'}
+ 
+     {capture assign=&quot;browsebar&quot;}
+-        {if $images-&gt;pages}
++        {if $images-&gt;totalPages &gt; 1}
+             &lt;tr&gt;
+-                &lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;
++                &lt;td class=&quot;adminRowR&quot; colspan=&quot;7&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;
+                     {if ! $images-&gt;isFirstPage}
+                         &lt;a href=&quot;{$images-&gt;getPreviousUrl()}&quot; class=&quot;subline&quot;&gt;&laquo;&lt;/a&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/links.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/links.tpl	2006-02-21 13:55:46 UTC (rev 1710)
++++ YDFramework2.0/trunk/examples/weblog/manage/links.tpl	2006-02-21 15:45:45 UTC (rev 1711)
+@@ -20,7 +20,7 @@
+ {if $YD_ACTION == 'default'}
+ 
+     {capture assign=&quot;browsebar&quot;}
+-        {if $links-&gt;pages}
++        {if $links-&gt;totalPages &gt; 1}
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/pages.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-02-21 13:55:46 UTC (rev 1710)
++++ YDFramework2.0/trunk/examples/weblog/manage/pages.tpl	2006-02-21 15:45:45 UTC (rev 1711)
+@@ -20,7 +20,7 @@
+ {if $YD_ACTION == 'default'}
+ 
+     {capture assign=&quot;browsebar&quot;}
+-        {if $pages-&gt;pages}
++        {if $pages-&gt;totalPages &gt; 1}
+             &lt;tr&gt;
+                 &lt;td class=&quot;adminRowR&quot; colspan=&quot;4&quot;&gt;
+                     &lt;p class=&quot;subline&quot;&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000123.html">[ydf-devel] r1710 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000125.html">[ydf-devel] r1712 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#124">[ date ]</a>
+              <a href="thread.html#124">[ thread ]</a>
+              <a href="subject.html#124">[ subject ]</a>
+              <a href="author.html#124">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

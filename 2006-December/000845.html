@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2254 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2254%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200612100041.kBA0fPIZ003245%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000844.html">
+   <LINK REL="Next"  HREF="000846.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2254 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2254%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200612100041.kBA0fPIZ003245%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2254 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sun Dec 10 01:41:25 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000844.html">[ydf-devel] r2253 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000846.html">[ydf-devel] r2255 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#845">[ date ]</a>
+              <a href="thread.html#845">[ thread ]</a>
+              <a href="subject.html#845">[ subject ]</a>
+              <a href="author.html#845">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-12-10 01:40:52 +0100 (Sun, 10 Dec 2006)
+New Revision: 2254
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+* enhancement: YDArrayUtil::getGMT fixed, much better and complete
+* new: YDForm element 'timezone' that is a pre-populated select box with all possible timezones
+            $form-&gt;addElement( 'timezone', 'mytime', 'Select timezone' );
+            $form-&gt;addElement( 'timezone', 'mytime', 'Select timezone', array(), 'simple' );
+* new: validate rule 'timezone' that checks if a variable is a valid timezone
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-12-09 22:18:06 UTC (rev 2253)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-12-10 00:40:52 UTC (rev 2254)
+@@ -133,8 +133,8 @@
+             $this-&gt;registerElement( 'switchmenu', 'YDFormElement_SwitchMenu', 'YDFormElement_SwitchMenu.php' );
+             $this-&gt;registerElement( 'grid', 'YDFormElement_Grid', 'YDFormElement_Grid.php' );
+             $this-&gt;registerElement( 'captcha', 'YDFormElement_Captcha', 'YDFormElement_Captcha.php' );
++            $this-&gt;registerElement( 'timezone', 'YDFormElement_Timezone', 'YDFormElement_Timezone.php' );
+ 
+-
+             // Add the rules
+             $this-&gt;registerRule( 'value', array( 'YDValidateRules', 'value' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'required', array( 'YDValidateRules', 'required' ), 'YDValidateRules.php' );
+@@ -174,6 +174,7 @@
+             $this-&gt;registerRule( 'httpurl', array( 'YDValidateRules', 'httpurl' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'maxhyperlinks', array( 'YDValidateRules', 'maxhyperlinks' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'captcha', array( 'YDValidateRules', 'captcha' ), 'YDValidateRules.php' );
++            $this-&gt;registerRule( 'timezone', array( 'YDValidateRules', 'timezone' ), 'YDValidateRules.php' );
+ 
+             // Add the filters
+             $this-&gt;registerFilter( 'trim', 'trim' );
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php	2006-12-09 22:18:06 UTC (rev 2253)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php	2006-12-10 00:40:52 UTC (rev 2254)
+@@ -0,0 +1,60 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( dirname( __FILE__ ) . '/YDFormElement_Select.php');
++
++    /**
++     *	This is the class that define a select timezone.
++     */
++    class YDFormElement_Timezone extends YDFormElement_Select {
++
++        /**
++         *	This is the class constructor for the YDFormElement_Timezone class.
++         *
++         *	@param $form		The name of the form to which this element is connected.
++         *	@param $name		The name of the form element.
++         *	@param $label		(optional) The label for the form element.
++         *	@param $attributes	(optional) The attributes for the form element.
++         *	@param $options		(optional) Format string: 'simple' or 'full'
++         */
++        function YDFormElement_Timezone( $form, $name, $label='', $attributes=array(), $options='full' ) {
++
++            // initialize parent
++            $this-&gt;YDFormElement_Select( $form, $name, $label, $attributes, YDArrayUtil::getGMT( $options ) );
++
++            // set type
++            $this-&gt;_type = 'timezone';
++
++			// set default
++			$this-&gt;setDefault( 0 );
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-12-09 22:18:06 UTC (rev 2253)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2006-12-10 00:40:52 UTC (rev 2254)
+@@ -270,18 +270,54 @@
+         /**
+          *  This function will return a array with gmts.
+          *
+-         *  @returns	Array: array( -23 =&gt; '-23', ..., 0 =&gt; '0', ..., 23 =&gt; '+23' );
++         *  @param $format      Format to return
++         *
++         *  @returns	Array. If format is NULL returns complete array.
++         *                                  'simple' returns: array( -11 =&gt; '(GMT -11:00)', -10 =&gt; ...
++         *                                  'full'   returns: array( -11 =&gt; '(GMT -11:00) Nome, Midway Island, Samoa', -10 =&gt; ...
+          *  @static
+          */
+-		function getGMT(){
++		function getGMT( $format = null ){
+ 
+-			$gmts = array();
+-			for($i = -23; $i &lt;= 23; $i++) 
+-				if ($i &lt; 1 ) $gmts[$i] =      strval($i);
+-				else		 $gmts[$i] = '+'. strval($i);
++			$gmts = array(	'-11'   =&gt; array( '(GMT -11:00)', 'Nome, Midway Island, Samoa' ),
++							'-10'   =&gt; array( '(GMT -10:00)', 'Hawaii' ),
++							 '-9'   =&gt; array( '(GMT  -9:00)', 'Alaska' ),
++							 '-8'   =&gt; array( '(GMT  -8:00)', 'Pacific Time' ),
++							 '-7'   =&gt; array( '(GMT  -7:00)', 'Mountain Time' ),
++							 '-6'   =&gt; array( '(GMT  -6:00)', 'Central Time, Mexico City' ),
++							 '-5'   =&gt; array( '(GMT  -5:00)', 'Eastern Time, Bogota, Lima, Quito' ),
++							 '-4'   =&gt; array( '(GMT  -4:00)', 'Atlantic Time, Caracas, La Paz' ),
++							 '-3.5' =&gt; array( '(GMT  -3:30)', 'Newfoundland' ),
++							 '-3'   =&gt; array( '(GMT  -3:00)', 'Brazil, Buenos Aires, Georgetown, Falkland Is.' ),
++							 '-2'   =&gt; array( '(GMT  -2:00)', 'Mid-Atlantic, Ascention Is., St Helena' ),
++							 '-1'   =&gt; array( '(GMT  -1:00)', 'Azores, Cape Verde Islands' ),
++							  '0'   =&gt; array( '(GMT   0:00)', 'Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia' ),
++							  '1'   =&gt; array( '(GMT  +1:00)', 'Berlin, Brussels, Copenhagen, Madrid, Paris, Rome' ),
++							  '2'   =&gt; array( '(GMT  +2:00)', 'Kaliningrad, South Africa, Warsaw' ),
++							  '3'   =&gt; array( '(GMT  +3:00)', 'Baghdad, Riyadh, Moscow, Nairobi' ),
++							  '2.5' =&gt; array( '(GMT  +3:30)', 'Tehran' ),
++							  '4'   =&gt; array( '(GMT  +4:00)', 'Abu Dhabi, Baku, Muscat, Tbilisi' ),
++							  '4.5' =&gt; array( '(GMT  +4:30)', 'Kabul' ),
++							  '5'   =&gt; array( '(GMT  +5:00)', 'Islamabad, Karachi, Tashkent' ),
++						      '5.5' =&gt; array( '(GMT  +5:30)', 'Bombay, Calcutta, Madras, New Delhi' ),
++							  '6'   =&gt; array( '(GMT  +6:00)', 'Almaty, Colombo, Dhaka' ),
++							  '7'   =&gt; array( '(GMT  +7:00)', 'Bangkok, Hanoi, Jakarta' ),
++							  '8'   =&gt; array( '(GMT  +8:00)', 'Beijing, Hong Kong, Perth, Singapore, Taipei' ),
++							  '9'   =&gt; array( '(GMT  +9:00)', 'Osaka, Sapporo, Seoul, Tokyo, Yakutsk' ),
++							  '9.5' =&gt; array( '(GMT  +9:30)', 'Adelaide, Darwin' ),
++							 '10'   =&gt; array( '(GMT +10:00)', 'Melbourne, Papua New Guinea, Sydney, Vladivostok' ),
++							 '11'   =&gt; array( '(GMT +11:00)', 'Magadan, New Caledonia, Solomon Islands' ),
++							 '12'   =&gt; array( '(GMT +12:00)', 'Auckland, Wellington, Fiji, Marshall Island' ) );
++			
++			if ( is_null( $format ) ) return $gmts;
++
++			foreach( $gmts as $t =&gt; $arr ){
++				if ( $format == 'simple' ) $gmts[ $t ] = $arr[ 0 ];
++				else                       $gmts[ $t ] = $arr[ 0 ] . ' ' . $arr[ 1 ];
++			}
++
+ 			return $gmts;
+ 		}
+-
+     }
+ 
+     /**
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-12-09 22:18:06 UTC (rev 2253)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-12-10 00:40:52 UTC (rev 2254)
+@@ -750,6 +750,22 @@
+         }
+ 
+ 
++        /**
++         *	This function returns true if the variable matches a valid gmt value
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	(not required)
++         */
++        function timezone( $val, $opts='' ) {
++
++			YDInclude( 'YDUtil.php' );
++
++			$arr = YDArrayUtil::getGMT();
++
++            return isset( $arr[ $val ] );
++        }
++
++
+     }
+ 
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000844.html">[ydf-devel] r2253 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000846.html">[ydf-devel] r2255 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#845">[ date ]</a>
+              <a href="thread.html#845">[ thread ]</a>
+              <a href="subject.html#845">[ subject ]</a>
+              <a href="author.html#845">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

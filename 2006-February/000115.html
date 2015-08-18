@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Weblog: cookies and admin login
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Weblog%3A%20cookies%20and%20admin%20login&In-Reply-To=%3C306340e00602201240o32cd8739l%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000114.html">
+   <LINK REL="Next"  HREF="000121.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Weblog: cookies and admin login</H1>
+    <B>ydf poi</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Weblog%3A%20cookies%20and%20admin%20login&In-Reply-To=%3C306340e00602201240o32cd8739l%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] Weblog: cookies and admin login">ydfpoi at gmail.com
+       </A><BR>
+    <I>Mon Feb 20 21:40:59 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000114.html">[ydf-devel] r1705 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/safehtml YDFramework2/3rdparty/safehtml/classes YDFramework2/3rdparty/safehtml/classes/HTMLSax3 YDFramework2/YDClasses examples examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000121.html">[ydf-devel] Weblog: cookies and admin login
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#115">[ date ]</a>
+              <a href="thread.html#115">[ thread ]</a>
+              <a href="subject.html#115">[ subject ]</a>
+              <a href="author.html#115">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Pieter,
+
+I upgraded from build 1689 to 1705 and i can't log in as admin in Weblog now.
+
+After browsing and testing the code i found that in build 1704 you
+added a function called _getCookiePath to the YDWeblogAdminRequest
+class.
+Inside this function it may happens that &quot;dirname( YD_SELF_SCRIPT )&quot;
+returns '/' (or '\' on windows).
+As a '/' is always appended to the latter expression the weblog admin
+login page sets my YD_USER_PASS and YD_USER_NAME cookies path to '\/'
+(2 chars, not vee) and, as a result, i can't log in as an admin
+because these cookies are not found :-(
+
+Imho the _getCookiePath function should return '/' rather than '//' or
+'\/' for cookie path to be correctly set.
+
+Can you fix this please?
+
+Kind regards
+--
+po&#239;
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000114.html">[ydf-devel] r1705 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/safehtml YDFramework2/3rdparty/safehtml/classes YDFramework2/3rdparty/safehtml/classes/HTMLSax3 YDFramework2/YDClasses examples examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000121.html">[ydf-devel] Weblog: cookies and admin login
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#115">[ date ]</a>
+              <a href="thread.html#115">[ thread ]</a>
+              <a href="subject.html#115">[ subject ]</a>
+              <a href="author.html#115">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

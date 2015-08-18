@@ -1,0 +1,609 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2368 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2368%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200701271821.l0RILKA0016113%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000960.html">
+   <LINK REL="Next"  HREF="000962.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2368 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2368%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200701271821.l0RILKA0016113%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2368 - YDFramework2.0/trunk/YDFramework2">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 27 19:21:20 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000960.html">[ydf-devel] r2367 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default	examples/simplecms/resources
+</A></li>
+        <LI>Next message: <A HREF="000962.html">[ydf-devel] r2369 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#961">[ date ]</a>
+              <a href="thread.html#961">[ thread ]</a>
+              <a href="subject.html#961">[ subject ]</a>
+              <a href="author.html#961">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-27 19:21:15 +0100 (Sat, 27 Jan 2007)
+New Revision: 2368
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+Log:
+Moved the YDExecutor class definition to YDF2_init.php.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-25 13:02:29 UTC (rev 2367)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-27 18:21:15 UTC (rev 2368)
+@@ -630,6 +630,263 @@
+ 
+     }
+ 
++    /**
++     *	This is the executor class that contains all the logic for executing requests. It will instantiate the request
++     *	class and execute the right functions to get the request processed correctly.
++     *
++     *  @ingroup YDFramework
++     */
++    class YDExecutor extends YDBase {
++
++        /**
++         *	The class constructor for the YDExecutor class.
++         *
++         *	@param $file	Full path to the file that contains the request.
++         */
++        function YDExecutor( $file ) {
++            $this-&gt;_file = $file;
++        }
++
++        /**
++         *	The execute function will start the YDExecutor class and process the request.
++         */
++        function execute() {
++
++            // Do nothing if we already processed a request
++            if ( defined( 'YD_REQ_PROCESSED' ) ) {
++                return;
++            }
++
++            // Construct the name of the request class
++            $clsName = basename( $this-&gt;_file, YD_SCR_EXT );
++            $this-&gt;clsInst = new $clsName();
++
++            // Check if the object a YDRequest object
++            if ( ! YDObjectUtil::isSubClass( $this-&gt;clsInst, 'YDRequest' ) ) {
++                $ancestors = YDObjectUtil::getAncestors( $this-&gt;clsInst );
++                trigger_error(
++                    'Class &quot;' . $clsName . '&quot; should be derived from the YDRequest class. Currently, this class has the '
++                    . 'following ancestors: ' . implode( ' -&gt; ', $ancestors ), YD_ERROR
++                );
++            }
++
++            // Check if the class is properly initialized
++            if ( $this-&gt;clsInst-&gt;isInitialized() != true ) {
++                trigger_error(
++                    'Class &quot;' . $clsName . '&quot; is not initialized properly. Make  sure loaded the base class YDRequest '
++                    . 'and initialized it.', YD_ERROR
++                );
++            }
++
++            // Only if authentication is required
++            if ( $this-&gt;clsInst-&gt;getRequiresAuthentication() ) {
++                $result = $this-&gt;clsInst-&gt;isAuthenticated();
++                if ( $result ) {
++                    $this-&gt;clsInst-&gt;authenticationSucceeded();
++                } else {
++                    $this-&gt;clsInst-&gt;authenticationFailed();
++                    $this-&gt;finish();
++                }
++            }
++
++            // Get the action name
++            $action = 'action' . $this-&gt;clsInst-&gt;getActionName();
++
++            // Check if the action exists
++            if ( ! $this-&gt;clsInst-&gt;hasMethod( $action ) ) {
++                $this-&gt;clsInst-&gt;errorMissingAction( $action );
++                $this-&gt;finish();
++            }
++
++            // Check if the current action is allowed or not and execute errorActionNotAllowed if failed
++            if ( ! $this-&gt;clsInst-&gt;isActionAllowed() ) {
++                $this-&gt;clsInst-&gt;errorActionNotAllowed();
++                $this-&gt;finish();
++            }
++
++            // Process the request
++            $this-&gt;clsInst-&gt;process();
++            $this-&gt;finish();
++
++        }
++
++        /**
++         *	This is the function we use for finishing the request.
++         *
++         *	@internal
++         */
++        function finish() {
++
++            // Mark that the request is processed
++            define( 'YD_REQ_PROCESSED', 1 );
++
++            // Stop the timer
++            $GLOBALS['timer']-&gt;finish();
++
++            // Output visible debug info as a comment
++            if ( YDConfig::get( 'YD_DEBUG' ) == 1 ) {
++
++                // Total size of include files
++                $includeFiles = get_included_files();
++
++                // Calculate the total size
++                $includeFilesSize = 0;
++                $includeFilesWithSize = array();
++                foreach ( $includeFiles as $key=&gt;$includeFile ) {
++                    if ( is_file( $includeFile ) ) {
++                        $includeFilesSize += filesize( $includeFile );
++                        $includeFilesWithSize[ filesize( $includeFile ) ] = realpath( $includeFile );
++                    }
++                }
++                $includeFilesSize = YDStringUtil::formatFileSize( $includeFilesSize );
++
++                // Sort the list of include files by file size
++                krsort( $includeFilesWithSize );
++
++                // Convert to a string
++                $includeFiles = array();
++                foreach ( $includeFilesWithSize as $size=&gt;$file ) {
++                    array_push( $includeFiles, YDStringUtil::formatFileSize( $size ) . &quot;\t  &quot; . realpath( $file ) );
++                }
++
++                // Create the debug messages
++                $debug = YD_CRLF . YD_CRLF . YD_FW_NAMEVERS . ' DEBUG INFORMATION ' . YD_CRLF . YD_CRLF;
++
++                // Create the timings report
++                $debug .= 'PROCESSING TIME:' . YD_CRLF . YD_CRLF;
++                $debug .= &quot;    Elapsed\t  Diff\t  Marker&quot; . YD_CRLF;
++                $timings = $GLOBALS['timer']-&gt;getReport();
++                foreach ( $timings as $timing ) {
++                    $debug .= &quot;    &quot; . $timing[0] . ' ms' . &quot;\t  &quot; . $timing[1] . ' ms' . &quot;\t  &quot; .$timing[2] . YD_CRLF;
++                }
++                $debug .= YD_CRLF;
++
++                // Create the include file details
++                $debug .= 'INCLUDED FILES (' . sizeof( $includeFiles ) . ' files - ' . $includeFilesSize . ')' . YD_CRLF . YD_CRLF;
++                $debug .= &quot;    &quot; . implode( &quot;\n    &quot;, $includeFiles ) . YD_CRLF . YD_CRLF;
++
++                // Add the queries if any
++                if ( sizeof( $GLOBALS['YD_SQL_QUERY'] ) &gt; 0 ) {
++                    $debug .= 'EXECUTED SQL QUERIES (' . sizeof( $GLOBALS['YD_SQL_QUERY'] ) . ' queries)' . YD_CRLF . YD_CRLF;
++                    foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
++                        $debug .= &quot;    &quot; . '---- SQL QUERY ' . ($key+1) . ' ----' . YD_CRLF;
++                        foreach ( explode( YD_CRLF, trim( $query['trace'] ) ) as $line ) {
++                            $debug .= &quot;    &quot; . rtrim( $line ) . YD_CRLF;
++                        }
++                        $debug .= YD_CRLF . &quot;    SQL Query:&quot; . YD_CRLF;
++                        foreach ( explode( YD_CRLF, trim( $query['sql'] ) ) as $line ) {
++                            $debug .= &quot;        &quot; . rtrim( $line ) . YD_CRLF;
++                        }
++                        $debug .= YD_CRLF . &quot;    Query Time: &quot; . $query['time'] . ' ms' . YD_CRLF;
++                        $debug .= YD_CRLF;
++                    }
++                }
++
++                // Output the debug message
++                YDDebugUtil::debug( $debug );
++
++            }
++
++            // Output visible debug info
++            if ( YDConfig::get( 'YD_DEBUG' ) == 2 ) {
++
++                // Total size of include files
++                $includeFiles = get_included_files();
++
++                // Calculate the total size
++                $includeFilesSize = 0;
++                $includeFilesWithSize = array();
++                foreach ( $includeFiles as $key=&gt;$includeFile ) {
++                    if ( is_file( $includeFile ) ) {
++                        $includeFilesSize += filesize( $includeFile );
++                        $includeFilesWithSize[ filesize( $includeFile ) ] = realpath( $includeFile );
++                    }
++                }
++                $includeFilesSize = YDStringUtil::formatFileSize( $includeFilesSize );
++
++                // Sort the list of include files by file size
++                krsort( $includeFilesWithSize );
++
++                // Get the timing report
++                $timings = $GLOBALS['timer']-&gt;getReport();
++
++                // The font to use for the debug output
++                $font = ' style=&quot;font-family: Arial, Helvetica, sans-serif; text-align: left; vertical-align: top;&quot;';
++
++                // Include the needed libraries
++                $debug  = '';
++
++                // Create the output
++                $debug .= '&lt;br clear=&quot;all&quot;/&gt;&lt;hr size=&quot;1&quot;/&gt;';
++                $debug .= '&lt;p ' . $font . '&gt;&lt;b&gt;' . YD_FW_NAMEVERS . ' Debug Information&lt;/b&gt;&lt;/p&gt;';
++
++                // Add the processing time
++                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Processing time&lt;/i&gt;&lt;/p&gt;';
++                $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
++                $debug .= sprintf(
++                    '&lt;tr&gt;&lt;th %s&gt;Elapsed&lt;/th&gt;&lt;th %s&gt;Diff&lt;/th&gt;&lt;th %s&gt;Marker&lt;/th&gt;&lt;/tr&gt;',
++                    $font, $font, $font
++                );
++                foreach ( $timings as $timing ) {
++                    $debug .= sprintf(
++                        '&lt;tr&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;td %s&gt;%s&lt;/td&gt;&lt;/tr&gt;',
++                        $font, $timing[0], $font, $timing[0], $font, $timing[2]
++                    );
++                }
++                $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
++
++                // Add the included files
++                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Included files (' . $includeFilesSize . ')&lt;/i&gt;&lt;/p&gt;';
++                $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
++                $debug .= sprintf( '&lt;tr&gt;&lt;th %s&gt;File&lt;/th&gt;&lt;th %s&gt;Size&lt;/th&gt;&lt;/tr&gt;', $font, $font );
++                foreach ( $includeFilesWithSize as $size=&gt;$file ) {
++                    $debug .= sprintf(
++                        '&lt;tr&gt;&lt;td %s&gt;%s&lt;/td&gt;&lt;td %s&gt;%s&lt;/td&gt;&lt;/tr&gt;',
++                        $font, realpath( $file ), $font, YDStringUtil::formatFileSize( $size )
++                    );
++                }
++                $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
++
++                // Add the query log
++                if ( sizeof( $GLOBALS['YD_SQL_QUERY'] ) &gt; 0 ) {
++                    $debug .= '&lt;script src=&quot;' . YD_SELF_SCRIPT . '?do=JsShMain&quot;&gt;&lt;/script&gt;';
++                    $debug .= '&lt;script src=&quot;' . YD_SELF_SCRIPT . '?do=JsShSql&quot;&gt;&lt;/script&gt;';
++                    $debug .= '&lt;link rel=&quot;stylesheet&quot; href=&quot;' . YD_SELF_SCRIPT . '?do=CssShStyle&quot; type=&quot;text/css&quot; /&gt;';
++                    $debug .= sprintf(
++                        '&lt;p ' . $font . '&gt;&lt;i&gt;SQL Query Log (%s queries)&lt;/i&gt;&lt;/p&gt;',
++                        sizeof( $GLOBALS['YD_SQL_QUERY'] )
++                    );
++                    $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
++                    $debug .= sprintf(
++                        '&lt;tr&gt;&lt;th %s&gt;Query #&lt;/th&gt;&lt;th %s&gt;Trace&lt;/th&gt;&lt;th %s&gt;SQL Statement&lt;/th&gt;&lt;th %s&gt;Elapsed&lt;/th&gt;&lt;/tr&gt;',
++                        $font, $font, $font, $font );
++                    foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
++                        $debug .= sprintf(
++                            '&lt;tr&gt;&lt;td width=&quot;5%%&quot; %s&gt;%s&lt;/td&gt;&lt;td width=&quot;15%%&quot; %s&gt;%s ms&lt;/td&gt;&lt;td width=&quot;40%%&quot; %s&gt;&lt;pre&gt;%s&lt;/pre&gt;&lt;/td&gt;&lt;td width=&quot;40%%&quot; %s&gt;&lt;pre class=&quot;sh_sql&quot;&gt;%s&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;',
++                            $font, $key, $font, $query['time'], $font, $query['trace'], $font, $query['sql']
++                        );
++                    }
++                    $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
++                    $debug .= '&lt;script&gt;sh_highlightDocument();&lt;/script&gt;';
++                    $debug .= '&lt;script&gt;sh_highlightDocument();&lt;/script&gt;';
++                }
++
++                // Add the elapsed time
++                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Elapsed Time&lt;/i&gt;&lt;/p&gt;';
++                $debug .= '&lt;dd&gt;&lt;p&gt;' . $GLOBALS['timer']-&gt;getElapsed() . ' ms&lt;/p&gt;&lt;/dd&gt;';
++
++                // Output the debug message
++                echo( $debug );
++
++            }
++
++            // Add the elapsed time
++            die( YD_CRLF . '&lt;!-- ' . $GLOBALS['timer']-&gt;getElapsed() . ' ms --&gt;' );
++
++        }
++
++    }
++
+     // Add if not exists yet
+     if ( ! function_exists( 'str_ireplace' ) ) {
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-25 13:02:29 UTC (rev 2367)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-27 18:21:15 UTC (rev 2368)
+@@ -33,263 +33,6 @@
+     // Auto execute config value. Default: true.
+     YDConfig::set( 'YD_AUTO_EXECUTE', true, false );
+ 
+-    /**
+-     *	This is the executor class that contains all the logic for executing requests. It will instantiate the request
+-     *	class and execute the right functions to get the request processed correctly.
+-     *
+-     *  @ingroup YDFramework
+-     */
+-    class YDExecutor extends YDBase {
+-
+-        /**
+-         *	The class constructor for the YDExecutor class.
+-         *
+-         *	@param $file	Full path to the file that contains the request.
+-         */
+-        function YDExecutor( $file ) {
+-            $this-&gt;_file = $file;
+-        }
+-
+-        /**
+-         *	The execute function will start the YDExecutor class and process the request.
+-         */
+-        function execute() {
+-
+-            // Do nothing if we already processed a request
+-            if ( defined( 'YD_REQ_PROCESSED' ) ) {
+-                return;
+-            }
+-
+-            // Construct the name of the request class
+-            $clsName = basename( $this-&gt;_file, YD_SCR_EXT );
+-            $this-&gt;clsInst = new $clsName();
+-
+-            // Check if the object a YDRequest object
+-            if ( ! YDObjectUtil::isSubClass( $this-&gt;clsInst, 'YDRequest' ) ) {
+-                $ancestors = YDObjectUtil::getAncestors( $this-&gt;clsInst );
+-                trigger_error(
+-                    'Class &quot;' . $clsName . '&quot; should be derived from the YDRequest class. Currently, this class has the '
+-                    . 'following ancestors: ' . implode( ' -&gt; ', $ancestors ), YD_ERROR
+-                );
+-            }
+-
+-            // Check if the class is properly initialized
+-            if ( $this-&gt;clsInst-&gt;isInitialized() != true ) {
+-                trigger_error(
+-                    'Class &quot;' . $clsName . '&quot; is not initialized properly. Make  sure loaded the base class YDRequest '
+-                    . 'and initialized it.', YD_ERROR
+-                );
+-            }
+-
+-            // Only if authentication is required
+-            if ( $this-&gt;clsInst-&gt;getRequiresAuthentication() ) {
+-                $result = $this-&gt;clsInst-&gt;isAuthenticated();
+-                if ( $result ) {
+-                    $this-&gt;clsInst-&gt;authenticationSucceeded();
+-                } else {
+-                    $this-&gt;clsInst-&gt;authenticationFailed();
+-                    $this-&gt;finish();
+-                }
+-            }
+-
+-            // Get the action name
+-            $action = 'action' . $this-&gt;clsInst-&gt;getActionName();
+-
+-            // Check if the action exists
+-            if ( ! $this-&gt;clsInst-&gt;hasMethod( $action ) ) {
+-                $this-&gt;clsInst-&gt;errorMissingAction( $action );
+-                $this-&gt;finish();
+-            }
+-
+-            // Check if the current action is allowed or not and execute errorActionNotAllowed if failed
+-            if ( ! $this-&gt;clsInst-&gt;isActionAllowed() ) {
+-                $this-&gt;clsInst-&gt;errorActionNotAllowed();
+-                $this-&gt;finish();
+-            }
+-
+-            // Process the request
+-            $this-&gt;clsInst-&gt;process();
+-            $this-&gt;finish();
+-
+-        }
+-
+-        /**
+-         *	This is the function we use for finishing the request.
+-         *
+-         *	@internal
+-         */
+-        function finish() {
+-
+-            // Mark that the request is processed
+-            define( 'YD_REQ_PROCESSED', 1 );
+-
+-            // Stop the timer
+-            $GLOBALS['timer']-&gt;finish();
+-
+-            // Output visible debug info as a comment
+-            if ( YDConfig::get( 'YD_DEBUG' ) == 1 ) {
+-
+-                // Total size of include files
+-                $includeFiles = get_included_files();
+-
+-                // Calculate the total size
+-                $includeFilesSize = 0;
+-                $includeFilesWithSize = array();
+-                foreach ( $includeFiles as $key=&gt;$includeFile ) {
+-                    if ( is_file( $includeFile ) ) {
+-                        $includeFilesSize += filesize( $includeFile );
+-                        $includeFilesWithSize[ filesize( $includeFile ) ] = realpath( $includeFile );
+-                    }
+-                }
+-                $includeFilesSize = YDStringUtil::formatFileSize( $includeFilesSize );
+-
+-                // Sort the list of include files by file size
+-                krsort( $includeFilesWithSize );
+-
+-                // Convert to a string
+-                $includeFiles = array();
+-                foreach ( $includeFilesWithSize as $size=&gt;$file ) {
+-                    array_push( $includeFiles, YDStringUtil::formatFileSize( $size ) . &quot;\t  &quot; . realpath( $file ) );
+-                }
+-
+-                // Create the debug messages
+-                $debug = YD_CRLF . YD_CRLF . YD_FW_NAMEVERS . ' DEBUG INFORMATION ' . YD_CRLF . YD_CRLF;
+-
+-                // Create the timings report
+-                $debug .= 'PROCESSING TIME:' . YD_CRLF . YD_CRLF;
+-                $debug .= &quot;    Elapsed\t  Diff\t  Marker&quot; . YD_CRLF;
+-                $timings = $GLOBALS['timer']-&gt;getReport();
+-                foreach ( $timings as $timing ) {
+-                    $debug .= &quot;    &quot; . $timing[0] . ' ms' . &quot;\t  &quot; . $timing[1] . ' ms' . &quot;\t  &quot; .$timing[2] . YD_CRLF;
+-                }
+-                $debug .= YD_CRLF;
+-
+-                // Create the include file details
+-                $debug .= 'INCLUDED FILES (' . sizeof( $includeFiles ) . ' files - ' . $includeFilesSize . ')' . YD_CRLF . YD_CRLF;
+-                $debug .= &quot;    &quot; . implode( &quot;\n    &quot;, $includeFiles ) . YD_CRLF . YD_CRLF;
+-
+-                // Add the queries if any
+-                if ( sizeof( $GLOBALS['YD_SQL_QUERY'] ) &gt; 0 ) {
+-                    $debug .= 'EXECUTED SQL QUERIES (' . sizeof( $GLOBALS['YD_SQL_QUERY'] ) . ' queries)' . YD_CRLF . YD_CRLF;
+-                    foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
+-                        $debug .= &quot;    &quot; . '---- SQL QUERY ' . ($key+1) . ' ----' . YD_CRLF;
+-                        foreach ( explode( YD_CRLF, trim( $query['trace'] ) ) as $line ) {
+-                            $debug .= &quot;    &quot; . rtrim( $line ) . YD_CRLF;
+-                        }
+-                        $debug .= YD_CRLF . &quot;    SQL Query:&quot; . YD_CRLF;
+-                        foreach ( explode( YD_CRLF, trim( $query['sql'] ) ) as $line ) {
+-                            $debug .= &quot;        &quot; . rtrim( $line ) . YD_CRLF;
+-                        }
+-                        $debug .= YD_CRLF . &quot;    Query Time: &quot; . $query['time'] . ' ms' . YD_CRLF;
+-                        $debug .= YD_CRLF;
+-                    }
+-                }
+-
+-                // Output the debug message
+-                YDDebugUtil::debug( $debug );
+-
+-            }
+-
+-            // Output visible debug info
+-            if ( YDConfig::get( 'YD_DEBUG' ) == 2 ) {
+-
+-                // Total size of include files
+-                $includeFiles = get_included_files();
+-
+-                // Calculate the total size
+-                $includeFilesSize = 0;
+-                $includeFilesWithSize = array();
+-                foreach ( $includeFiles as $key=&gt;$includeFile ) {
+-                    if ( is_file( $includeFile ) ) {
+-                        $includeFilesSize += filesize( $includeFile );
+-                        $includeFilesWithSize[ filesize( $includeFile ) ] = realpath( $includeFile );
+-                    }
+-                }
+-                $includeFilesSize = YDStringUtil::formatFileSize( $includeFilesSize );
+-
+-                // Sort the list of include files by file size
+-                krsort( $includeFilesWithSize );
+-
+-                // Get the timing report
+-                $timings = $GLOBALS['timer']-&gt;getReport();
+-
+-                // The font to use for the debug output
+-                $font = ' style=&quot;font-family: Arial, Helvetica, sans-serif; text-align: left; vertical-align: top;&quot;';
+-
+-                // Include the needed libraries
+-                $debug  = '';
+-
+-                // Create the output
+-                $debug .= '&lt;br clear=&quot;all&quot;/&gt;&lt;hr size=&quot;1&quot;/&gt;';
+-                $debug .= '&lt;p ' . $font . '&gt;&lt;b&gt;' . YD_FW_NAMEVERS . ' Debug Information&lt;/b&gt;&lt;/p&gt;';
+-
+-                // Add the processing time
+-                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Processing time&lt;/i&gt;&lt;/p&gt;';
+-                $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
+-                $debug .= sprintf(
+-                    '&lt;tr&gt;&lt;th %s&gt;Elapsed&lt;/th&gt;&lt;th %s&gt;Diff&lt;/th&gt;&lt;th %s&gt;Marker&lt;/th&gt;&lt;/tr&gt;',
+-                    $font, $font, $font
+-                );
+-                foreach ( $timings as $timing ) {
+-                    $debug .= sprintf(
+-                        '&lt;tr&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;td %s&gt;%s ms&lt;/td&gt;&lt;td %s&gt;%s&lt;/td&gt;&lt;/tr&gt;',
+-                        $font, $timing[0], $font, $timing[0], $font, $timing[2]
+-                    );
+-                }
+-                $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
+-
+-                // Add the included files
+-                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Included files (' . $includeFilesSize . ')&lt;/i&gt;&lt;/p&gt;';
+-                $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
+-                $debug .= sprintf( '&lt;tr&gt;&lt;th %s&gt;File&lt;/th&gt;&lt;th %s&gt;Size&lt;/th&gt;&lt;/tr&gt;', $font, $font );
+-                foreach ( $includeFilesWithSize as $size=&gt;$file ) {
+-                    $debug .= sprintf(
+-                        '&lt;tr&gt;&lt;td %s&gt;%s&lt;/td&gt;&lt;td %s&gt;%s&lt;/td&gt;&lt;/tr&gt;',
+-                        $font, realpath( $file ), $font, YDStringUtil::formatFileSize( $size )
+-                    );
+-                }
+-                $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
+-
+-                // Add the query log
+-                if ( sizeof( $GLOBALS['YD_SQL_QUERY'] ) &gt; 0 ) {
+-                    $debug .= '&lt;script src=&quot;' . YD_SELF_SCRIPT . '?do=JsShMain&quot;&gt;&lt;/script&gt;';
+-                    $debug .= '&lt;script src=&quot;' . YD_SELF_SCRIPT . '?do=JsShSql&quot;&gt;&lt;/script&gt;';
+-                    $debug .= '&lt;link rel=&quot;stylesheet&quot; href=&quot;' . YD_SELF_SCRIPT . '?do=CssShStyle&quot; type=&quot;text/css&quot; /&gt;';
+-                    $debug .= sprintf(
+-                        '&lt;p ' . $font . '&gt;&lt;i&gt;SQL Query Log (%s queries)&lt;/i&gt;&lt;/p&gt;',
+-                        sizeof( $GLOBALS['YD_SQL_QUERY'] )
+-                    );
+-                    $debug .= '&lt;dd&gt;&lt;p&gt;&lt;table width=&quot;90%&quot; border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;';
+-                    $debug .= sprintf(
+-                        '&lt;tr&gt;&lt;th %s&gt;Query #&lt;/th&gt;&lt;th %s&gt;Trace&lt;/th&gt;&lt;th %s&gt;SQL Statement&lt;/th&gt;&lt;th %s&gt;Elapsed&lt;/th&gt;&lt;/tr&gt;',
+-                        $font, $font, $font, $font );
+-                    foreach ( $GLOBALS['YD_SQL_QUERY'] as $key=&gt;$query ) {
+-                        $debug .= sprintf(
+-                            '&lt;tr&gt;&lt;td width=&quot;5%%&quot; %s&gt;%s&lt;/td&gt;&lt;td width=&quot;15%%&quot; %s&gt;%s ms&lt;/td&gt;&lt;td width=&quot;40%%&quot; %s&gt;&lt;pre&gt;%s&lt;/pre&gt;&lt;/td&gt;&lt;td width=&quot;40%%&quot; %s&gt;&lt;pre class=&quot;sh_sql&quot;&gt;%s&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;',
+-                            $font, $key, $font, $query['time'], $font, $query['trace'], $font, $query['sql']
+-                        );
+-                    }
+-                    $debug .= '&lt;/table&gt;&lt;/p&gt;&lt;/dd&gt;';
+-                    $debug .= '&lt;script&gt;sh_highlightDocument();&lt;/script&gt;';
+-                    $debug .= '&lt;script&gt;sh_highlightDocument();&lt;/script&gt;';
+-                }
+-
+-                // Add the elapsed time
+-                $debug .= '&lt;p ' . $font . '&gt;&lt;i&gt;Elapsed Time&lt;/i&gt;&lt;/p&gt;';
+-                $debug .= '&lt;dd&gt;&lt;p&gt;' . $GLOBALS['timer']-&gt;getElapsed() . ' ms&lt;/p&gt;&lt;/dd&gt;';
+-
+-                // Output the debug message
+-                echo( $debug );
+-
+-            }
+-
+-            // Add the elapsed time
+-            die( YD_CRLF . '&lt;!-- ' . $GLOBALS['timer']-&gt;getElapsed() . ' ms --&gt;' );
+-
+-        }
+-
+-    }
+-
+     // Check if we need to auto execute
+     if ( YDConfig::get( 'YD_AUTO_EXECUTE', true ) == true ) { 
+         $clsInst = new YDExecutor( YD_SELF_FILE );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000960.html">[ydf-devel] r2367 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default	examples/simplecms/resources
+</A></li>
+	<LI>Next message: <A HREF="000962.html">[ydf-devel] r2369 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#961">[ date ]</a>
+              <a href="thread.html#961">[ thread ]</a>
+              <a href="subject.html#961">[ subject ]</a>
+              <a href="author.html#961">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

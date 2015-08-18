@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C1163787000.v2.fusewebmail-15630%40f%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000766.html">
+   <LINK REL="Next"  HREF="000768.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C1163787000.v2.fusewebmail-15630%40f%3E"
+       TITLE="[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields">francisco at fusemail.com
+       </A><BR>
+    <I>Fri Nov 17 19:10:00 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000766.html">[ydf-devel] r2208 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000768.html">[ydf-devel] r2209 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#767">[ date ]</a>
+              <a href="thread.html#767">[ thread ]</a>
+              <a href="subject.html#767">[ subject ]</a>
+              <a href="author.html#767">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Graeme
+
+&gt;<i> As mentioned above, there are bugs in YDDatabaseTree2::moveNode and
+</I>&gt;<i> YDDatabaseTree2::addNode. I think the bugs will also be present in
+</I>&gt;<i> YDDatabaseTree3 since the logic is basically  the same.
+</I>&gt;<i>
+</I>&gt;<i> For moveNode, positions can be duplicated if the position of a node is
+</I>&gt;<i> moved within the current parent. For addNode the database can also end
+</I>&gt;<i> up with duplicated positions within the current parent.
+</I>
+Well, some fixes (related to addNode) were already done.. but in current
+YDDatabaseTree3 (shame on me.. i didn't update YDDT2).
+
+
+&gt;<i> I have *attached *a modified version of YDDatabaseTree2 containing my
+</I>fixes.
+
+Graeme, i saw your fixes but i think we could have some problems too.
+I have fixed YDDatabaseTree3::moveNode.
+
+One think i would like to tell too is that i would prefer to delete 
+YDDatabaseTree2 and use YDDatabaseTree3 since they use the same algorithm
+but YDDatabaseTree3 is far the best implementation.
+
+So, please use YDDatabaseTree3 :)
+
+&gt;<i> I was thinking that the following methods would make use of the tree
+</I>&gt;<i> classes more flexible:
+</I>
+That's cool. Let's see...
+
+&gt;<i>     * *positionDecrementNode( $id, $lock_branch = true )* - decrease the
+</I>&gt;<i>       position of the specified node within the current branch. If
+</I>&gt;<i>       lock_branch is set to false and the node's current position is 1
+</I>&gt;<i>       then the node will move up to the position one less than the
+</I>&gt;<i>       parent's position in the parent level.
+</I>
+Yes, but i'm confused. :)
+Afaik, all your methods are difference forms of move, right?
+
+So, with a original tree like:
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- X
+</I>|<i>  +- Y
+</I>|<i>  |  +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- C
+   +- D
+
+So, positionDecrementNode( X, false ) will result in:
+
+.
++- A
+|<i>
+</I>+- X
++- B
+|<i>  +- Y
+</I>|<i>  |  +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- C
+   +- D
+
+
+&gt;<i>     * *positionIncrementNode( $id, $lock_branch = true )* - increase the
+</I>&gt;<i>       position of the specified node within the current branch. If
+</I>&gt;<i>       lock_branch is set to false and the node's current position is the
+</I>&gt;<i>       highest in the current branch then the node will move up to the
+</I>&gt;<i>       position one greater than the parent's position in the parent level.
+</I>
+
+So, with a original tree like:
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- X
+</I>|<i>  +- Y
+</I>|<i>  |  +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- C
+   +- D
+
+So, positionIncrementNode( G, false ) will result in:
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- X
+</I>|<i>  +- Y
+</I>|<i>  +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- C
+   +- D
+
+
+.. this sounds very strange to me.. but ok.
+
+&gt;<i>     * *levelPromoteNode( $id )* - reduce the level of the specified node
+</I>&gt;<i>       by 1 and the position will be set to the position of the parent
+</I>&gt;<i>       node plus one.
+</I>
+So, with a original tree like:
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- X
+</I>|<i>  +- Y
+</I>|<i>  |  +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- C
+   +- D
+
+So, levelPromoteNode( X ) will result in:
+
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- Y
+</I>|<i>  |  +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- X
+|<i>
+</I>+- C
+   +- D
+
+but.. should the position be PARENT - one ..(instead of +) ?
+
+
+&gt;<i>     * *levelDemoteNode( $id )* - increase the level of the specified
+</I>&gt;<i>       node by making the node a child of its brother node (the brother
+</I>&gt;<i>       node with position one less than the subject node's original
+</I>&gt;<i>       position).
+</I>
+So, with a original tree like:
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- X
+</I>|<i>  +- Y
+</I>|<i>  |  +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- C
+   +- D
+
+So, levelDemoteNode( Y ) will result in:
+
+.
++- A
+|<i>
+</I>+- B
+|<i>  +- X
+</I>|<i>  |  +- Y
+</I>|<i>  |     +- G
+</I>|<i>  +- L
+</I>|<i>
+</I>+- C
+   +- D
+
+
+Graeme, my personal opinion is that these methods have &quot;strange&quot; results
+in some contexts and all can be done using the moveNode with some tests
+before.. but should we implement them in YDDT3?
+
+Btw, please test YDDT3 moveNode and addNode.
+
+What do you think?
+Francisco A
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000766.html">[ydf-devel] r2208 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000768.html">[ydf-devel] r2209 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#767">[ date ]</a>
+              <a href="thread.html#767">[ thread ]</a>
+              <a href="subject.html#767">[ subject ]</a>
+              <a href="author.html#767">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

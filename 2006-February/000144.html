@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1729 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1729%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200602261809.k1QI91aw020012%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000143.html">
+   <LINK REL="Next"  HREF="000145.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1729 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1729%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200602261809.k1QI91aw020012%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1729 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at berlios.de
+       </A><BR>
+    <I>Sun Feb 26 19:09:01 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000143.html">[ydf-devel] r1728 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000145.html">[ydf-devel] r1730 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#144">[ date ]</a>
+              <a href="thread.html#144">[ thread ]</a>
+              <a href="subject.html#144">[ subject ]</a>
+              <a href="author.html#144">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-02-26 19:08:48 +0100 (Sun, 26 Feb 2006)
+New Revision: 1729
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+new static method YDAjax::message to send response as error report
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-02-26 16:49:31 UTC (rev 1728)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-02-26 18:08:48 UTC (rev 1729)
+@@ -219,7 +219,7 @@
+ 			if (isset($this-&gt;wtID)) return;
+ 		
+ 			// create js variable name for html message element
+-			$this-&gt;wtID = $this-&gt;prefix . &quot;waitingmessage&quot;;
++			$this-&gt;wtID = &quot;waitingmessage&quot;;
+ 
+ 			// check custom options
+ 			if (!isset($options['style.backgroundColor'])) $options['style.backgroundColor'] = '#cccccc';
+@@ -250,31 +250,32 @@
+ 			// append start code
+ 			$this-&gt;waitingMessageCode .= $effectStart-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectStart-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;);
+ 
+-			// create function name to show div
+-			$this-&gt;wtFunction = $this-&gt;wtID .&quot;show()&quot;;
++			// create js function headers to show/hide waiting message div
++			$this-&gt;wtFunctionShow = $this-&gt;wtID .&quot;show()&quot;;
++			$this-&gt;wtFunctionHide = $this-&gt;wtID .&quot;hide()&quot;;
+ 
+ 			// create show effect
+ 			if (is_null( $effectShow ))
+ 				$effectShow = new YDAjaxEffect( '', 'show', '', 0 );
+ 
+-			// save hide effect to be used on response
+-			if (is_null( $effectHide )) $this-&gt;effectHide = new YDAjaxEffect( '', 'hide', '', 0 );
+-			else                        $this-&gt;effectHide = $effectHide;
++			// create hide effect
++			if (is_null( $effectHide )) 
++				$effectHide = new YDAjaxEffect( '', 'hide', '', 0 );
+ 
+-			// create js function to show div
+-			$this-&gt;waitingMessageCodeFunction =&quot;\nfunction &quot;. $this-&gt;wtFunction .&quot;{&quot;. $effectShow-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectShow-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) .&quot;}&quot;;
++			// create js functions to show/hide div
++			$this-&gt;waitingMessageCodeFunction  = &quot;\nfunction &quot;. $this-&gt;wtFunctionShow .&quot;{&quot;. $effectShow-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectShow-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) .&quot;}&quot;;
++			$this-&gt;waitingMessageCodeFunction .= &quot;\nfunction &quot;. $this-&gt;wtFunctionHide .&quot;{&quot;. $effectHide-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $effectHide-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) .&quot;}&quot;;
+ 
+ 			// add script to hide waiting message on response
+-			$this-&gt;response-&gt;addScript( $this-&gt;effectHide-&gt;getJSHead($this-&gt;wtID .&quot;id&quot;) . $this-&gt;effectHide-&gt;getJSBody($this-&gt;wtID .&quot;id&quot;) );
++			$this-&gt;response-&gt;addScript( $this-&gt;wtFunctionHide . &quot;;&quot; );
+ 		}
+ 
+ 
+-		// internal method to get the js waiting message function declaration
+-		function _getMessageFunction(){
++		// internal method to get the js show waiting message function declaration
++		function _getWMFunctionShow(){
+ 
+-			if (isset($this-&gt;wtID)) return $this-&gt;wtFunction . &quot;;&quot; ;
+-
+-			return '';
++			if (isset($this-&gt;wtID)) return $this-&gt;wtFunctionShow . &quot;;&quot;;
++			else                    return '';
+ 		}
+ 
+ 
+@@ -357,7 +358,7 @@
+ 			if (!is_array( $options )) $options = array( $options );
+ 			
+ 			// get function name
+-			$functionName = $this-&gt;_getMessageFunction() . $this-&gt;sWrapperPrefix . $serverFunctionName .'('. $this-&gt;_computeFunctionArguments( $arguments, $options ) .');';
++			$functionName = $this-&gt;_getWMFunctionShow() . $this-&gt;sWrapperPrefix . $serverFunctionName .'('. $this-&gt;_computeFunctionArguments( $arguments, $options ) .');';
+ 
+ 			// process effects
+ 			if (!is_null( $effects )){
+@@ -881,6 +882,22 @@
+ 			$this-&gt;response-&gt;addAlert( $message );
+ 		}
+ 
++
++        /**
++         *	This method sends a ajax response message
++         *
++         *	@param $message			Message to display.
++         */		
++		function message( $message ){
++			
++			$response = new YDAjaxResponse( YDConfig::get( 'YD_AJAX_ENCODING' ) );
++			$response-&gt;addScript( 'try{ waitingmessagehide() }catch(e){}' );
++			$response-&gt;addAlert( $message );
++			
++			return $response;
++		}
++
++
+ 	}
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000143.html">[ydf-devel] r1728 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000145.html">[ydf-devel] r1730 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#144">[ date ]</a>
+              <a href="thread.html#144">[ thread ]</a>
+              <a href="subject.html#144">[ subject ]</a>
+              <a href="author.html#144">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

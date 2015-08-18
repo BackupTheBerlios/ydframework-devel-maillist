@@ -1,0 +1,556 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1857 - in YDFramework2.0/trunk/examples/cms: includes modules modules/ydcmfgallery modules/ydcmfgalleryalbum modules/ydcmfgalleryitem modules/ydcmfhome
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1857%20-%20in%20YDFramework2.0/trunk/examples/cms%3A%20includes%20modules%20modules/ydcmfgallery%20modules/ydcmfgalleryalbum%20modules/ydcmfgalleryitem%20modules/ydcmfhome&In-Reply-To=%3C200604201500.k3KF0Iip018664%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000360.html">
+   <LINK REL="Next"  HREF="000302.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1857 - in YDFramework2.0/trunk/examples/cms: includes modules modules/ydcmfgallery modules/ydcmfgalleryalbum modules/ydcmfgalleryitem modules/ydcmfhome</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1857%20-%20in%20YDFramework2.0/trunk/examples/cms%3A%20includes%20modules%20modules/ydcmfgallery%20modules/ydcmfgalleryalbum%20modules/ydcmfgalleryitem%20modules/ydcmfhome&In-Reply-To=%3C200604201500.k3KF0Iip018664%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1857 - in YDFramework2.0/trunk/examples/cms: includes modules modules/ydcmfgallery modules/ydcmfgalleryalbum modules/ydcmfgalleryitem modules/ydcmfhome">pclaerhout at berlios.de
+       </A><BR>
+    <I>Thu Apr 20 17:00:18 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000360.html">[ydf-devel] YDCM feedback
+</A></li>
+        <LI>Next message: <A HREF="000302.html">[ydf-devel] r1858 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#301">[ date ]</a>
+              <a href="thread.html#301">[ thread ]</a>
+              <a href="subject.html#301">[ subject ]</a>
+              <a href="author.html#301">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-04-20 17:00:17 +0200 (Thu, 20 Apr 2006)
+New Revision: 1857
+
+Added:
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.php
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.tpl
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.php
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.tpl
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.php
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.tpl
+Modified:
+   YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php
+   YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl
+Log:
+Added some more modules to show the functionality of this CMF framework.
+
+Modified: YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -2,7 +2,13 @@
+ 
+     // Include the YDDatabaseMetaData class
+     include_once( YD_DIR_HOME_CLS . '/YDDatabaseMetaData.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDFileSystem.php' );
+ 
++    include( YDCMS_DIR_MOD . '/ydcmfhome/ydcmfhome.php' );
++    include( YDCMS_DIR_MOD . '/ydcmfgallery/ydcmfgallery.php' );
++    include( YDCMS_DIR_MOD . '/ydcmfgalleryalbum/ydcmfgalleryalbum.php' );
++    include( YDCMS_DIR_MOD . '/ydcmfgalleryitem/ydcmfgalleryitem.php' );
++
+     // Get the metadata object
+     $meta = new YDDatabaseMetaData( $this-&gt;db );
+ 
+@@ -83,16 +89,13 @@
+     $node-&gt;setValue( 'title',           'Titel Nederlands', 'nl' );
+     $node-&gt;setValue( 'title',           'Title English', 'en' );
+     $node-&gt;setValue( 'title',           'Titre Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
+-    $node-&gt;setValue( 'property',        'Property English', 'en' );
+-    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property_other',  'Property1' );
+-
+-    // Add it to the store
++//    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++//    $node-&gt;setValue( 'property',        'Property English', 'en' );
++//    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++//    $node-&gt;setValue( 'property_other',  'Property1' );
+     $this-&gt;addNode( $node );
+ 
+     // Create a new node
+-    include( YDCMS_DIR_MOD . '/ydcmfhome/ydcmfhome.php' );
+     $node = new YDCmfHome();
+     $node-&gt;setValue( 'id',              2 );
+     $node-&gt;setValue( 'parent_id',       1 );
+@@ -100,12 +103,10 @@
+     $node-&gt;setValue( 'title',           'Titel2 Nederlands', 'nl' );
+     $node-&gt;setValue( 'title',           'Title2 English', 'en' );
+     $node-&gt;setValue( 'title',           'Titre2 Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property',        'Property2 Nederlands', 'nl' );
+-    $node-&gt;setValue( 'property',        'Property2 English', 'en' );
+-    $node-&gt;setValue( 'property',        'Property2 Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property_other',  'Property21' );
+-
+-    // Add it to the store
++//    $node-&gt;setValue( 'property',        'Property2 Nederlands', 'nl' );
++//    $node-&gt;setValue( 'property',        'Property2 English', 'en' );
++//    $node-&gt;setValue( 'property',        'Property2 Fran&ccedil;ais', 'fr' );
++//    $node-&gt;setValue( 'property_other',  'Property21' );
+     $this-&gt;addNode( $node );
+ 
+     // Create a new node
+@@ -116,12 +117,10 @@
+     $node-&gt;setValue( 'title',           'News Nederlands', 'nl' );
+     $node-&gt;setValue( 'title',           'News English', 'en' );
+     $node-&gt;setValue( 'title',           'News Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
+-    $node-&gt;setValue( 'property',        'Property English', 'en' );
+-    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property_other',  'Property1' );
+-
+-    // Add it to the store
++//    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++//    $node-&gt;setValue( 'property',        'Property English', 'en' );
++//    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++//    $node-&gt;setValue( 'property_other',  'Property1' );
+     $this-&gt;addNode( $node );
+ 
+     // Create a new node
+@@ -132,12 +131,10 @@
+     $node-&gt;setValue( 'title',           'News Krabrally 2006 Nederlands', 'nl' );
+     $node-&gt;setValue( 'title',           'News Krabrally 2006 English', 'en' );
+     $node-&gt;setValue( 'title',           'News Krabrally 2006 Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
+-    $node-&gt;setValue( 'property',        'Property English', 'en' );
+-    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property_other',  'Property1' );
+-
+-    // Add it to the store
++//    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++//    $node-&gt;setValue( 'property',        'Property English', 'en' );
++//    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++//    $node-&gt;setValue( 'property_other',  'Property1' );
+     $this-&gt;addNode( $node );
+ 
+     // Create a new node
+@@ -148,12 +145,56 @@
+     $node-&gt;setValue( 'title',           'News Krabrally 2007 Nederlands', 'nl' );
+     $node-&gt;setValue( 'title',           'News Krabrally 2007 English', 'en' );
+     $node-&gt;setValue( 'title',           'News Krabrally 2007 Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
+-    $node-&gt;setValue( 'property',        'Property English', 'en' );
+-    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
+-    $node-&gt;setValue( 'property_other',  'Property1' );
++//    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++//    $node-&gt;setValue( 'property',        'Property English', 'en' );
++//    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++//    $node-&gt;setValue( 'property_other',  'Property1' );
++    $this-&gt;addNode( $node );
+ 
+-    // Add it to the store
++    // Add a new photo gallery list
++    $node = new YDCmfGallery();
++    $node-&gt;setValue( 'id',        6 );
++    $node-&gt;setValue( 'parent_id', 1 );
++    $node-&gt;setValue( 'name',      'photo' );
++    $node-&gt;setValue( 'title',     'Photo Galleries' );
+     $this-&gt;addNode( $node );
+ 
++    // Add a new photo gallery list
++    $node = new YDCmfGalleryAlbum();
++    $node-&gt;setValue( 'id',        7 );
++    $node-&gt;setValue( 'parent_id', 6 );
++    $node-&gt;setValue( 'name',      'photo/krabrally2006' );
++    $node-&gt;setValue( 'title',     'Krabrally 2006' );
++    $this-&gt;addNode( $node );
++
++    // Add a new photo gallery list
++    $node = new YDCmfGalleryAlbum();
++    $node-&gt;setValue( 'id',        8 );
++    $node-&gt;setValue( 'parent_id', 6 );
++    $node-&gt;setValue( 'name',      'photo/krabrally2007' );
++    $node-&gt;setValue( 'title',     'Krabrally 2007' );
++    $this-&gt;addNode( $node );
++
++    // Add some images
++    $dir = new YDFSDirectory( dirname( __FILE__ ) . '/../uploads/krabrally2006' );
++    foreach ( $dir-&gt;getContents() as $idx =&gt; $file ) {
++        $node = new YDCmfGalleryItem();
++        $node-&gt;setValue( 'parent_id', 7 );
++        $node-&gt;setValue( 'name', 'photo/krabrally2006/' . $file-&gt;getBasenameNoExt() );
++        $node-&gt;setValue( 'title', $file-&gt;getBasename() );
++        $node-&gt;setValue( 'relative_path', 'uploads/krabrally2006/' . $file-&gt;getBasename() );
++        $this-&gt;addNode( $node );
++    }
++
++    // Add some images
++    $dir = new YDFSDirectory( dirname( __FILE__ ) . '/../uploads/krabrally2007' );
++    foreach ( $dir-&gt;getContents() as $idx =&gt; $file ) {
++        $node = new YDCmfGalleryItem();
++        $node-&gt;setValue( 'parent_id', 8 );
++        $node-&gt;setValue( 'name', 'photo/krabrally2007/' . $file-&gt;getBasenameNoExt() );
++        $node-&gt;setValue( 'title', $file-&gt;getBasename() );
++        $node-&gt;setValue( 'relative_path', 'uploads/krabrally2007/' . $file-&gt;getBasename() );
++        $this-&gt;addNode( $node );
++    }
++
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -205,8 +205,8 @@
+             $this-&gt;addMeta( 'nright', null, 'int', false, null, false );
+             $this-&gt;addMeta( 'nlevel', null, 'int', false, null, false );
+             $this-&gt;addMeta( 'title', null, 'string', true, null );
+-            $this-&gt;addMeta( 'property', 'property_0', 'string', true, null );
+-            $this-&gt;addMeta( 'property_other', 'property_1', 'string', false, null );
++//            $this-&gt;addMeta( 'property', 'property_0', 'string', true, null );
++//            $this-&gt;addMeta( 'property_other', 'property_1', 'string', false, null );
+             $this-&gt;addMeta( 'created', null, 'datetime', false, time() );
+             $this-&gt;addMeta( 'created_by', null, 'string', false, YDBrowserInfo::getComputerName() );
+             $this-&gt;addMeta( 'modified', null, 'datetime', false, time() );
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.php	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.php	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -0,0 +1,16 @@
++&lt;?php
++
++    // Class
++    class ydcmfgallery extends YDCmfContentNode {
++
++        // Constructor
++        function ydcmfgallery() {
++
++            // Initialize the parent
++            $this-&gt;YDCmfContentNode();
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.tpl	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfgallery/ydcmfgallery.tpl	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -0,0 +1,65 @@
++&lt;h2&gt;&lt;?php echo( $node-&gt;getTranslatedValue( 'title' ) ); ?&gt;&lt;/h2&gt;
++
++&lt;p&gt;Hello world from template.&lt;/p&gt;
++
++&lt;?php if ( sizeof( $languages ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Languages:&lt;/b&gt;
++    &lt;?php foreach ( $languages as $l =&gt; $fl ) { ?&gt;
++        &lt;?php if ( $l == $language ) { ?&gt;
++            [&lt;?php echo( $l ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( null, $fl, $l ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( sizeof( $node-&gt;getPossibleActions() ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Actions:&lt;/b&gt;
++    &lt;?php foreach ( $node-&gt;getPossibleActions() as $a ) { ?&gt;
++        &lt;?php if ( $a == $YD_MODULE_ACTION ) { ?&gt;
++            [&lt;?php echo( $a ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( $a, $language, $a ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'custom' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;MySQL version:&lt;/b&gt; &lt;?php echo( $mysql_version ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'form' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;Using forms&lt;/b&gt;
++    &lt;?php echo( $form ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++
++&lt;p&gt;&lt;b&gt;Template:&lt;/b&gt; &lt;?php echo( $tplName ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Content-Type:&lt;/b&gt; &lt;?php echo( $node-&gt;getValue( 'content_type' ) ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Action:&lt;/b&gt; &lt;?php echo( $YD_MODULE_ACTION ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Parameters:&lt;/b&gt; &lt;?php YDDebugUtil::dump( $_GET ); ?&gt;&lt;/p&gt;
++
++&lt;?php if ( $node-&gt;getChildren() ) { ?&gt;
++    &lt;p&gt;&lt;b&gt;Children&lt;/b&gt;&lt;/p&gt;
++    &lt;ul&gt;
++        &lt;?php foreach ( $node-&gt;getChildren() as $child ) { ?&gt;
++            &lt;li&gt;&lt;?php echo( $child-&gt;getTitleLink( '' ) ); ?&gt;&lt;/li&gt;
++        &lt;?php } ?&gt;
++    &lt;/ul&gt;
++&lt;?php } ?&gt;
++
++&lt;p&gt;&lt;b&gt;Path&lt;/b&gt;
++&lt;?php foreach ( $node-&gt;getPath() as $path ) { ?&gt;
++    &raquo; &lt;?php echo( $path-&gt;getTitleLink( '' ) ); ?&gt;
++&lt;?php } ?&gt;
++&lt;/p&gt;
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.php	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.php	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -0,0 +1,16 @@
++&lt;?php
++
++    // Class
++    class ydcmfgalleryalbum extends YDCmfContentNode {
++
++        // Constructor
++        function ydcmfgalleryalbum() {
++
++            // Initialize the parent
++            $this-&gt;YDCmfContentNode();
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.tpl	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryalbum/ydcmfgalleryalbum.tpl	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -0,0 +1,65 @@
++&lt;h2&gt;&lt;?php echo( $node-&gt;getTranslatedValue( 'title' ) ); ?&gt;&lt;/h2&gt;
++
++&lt;p&gt;Hello world from template.&lt;/p&gt;
++
++&lt;?php if ( sizeof( $languages ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Languages:&lt;/b&gt;
++    &lt;?php foreach ( $languages as $l =&gt; $fl ) { ?&gt;
++        &lt;?php if ( $l == $language ) { ?&gt;
++            [&lt;?php echo( $l ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( null, $fl, $l ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( sizeof( $node-&gt;getPossibleActions() ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Actions:&lt;/b&gt;
++    &lt;?php foreach ( $node-&gt;getPossibleActions() as $a ) { ?&gt;
++        &lt;?php if ( $a == $YD_MODULE_ACTION ) { ?&gt;
++            [&lt;?php echo( $a ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( $a, $language, $a ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'custom' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;MySQL version:&lt;/b&gt; &lt;?php echo( $mysql_version ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'form' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;Using forms&lt;/b&gt;
++    &lt;?php echo( $form ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++
++&lt;p&gt;&lt;b&gt;Template:&lt;/b&gt; &lt;?php echo( $tplName ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Content-Type:&lt;/b&gt; &lt;?php echo( $node-&gt;getValue( 'content_type' ) ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Action:&lt;/b&gt; &lt;?php echo( $YD_MODULE_ACTION ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Parameters:&lt;/b&gt; &lt;?php YDDebugUtil::dump( $_GET ); ?&gt;&lt;/p&gt;
++
++&lt;?php if ( $node-&gt;getChildren() ) { ?&gt;
++    &lt;p&gt;&lt;b&gt;Children&lt;/b&gt;&lt;/p&gt;
++    &lt;ul&gt;
++        &lt;?php foreach ( $node-&gt;getChildren( 'created DESC, title_' . $language . ' DESC' ) as $child ) { ?&gt;
++            &lt;li&gt;&lt;?php echo( $child-&gt;getTitleLink( '' ) ); ?&gt;&lt;/li&gt;
++        &lt;?php } ?&gt;
++    &lt;/ul&gt;
++&lt;?php } ?&gt;
++
++&lt;p&gt;&lt;b&gt;Path&lt;/b&gt;
++&lt;?php foreach ( $node-&gt;getPath() as $path ) { ?&gt;
++    &raquo; &lt;?php echo( $path-&gt;getTitleLink( '' ) ); ?&gt;
++&lt;?php } ?&gt;
++&lt;/p&gt;
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.php	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.php	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -0,0 +1,19 @@
++&lt;?php
++
++    // Class
++    class ydcmfgalleryitem extends YDCmfContentNode {
++
++        // Constructor
++        function ydcmfgalleryitem() {
++
++            // Initialize the parent
++            $this-&gt;YDCmfContentNode();
++
++            // Add the path to the image
++            $this-&gt;addMeta( 'relative_path', 'property_0', 'string', false, null );
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.tpl	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfgalleryitem/ydcmfgalleryitem.tpl	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -0,0 +1,65 @@
++&lt;h2&gt;&lt;?php echo( $node-&gt;getTranslatedValue( 'title' ) ); ?&gt;&lt;/h2&gt;
++
++&lt;p&gt;Hello world from template.&lt;/p&gt;
++
++&lt;?php if ( sizeof( $languages ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Languages:&lt;/b&gt;
++    &lt;?php foreach ( $languages as $l =&gt; $fl ) { ?&gt;
++        &lt;?php if ( $l == $language ) { ?&gt;
++            [&lt;?php echo( $l ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( null, $fl, $l ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( sizeof( $node-&gt;getPossibleActions() ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Actions:&lt;/b&gt;
++    &lt;?php foreach ( $node-&gt;getPossibleActions() as $a ) { ?&gt;
++        &lt;?php if ( $a == $YD_MODULE_ACTION ) { ?&gt;
++            [&lt;?php echo( $a ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( $a, $language, $a ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'custom' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;MySQL version:&lt;/b&gt; &lt;?php echo( $mysql_version ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'form' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;Using forms&lt;/b&gt;
++    &lt;?php echo( $form ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++
++&lt;p&gt;&lt;b&gt;Template:&lt;/b&gt; &lt;?php echo( $tplName ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Content-Type:&lt;/b&gt; &lt;?php echo( $node-&gt;getValue( 'content_type' ) ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Action:&lt;/b&gt; &lt;?php echo( $YD_MODULE_ACTION ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Parameters:&lt;/b&gt; &lt;?php YDDebugUtil::dump( $_GET ); ?&gt;&lt;/p&gt;
++
++&lt;?php if ( $node-&gt;getChildren() ) { ?&gt;
++    &lt;p&gt;&lt;b&gt;Children&lt;/b&gt;&lt;/p&gt;
++    &lt;ul&gt;
++        &lt;?php foreach ( $node-&gt;getChildren( 'created DESC, title_' . $language . ' DESC' ) as $child ) { ?&gt;
++            &lt;li&gt;&lt;?php echo( $child-&gt;getTitleLink( '' ) ); ?&gt;&lt;/li&gt;
++        &lt;?php } ?&gt;
++    &lt;/ul&gt;
++&lt;?php } ?&gt;
++
++&lt;p&gt;&lt;b&gt;Path&lt;/b&gt;
++&lt;?php foreach ( $node-&gt;getPath() as $path ) { ?&gt;
++    &raquo; &lt;?php echo( $path-&gt;getTitleLink( '' ) ); ?&gt;
++&lt;?php } ?&gt;
++&lt;/p&gt;
+
+Modified: YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl	2006-04-18 12:55:49 UTC (rev 1856)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl	2006-04-20 15:00:17 UTC (rev 1857)
+@@ -5,11 +5,11 @@
+ &lt;?php if ( sizeof( $languages ) &gt; 1 ) { ?&gt;
+ &lt;p&gt;
+     &lt;b&gt;Languages:&lt;/b&gt;
+-    &lt;?php foreach ( $languages as $l =&gt; $fl ) { ?&gt;
++    &lt;?php foreach ( $languages as $fl =&gt; $l ) { ?&gt;
+         &lt;?php if ( $l == $language ) { ?&gt;
+-            [&lt;?php echo( $l ); ?&gt;]
++            [&lt;?php echo( $fl ); ?&gt;]
+         &lt;? } else { ?&gt;
+-            &lt;?php echo( $node-&gt;getTitleLink( null, $fl, $l ) ); ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( null, $l, $fl ) ); ?&gt;
+         &lt;? } ?&gt;
+     &lt;?php } ?&gt;
+ &lt;/p&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000360.html">[ydf-devel] YDCM feedback
+</A></li>
+	<LI>Next message: <A HREF="000302.html">[ydf-devel] r1858 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#301">[ date ]</a>
+              <a href="thread.html#301">[ thread ]</a>
+              <a href="subject.html#301">[ subject ]</a>
+              <a href="author.html#301">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

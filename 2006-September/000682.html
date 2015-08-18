@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2160 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2160%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609231504.k8NF4dsH032330%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000681.html">
+   <LINK REL="Next"  HREF="000683.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2160 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2160%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609231504.k8NF4dsH032330%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2160 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep 23 17:04:39 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000681.html">[ydf-devel] r2159 -	YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator
+</A></li>
+        <LI>Next message: <A HREF="000683.html">[ydf-devel] r2161 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#682">[ date ]</a>
+              <a href="thread.html#682">[ thread ]</a>
+              <a href="subject.html#682">[ subject ]</a>
+              <a href="author.html#682">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-23 17:04:39 +0200 (Sat, 23 Sep 2006)
+New Revision: 2160
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+Added a YDRecordSet::getBrowseBar function that takes care of intelligently building page lists for recordsets.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-09-22 12:38:35 UTC (rev 2159)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-09-23 15:04:39 UTC (rev 2160)
+@@ -32,6 +32,8 @@
+     // Constants
+     define( 'YD_DB_FETCH_ASSOC', 1 );
+     define( 'YD_DB_FETCH_NUM', 2 );
++    define( 'YD_BROWSEBAR_FULL', 3 );
++    define( 'YD_BROWSEBAR_SHORT', 4 );
+ 
+     // Configure the default for this class
+     YDConfig::set( 'YD_DB_FETCHTYPE', YD_DB_FETCH_ASSOC, false );
+@@ -222,7 +224,53 @@
+ 
+             // Add the list of pages as an array
+             $this-&gt;pages = ( $this-&gt;totalPages &lt;= 1 ) ? array( 1 ) : range( 1, $this-&gt;totalPages );
+-            
++
++            // Get subset of the pages a la phpBB (ideal for large page lists
++            $this-&gt;pagesShort = $this-&gt;pages;
++            if ( sizeof( $this-&gt;pages ) &gt; 10 ) {
++
++                // Get the first 3 pages
++                $this-&gt;pagesShort = range( 1, 3 );
++
++                // Get the current page, the previous one and the next one
++                if ( $this-&gt;pagePrevious !== false &amp;&amp; ! in_array( $this-&gt;pagePrevious, $this-&gt;pagesShort ) ) {
++                    array_push( $this-&gt;pagesShort, $this-&gt;pagePrevious );
++                }
++                if ( ! in_array( $this-&gt;page, $this-&gt;pagesShort ) ) {
++                    array_push( $this-&gt;pagesShort, $this-&gt;page );
++                }
++                if ( $this-&gt;pageNext !== false &amp;&amp; ! in_array( $this-&gt;pageNext, $this-&gt;pagesShort ) ) {
++                    array_push( $this-&gt;pagesShort, $this-&gt;pageNext );
++                }
++
++                // Get the last 3 pages
++                $this-&gt;pagesShort = array_merge( $this-&gt;pagesShort, range( $this-&gt;totalPages-2, $this-&gt;totalPages ) );
++
++                // Get the unique values
++                $this-&gt;pagesShort = array_unique( $this-&gt;pagesShort );
++
++                // Sort the list
++                sort( $this-&gt;pagesShort );
++
++                // Add the holes
++                $pagesShort = $this-&gt;pagesShort;
++                $counter = 1;
++                foreach ( $this-&gt;pagesShort as $key=&gt;$page ) {
++                    $next = next( $this-&gt;pagesShort );
++                    if ( $next !== false &amp;&amp; ( $page + 1 ) != $next ) {
++                        array_splice(
++                            $pagesShort,
++                            $key+$counter,
++                            count( $pagesShort ),
++                            array_merge( array( false ), array_slice( $pagesShort, $key+$counter ) )
++                        );
++                        $counter++;
++                    }
++                }
++                $this-&gt;pagesShort = $pagesShort;
++
++            }
++
+             // Get the subset of the records we need
+             $this-&gt;set = array_slice( $this-&gt;records, $this-&gt;offset, $this-&gt;pagesize );
+ 
+@@ -439,7 +487,6 @@
+             return $this-&gt;set;
+         }
+ 
+-
+         /**
+          *  Sets fields names
+          *
+@@ -449,7 +496,6 @@
+             return $this-&gt;gr_fields = $fields;
+         }
+ 
+-
+         /**
+          *  Gets fields names
+          */
+@@ -457,7 +503,6 @@
+             return ( isset( $this-&gt;gr_fields ) ? $this-&gt;gr_fields : array() );
+         }
+ 
+-
+         /**
+          *  Set current field name
+          *
+@@ -466,10 +511,9 @@
+          */
+         function setCurrentField( $field, $sortdirection ) {
+             $this-&gt;gr_currentField = $field;
+-			$this-&gt;sortdirection   = $sortdirection;
++            $this-&gt;sortdirection   = $sortdirection;
+         }
+ 
+-
+         /**
+          *  Get current field name
+          */
+@@ -477,7 +521,6 @@
+             return ( isset( $this-&gt;gr_currentField ) ? $this-&gt;gr_currentField : array() );
+         }
+ 
+-
+         /**
+          *  Get sort direction
+          *
+@@ -485,13 +528,101 @@
+          *
+          */
+         function getSortdirection( $reverse = false ) {
++            if ( $reverse ) {
++                return ( strtoupper( $this-&gt;sortdirection ) == 'ASC' ? 'DESC' : 'ASC' );
++            } else {
++                return $this-&gt;sortdirection;
++            }
++        }
+ 
+-			if ( $reverse ) return ( strtoupper( $this-&gt;sortdirection ) == 'ASC' ? 'DESC' : 'ASC' );
++        /**
++         *  This function gives a prerendered browsing bar for the recordset.
++         *
++         *  @param  $previousLabel  (optional) Label for the previous link. Defaults to &quot;previous&quot;.
++         *  @param  $nextLabel      (optional) Label for the next link. Defaults to &quot;next&quot;.
++         *  @param  $style          (optional) Style of the browse bar. This can be either YD_BROWSEBAR_FULL or
++         *                          YD_BROWSEBAR_FULL. The full one shows all page numbers, the short one doesn't.
++         *  @param  $currentLink    (optional) Boolean indicating if you should be able to click on the link for the
++         *                          current page or not.
++         *
++         *  @returns    The browsebar as formatted HTML.
++         */
++        function getBrowseBar(
++            $previousLabel='previous', $nextLabel='next', $style=YD_BROWSEBAR_SHORT, $currentLink=false
++        ) {
+ 
+-			return $this-&gt;sortdirection;
++//            {if $users-&gt;totalPages &gt; 1}
++//                &lt;tr&gt;&lt;td colspan=&quot;5&quot;&gt;
++//                {if $users-&gt;page != 1}
++//                    &lt;a href=&quot;{$users-&gt;getPreviousUrl()}&quot;&gt;{t w=&quot;previous&quot;}&lt;/a&gt;
++//                {else}
++//                    {t w=&quot;previous&quot;}
++//                {/if}
++//                {foreach from=$users-&gt;pages item=&quot;page&quot;}
++//                    {if $page == $users-&gt;page}
++//                        {$page}
++//                    {else}
++//                        &lt;a href=&quot;{$users-&gt;getPageUrl($page)}&quot;&gt;{$page}&lt;/a&gt;
++//                    {/if}
++//                {/foreach}
++//                {if $users-&gt;page != $users-&gt;totalPages}
++//                    &lt;a href=&quot;{$users-&gt;getNextUrl()}&quot;&gt;{t w=&quot;next&quot;}&lt;/a&gt;
++//                {else}
++//                    {t w=&quot;next&quot;}
++//                {/if}
++//                &lt;/td&gt;&lt;/tr&gt;
++//            {/if}
++
++            // Capture the HTML output
++            $html = '';
++
++            // If no pages, return an empty string
++            if ( $this-&gt;totalPages &lt;= 1 ) {
++                return $html;
++            }
++
++            // Get the correct currentLink value
++            $currentLink = ( $currentLink === false ) ? false : true;
++
++            // Get the list of pages we need to use
++            $pages = ( $style == YD_BROWSEBAR_SHORT ) ? $this-&gt;pagesShort : $this-&gt;pages;
++
++            // Get the previous link if any
++            if ( $this-&gt;page != 1 ) {
++                $html .= sprintf( '&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt; ', $this-&gt;getPreviousUrl(), $previousLabel );
++            } else {
++                $html .= sprintf( '%s ', $previousLabel );
++            }
++
++            // Loop over the pages
++            foreach ( $pages as $page ) {
++                if ( $page !== false ) {
++                    if ( $page == $this-&gt;page ) {
++                        if ( $currentLink ) {
++                            $html .= sprintf( '&lt;a href=&quot;%s&quot;&gt;&lt;b&gt;%s&lt;/b&gt;&lt;/a&gt; ', $this-&gt;getPageUrl( $page ), $page );
++                        } else {
++                            $html .= sprintf( '&lt;b&gt;%s&lt;/b&gt; ', $page );
++                        }
++                    } else {
++                        $html .= sprintf( '&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt; ', $this-&gt;getPageUrl( $page ), $page );
++                    }
++                } else {
++                    $html .= '... ';
++                }
++            }
++
++            // Get the next link if any
++            if ( $this-&gt;page != $this-&gt;totalPages ) {
++                $html .= sprintf( '&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt; ', $this-&gt;getNextUrl(), $nextLabel );
++            } else {
++                $html .= sprintf( '%s ', $nextLabel );
++            }
++
++            // Return the HTML
++            return $html;
++
+         }
+ 
+-
+     }
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000681.html">[ydf-devel] r2159 -	YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator
+</A></li>
+	<LI>Next message: <A HREF="000683.html">[ydf-devel] r2161 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#682">[ date ]</a>
+              <a href="thread.html#682">[ thread ]</a>
+              <a href="subject.html#682">[ subject ]</a>
+              <a href="author.html#682">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

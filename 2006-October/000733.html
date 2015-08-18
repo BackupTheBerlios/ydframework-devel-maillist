@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Query builder
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Query%20builder&In-Reply-To=%3C1162304333.v1.fusewebmail-15630%40f%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000732.html">
+   <LINK REL="Next"  HREF="000734.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Query builder</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Query%20builder&In-Reply-To=%3C1162304333.v1.fusewebmail-15630%40f%3E"
+       TITLE="[ydf-devel] Query builder">francisco at fusemail.com
+       </A><BR>
+    <I>Tue Oct 31 15:18:53 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000732.html">[ydf-devel] r2194 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000734.html">[ydf-devel] Query builder
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#733">[ date ]</a>
+              <a href="thread.html#733">[ thread ]</a>
+              <a href="subject.html#733">[ subject ]</a>
+              <a href="author.html#733">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi db, Hi all
+
+I have an idea about sql and a way to handle filters in a automated way
+and i would like to discuss with you the best way to create it.
+Currently we have YDDatabaseObject that handles db operations, but what do
+you think of a new object (that integrates with YDDatabaseObject) to
+handle filters?
+
+All select results are (almost) always diaplayed in tables and we have
+filters for that. Filters are just pre-defined 'where' clauses.
+
+Imagine a cars table:
+
+CAR  | COLOR | PRICE
+
+fiat | red   | 100
+ford | red   |  10
+audi | blue  |  99
+
+
+We could define pre-defined filters:
+- user can filter by 'color' value
+- user can filter by 'price' interval
+
+This could be done as:
+
+$filter = new YDDatabaseFilter();
+$filter-&gt;addField( 'color', 'is', array( 'red', 'blue' ) );
+$filter-&gt;addField( 'price', 'between', 5, 500 );
+
+this filter means that color must be 'red' or 'blue' and price must be
+between '5' and '500'.
+
+
+How to use the filter
+====================
+
+The filter can have 2 uses:
+ - be displayed with master select results as a form
+ - be used to create result with YDDatabase (on a response)
+
+
+ when displayed
+ ==============
+
+ $filter-&gt;toHTML(); or $form = &amp; $filter-&gt;getForm();
+
+ returns the html/form code needed to manage the filter.
+ in the previous example this will generate a YDForm with 2 elements
+'color' and 'price'.
+ - 'color' will be a 'select' box with values 'red' and 'blue'
+ - 'price' will be a 'text' element where the user will set the price we
+wants.
+
+
+
+ when integrated with YDDatabaseObject
+ =====================================
+
+ $dbObject-&gt;resetValues();
+ $dbObject-&gt;userFilter( $filter );
+ $dbObject-&gt;findAll();
+
+ this means that our YDDatabaseObject will read the filter and apply all
+'where' internally.
+ basically, in the example, this is the same as doing it by hand like:
+
+ $dbObject-&gt;resetValues();
+ $dbObject-&gt;set( 'color', $color_value );
+ $dbObject-&gt;set( 'price', $price_value );
+ $dbObject-&gt;findAll();
+
+
+
+This seems a good feature to me, that can make development much more
+easier :)
+Imagine..
+  * more complex filters (and how they could be automated)...
+  * saving filters in db..
+
+
+What do you think?
+Francisco A
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000732.html">[ydf-devel] r2194 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000734.html">[ydf-devel] Query builder
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#733">[ date ]</a>
+              <a href="thread.html#733">[ thread ]</a>
+              <a href="subject.html#733">[ subject ]</a>
+              <a href="author.html#733">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

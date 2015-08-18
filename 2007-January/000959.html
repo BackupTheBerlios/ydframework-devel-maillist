@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2366 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2366%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701250913.l0P9D7Df029755%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000958.html">
+   <LINK REL="Next"  HREF="000960.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2366 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2366%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701250913.l0P9D7Df029755%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2366 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Jan 25 10:13:07 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000958.html">[ydf-devel] r2365 - YDFramework2.0/trunk/doc_src
+</A></li>
+        <LI>Next message: <A HREF="000960.html">[ydf-devel] r2367 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default	examples/simplecms/resources
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#959">[ date ]</a>
+              <a href="thread.html#959">[ thread ]</a>
+              <a href="subject.html#959">[ subject ]</a>
+              <a href="author.html#959">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-25 10:13:05 +0100 (Thu, 25 Jan 2007)
+New Revision: 2366
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+Changed the language index to a YDConfig variable instead of as a class variable. This makes it much more convenient.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-24 19:34:12 UTC (rev 2365)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-25 09:13:05 UTC (rev 2366)
+@@ -44,6 +44,7 @@
+     YDConfig::set( 'YD_DB_DEFAULTPAGESIZE', 20, false );
+     YDConfig::set( 'YD_DB_TABLEPREFIX', '', false );
+     YDConfig::set( 'YD_DB_ALLOW_PERSISTENT_SORT', false, false );
++    YDConfig::set( 'YD_DB_LANGUAGE_INDEX', null, false );
+ 
+     YDConfig::set( 'YD_DB_RS_CYCLENAVIGATION', false, false );
+ 
+@@ -866,9 +867,6 @@
+             $this-&gt;_fmtTimeStamp = 'Y-m-d H:i:s';
+             $this-&gt;_fmtQuote = &quot;'&quot;;
+ 
+-            // The language index to use
+-            $this-&gt;_languageIndex = null;
+-
+         }
+ 
+         /**
+@@ -881,28 +879,6 @@
+         }
+ 
+         /**
+-         *  This function sets the language index which will be used to retrieve the fields. If you set this to a non
+-         *  null value, it will replace all occurrences of &quot;_@&quot; with &quot;_{$val}&quot;. This is very handy if you put the fields
+-         *  in the database as follows:
+-         *      - id
+-         *      - title_1
+-         *      - title_2
+-         *      - title_3
+-         *
+-         *  If you then use the following query, provided you have set the correct language index, the right column will
+-         *  be retrieved:
+-         *
+-         *  @code
+-         *  SELECT id, title_@ FROM mytable;
+-         *  @endcode
+-         *
+-         *  @param $val     (optional) True if you want the script to die on an error, false otherwise.
+-         */
+-        function setLanguageIndex( $val=null ) { 
+-            $this-&gt;_languageIndex = $val; 
+-        }
+-
+-        /**
+          *  This funciton returns the database name.
+          *
+          *  @returns    The database name.
+@@ -1319,8 +1295,9 @@
+             }
+ 
+             // Update the language placeholders
+-            if ( ! is_null( $this-&gt;_languageIndex ) ) {
+-                $sql = str_replace( '_@', '_' . $this-&gt;_languageIndex, $sql );
++            $languageIndex = YDConfig::get( 'YD_DB_LANGUAGE_INDEX', null );
++            if ( ! is_null( $languageIndex ) ) {
++                $sql = str_replace( '_@', '_' . $languageIndex, $sql );
+             }
+ 
+             // Return the SQL statement
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000958.html">[ydf-devel] r2365 - YDFramework2.0/trunk/doc_src
+</A></li>
+	<LI>Next message: <A HREF="000960.html">[ydf-devel] r2367 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default	examples/simplecms/resources
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#959">[ date ]</a>
+              <a href="thread.html#959">[ thread ]</a>
+              <a href="subject.html#959">[ subject ]</a>
+              <a href="author.html#959">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] question on YDDatabaseObject::fetch()
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20question%20on%20YDDatabaseObject%3A%3Afetch%28%29&In-Reply-To=%3C12260be20609270900p2f29bc26v4421037984816bc7%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000690.html">
+   <LINK REL="Next"  HREF="000694.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] question on YDDatabaseObject::fetch()</H1>
+    <B>David Bittencourt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20question%20on%20YDDatabaseObject%3A%3Afetch%28%29&In-Reply-To=%3C12260be20609270900p2f29bc26v4421037984816bc7%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] question on YDDatabaseObject::fetch()">muitocomplicado at gmail.com
+       </A><BR>
+    <I>Wed Sep 27 18:00:10 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000690.html">[ydf-devel] question on YDDatabaseObject::fetch()
+</A></li>
+        <LI>Next message: <A HREF="000694.html">[ydf-devel] question on YDDatabaseObject::fetch()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#692">[ date ]</a>
+              <a href="thread.html#692">[ thread ]</a>
+              <a href="subject.html#692">[ subject ]</a>
+              <a href="author.html#692">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>The idea is to use fetch() or getResults() but not both. fetch() always
+populate the object with the first result of the results array. So when
+there is no more results, fetch() returns false. For example:
+
+$db-&gt;find();
+
+while ( $db-&gt;fetch() ) {
+  $arr = $db-&gt;getValues();
+  // do something
+}
+
+If you are using fetch() to know if there are results, use count() instead.
+
+-db
+
+
+On 9/27/06, Rene Schmidt &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">rene at reneschmidt.de</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Hello there,
+</I>&gt;<i>
+</I>&gt;<i> there is this line in YDDatabaseObject::fetch():
+</I>&gt;<i>
+</I>&gt;<i> $res = array_shift( $this-&gt;_results );
+</I>&gt;<i>
+</I>&gt;<i> It deletes the first element in the array. Why is this being done? I
+</I>&gt;<i> don't understand that.
+</I>&gt;<i>
+</I>&gt;<i> The  SQL statement that gets generated in my project yields n records as
+</I>&gt;<i> it should, where after calling fetch() method getResults() yields only
+</I>&gt;<i> n-1 records, which is plain wrong. Deleting the line makes fetch() work
+</I>&gt;<i> as I intend.
+</I>&gt;<i>
+</I>&gt;<i> Any clues?
+</I>&gt;<i> --
+</I>&gt;<i> Rene Schmidt
+</I>&gt;<i> Berater f&#252;r Web-Entwicklung und eCommerce
+</I>&gt;<i> Lange Str. 15, 21614 Buxtehude
+</I>&gt;<i> Tel. 04161.558363 - <A HREF="http://www.reneschmidt.de/">http://www.reneschmidt.de/</A>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">https://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060927/399642e1/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060927/399642e1/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000690.html">[ydf-devel] question on YDDatabaseObject::fetch()
+</A></li>
+	<LI>Next message: <A HREF="000694.html">[ydf-devel] question on YDDatabaseObject::fetch()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#692">[ date ]</a>
+              <a href="thread.html#692">[ thread ]</a>
+              <a href="subject.html#692">[ subject ]</a>
+              <a href="author.html#692">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

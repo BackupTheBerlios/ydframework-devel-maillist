@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2247 -	YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2247%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors&In-Reply-To=%3C200612091758.kB9HwwGg022312%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000837.html">
+   <LINK REL="Next"  HREF="000839.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2247 -	YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2247%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors&In-Reply-To=%3C200612091758.kB9HwwGg022312%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2247 -	YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Dec  9 18:58:58 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000837.html">[ydf-devel] r2246 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000839.html">[ydf-devel] r2248 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#838">[ date ]</a>
+              <a href="thread.html#838">[ thread ]</a>
+              <a href="subject.html#838">[ subject ]</a>
+              <a href="author.html#838">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-12-09 18:58:35 +0100 (Sat, 09 Dec 2006)
+New Revision: 2247
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php
+Log:
+- added toolbar set YDConfig to Ajax fckeditor
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php	2006-12-07 12:55:58 UTC (rev 2246)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php	2006-12-09 17:58:35 UTC (rev 2247)
+@@ -48,7 +48,13 @@
+     YDConfig::set( 'YD_AJAXEDITOR_FCKEDITOR_ToolbarStartExpanded', true, false );
+ 
+ 
++    /**
++     *  This config defines the toolbar scheme to use, eg, 'Default', 'Basic'
++     *  Default: 'Default'
++     */
++    YDConfig::set( 'YD_AJAXEDITOR_FCKEDITOR_ToolbarSet', 'Default', false );
+ 
++
+     /**
+      *  Class definition for the YDAjaxEditor.
+      */
+@@ -69,9 +75,12 @@
+ 			// set editor skin path
+ 			$js .= &quot;oFCKeditor.Config['SkinPath'] = oFCKeditor.BasePath + 'editor/skins/&quot; . YDConfig::get( 'YD_AJAXEDITOR_FCKEDITOR_Skin' ) . &quot;/';&quot;;
+ 
+-			// set toobar expanded on start
++			// set toolbar expanded on start
+ 			$js .= YDConfig::get( 'YD_AJAXEDITOR_FCKEDITOR_ToolbarStartExpanded' ) ? &quot;oFCKeditor.Config['ToolbarStartExpanded'] = true;&quot; : &quot;oFCKeditor.Config['ToolbarStartExpanded'] = false;&quot;;
+ 
++			// set toolbar scheme
++			$js .= &quot;oFCKeditor.ToolbarSet = '&quot; . YDConfig::get( 'YD_AJAXEDITOR_FCKEDITOR_ToolbarSet' ) . &quot;';&quot;;
++
+ 			// on fckeditor we add a replace method (that will replace the textarea)
+ 			$js .= &quot;oFCKeditor.ReplaceTextarea();&quot;;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000837.html">[ydf-devel] r2246 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000839.html">[ydf-devel] r2248 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#838">[ date ]</a>
+              <a href="thread.html#838">[ thread ]</a>
+              <a href="subject.html#838">[ subject ]</a>
+              <a href="author.html#838">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

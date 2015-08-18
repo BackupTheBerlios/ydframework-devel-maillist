@@ -1,0 +1,1414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1705 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/safehtml YDFramework2/3rdparty/safehtml/classes YDFramework2/3rdparty/safehtml/classes/HTMLSax3 YDFramework2/YDClasses examples examples/weblog
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1705%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/3rdparty%20YDFramework2/3rdparty/safehtml%20YDFramework2/3rdparty/safehtml/classes%20YDFramework2/3rdparty/safehtml/classes/HTMLSax3%20YDFramework2/YDClasses%20examples%20examples/weblog&In-Reply-To=%3C200602201404.k1KE4DJ9006746%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000113.html">
+   <LINK REL="Next"  HREF="000115.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1705 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/safehtml YDFramework2/3rdparty/safehtml/classes YDFramework2/3rdparty/safehtml/classes/HTMLSax3 YDFramework2/YDClasses examples examples/weblog</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1705%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/3rdparty%20YDFramework2/3rdparty/safehtml%20YDFramework2/3rdparty/safehtml/classes%20YDFramework2/3rdparty/safehtml/classes/HTMLSax3%20YDFramework2/YDClasses%20examples%20examples/weblog&In-Reply-To=%3C200602201404.k1KE4DJ9006746%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1705 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/safehtml YDFramework2/3rdparty/safehtml/classes YDFramework2/3rdparty/safehtml/classes/HTMLSax3 YDFramework2/YDClasses examples examples/weblog">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 20 15:04:13 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000113.html">[ydf-devel] r1704 - in YDFramework2.0/trunk/examples/weblog: include manage skins/default
+</A></li>
+        <LI>Next message: <A HREF="000115.html">[ydf-devel] Weblog: cookies and admin login
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#114">[ date ]</a>
+              <a href="thread.html#114">[ thread ]</a>
+              <a href="subject.html#114">[ subject ]</a>
+              <a href="author.html#114">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-20 15:04:08 +0100 (Mon, 20 Feb 2006)
+New Revision: 1705
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/Decorators.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/States.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/safehtml.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/license.txt
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/readme.txt
+   YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/safehtml.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/examples/form.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+Log:
+Added the safe_html form filter and enabled it for the comments in the weblog application.
+
+This form filter is based on <A HREF="http://pixel-apes.com/safehtml/.">http://pixel-apes.com/safehtml/.</A>
+
+It's specifically designed to prevent XSS html. It does the following:
+- opening tag without its closing tag 
+- closing tag without its opening tag 
+- any of these tags: ?\226?\128?\156base?\226?\128?\157, ?\226?\128?\156basefont?\226?\128?\157, ?\226?\128?\156head?\226?\128?\157, ?\226?\128?\156html?\226?\128?\157, ?\226?\128?\156body?\226?\128?\157, ?\226?\128?\156applet?\226?\128?\157, ?\226?\128?\156object?\226?\128?\157, ?\226?\128?\156iframe?\226?\128?\157, ?\226?\128?\156frame?\226?\128?\157, ?\226?\128?\156frameset?\226?\128?\157, ?\226?\128?\156script?\226?\128?\157, ?\226?\128?\156layer?\226?\128?\157, ?\226?\128?\156ilayer?\226?\128?\157, ?\226?\128?\156embed?\226?\128?\157, ?\226?\128?\156bgsound?\226?\128?\157, ?\226?\128?\156link?\226?\128?\157, ?\226?\128?\156meta?\226?\128?\157, ?\226?\128?\156style?\226?\128?\157, ?\226?\128?\156title?\226?\128?\157, ?\226?\128?\156blink?\226?\128?\157, ?\226?\128?\156xml?\226?\128?\157 etc.
+- any of these attributes: on*, data*, dynsrc 
+- javascript:/vbscript:/about: etc. protocols 
+- expression/behavior etc. in styles 
+- any other active content
+
+This should again prevent strange input from being entered in the comment fields.
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/Decorators.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/Decorators.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/Decorators.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -0,0 +1,122 @@
++&lt;?php
++class XML_HTMLSax3_Trim {
++ var $orig_obj;
++ var $orig_method;
++ function XML_HTMLSax3_Trim(&amp;$orig_obj, $orig_method) {
++  $this-&gt;orig_obj =&amp; $orig_obj;
++  $this-&gt;orig_method = $orig_method;
++ }
++ function trimData(&amp;$parser, $data) {
++  $data = trim($data);
++  if ($data != '') {
++   $this-&gt;orig_obj-&gt;{$this-&gt;orig_method}($parser, $data);
++  }
++ }
++}
++class XML_HTMLSax3_CaseFolding {
++ var $orig_obj;
++ var $orig_open_method;
++ var $orig_close_method;
++ function XML_HTMLSax3_CaseFolding(&amp;$orig_obj, $orig_open_method, $orig_close_method) {
++  $this-&gt;orig_obj =&amp; $orig_obj;
++  $this-&gt;orig_open_method = $orig_open_method;
++  $this-&gt;orig_close_method = $orig_close_method;
++ }
++ function foldOpen(&amp;$parser, $tag, $attrs=array(), $empty = FALSE) {
++  $this-&gt;orig_obj-&gt;{$this-&gt;orig_open_method}($parser, strtoupper($tag), $attrs, $empty);
++ }
++ function foldClose(&amp;$parser, $tag, $empty = FALSE) {
++  $this-&gt;orig_obj-&gt;{$this-&gt;orig_close_method}($parser, strtoupper($tag), $empty);
++ }
++}
++class XML_HTMLSax3_Linefeed {
++ var $orig_obj;
++ var $orig_method;
++ function XML_HTMLSax3_LineFeed(&amp;$orig_obj, $orig_method) {
++  $this-&gt;orig_obj =&amp; $orig_obj;
++  $this-&gt;orig_method = $orig_method;
++ }
++ function breakData(&amp;$parser, $data) {
++  $data = explode(&quot;\n&quot;,$data);
++  foreach ( $data as $chunk ) {
++   $this-&gt;orig_obj-&gt;{$this-&gt;orig_method}($parser, $chunk);
++  }
++ }
++}
++class XML_HTMLSax3_Tab {
++ var $orig_obj;
++ var $orig_method;
++ function XML_HTMLSax3_Tab(&amp;$orig_obj, $orig_method) {
++  $this-&gt;orig_obj =&amp; $orig_obj;
++  $this-&gt;orig_method = $orig_method;
++ }
++ function breakData(&amp;$parser, $data) {
++  $data = explode(&quot;\t&quot;,$data);
++  foreach ( $data as $chunk ) {
++   $this-&gt;orig_obj-&gt;{$this-&gt;orig_method}($this, $chunk);
++  }
++ }
++}
++class XML_HTMLSax3_Entities_Parsed {
++ var $orig_obj;
++ var $orig_method;
++ function XML_HTMLSax3_Entities_Parsed(&amp;$orig_obj, $orig_method) {
++  $this-&gt;orig_obj =&amp; $orig_obj;
++  $this-&gt;orig_method = $orig_method;
++ }
++ function breakData(&amp;$parser, $data) {
++  $data = preg_split('/(&amp;.+?;)/',$data,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
++  foreach ( $data as $chunk ) {
++   $chunk = html_entity_decode($chunk,ENT_NOQUOTES);
++   $this-&gt;orig_obj-&gt;{$this-&gt;orig_method}($this, $chunk);
++  }
++ }
++}
++if (version_compare(phpversion(), '4.3', '&lt;') &amp;&amp; !function_exists('html_entity_decode') ) {
++ function html_entity_decode($str, $style=ENT_NOQUOTES) {
++  return strtr($str,
++   array_flip(get_html_translation_table(HTML_ENTITIES,$style)));
++ }
++}
++class XML_HTMLSax3_Entities_Unparsed {
++ var $orig_obj;
++ var $orig_method;
++ function XML_HTMLSax3_Entities_Unparsed(&amp;$orig_obj, $orig_method) {
++  $this-&gt;orig_obj =&amp; $orig_obj;
++  $this-&gt;orig_method = $orig_method;
++ }
++ function breakData(&amp;$parser, $data) {
++  $data = preg_split('/(&amp;.+?;)/',$data,-1,PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
++  foreach ( $data as $chunk ) {
++   $this-&gt;orig_obj-&gt;{$this-&gt;orig_method}($this, $chunk);
++  }
++ }
++}
++
++class XML_HTMLSax3_Escape_Stripper {
++ var $orig_obj;
++ var $orig_method;
++ function XML_HTMLSax3_Escape_Stripper(&amp;$orig_obj, $orig_method) {
++  $this-&gt;orig_obj =&amp; $orig_obj;
++  $this-&gt;orig_method = $orig_method;
++ }
++ function strip(&amp;$parser, $data) {
++  if ( substr($data,0,2) == '--' ) {
++   $patterns = array(
++    '/^\-\-/',    // Opening comment: --
++    '/\-\-$/',    // Closing comment: --
++   );
++   $data = preg_replace($patterns,'',$data);
++
++  } else if ( substr($data,0,1) == '[' ) {
++   $patterns = array(
++    '/^\[.*CDATA.*\[/s', // Opening CDATA
++    '/\].*\]$/s',    // Closing CDATA
++    );
++   $data = preg_replace($patterns,'',$data);
++  }
++
++  $this-&gt;orig_obj-&gt;{$this-&gt;orig_method}($this, $data);
++ }
++}
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/States.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/States.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3/States.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -0,0 +1,179 @@
++&lt;?php
++define('XML_HTMLSAX3_STATE_STOP', 0);
++define('XML_HTMLSAX3_STATE_START', 1);
++define('XML_HTMLSAX3_STATE_TAG', 2);
++define('XML_HTMLSAX3_STATE_OPENING_TAG', 3);
++define('XML_HTMLSAX3_STATE_CLOSING_TAG', 4);
++define('XML_HTMLSAX3_STATE_ESCAPE', 6);
++define('XML_HTMLSAX3_STATE_JASP', 7);
++define('XML_HTMLSAX3_STATE_PI', 8);
++class XML_HTMLSax3_StartingState  {
++ function parse(&amp;$context) {
++  $data = $context-&gt;scanUntilString('&lt;');
++  if ($data != '') {
++   $context-&gt;handler_object_data-&gt;
++    {$context-&gt;handler_method_data}($context-&gt;htmlsax, $data);
++  }
++  $context-&gt;IgnoreCharacter();
++  return XML_HTMLSAX3_STATE_TAG;
++ }
++}
++class XML_HTMLSax3_TagState {
++ function parse(&amp;$context) {
++  switch($context-&gt;ScanCharacter()) {
++  case '/':
++   return XML_HTMLSAX3_STATE_CLOSING_TAG;
++   break;
++  case '?':
++   return XML_HTMLSAX3_STATE_PI;
++   break;
++  case '%':
++   return XML_HTMLSAX3_STATE_JASP;
++   break;
++  case '!':
++   return XML_HTMLSAX3_STATE_ESCAPE;
++   break;
++  default:
++   $context-&gt;unscanCharacter();
++   return XML_HTMLSAX3_STATE_OPENING_TAG;
++  }
++ }
++}
++class XML_HTMLSax3_ClosingTagState {
++ function parse(&amp;$context) {
++  $tag = $context-&gt;scanUntilCharacters('/&gt;');
++  if ($tag != '') {
++   $char = $context-&gt;scanCharacter();
++   if ($char == '/') {
++    $char = $context-&gt;scanCharacter();
++    if ($char != '&gt;') {
++     $context-&gt;unscanCharacter();
++    }
++   }
++   $context-&gt;handler_object_element-&gt;
++    {$context-&gt;handler_method_closing}($context-&gt;htmlsax, $tag, FALSE);
++  }
++  return XML_HTMLSAX3_STATE_START;
++ }
++}
++class XML_HTMLSax3_OpeningTagState {
++ function parseAttributes(&amp;$context) {
++  $Attributes = array();
++ 
++  $context-&gt;ignoreWhitespace();
++  $attributename = $context-&gt;scanUntilCharacters(&quot;=/&gt; \n\r\t&quot;);
++  while ($attributename != '') {
++   $attributevalue = NULL;
++   $context-&gt;ignoreWhitespace();
++   $char = $context-&gt;scanCharacter();
++   if ($char == '=') {
++    $context-&gt;ignoreWhitespace();
++    $char = $context-&gt;ScanCharacter();
++    if ($char == '&quot;') {
++     $attributevalue= $context-&gt;scanUntilString('&quot;');
++     $context-&gt;IgnoreCharacter();
++    } else if ($char == &quot;'&quot;) {
++     $attributevalue = $context-&gt;scanUntilString(&quot;'&quot;);
++     $context-&gt;IgnoreCharacter();
++    } else {
++     $context-&gt;unscanCharacter();
++     $attributevalue =
++      $context-&gt;scanUntilCharacters(&quot;&gt; \n\r\t&quot;);
++    }
++   } else if ($char !== NULL) {
++    $attributevalue = NULL;
++    $context-&gt;unscanCharacter();
++   }
++   $Attributes[$attributename] = $attributevalue;
++   
++   $context-&gt;ignoreWhitespace();
++   $attributename = $context-&gt;scanUntilCharacters(&quot;=/&gt; \n\r\t&quot;);
++  }
++  return $Attributes;
++ }
++
++ function parse(&amp;$context) {
++  $tag = $context-&gt;scanUntilCharacters(&quot;/&gt; \n\r\t&quot;);
++  if ($tag != '') {
++   $this-&gt;attrs = array();
++   $Attributes = $this-&gt;parseAttributes($context);
++   $char = $context-&gt;scanCharacter();
++   if ($char == '/') {
++    $char = $context-&gt;scanCharacter();
++    if ($char != '&gt;') {
++     $context-&gt;unscanCharacter();
++    }
++    $context-&gt;handler_object_element-&gt;
++     {$context-&gt;handler_method_opening}($context-&gt;htmlsax, $tag, 
++     $Attributes, TRUE);
++    $context-&gt;handler_object_element-&gt;
++     {$context-&gt;handler_method_closing}($context-&gt;htmlsax, $tag, 
++     TRUE);
++   } else {
++    $context-&gt;handler_object_element-&gt;
++     {$context-&gt;handler_method_opening}($context-&gt;htmlsax, $tag, 
++     $Attributes, FALSE);
++   }
++  }
++  return XML_HTMLSAX3_STATE_START;
++ }
++}
++
++class XML_HTMLSax3_EscapeState {
++ function parse(&amp;$context) {
++  $char = $context-&gt;ScanCharacter();
++  if ($char == '-') {
++   $char = $context-&gt;ScanCharacter();
++   if ($char == '-') {
++    $context-&gt;unscanCharacter();
++    $context-&gt;unscanCharacter();
++    $text = $context-&gt;scanUntilString('--&gt;');
++    $text .= $context-&gt;scanCharacter();
++    $text .= $context-&gt;scanCharacter();
++   } else {
++    $context-&gt;unscanCharacter();
++    $text = $context-&gt;scanUntilString('&gt;');
++   }
++  } else if ( $char == '[') {
++   $context-&gt;unscanCharacter();
++   $text = $context-&gt;scanUntilString(']&gt;');
++   $text.= $context-&gt;scanCharacter();
++  } else {
++   $context-&gt;unscanCharacter();
++   $text = $context-&gt;scanUntilString('&gt;');
++  }
++
++  $context-&gt;IgnoreCharacter();
++  if ($text != '') {
++   $context-&gt;handler_object_escape-&gt;
++   {$context-&gt;handler_method_escape}($context-&gt;htmlsax, $text);
++  }
++  return XML_HTMLSAX3_STATE_START;
++ }
++}
++class XML_HTMLSax3_JaspState {
++ function parse(&amp;$context) {
++  $text = $context-&gt;scanUntilString('%&gt;');
++  if ($text != '') {
++   $context-&gt;handler_object_jasp-&gt;
++    {$context-&gt;handler_method_jasp}($context-&gt;htmlsax, $text);
++  }
++  $context-&gt;IgnoreCharacter();
++  $context-&gt;IgnoreCharacter();
++  return XML_HTMLSAX3_STATE_START;
++ }
++}
++class XML_HTMLSax3_PiState {
++ function parse(&amp;$context) {
++  $target = $context-&gt;scanUntilCharacters(&quot; \n\r\t&quot;);
++  $data = $context-&gt;scanUntilString('?&gt;');
++  if ($data != '') {
++   $context-&gt;handler_object_pi-&gt;
++   {$context-&gt;handler_method_pi}($context-&gt;htmlsax, $target, $data);
++  }
++  $context-&gt;IgnoreCharacter();
++  $context-&gt;IgnoreCharacter();
++  return XML_HTMLSAX3_STATE_START;
++ }
++}
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/HTMLSax3.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -0,0 +1,292 @@
++&lt;?php
++// +----------------------------------------------------------------------+
++// | Copyright (c) 1997-2002 The PHP Group                                |
++// +----------------------------------------------------------------------+
++// | This source file is subject to version 2.02 of the PHP license,      |
++// | that is bundled with this package in the file LICENSE, and is        |
++// | available at through the world-wide-web at                           |
++// | <A HREF="http://www.php.net/license/3_0.txt.">http://www.php.net/license/3_0.txt.</A>                                  |
++// | If you did not receive a copy of the PHP license and are unable to   |
++// | obtain it through the world-wide-web, please send a note to          |
++// | <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">license at php.net</A> so we can mail you a copy immediately.               |
++// +----------------------------------------------------------------------+
++// | Authors: Alexander Zhukov &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">alex at veresk.ru</A>&gt; Original port from Python |
++// | Authors: Harry Fuecks &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">hfuecks at phppatterns.com</A>&gt; Port to PEAR + more  |
++// | Authors: Many @ Sitepointforums Advanced PHP Forums                  |
++// +----------------------------------------------------------------------+
++//
++if (!defined('XML_HTMLSAX3')) {
++ define('XML_HTMLSAX3', 'XML/');
++}
++require_once(XML_HTMLSAX3 . 'HTMLSax3/States.php');
++require_once(XML_HTMLSAX3 . 'HTMLSax3/Decorators.php');
++
++class XML_HTMLSax3_StateParser {
++ var $htmlsax;
++ var $handler_object_element;
++ var $handler_method_opening;
++ var $handler_method_closing;
++ var $handler_object_data;
++ var $handler_method_data;
++ var $handler_object_pi;
++ var $handler_method_pi;
++ var $handler_object_jasp;
++ var $handler_method_jasp;
++ var $handler_object_escape;
++ var $handler_method_escape;
++ var $handler_default;
++ var $parser_options = array();
++ var $rawtext;
++ var $position;
++ var $length;
++ var $State = array();
++
++ function XML_HTMLSax3_StateParser (&amp; $htmlsax) {
++  $this-&gt;htmlsax = &amp; $htmlsax;
++  $this-&gt;State[XML_HTMLSAX3_STATE_START] =&amp; new XML_HTMLSax3_StartingState();
++
++  $this-&gt;State[XML_HTMLSAX3_STATE_CLOSING_TAG] =&amp; new XML_HTMLSax3_ClosingTagState();
++  $this-&gt;State[XML_HTMLSAX3_STATE_TAG] =&amp; new XML_HTMLSax3_TagState();
++  $this-&gt;State[XML_HTMLSAX3_STATE_OPENING_TAG] =&amp; new XML_HTMLSax3_OpeningTagState();
++
++  $this-&gt;State[XML_HTMLSAX3_STATE_PI] =&amp; new XML_HTMLSax3_PiState();
++  $this-&gt;State[XML_HTMLSAX3_STATE_JASP] =&amp; new XML_HTMLSax3_JaspState();
++  $this-&gt;State[XML_HTMLSAX3_STATE_ESCAPE] =&amp; new XML_HTMLSax3_EscapeState();
++ }
++
++ function unscanCharacter() {
++  $this-&gt;position -= 1;
++ }
++
++ function ignoreCharacter() {
++  $this-&gt;position += 1;
++ }
++
++ function scanCharacter() {
++  if ($this-&gt;position &lt; $this-&gt;length) {
++   return $this-&gt;rawtext{$this-&gt;position++};
++  }
++ }
++
++ function scanUntilString($string) {
++  $start = $this-&gt;position;
++  $this-&gt;position = strpos($this-&gt;rawtext, $string, $start);
++  if ($this-&gt;position === FALSE) {
++   $this-&gt;position = $this-&gt;length;
++  }
++  return substr($this-&gt;rawtext, $start, $this-&gt;position - $start);
++ }
++
++ function scanUntilCharacters($string) {}
++
++ function ignoreWhitespace() {}
++
++ function parse($data) {
++  if ($this-&gt;parser_options['XML_OPTION_TRIM_DATA_NODES']==1) {
++   $decorator =&amp; new XML_HTMLSax3_Trim(
++    $this-&gt;handler_object_data,
++    $this-&gt;handler_method_data);
++   $this-&gt;handler_object_data =&amp; $decorator;
++   $this-&gt;handler_method_data = 'trimData';
++  }
++  if ($this-&gt;parser_options['XML_OPTION_CASE_FOLDING']==1) {
++   $open_decor =&amp; new XML_HTMLSax3_CaseFolding(
++    $this-&gt;handler_object_element,
++    $this-&gt;handler_method_opening,
++    $this-&gt;handler_method_closing);
++   $this-&gt;handler_object_element =&amp; $open_decor;
++   $this-&gt;handler_method_opening ='foldOpen';
++   $this-&gt;handler_method_closing ='foldClose';
++  }
++  if ($this-&gt;parser_options['XML_OPTION_LINEFEED_BREAK']==1) {
++   $decorator =&amp; new XML_HTMLSax3_Linefeed(
++    $this-&gt;handler_object_data,
++    $this-&gt;handler_method_data);
++   $this-&gt;handler_object_data =&amp; $decorator;
++   $this-&gt;handler_method_data = 'breakData';
++  }
++  if ($this-&gt;parser_options['XML_OPTION_TAB_BREAK']==1) {
++   $decorator =&amp; new XML_HTMLSax3_Tab(
++    $this-&gt;handler_object_data,
++    $this-&gt;handler_method_data);
++   $this-&gt;handler_object_data =&amp; $decorator;
++   $this-&gt;handler_method_data = 'breakData';
++  }
++  if ($this-&gt;parser_options['XML_OPTION_ENTITIES_UNPARSED']==1) {
++   $decorator =&amp; new XML_HTMLSax3_Entities_Unparsed(
++    $this-&gt;handler_object_data,
++    $this-&gt;handler_method_data);
++   $this-&gt;handler_object_data =&amp; $decorator;
++   $this-&gt;handler_method_data = 'breakData';
++  }
++  if ($this-&gt;parser_options['XML_OPTION_ENTITIES_PARSED']==1) {
++   $decorator =&amp; new XML_HTMLSax3_Entities_Parsed(
++    $this-&gt;handler_object_data,
++    $this-&gt;handler_method_data);
++   $this-&gt;handler_object_data =&amp; $decorator;
++   $this-&gt;handler_method_data = 'breakData';
++  }
++  // Note switched on by default
++  if ($this-&gt;parser_options['XML_OPTION_STRIP_ESCAPES']==1) {
++   $decorator =&amp; new XML_HTMLSax3_Escape_Stripper(
++    $this-&gt;handler_object_escape,
++    $this-&gt;handler_method_escape);
++   $this-&gt;handler_object_escape =&amp; $decorator;
++   $this-&gt;handler_method_escape = 'strip';
++  }
++  $this-&gt;rawtext = $data;
++  $this-&gt;length = strlen($data);
++  $this-&gt;position = 0;
++  $this-&gt;_parse();
++ }
++
++ function _parse($state = XML_HTMLSAX3_STATE_START) {
++  do {
++   $state = $this-&gt;State[$state]-&gt;parse($this);
++  } while ($state != XML_HTMLSAX3_STATE_STOP &amp;&amp;
++     $this-&gt;position &lt; $this-&gt;length);
++ }
++}
++
++class XML_HTMLSax3_StateParser_Lt430 extends XML_HTMLSax3_StateParser {
++ function XML_HTMLSax3_StateParser_Lt430(&amp; $htmlsax) {
++  parent::XML_HTMLSax3_StateParser($htmlsax);
++  $this-&gt;parser_options['XML_OPTION_TRIM_DATA_NODES'] = 0;
++  $this-&gt;parser_options['XML_OPTION_CASE_FOLDING'] = 0;
++  $this-&gt;parser_options['XML_OPTION_LINEFEED_BREAK'] = 0;
++  $this-&gt;parser_options['XML_OPTION_TAB_BREAK'] = 0;
++  $this-&gt;parser_options['XML_OPTION_ENTITIES_PARSED'] = 0;
++  $this-&gt;parser_options['XML_OPTION_ENTITIES_UNPARSED'] = 0;
++  $this-&gt;parser_options['XML_OPTION_STRIP_ESCAPES'] = 0;
++ }
++
++ function scanUntilCharacters($string) {
++  $startpos = $this-&gt;position;
++  while ($this-&gt;position &lt; $this-&gt;length &amp;&amp; strpos($string, $this-&gt;rawtext{$this-&gt;position}) === FALSE) {
++   $this-&gt;position++;
++  }
++  return substr($this-&gt;rawtext, $startpos, $this-&gt;position - $startpos);
++ }
++
++ function ignoreWhitespace() {
++  while ($this-&gt;position &lt; $this-&gt;length &amp;&amp; 
++   strpos(&quot; \n\r\t&quot;, $this-&gt;rawtext{$this-&gt;position}) !== FALSE) {
++   $this-&gt;position++;
++  }
++ }
++
++ function parse($data) {
++  parent::parse($data);
++ }
++}
++
++class XML_HTMLSax3_StateParser_Gtet430 extends XML_HTMLSax3_StateParser {
++ function XML_HTMLSax3_StateParser_Gtet430(&amp; $htmlsax) {
++  parent::XML_HTMLSax3_StateParser($htmlsax);
++  $this-&gt;parser_options['XML_OPTION_TRIM_DATA_NODES'] = 0;
++  $this-&gt;parser_options['XML_OPTION_CASE_FOLDING'] = 0;
++  $this-&gt;parser_options['XML_OPTION_LINEFEED_BREAK'] = 0;
++  $this-&gt;parser_options['XML_OPTION_TAB_BREAK'] = 0;
++  $this-&gt;parser_options['XML_OPTION_ENTITIES_PARSED'] = 0;
++  $this-&gt;parser_options['XML_OPTION_ENTITIES_UNPARSED'] = 0;
++  $this-&gt;parser_options['XML_OPTION_STRIP_ESCAPES'] = 0;
++ }
++ function scanUntilCharacters($string) {
++  $startpos = $this-&gt;position;
++  $length = strcspn($this-&gt;rawtext, $string, $startpos);
++  $this-&gt;position += $length;
++  return substr($this-&gt;rawtext, $startpos, $length);
++ }
++
++ function ignoreWhitespace() {
++  $this-&gt;position += strspn($this-&gt;rawtext, &quot; \n\r\t&quot;, $this-&gt;position);
++ }
++
++ function parse($data) {
++  parent::parse($data);
++ }
++}
++
++class XML_HTMLSax3_NullHandler {
++ function DoNothing() {
++ }
++}
++
++class XML_HTMLSax3 {
++ var $state_parser;
++
++ function XML_HTMLSax3() {
++  if (version_compare(phpversion(), '4.3', 'ge')) {
++   $this-&gt;state_parser =&amp; new XML_HTMLSax3_StateParser_Gtet430($this);
++  } else {
++   $this-&gt;state_parser =&amp; new XML_HTMLSax3_StateParser_Lt430($this);
++  }
++  $nullhandler =&amp; new XML_HTMLSax3_NullHandler();
++  $this-&gt;set_object($nullhandler);
++  $this-&gt;set_element_handler('DoNothing', 'DoNothing');
++  $this-&gt;set_data_handler('DoNothing');
++  $this-&gt;set_pi_handler('DoNothing');
++  $this-&gt;set_jasp_handler('DoNothing');
++  $this-&gt;set_escape_handler('DoNothing');
++ }
++
++ function set_object(&amp;$object) {
++  if ( is_object($object) ) {
++   $this-&gt;state_parser-&gt;handler_default =&amp; $object;
++   return true;
++  } else {
++   require_once('PEAR.php');
++   PEAR::raiseError('XML_HTMLSax3::set_object requires '.
++    'an object instance');
++  }
++ }
++
++ function set_option($name, $value=1) {
++  if ( array_key_exists($name,$this-&gt;state_parser-&gt;parser_options) ) {
++   $this-&gt;state_parser-&gt;parser_options[$name] = $value;
++   return true;
++  } else {
++   require_once('PEAR.php');
++   PEAR::raiseError('XML_HTMLSax3::set_option('.$name.') illegal');
++  }
++ }
++
++ function set_data_handler($data_method) {
++  $this-&gt;state_parser-&gt;handler_object_data =&amp; $this-&gt;state_parser-&gt;handler_default;
++  $this-&gt;state_parser-&gt;handler_method_data = $data_method;
++ }
++
++ function set_element_handler($opening_method, $closing_method) {
++  $this-&gt;state_parser-&gt;handler_object_element =&amp; $this-&gt;state_parser-&gt;handler_default;
++  $this-&gt;state_parser-&gt;handler_method_opening = $opening_method;
++  $this-&gt;state_parser-&gt;handler_method_closing = $closing_method;
++ }
++
++ function set_pi_handler($pi_method) {
++  $this-&gt;state_parser-&gt;handler_object_pi =&amp; $this-&gt;state_parser-&gt;handler_default;
++  $this-&gt;state_parser-&gt;handler_method_pi = $pi_method;
++ }
++
++ function set_escape_handler($escape_method) {
++  $this-&gt;state_parser-&gt;handler_object_escape =&amp; $this-&gt;state_parser-&gt;handler_default;
++  $this-&gt;state_parser-&gt;handler_method_escape = $escape_method;
++ }
++
++ function set_jasp_handler ($jasp_method) {
++  $this-&gt;state_parser-&gt;handler_object_jasp =&amp; $this-&gt;state_parser-&gt;handler_default;
++  $this-&gt;state_parser-&gt;handler_method_jasp = $jasp_method;
++ }
++
++ function get_current_position() {
++  return $this-&gt;state_parser-&gt;position;
++ }
++
++ function get_length() {
++  return $this-&gt;state_parser-&gt;length;
++ }
++
++ function parse($data) {
++  $this-&gt;state_parser-&gt;parse($data);
++ }
++}
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/safehtml.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/safehtml.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/classes/safehtml.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -0,0 +1,381 @@
++&lt;?php
++/**
++ * SafeHTML Parser
++ *
++ * @package SafeHTML
++ * @author  Roman Ivanov &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">thingol at mail.ru</A>&gt;
++ * @copyright  2004-2005 Roman Ivanov
++ * @license <A HREF="http://www.debian.org/misc/bsd.license">http://www.debian.org/misc/bsd.license</A>  BSD License (3 Clause)
++ * @version    1.3.7
++ * @link    <A HREF="http://pixel-apes.com/safehtml/">http://pixel-apes.com/safehtml/</A>
++ */
++
++require_once(XML_HTMLSAX3 . 'HTMLSax3.php');
++
++class SafeHTML 
++{
++ var $_xhtml = '';
++ 
++ var $_counter = array();
++ 
++ var $_stack = array();
++ 
++ var $_dcCounter = array();
++ 
++ var $_dcStack = array();
++ 
++ var $_listScope = 0; 
++ 
++ var $_liStack = array();
++
++ var $_protoRegexps = array();
++ 
++ var $_cssRegexps = array();
++
++ var $singleTags = array('area', 'br', 'img', 'input', 'hr', 'wbr', );
++
++ var $deleteTags = array(
++  'applet', 'base',   'basefont', 'bgsound', 'blink',  'body', 
++  'embed',  'frame',  'frameset', 'head', 'html',   'ilayer', 
++  'iframe', 'layer',  'link',  'meta', 'object', 'style', 
++  'title',  'script', 
++  );
++
++ var $deleteTagsContent = array('script', 'style', 'title', 'xml', );
++
++ var $protocolFiltering = 'white';
++
++ var $blackProtocols = array(
++  'about',   'chrome',  'data',    'disk',  'hcp',  
++  'help', 'javascript', 'livescript', 'lynxcgi',  'lynxexec', 
++  'ms-help', 'ms-its',  'mhtml',   'mocha', 'opera',   
++  'res',  'resource',   'shell',   'vbscript', 'view-source', 
++  'vnd.ms.radio',    'wysiwyg', 
++  );
++
++ var $whiteProtocols = array(
++  'ed2k',   'file', 'ftp',  'gopher', 'http',  'https', 
++  'irc',    'mailto', 'news', 'nntp', 'telnet', 'webcal', 
++  'xmpp', 'callto',
++  );
++
++ var $protocolAttributes = array(
++  'action', 'background', 'codebase', 'dynsrc', 'href', 'lowsrc', 'src', 
++  );
++
++ var $cssKeywords = array(
++  'absolute', 'behavior',    'behaviour',   'content', 'expression', 
++  'fixed', 'include-source', 'moz-binding',
++  );
++
++ var $noClose = array();
++
++ var $closeParagraph = array(
++  'address', 'blockquote', 'center', 'dd',   'dir',    'div', 
++  'dl',   'dt',   'h1',  'h2',   'h3',  'h4', 
++  'h5',   'h6',   'hr',  'isindex', 'listing',   'marquee', 
++  'menu', 'multicol',   'ol',  'p',    'plaintext', 'pre', 
++  'table',   'ul',   'xmp', 
++  );
++
++ var $tableTags = array(
++  'caption', 'col', 'colgroup', 'tbody', 'td', 'tfoot', 'th', 
++  'thead',   'tr', 
++  );
++
++ var $listTags = array('dir', 'menu', 'ol', 'ul', 'dl', );
++
++ var $attributes = array('dynsrc', 'id', 'name', );
++
++ var $attributesNS = array('xml:lang', );
++
++ function SafeHTML() 
++ {
++  //making regular expressions based on Proto &amp; CSS arrays
++  foreach ($this-&gt;blackProtocols as $proto) {
++   $preg = &quot;/[\s\x01-\x1F]*&quot;;
++   for ($i=0; $i&lt;strlen($proto); $i++) {
++    $preg .= $proto{$i} . &quot;[\s\x01-\x1F]*&quot;;
++   }
++   $preg .= &quot;:/i&quot;;
++   $this-&gt;_protoRegexps[] = $preg;
++  }
++
++  foreach ($this-&gt;cssKeywords as $css) {
++   $this-&gt;_cssRegexps[] = '/' . $css . '/i';
++  }
++  return true;
++ }
++
++ function _writeAttrs ($attrs) 
++ {
++  if (is_array($attrs)) {
++   foreach ($attrs as $name =&gt; $value) {
++
++    $name = strtolower($name);
++
++    if (strpos($name, 'on') === 0) {
++     continue;
++    }
++    if (strpos($name, 'data') === 0) {
++     continue;
++    }
++    if (in_array($name, $this-&gt;attributes)) {
++     continue;
++    }
++    if (!preg_match(&quot;/^[a-z0-9]+$/i&quot;, $name)) {
++      if (!in_array($name, $this-&gt;attributesNS))
++      {
++       continue;
++      }
++    }
++
++    if (($value === TRUE) || (is_null($value))) {
++     $value = $name;
++    }
++
++    if ($name == 'style') {
++                   
++                   // removes insignificant backslahes
++       $value = str_replace(&quot;\\&quot;, '', $value);
++
++                   // removes CSS comments
++                   while (1)
++                   {
++                     $_value = preg_replace(&quot;!/\*.*?\*/!s&quot;, '', $value);
++                     if ($_value == $value) break;
++                     $value = $_value;
++                   }
++                   
++                   // replace all &amp; to &amp;
++       $value = str_replace('&amp;', '&amp;', $value);
++       $value = str_replace('&amp;', '&amp;', $value);
++
++       foreach ($this-&gt;_cssRegexps as $css) {
++        if (preg_match($css, $value)) { 
++         continue 2;
++        }
++       }
++       foreach ($this-&gt;_protoRegexps as $proto) {
++        if (preg_match($proto, $value)) {
++         continue 2;
++        }
++       }
++    }
++
++    $tempval = preg_replace('/&amp;#(\d+);?/me', &quot;chr('\\1')&quot;, $value); //&quot;'
++    $tempval = preg_replace('/&amp;#x([0-9a-f]+);?/mei', &quot;chr(hexdec('\\1'))&quot;, $tempval);
++
++    if ((in_array($name, $this-&gt;protocolAttributes)) &amp;&amp; 
++     (strpos($tempval, ':') !== false)) 
++    {
++     if ($this-&gt;protocolFiltering == 'black') {
++      foreach ($this-&gt;_protoRegexps as $proto) {
++       if (preg_match($proto, $tempval)) continue 2;
++      }
++     } else {
++      $_tempval = explode(':', $tempval);
++      $proto = $_tempval[0];
++      if (!in_array($proto, $this-&gt;whiteProtocols)) {
++       continue;
++      }
++     }
++    }
++
++    $value = str_replace(&quot;\&quot;&quot;, &quot;&quot;&quot;, $value);
++    $this-&gt;_xhtml .= ' ' . $name . '=&quot;' . $value . '&quot;';
++   }
++  }
++  return true;
++ }
++
++ function _openHandler(&amp;$parser, $name, $attrs) 
++ {
++  $name = strtolower($name);
++
++  if (in_array($name, $this-&gt;deleteTagsContent)) {
++   array_push($this-&gt;_dcStack, $name);
++   $this-&gt;_dcCounter[$name] = isset($this-&gt;_dcCounter[$name]) ? $this-&gt;_dcCounter[$name]+1 : 1;
++  }
++  if (count($this-&gt;_dcStack) != 0) {
++   return true;
++  }
++
++  if (in_array($name, $this-&gt;deleteTags)) {
++   return true;
++  }
++  
++  if (!preg_match(&quot;/^[a-z0-9]+$/i&quot;, $name)) {
++   if (preg_match(&quot;!(?:\@|://)!i&quot;, $name)) {
++    $this-&gt;_xhtml .= '&lt;' . $name . '&gt;';
++   }
++   return true;
++  }
++
++  if (in_array($name, $this-&gt;singleTags)) {
++   $this-&gt;_xhtml .= '&lt;' . $name;
++   $this-&gt;_writeAttrs($attrs);
++   $this-&gt;_xhtml .= ' /&gt;';
++   return true;
++  }
++
++  // TABLES: cannot open table elements when we are not inside table
++  if ((isset($this-&gt;_counter['table'])) &amp;&amp; ($this-&gt;_counter['table'] &lt;= 0) 
++   &amp;&amp; (in_array($name, $this-&gt;tableTags))) 
++  {
++   return true;
++  }
++
++  // PARAGRAPHS: close paragraph when closeParagraph tags opening
++  if ((in_array($name, $this-&gt;closeParagraph)) &amp;&amp; (in_array('p', $this-&gt;_stack))) {
++   $this-&gt;_closeHandler($parser, 'p');
++  }
++
++  // LISTS: we should close &lt;li&gt; if &lt;li&gt; of the same level opening
++  if ($name == 'li' &amp;&amp; count($this-&gt;_liStack) &amp;&amp; 
++   $this-&gt;_listScope == $this-&gt;_liStack[count($this-&gt;_liStack)-1]) 
++  {
++   $this-&gt;_closeHandler($parser, 'li');
++  }
++
++  // LISTS: we want to know on what nesting level of lists we are
++  if (in_array($name, $this-&gt;listTags)) {
++   $this-&gt;_listScope++;
++  }
++  if ($name == 'li') {
++   array_push($this-&gt;_liStack, $this-&gt;_listScope);
++  }
++   
++  $this-&gt;_xhtml .= '&lt;' . $name;
++  $this-&gt;_writeAttrs($attrs);
++  $this-&gt;_xhtml .= '&gt;';
++  array_push($this-&gt;_stack,$name);
++  $this-&gt;_counter[$name] = isset($this-&gt;_counter[$name]) ? $this-&gt;_counter[$name]+1 : 1;
++  return true;
++ }
++
++ function _closeHandler(&amp;$parser, $name) 
++ {
++
++  $name = strtolower($name);
++
++  if (isset($this-&gt;_dcCounter[$name]) &amp;&amp; ($this-&gt;_dcCounter[$name] &gt; 0) &amp;&amp; 
++   (in_array($name, $this-&gt;deleteTagsContent))) 
++  {
++     while ($name != ($tag = array_pop($this-&gt;_dcStack))) {
++   $this-&gt;_dcCounter[$tag]--;
++     }
++
++     $this-&gt;_dcCounter[$name]--;
++  }
++
++  if (count($this-&gt;_dcStack) != 0) {
++   return true;
++  }
++
++  if ((isset($this-&gt;_counter[$name])) &amp;&amp; ($this-&gt;_counter[$name] &gt; 0)) {
++     while ($name != ($tag = array_pop($this-&gt;_stack))) {
++      $this-&gt;_closeTag($tag);
++     }
++
++     $this-&gt;_closeTag($name);
++  }
++  return true;
++ }
++
++ function _closeTag($tag) 
++ {
++  if (!in_array($tag, $this-&gt;noClose)) {
++   $this-&gt;_xhtml .= '&lt;/' . $tag . '&gt;';
++  }
++
++  $this-&gt;_counter[$tag]--;
++
++  if (in_array($tag, $this-&gt;listTags)) {
++   $this-&gt;_listScope--;
++  }
++
++  if ($tag == 'li') {
++   array_pop($this-&gt;_liStack);
++  }
++  return true;
++ }
++
++ function _dataHandler(&amp;$parser, $data) 
++ {
++  if (count($this-&gt;_dcStack) == 0) {
++   $this-&gt;_xhtml .= $data;
++  }
++  return true;
++ }
++
++ function _escapeHandler(&amp;$parser, $data) 
++ {
++  return true;
++ }
++
++ function getXHTML () 
++ {
++  while ($tag = array_pop($this-&gt;_stack)) {
++   $this-&gt;_closeTag($tag);
++  }
++  
++  return $this-&gt;_xhtml;
++ }
++
++ function clear() 
++ {
++  $this-&gt;_xhtml = '';
++  return true;
++ }
++
++ function parse($doc) 
++ {
++
++    // Save all '&lt;' symbols
++    $doc = preg_replace(&quot;/&lt;(?=[^a-zA-Z\/\!\?\%])/&quot;, '&lt;', $doc);
++
++    // Web documents shouldn't contains \x00 symbol
++    $doc = str_replace(&quot;\x00&quot;, '', $doc);
++
++    // Opera6 bug workaround
++    $doc = str_replace(&quot;\xC0\xBC&quot;, '&lt;', $doc);
++
++    // UTF-7 encoding ASCII decode
++    $doc = $this-&gt;repackUTF7($doc);
++
++    // Instantiate the parser
++    $parser=&amp; new XML_HTMLSax3();
++
++    // Set up the parser
++    $parser-&gt;set_object($this);
++
++    $parser-&gt;set_element_handler('_openHandler','_closeHandler');
++    $parser-&gt;set_data_handler('_dataHandler');
++    $parser-&gt;set_escape_handler('_escapeHandler');
++
++    $parser-&gt;parse($doc);
++
++    return $this-&gt;getXHTML();
++
++ }
++
++    function repackUTF7($str)
++    {
++       return preg_replace_callback('!\+([0-9a-zA-Z/]+)\-!', array($this, 'repackUTF7Callback'), $str);
++    }
++
++    function repackUTF7Callback($str)
++    {
++       $str = base64_decode($str[1]);
++       $str = preg_replace_callback('/^((?:\x00.)*)((?:[^\x00].)+)/', array($this, 'repackUTF7Back'), $str);
++       return preg_replace('/\x00(.)/', '$1', $str);
++    }
++
++    function repackUTF7Back($str)
++    {
++       return $str[1].'+'.rtrim(base64_encode($str[2]), '=').'-';
++    }
++}
++
++?&gt;
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/license.txt
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/license.txt	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/license.txt	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -0,0 +1,26 @@
++(c) Roman Ivanov, 2004-2005
++(c) Pixel-Apes ( <A HREF="http://pixel-apes.com/">http://pixel-apes.com/</A> ), 2004-2005
++(c) JetStyle   ( <A HREF="http://jetstyle.ru/">http://jetstyle.ru/</A>    ), 2004-2005
++Maintainer -- Roman Ivanov &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">thingol at mail.ru</A>&gt;
++
++Redistribution and use in source and binary forms, with or without
++modification, are permitted provided that the following conditions
++are met:
++1. Redistributions of source code must retain the above copyright
++   notice, this list of conditions and the following disclaimer.
++2. Redistributions in binary form must reproduce the above copyright
++   notice, this list of conditions and the following disclaimer in the
++   documentation and/or other materials provided with the distribution.
++3. The name of the author may not be used to endorse or promote products
++   derived from this software without specific prior written permission.
++
++THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
++IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
++OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
++INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
++THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/readme.txt
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/readme.txt	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/readme.txt	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -0,0 +1,81 @@
++SafeHTML
++--------
++Version 1.3.7.
++<A HREF="http://pixel-apes.com/safehtml/">http://pixel-apes.com/safehtml/</A>
++--------
++
++This parser strips down all potentially dangerous content within HTML:
++  * opening tag without its closing tag
++  * closing tag without its opening tag
++  * any of these tags: &quot;base&quot;, &quot;basefont&quot;, &quot;head&quot;, &quot;html&quot;, &quot;body&quot;, &quot;applet&quot;, &quot;object&quot;, 
++    &quot;iframe&quot;, &quot;frame&quot;, &quot;frameset&quot;, &quot;script&quot;, &quot;layer&quot;, &quot;ilayer&quot;, &quot;embed&quot;, &quot;bgsound&quot;, 
++    &quot;link&quot;, &quot;meta&quot;, &quot;style&quot;, &quot;title&quot;, &quot;blink&quot;, &quot;xml&quot; etc.
++  * any of these attributes: on*, data*, dynsrc
++  * javascript:/vbscript:/about: etc. protocols
++  * expression/behavior etc. in styles
++  * any other active content
++It also tries to convert code to XHTML valid, but htmltidy is far better solution for this task.
++
++If you found any bugs in this parser, please inform me -- ICQ:551593 or mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">thingol at mail.ru</A>
++
++Please, subscribe to <A HREF="http://pixel-apes.com/safehtml/feed/rss">http://pixel-apes.com/safehtml/feed/rss</A> feed in order to receive notices 
++when SAFEHTML will be updated.
++
++-- Roman Ivanov.
++-- Pixel-Apes ( <A HREF="http://pixel-apes.com">http://pixel-apes.com</A> ).
++-- JetStyle ( <A HREF="http://jetstyle.ru/">http://jetstyle.ru/</A> ).
++
++
++
++--------
++Version history:
++--------
++1.3.7.
++ * Added 'dl' to the list of 'lists' tags.
++ * Added 'callto' to the white list of protocols.
++ * Added white list of &quot;namespaced&quot; attributes.
++1.3.6.
++ * More accurate UTF-7 decoding.
++1.3.5.
++ * Two serious security flaws fixed: UTF-7 XSS and CSS comments handling.
++1.3.2.
++ * Security flaw (improper quotes handling in attributes' values) fixed. Big thanks to Nick Cleaton.
++1.3.1.
++ * Dumb bug fixed (some closing tags were ignored).
++1.3.0.
++ * Two holes (with decimal HTML entities and with \x00 symbol) fixed.
++ * Class rewritten under PEAR coding standarts.
++ * Class now uses unmodified HTMLSax3 from PEAR.
++ * To the list of table tags added: &quot;caption&quot;, &quot;col&quot;, &quot;colgroup&quot;.
++1.2.1.
++ * It was possible to create XSS with hexadecimal HTML entities. Fixed. Big thanks to Christian Stocker.
++1.2.0.
++ * &quot;id&quot; and &quot;name&quot; attributes added to dangerous attributes list, because malefactor can broke legal javascript by spoofing ID or NAME of some element.
++ * New method parse() allows to do all parsing process in two lines of code. Examples also updated.
++ * New array, closeParagraph, contains list of block-level elements. When we open such elemet, we should close paragraph before. . It allows SafeHTML to produce more XHTML compliant code.
++ * Added &quot;webcal&quot; to white list of protocols for those who uses calendar programs (Mozilla/iCal/etc).
++ * Now SafeHTML strips down table elements when we are not inside table.
++ * Now SafeHTML correctly closes unclosed &quot;li&quot; tags: before opening &quot;li&quot; of the same nesting level.
++1.1.0.
++ * New &quot;dangerous&quot; protocols: hcp, ms-help, help, disk, vnd.ms.radio, opera, res, resource, chrome, mocha, livescript.
++ * &lt;XML&gt; tag was moved from &quot;tags for deletion&quot; to &quot;tags for deletion with content&quot;.
++ * New &quot;dangerous&quot; CSS instruction &quot;include-source&quot; (NN4 specific).
++ * New array, Attributes, contains list of attributes for removal. If you need to remove &quot;id&quot; or &quot;name&quot; attribute, 
++ just add it to this array.
++ * Now it is possible to choose between white-list and black-list filtering of protocols. Defaults are &quot;white-list&quot;.
++ This list is: &quot;http&quot;, &quot;https&quot;, &quot;ftp&quot;, &quot;telnet&quot;, &quot;news&quot;, &quot;nntp&quot;, &quot;gopher&quot;, &quot;mailto&quot;, &quot;file&quot;.
++ * For speed purposes, we now filter protocols only from these attributes: src, href, action, lowsrc, dynsrc, 
++ background, codebase.
++ * Opera6 XSS bug ([\xC0][\xBC]script&gt;alert(1)[\xC0][\xBC]/script&gt; [UTF-8] workarounded.
++1.0.4.
++ New &quot;dangerous&quot; tag: plaintext.
++1.0.3.
++ Added array of elements that can have no closing tag.
++1.0.2.
++ Bug fix: &lt;img src=&quot;&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;alert(1);&quot;&gt; attack.
++ Thanks to shmel.
++1.0.1.
++ Bug fix: safehtml hangs on &lt;style&gt;&lt;/style&gt;&lt;/style&gt; code.
++ Thanks to lj user=electrocat.
++1.0.0.
++ First public release
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/safehtml.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/safehtml.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/safehtml/safehtml.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -0,0 +1,93 @@
++&lt;?php
++error_reporting(E_ALL);
++/*
++
++    Example for Safehtml
++
++*/
++
++define('XML_HTMLSAX3', dirname(__FILE__).&quot;/classes/&quot;);
++?&gt;
++&lt;html&gt;
++&lt;head&gt;
++  &lt;style&gt;
++  STRIKE, S { color:#999999 }
++  &lt;/style&gt;
++&lt;/head&gt;
++&lt;body&gt;
++&lt;h2&gt;SAFEHTML Testing interface&lt;/h2&gt;
++This parser strip down all potentially dangerous content within HTML:
++&lt;ul&gt;
++&lt;li&gt; opening tag without its closing tag
++&lt;li&gt; closing tag without its opening tag
++&lt;li&gt; any of these tags: &quot;base&quot;, &quot;basefont&quot;, &quot;head&quot;, &quot;html&quot;, &quot;body&quot;, &quot;applet&quot;, &quot;object&quot;, &quot;iframe&quot;, &quot;frame&quot;, &quot;frameset&quot;, &quot;script&quot;, &quot;layer&quot;, &quot;ilayer&quot;, &quot;embed&quot;, &quot;bgsound&quot;, &quot;link&quot;, &quot;meta&quot;, &quot;style&quot;, &quot;title&quot;, &quot;blink&quot;, &quot;xml&quot; etc.
++&lt;li&gt; any of these attributes: on*, data*, dynsrc
++&lt;li&gt; javascript:/vbscript:/about: etc. protocols
++&lt;li&gt; expression/behavior etc. in styles
++&lt;li&gt; any other active content
++&lt;/ul&gt;
++&lt;p&gt;If you found any bugs in this parser, please inform me &mdash; ICQ:551593 or &lt;a href=mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">thingol at mail.ru</A>&gt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">thingol at mail.ru</A>&lt;/a&gt; - Roman Ivanov.
++
++&lt;form method=&quot;post&quot; action=&quot;&lt;?php echo $_SERVER[&quot;PHP_SELF&quot;];?&gt;&quot;&gt;
++&lt;textarea name=&quot;html&quot; rows=&quot;10&quot; cols=&quot;100&quot;&gt;
++&lt;?
++if (isset($_POST[&quot;html&quot;])) 
++{
++ $_POST[&quot;html&quot;] = stripslashes($_POST[&quot;html&quot;]);
++ echo htmlspecialchars($_POST[&quot;html&quot;]);
++}
++?&gt;
++&lt;/textarea&gt;
++&lt;input type=&quot;submit&quot;&gt;
++&lt;/form&gt;
++&lt;?php
++require_once('classes/safehtml.php');
++
++function getmicrotime(){ 
++  list($usec, $sec) = explode(&quot; &quot;,microtime()); 
++  return ((float)$usec + (float)$sec); 
++}
++
++
++if (isset($_POST[&quot;html&quot;])) 
++{
++ $doc=$_POST[&quot;html&quot;];
++
++ // Instantiate the handler
++ $safehtml =&amp; new safehtml();
++
++ echo ('&lt;pre&gt;');
++ // Time HTMLSax
++ $start = getmicrotime();
++ $result = $safehtml-&gt;parse($doc);
++ echo ( &quot;Parsing took seconds:\t\t&quot;.(getmicrotime()-$start) );
++ echo ('&lt;/pre&gt;');
++
++ echo ('&lt;b&gt;Source code after filtration:&lt;/b&gt;&lt;br/&gt;');
++ echo ( htmlspecialchars($result) );
++
++ echo ('&lt;p&gt;&lt;b&gt;Code after filtration as is (HTML):&lt;/b&gt;&lt;br/&gt;');
++ echo ( $result );
++}
++?&gt;
++&lt;hr&gt;
++&lt;h3&gt;Many thanks:&lt;/h3&gt;
++&lt;ul&gt;
++&lt;li&gt; HTMLSax authors
++&lt;li&gt; lj user=BOLK
++&lt;li&gt; lj user=ati &amp; lj user=curiousweasel
++&lt;li&gt; lj user=teplorod
++&lt;li&gt; Boris Bogdanov
++&lt;li&gt; Mash
++&lt;li&gt; lj user=electrocat
++&lt;li&gt; shmel
++&lt;li&gt; John &quot;Gozzy&quot; Godsland
++&lt;li&gt; Christian Stocker
++&lt;li&gt; Nick Cleaton
++&lt;/ul&gt;
++&lt;hr /&gt; &lt;a href=&quot;<A HREF="http://pixel-apes.com/safehtml">http://pixel-apes.com/safehtml</A>&quot;&gt;Download Safehtml&lt;/a&gt;.
++&lt;br /&gt; Copyright &copy; 2004-2005, Roman Ivanov.
++&lt;br /&gt; All rights reserved.
++
++&lt;/body&gt;
++&lt;/html&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -26,6 +26,11 @@
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++    // Define the path to XML HTML SAX 3 (needed for safehtml)
++    if ( ! defined( 'XML_HTMLSAX3' ) ) {
++        define( 'XML_HTMLSAX3', YD_DIR_HOME . '/3rdparty/safehtml/classes/' );
++    }
++
+     // Includes
+     include_once( YD_DIR_HOME_CLS . '/YDRequest.php');
+ 
+@@ -161,6 +166,7 @@
+             $this-&gt;registerFilter( 'upper', 'strtoupper' );
+             $this-&gt;registerFilter( 'utf8_decode', 'utf8_decode' );
+             $this-&gt;registerFilter( 'strip_html', 'strip_tags' );
++            $this-&gt;registerFilter( 'safe_html', 'YDFormFilter_safe_html' );
+ 
+             // Add the renderers
+             $this-&gt;registerRenderer( 'array', 'YDFormRenderer_array', 'YDFormRenderer_array.php' );
+@@ -1535,4 +1541,35 @@
+ 
+     }
+ 
++    /**
++     *  This filter checks data for any possible XSS HTML code.
++     *
++     *  It basically does the following:
++     *  * opening tag without its closing tag
++     *  * closing tag without its opening tag
++     *  * any of these tags: &quot;base&quot;, &quot;basefont&quot;, &quot;head&quot;, &quot;html&quot;, &quot;body&quot;, &quot;applet&quot;, &quot;object&quot;, 
++     *    &quot;iframe&quot;, &quot;frame&quot;, &quot;frameset&quot;, &quot;script&quot;, &quot;layer&quot;, &quot;ilayer&quot;, &quot;embed&quot;, &quot;bgsound&quot;, 
++     *    &quot;link&quot;, &quot;meta&quot;, &quot;style&quot;, &quot;title&quot;, &quot;blink&quot;, &quot;xml&quot; etc.
++     *  * any of these attributes: on*, data*, dynsrc
++     *  * javascript:/vbscript:/about: etc. protocols
++     *  * expression/behavior etc. in styles
++     *  * any other active content
++     *
++     *  @param  $data   The data to filter.
++     *
++     *  @returns The filtered data as a string.
++     */
++    function YDFormFilter_safe_html( $data ) {
++
++        // Include the safe_html library
++        require_once( YD_DIR_HOME . '/3rdparty/safehtml/classes/safehtml.php' );
++
++        // Instantiate the handler
++        $safehtml = &amp; new safehtml();
++
++        // Return the filtered data
++        return $safehtml-&gt;parse( $data );
++
++    }
++
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/form.php
+===================================================================
+--- YDFramework2.0/trunk/examples/form.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/examples/form.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -51,6 +51,7 @@
+ 
+             // Apply a filter
+             $form-&gt;addFilter( 'name', 'trim' );
++            $form-&gt;addFilter( 'desc1', 'safe_html' );
+ 
+             // Add a rule
+             $form-&gt;addRule( 'name', 'required', 'Please enter your name' );
+@@ -58,6 +59,9 @@
+             // Process the form
+             if ( $form-&gt;validate() ) {
+ 
++                // Show the form values
++                YDDebugUtil::dump( $form-&gt;getValues() );
++
+                 // Mark the form as valid
+                 $this-&gt;template-&gt;assign( 'formValid', true );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-02-20 13:04:47 UTC (rev 1704)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-02-20 14:04:08 UTC (rev 1705)
+@@ -74,6 +74,7 @@
+ 
+                 // Add the filters
+                 $form-&gt;addFilters( array( 'username', 'useremail', 'userwebsite' ), 'strip_html' );
++                $form-&gt;addFilter( 'comment', 'safe_html' );
+ 
+                 // Process the form
+                 if ( $form-&gt;validate() === true ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000113.html">[ydf-devel] r1704 - in YDFramework2.0/trunk/examples/weblog: include manage skins/default
+</A></li>
+	<LI>Next message: <A HREF="000115.html">[ydf-devel] Weblog: cookies and admin login
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#114">[ date ]</a>
+              <a href="thread.html#114">[ thread ]</a>
+              <a href="subject.html#114">[ subject ]</a>
+              <a href="author.html#114">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

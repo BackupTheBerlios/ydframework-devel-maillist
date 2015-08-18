@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDAjax and drag-drop
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20drag-drop&In-Reply-To=%3C4aef63030609210137q5bf33c2cx115190acbbe19e62%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000669.html">
+   <LINK REL="Next"  HREF="000679.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDAjax and drag-drop</H1>
+    <B>Pieter Claerhout</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20drag-drop&In-Reply-To=%3C4aef63030609210137q5bf33c2cx115190acbbe19e62%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] YDAjax and drag-drop">pieter at yellowduck.be
+       </A><BR>
+    <I>Thu Sep 21 10:37:42 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000669.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+        <LI>Next message: <A HREF="000679.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#677">[ date ]</a>
+              <a href="thread.html#677">[ thread ]</a>
+              <a href="subject.html#677">[ subject ]</a>
+              <a href="author.html#677">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Francisco,
+
+can you have a look at this?
+
+thanks,
+
+
+pieter
+
+2006/9/19, maximus meridius &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">maximus_meridius79 at yahoo.com</A>&gt;:
+&gt;<i>
+</I>&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> I found a modified version of moo.fx that includes a drag-drop effect
+</I>&gt;<i> here:
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://clement.lavoillotte.info/devs/moofx/new/#">http://clement.lavoillotte.info/devs/moofx/new/#</A>
+</I>&gt;<i>
+</I>&gt;<i> (I can't actually read that site since and couldn't find any explanation
+</I>&gt;<i> of the drag-drop that they had created)
+</I>&gt;<i>
+</I>&gt;<i> This has an MIT-style license. I have used this to add drag-drop to
+</I>&gt;<i> YDAjax.
+</I>&gt;<i>
+</I>&gt;<i> I have attached a tarball containing the following files:
+</I>&gt;<i>
+</I>&gt;<i> ./examples/ajax/drag.php
+</I>&gt;<i> ./examples/ajax/drag.tpl
+</I>&gt;<i> ./YDFramework2/addons/YDAjax/YDAjax.php
+</I>&gt;<i> ./YDFramework2/addons/YDAjax/js/prototype.lite.js_moo.fx.js_moo.fx.pack.js
+</I>&gt;<i>
+</I>&gt;<i> The Javascript file is a revised version of the existing one provided with
+</I>&gt;<i> YDAjax. I have added moo.fx.drag.js to the end of the file. I have also
+</I>&gt;<i> used the original uncompressed moo.fx javascript files for the purpose of
+</I>&gt;<i> aiding debugging (the javascript worked out of the box).
+</I>&gt;<i>
+</I>&gt;<i> I have added a method &quot;addDraggables&quot; to the YDAjax class.
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *    This method adds a draggabble element
+</I>&gt;<i>          *
+</I>&gt;<i>          *    @param $id        The id to assign the draggable
+</I>&gt;<i>          *  @param $html    The initial html for the draggable
+</I>&gt;<i>          */
+</I>&gt;<i>         function &amp; addDraggable( $id, $html = &quot;&quot;, $class = &quot;draggable&quot;,
+</I>&gt;<i> $parent = &quot;&quot; ) {
+</I>&gt;<i>
+</I>&gt;<i> This creates a div element that is draggable with the specified CSS &quot;$id&quot;.
+</I>&gt;<i> &quot;$html&quot; is for the div content. &quot;$parent&quot; is an optional CSS id that can be
+</I>&gt;<i> used to add a draggable to an existing div container. Draggables created in
+</I>&gt;<i> this form are restricted to the container. The container can have a
+</I>&gt;<i> pixel-width or percentage-width.
+</I>&gt;<i>
+</I>&gt;<i> Draggables can overlap. I am not sure how to modify the CSS or javascript
+</I>&gt;<i> to prevent overlap. It would be nice if overlap could be optionally turned
+</I>&gt;<i> off.
+</I>&gt;<i>
+</I>&gt;<i> I have setup addDraggable so that it can add a draggable in a request or
+</I>&gt;<i> in an ajax response.
+</I>&gt;<i>
+</I>&gt;<i> I have created an example. A screenshot of the example is attached. The
+</I>&gt;<i> &quot;Add a Popup&quot; button will create a draggable via an ajax response. The
+</I>&gt;<i> example works in Firefox, IE, Opera and Safari (although it does not refresh
+</I>&gt;<i> correctly in safari).
+</I>&gt;<i>
+</I>&gt;<i> I would like to add a method to create a draggable form that behaves as a
+</I>&gt;<i> modal dialog (i.e. the form must be closed, cancelled or submitted in
+</I>&gt;<i> order to continue).
+</I>&gt;<i>
+</I>&gt;<i> Enjoy!
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> Graeme
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>  ------------------------------
+</I>&gt;<i> Do you Yahoo!?
+</I>&gt;<i> Get on board. You're invited&lt;<A HREF="http://us.rd.yahoo.com/evt=40791/*http://advision.webevents.yahoo.com/mailbeta">http://us.rd.yahoo.com/evt=40791/*http://advision.webevents.yahoo.com/mailbeta</A>&gt;to try the new Yahoo! Mail.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">https://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060921/465668f8/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060921/465668f8/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000669.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+	<LI>Next message: <A HREF="000679.html">[ydf-devel] YDAjax and drag-drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#677">[ date ]</a>
+              <a href="thread.html#677">[ thread ]</a>
+              <a href="subject.html#677">[ subject ]</a>
+              <a href="author.html#677">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

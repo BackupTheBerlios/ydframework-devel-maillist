@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2087 - in YDFramework2.0/trunk/examples/weblog: .	include skins/default skins/default_with_lightbox
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2087%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200609071048.k87Amn64017606%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000603.html">
+   <LINK REL="Next"  HREF="000605.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2087 - in YDFramework2.0/trunk/examples/weblog: .	include skins/default skins/default_with_lightbox</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2087%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20skins/default%20skins/default_with_lightbox&In-Reply-To=%3C200609071048.k87Amn64017606%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2087 - in YDFramework2.0/trunk/examples/weblog: .	include skins/default skins/default_with_lightbox">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep  7 12:48:49 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000603.html">[ydf-devel] r2086 - in YDFramework2.0/trunk/examples/weblog: .	include manage
+</A></li>
+        <LI>Next message: <A HREF="000605.html">[ydf-devel] r2088 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#604">[ date ]</a>
+              <a href="thread.html#604">[ thread ]</a>
+              <a href="subject.html#604">[ subject ]</a>
+              <a href="author.html#604">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-07 12:48:48 +0200 (Thu, 07 Sep 2006)
+New Revision: 2087
+
+Removed:
+   YDFramework2.0/trunk/examples/weblog/include/exifer/
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+   YDFramework2.0/trunk/examples/weblog/item_gallery.php
+   YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+   YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_gallery.tpl
+Log:
+Removed the EXIF stuff from the weblog application as they were not really used in the first place.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-07 10:43:23 UTC (rev 2086)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-07 10:48:48 UTC (rev 2087)
+@@ -207,9 +207,6 @@
+                 $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_schemaversion CHANGE installed installed INT(11)' );
+                 $this-&gt;db-&gt;executeSql( 'UPDATE #_schemaversion SET installed = unix_timestamp() WHERE installed = 0' );
+ 
+-                // Remove the auto close fields from the items
+-
+-
+                 // Update the schema information
+                 $this-&gt;setSchemaVersion( $current_schema );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-09-07 10:43:23 UTC (rev 2086)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-09-07 10:48:48 UTC (rev 2087)
+@@ -50,7 +50,6 @@
+     // Include other libraries
+     YDInclude( dirname( __FILE__ ) . '/YDWeblogAPI.php' );
+     YDInclude( dirname( __FILE__ ) . '/YDWeblogRequest.php' );
+-    YDInclude( dirname( __FILE__ ) . '/exifer/exif.php' );
+     YDInclude( YD_DIR_HOME . '/3rdparty/smarty/libs/plugins/modifier.truncate.php' );
+ 
+     // Check for blocked IP addresses
+
+Modified: YDFramework2.0/trunk/examples/weblog/item_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-09-07 10:43:23 UTC (rev 2086)
++++ YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-09-07 10:48:48 UTC (rev 2087)
+@@ -46,24 +46,6 @@
+                 }
+             }
+ 
+-            // Get the EXIF info for the image
+-            $result = read_exif_data_raw( $image-&gt;getAbsolutePath(), false );
+-            $image-&gt;exif = array();
+-            if ( isset( $result['IFD0'] ) ) {
+-                $image-&gt;exif = array_merge( $image-&gt;exif, $result['IFD0'] );
+-            }
+-            if ( isset( $result['SubIFD'] ) ) {
+-                $image-&gt;exif = array_merge( $image-&gt;exif, $result['SubIFD'] );
+-            }
+-            if ( $image-&gt;exif ) {
+-                @ $image-&gt;exif['full'] = $image-&gt;exif['Model'] . ' ' . str_replace( ' sec', 's', $image-&gt;exif['ExposureTime'] )
+-                                     . ' ' . str_replace( ' ', '/', $image-&gt;exif['ApertureValue'] ) . ' ' .  t('at')
+-                                     . ' ' . str_replace( ' ', '', $image-&gt;exif['FocalLength'] ) . ' ISO'
+-                                     . $image-&gt;exif['ISOSpeedRatings'];
+-            } else {
+-                $image-&gt;exif = null;
+-            }
+-
+             // Assign the variables to the template
+             $this-&gt;tpl-&gt;assign( 'item',  $item );
+             $this-&gt;tpl-&gt;assign( 'image', $image );
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl	2006-09-07 10:43:23 UTC (rev 2086)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item_gallery.tpl	2006-09-07 10:48:48 UTC (rev 2087)
+@@ -45,10 +45,6 @@
+                     ({t w=&quot;image&quot;} {$image-&gt;num} {t w=&quot;of&quot;} {$image-&gt;total_images})
+                     &lt;br/&gt;
+                     {t w=&quot;item&quot;}: &lt;a href=&quot;{$item|@link_item}&quot;&gt;{$item.title}&lt;/a&gt;
+-                    {if $image-&gt;exif}
+-                        &lt;br/&gt;
+-                        EXIF: {$image-&gt;exif.full}
+-                    {/if}
+                 &lt;/small&gt;
+             &lt;/p&gt;
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl	2006-09-07 10:43:23 UTC (rev 2086)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/archive_gallery.tpl	2006-09-07 10:48:48 UTC (rev 2087)
+@@ -18,7 +18,7 @@
+                             &lt;td width=&quot;12%&quot; align=&quot;center&quot; valign=&quot;middle&quot; height=&quot;60&quot;&gt;
+                                 {if $image}
+                                     &lt;a href=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; rel=&quot;lightbox[{$item.id}]&quot;
+-                                    title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&lt;br/&gt;{$image-&gt;exif.full}&quot;
++                                    title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&quot;
+                                     &gt;&lt;img src=&quot;{$image|link_thumb_small}&quot; alt=&quot;{$image-&gt;getBaseName()}&quot; width=&quot;{$image-&gt;relative_path_s_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_s_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
+                                 {else}
+                                     &nbsp;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-09-07 10:43:23 UTC (rev 2086)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item.tpl	2006-09-07 10:48:48 UTC (rev 2087)
+@@ -54,7 +54,7 @@
+                     &lt;td width=&quot;33%&quot; align=&quot;center&quot; style=&quot;vertical-align: middle;&quot; height=&quot;100&quot;&gt;
+                         {if $image}
+                             &lt;a href=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; rel=&quot;lightbox[{$item.id}]&quot;
+-                             title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&lt;br/&gt;{$image-&gt;exif.full}&quot;
++                             title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&quot;
+                              &gt;&lt;img src=&quot;{$image|link_thumb}&quot; alt=&quot;{$image-&gt;getBaseName()}&quot;
+                              width=&quot;{$image-&gt;relative_path_m_obj-&gt;getWidth()}&quot; height=&quot;{$image-&gt;relative_path_m_obj-&gt;getHeight()}&quot;&gt;&lt;/a&gt;
+                         {else}
+@@ -68,7 +68,7 @@
+                     &lt;td width=&quot;33%&quot; align=&quot;center&quot;&gt;
+                         {if $image}
+                             &lt;p&gt;&lt;a href=&quot;{$uploads_dir}/{$image-&gt;relative_path}&quot; rel=&quot;lightbox[{$item.id}]&quot;
+-                             title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&lt;br/&gt;{$image-&gt;exif.full}&quot;
++                             title=&quot;{$item.title} &raquo; {$image-&gt;getBasenameNoExt()}&quot;
+                              &gt;{$image-&gt;getBasenameNoExt()}&lt;/a&gt;&lt;br/&gt;&nbsp;&lt;/p&gt;
+                         {else}
+                             &nbsp;
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_gallery.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_gallery.tpl	2006-09-07 10:43:23 UTC (rev 2086)
++++ YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox/item_gallery.tpl	2006-09-07 10:48:48 UTC (rev 2087)
+@@ -45,10 +45,6 @@
+                     ({t w=&quot;image&quot;} {$image-&gt;num} {t w=&quot;of&quot;} {$image-&gt;total_images})
+                     &lt;br/&gt;
+                     {t w=&quot;item&quot;}: &lt;a href=&quot;{$item|@link_item}&quot;&gt;{$item.title}&lt;/a&gt;
+-                    {if $image-&gt;exif}
+-                        &lt;br/&gt;
+-                        EXIF: {$image-&gt;exif.full}
+-                    {/if}
+                 &lt;/small&gt;
+             &lt;/p&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000603.html">[ydf-devel] r2086 - in YDFramework2.0/trunk/examples/weblog: .	include manage
+</A></li>
+	<LI>Next message: <A HREF="000605.html">[ydf-devel] r2088 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#604">[ date ]</a>
+              <a href="thread.html#604">[ thread ]</a>
+              <a href="subject.html#604">[ subject ]</a>
+              <a href="author.html#604">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

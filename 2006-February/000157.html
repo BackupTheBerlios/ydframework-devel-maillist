@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1742 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage skins/default
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1742%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20include/languages%20manage%20skins/default&In-Reply-To=%3C200602271354.k1RDsMN3027731%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000156.html">
+   <LINK REL="Next"  HREF="000158.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1742 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage skins/default</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1742%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20include%20include/languages%20manage%20skins/default&In-Reply-To=%3C200602271354.k1RDsMN3027731%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1742 - in YDFramework2.0/trunk/examples/weblog: include include/languages manage skins/default">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 27 14:54:22 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000156.html">[ydf-devel] r1741 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000158.html">[ydf-devel] r1743 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#157">[ date ]</a>
+              <a href="thread.html#157">[ thread ]</a>
+              <a href="subject.html#157">[ subject ]</a>
+              <a href="author.html#157">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-27 14:54:16 +0100 (Mon, 27 Feb 2006)
+New Revision: 1742
+
+Added:
+   YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+   YDFramework2.0/trunk/examples/weblog/manage/items.php
+   YDFramework2.0/trunk/examples/weblog/skins/default/comment_email.tpl
+Log:
+Added support for new item emails.
+
+Feature Request #1857
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -327,7 +327,7 @@
+ 
+         // Add an item
+         function addItem( $values ) {
+-            return $this-&gt;_executeInsert( '#_items', $values );
++            $result = $this-&gt;_executeInsert( '#_items', $values );
+         }
+ 
+         // Update an item
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -94,6 +94,9 @@
+ $GLOBALS['t']['item_title'] = 'Item title';
+ $GLOBALS['t']['wrote'] = 'wrote';
+ 
++// item_email.tpl
++$GLOBALS['t']['new_item'] = 'New item';
++
+ // page.tpl
+ $GLOBALS['t']['created_on'] = 'Created on';
+ $GLOBALS['t']['last_modified_on'] = 'Last modified on';
+@@ -251,6 +254,7 @@
+ $GLOBALS['t']['cfg_weblog_date_format'] = 'Date format';
+ $GLOBALS['t']['cfg_notification'] = 'Notification Settings';
+ $GLOBALS['t']['cfg_notification_email_comment'] = 'Email new comments';
++$GLOBALS['t']['cfg_notification_email_item'] = 'Email new items to site authors';
+ $GLOBALS['t']['cfg_rss'] = 'Syndication Settings';
+ $GLOBALS['t']['cfg_rss_max_syndicated_items'] = 'Number of syndicated items';
+ $GLOBALS['t']['err_db_host'] = 'Database Hostname is required';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_fr.php	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -94,6 +94,9 @@
+ $GLOBALS['t']['item_title'] = 'Titre de l\'entr&eacute;e';
+ $GLOBALS['t']['wrote'] = '&eacute;crit';
+ 
++// item_email.tpl
++$GLOBALS['t']['new_item'] = 'Nouveau entr&eacute;e';
++
+ // page.tpl
+ $GLOBALS['t']['created_on'] = 'Cr&eacute;&eacute; le';
+ $GLOBALS['t']['last_modified_on'] = 'Derni&egrave;re modification le';
+@@ -250,6 +253,7 @@
+ $GLOBALS['t']['cfg_weblog_date_format'] = 'Format des dates';
+ $GLOBALS['t']['cfg_notification'] = 'Options de notification';
+ $GLOBALS['t']['cfg_notification_email_comment'] = 'Pr&eacute;venir par email des nouveaux commentaires';
++$GLOBALS['t']['cfg_notification_email_item'] = 'Pr&eacute;venir par email des nouveaux articles';
+ $GLOBALS['t']['cfg_rss'] = 'Options de syndication';
+ $GLOBALS['t']['cfg_rss_max_syndicated_items'] = 'Nombre d\'entr&eacute;es syndiqu&eacute;es';
+ $GLOBALS['t']['err_db_host'] = 'Le serveur (hostname) de la base de donn&eacute;es est requis';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -94,6 +94,9 @@
+ $GLOBALS['t']['item_title'] = 'Item titel';
+ $GLOBALS['t']['wrote'] = 'schreef';
+ 
++// item_email.tpl
++$GLOBALS['t']['new_item'] = 'Nieuw item';
++
+ // page.tpl
+ $GLOBALS['t']['created_on'] = 'Aangemaakt op';
+ $GLOBALS['t']['last_modified_on'] = 'Laatst aangepast op';
+@@ -251,6 +254,7 @@
+ $GLOBALS['t']['cfg_weblog_date_format'] = 'Datum formaat';
+ $GLOBALS['t']['cfg_notification'] = 'Notificatie Instellingen';
+ $GLOBALS['t']['cfg_notification_email_comment'] = 'Email nieuwe commentaren';
++$GLOBALS['t']['cfg_notification_email_item'] = 'Email niewe items naar de site auteurs';
+ $GLOBALS['t']['cfg_rss'] = 'Syndicatie Instellingen';
+ $GLOBALS['t']['cfg_rss_max_syndicated_items'] = 'Aantal gesyndiceerde items';
+ $GLOBALS['t']['err_db_host'] = 'Database Hostnaam is vereist';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -25,6 +25,7 @@
+ 
+             // Fix the boolean values
+             $config['email_new_comment']   = ( $config['email_new_comment'] ) ? t('yes') : t('no');
++            $config['email_new_item']      = ( $config['email_new_item'] ) ? t('yes') : t('no');
+             $config['use_cache']           = ( $config['use_cache'] ) ? t('yes') : t('no');
+             $config['friendly_urls']       = ( $config['friendly_urls'] ) ? t('yes') : t('no');
+             $config['include_debug_info']  = ( $config['include_debug_info'] ) ? t('yes') : t('no');
+@@ -81,6 +82,7 @@
+             $form-&gt;addElement( 'checkbox', 'include_debug_info', t( 'cfg_include_debug_info' ), array( 'style' =&gt; 'border: none;' ) );
+ 
+             $form-&gt;addElement( 'checkbox', 'email_new_comment', t( 'cfg_notification_email_comment' ),  array( 'style' =&gt; 'border: none;' ) );
++            $form-&gt;addElement( 'checkbox', 'email_new_item', t( 'cfg_notification_email_item' ),  array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'text', 'max_syndicated_items', t( 'cfg_rss_max_syndicated_items' ), array( 'class' =&gt; 'tfM' ) );
+ 
+             $form-&gt;addElement( 'checkbox', 'use_cache', t( 'cfg_use_cache_comment' ), array( 'style' =&gt; 'border: none;' ) );
+@@ -154,6 +156,7 @@
+             $config['weblog_language']      = YDConfig::get( 'weblog_language',      'nl' );
+             $config['include_debug_info']   = YDConfig::get( 'include_debug_info',   false );
+             $config['email_new_comment']    = YDConfig::get( 'email_new_comment',    true );
++            $config['email_new_item']       = YDConfig::get( 'email_new_item',       true );
+             $config['max_syndicated_items'] = YDConfig::get( 'max_syndicated_items', 20 );
+             $config['use_cache']            = YDConfig::get( 'use_cache',            false );
+             $config['friendly_urls']        = YDConfig::get( 'friendly_urls',        false );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -114,6 +114,10 @@
+             &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;cfg_notification_email_comment&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$config.email_new_comment}&lt;/td&gt;
+         &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;300&quot;&gt;{t w=&quot;cfg_notification_email_item&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; width=&quot;400&quot;&gt;{$config.email_new_item}&lt;/td&gt;
++        &lt;/tr&gt;
+     &lt;/table&gt;
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+         &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -119,6 +119,35 @@
+                     // Add it to the database
+                     $this-&gt;weblog-&gt;addItem( $values );
+ 
++                    // Send an email if configured
++                    if ( YDConfig::get( 'email_new_item', true ) ) {
++
++                        // Include the YDEmail library
++                        YDInclude( 'YDEmail.php' );
++
++                        // Get the list of subscriptions
++                        $subscribers = $this-&gt;weblog-&gt;getUsers();
++
++                        // Add the comment to the email template
++                        $this-&gt;tpl-&gt;assign( 'item', $values );
++
++                        // Create the email and send it
++                        $eml = new YDEmail();
++                        if ( ! empty( $item['user_email'] ) ) {
++                            $eml-&gt;setFrom( $item['user_email'], YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
++                        } else {
++                            $eml-&gt;setFrom( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">nobody at nowhere.com</A>', YDConfig::get( 'weblog_title', 'Untitled Weblog' ) );
++                        }
++                        $eml-&gt;setReplyTo( '<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">no at reply.net</A>' );
++                        foreach ( $subscribers as $subscriber ) {
++                            $eml-&gt;addBcc( $subscriber['email'], $subscriber['name'] );
++                        }
++                        $eml-&gt;setSubject( 'New item: ' . strip_tags( $values['title'] ) );
++                        $eml-&gt;setHtmlBody( $this-&gt;fetch( dirname( __FILE__ ) . '/../' . $this-&gt;dir_skins . $this-&gt;skin . '/item_email.tpl' ) );
++                        $eml-&gt;send();
++
++                    }
++
+                 }
+ 
+                 // Redirect to the default acton
+
+Modified: YDFramework2.0/trunk/examples/weblog/skins/default/comment_email.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/comment_email.tpl	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/comment_email.tpl	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -4,7 +4,6 @@
+ 
+     &lt;title&gt;{$weblog.title}&lt;/title&gt;
+ 
+-    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+     &lt;meta name=&quot;generator&quot; content=&quot;{$YD_FW_NAMEVERS}&quot; /&gt;
+ 
+     &lt;link rel=&quot;stylesheet&quot; href=&quot;{$skin_dir}/default.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot; /&gt;
+
+Added: YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl	2006-02-27 13:27:39 UTC (rev 1741)
++++ YDFramework2.0/trunk/examples/weblog/skins/default/item_email.tpl	2006-02-27 13:54:16 UTC (rev 1742)
+@@ -0,0 +1,54 @@
++&lt;html&gt;
++
++&lt;head&gt;
++
++    &lt;title&gt;{$weblog.title}&lt;/title&gt;
++
++    &lt;meta name=&quot;generator&quot; content=&quot;{$YD_FW_NAMEVERS}&quot; /&gt;
++
++    &lt;link rel=&quot;stylesheet&quot; href=&quot;{$skin_dir}/default.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot; /&gt;
++
++    &lt;style type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
++        body        {literal}{{/literal} background: url(&quot;{$image_dir}/kubrickbgcolor.jpg&quot;);                                 {literal}}{/literal}
++        #page       {literal}{{/literal} background: url(&quot;{$image_dir}/kubrickbgwide.jpg&quot;) repeat-y top; border: none;       {literal}}{/literal}
++        #header     {literal}{{/literal} background: url(&quot;{$image_dir}/kubrickheader.jpg&quot;) no-repeat top center;             {literal}}{/literal}
++        #footer     {literal}{{/literal} background: url(&quot;{$image_dir}/kubrickfooter.jpg&quot;) no-repeat bottom; border: none;   {literal}}{/literal}
++        #header     {literal}{{/literal} margin: 0 !important; margin: 0; padding: 1px; height: 0px; width: 758px;           {literal}}{/literal}
++        #headerimg  {literal}{{/literal} margin: 0; height: 0px; width: 740px;                                               {literal}}{/literal}
++        .bbtextarea {literal}{{/literal} width: 650px; height: 160px;                                                        {literal}}{/literal}
++    &lt;/style&gt;
++
++&lt;/head&gt;
++
++&lt;body&gt;
++
++    &lt;div id=&quot;page&quot;&gt;
++
++        &lt;div id=&quot;header&quot;&gt;&lt;/div&gt;
++
++        &lt;div id=&quot;content&quot; class=&quot;narrowcolumn&quot;&gt;
++
++            &lt;h3&gt;{t w=&quot;new_item&quot;}: {$item.title}&lt;/h3&gt;
++
++            &lt;p&gt;
++                &lt;b&gt;{t w=&quot;weblog&quot;}&lt;/b&gt;: &lt;a href=&quot;{$weblog_link}&quot;&gt;{$weblog_title}&lt;/a&gt;&lt;br/&gt;
++                &lt;b&gt;{t w=&quot;item_title&quot;}&lt;/b&gt;: &lt;a href=&quot;{$item|@link_item}&quot;&gt;{$item.title}&lt;/a&gt;&lt;br/&gt;
++            &lt;/p&gt;
++
++            &lt;blockquote&gt;
++                &lt;p&gt;{$item.body|bbcode}&lt;/p&gt;
++                &lt;p&gt;{$item.body_more|bbcode}&lt;/p&gt;
++            &lt;/blockquote&gt;
++
++            &nbsp;
++
++        &lt;/div&gt;
++
++        &lt;div id=&quot;footer&quot;&gt;&lt;/div&gt;
++
++    &lt;/div&gt;
++
++&lt;/body&gt;
++
++&lt;/html&gt;
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000156.html">[ydf-devel] r1741 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000158.html">[ydf-devel] r1743 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#157">[ date ]</a>
+              <a href="thread.html#157">[ thread ]</a>
+              <a href="subject.html#157">[ subject ]</a>
+              <a href="author.html#157">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

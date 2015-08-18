@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2216 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2216%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611182229.kAIMTKvG029040%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000776.html">
+   <LINK REL="Next"  HREF="000778.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2216 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2216%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611182229.kAIMTKvG029040%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2216 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Nov 18 23:29:20 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000776.html">[ydf-devel] r2215 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000778.html">[ydf-devel] r2217 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#777">[ date ]</a>
+              <a href="thread.html#777">[ thread ]</a>
+              <a href="subject.html#777">[ subject ]</a>
+              <a href="author.html#777">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-18 23:29:08 +0100 (Sat, 18 Nov 2006)
+New Revision: 2216
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+Log:
+lots of cleanups and some fixes on YDDatabaseTree3
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-18 22:26:48 UTC (rev 2215)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-18 22:29:08 UTC (rev 2216)
+@@ -80,7 +80,7 @@
+ 
+ 			// register reserved fields
+ 			$this-&gt;registerKey( $idField, true );
+-			$this-&gt;registerField( $parentField );
++			$this-&gt;registerKey( $parentField );
+ 			$this-&gt;registerField( $lineageField );
+ 			$this-&gt;registerField( $levelField );
+ 			$this-&gt;registerField( $positionField );
+@@ -93,34 +93,27 @@
+ 			$this-&gt;__position = $positionField;
+ 
+ 			// define a generic tree order
+-			$this-&gt;order( $this-&gt;__parent . ' ASC,' . $this-&gt;__position .' ASC' );
++			$this-&gt;setOrder( $this-&gt;__parent . ' ASC, ' . $this-&gt;__position . ' ASC' );
+ 		}
+ 
+ 
+         /**
+-         *  This function will escape a string so that it's safe to include it in an SQL statement and will surround it
+-         *  with the quotes appropriate for the database backend.
++         *  This function defines the order used in all SELECTS
+          *
+-         *  @param $string  The string to escape.
+-         *
+-         *  @returns    The escaped string surrounded by quotes.
++         *  @param $string  The sql order string.
+          */
+-        function escapeSql( $string ){
++        function setOrder( $sql ){
+ 
+-			return $this-&gt;_db-&gt;escapeSql( $string );
++			return $this-&gt;_tree_order = $sql;
+         }
+ 
+ 
+         /**
+-         *  This function will escape all array elements with the quotes appropriate for the database backend.
+-         *
+-         *  @param $arr  The array to escape. Eg: array( 1, null, 'hi' ) will result in &quot;1, null, 'hi'&quot;
+-         *
+-         *  @returns    The escaped string surrounded by quotes.
++         *  This function will overide the YDDatabaseObject to reset object but init order
+          */
+-        function escapeSqlArray( $arr ) {
+-
+-			return $this-&gt;_db-&gt;escapeSqlArray( $arr );
++		function reset(){
++			parent::reset();
++			$this-&gt;order( $this-&gt;_tree_order );
+ 		}
+ 
+ 
+@@ -145,7 +138,7 @@
+          */
+         function getNode( $id, $field = null ) {
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			// if field not defined, field is id
+ 			if ( is_null( $field ) ) $field = $this-&gt;__id;
+@@ -183,8 +176,11 @@
+          */
+         function getDescendants( $id, $includeSelf = false ) {
+ 
+-			$this-&gt;resetValues();
++			// check if we want an invalid id (like 0 or 1)
++			if ( $id &lt; 2 ) return $this-&gt;getTreeElements();
+ 
++			$this-&gt;reset();
++
+ 			return $this-&gt;_getDescendants( $id, $includeSelf );
+ 		}
+ 
+@@ -218,7 +214,7 @@
+          */
+         function getTreeElements() {
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			return $this-&gt;_getTreeElements();
+ 		}
+@@ -275,7 +271,7 @@
+          */
+         function getChildren( $id, $includeSelf = false ){
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 			
+ 			return $this-&gt;_getChildren( $id, $includeSelf );
+         }
+@@ -312,7 +308,7 @@
+          */
+         function getPath( $id, $includeSelf=false ) {
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			return $this-&gt;_getPath( $id, $includeSelf );
+         }
+@@ -331,14 +327,17 @@
+             // Get the node
+             $node = $this-&gt;getNode( $id ) ;
+ 
++			// reset values of previous getNode()
++			$this-&gt;reset();
++
+             // No node, return empty array
+             if ( ! $node ) return array();
+ 
+ 			// compute parents of this node. Read lineage, delete first '//', last '/', apply 'intval' to all elements and implode
+-			$nodes = implode( '&quot;,&quot;', array_map( 'intval', explode('/', substr( substr( $node[ $this-&gt;__lineage ], 2 ), 0, -1 ) ) ) );
++			$nodes = array_map( 'intval', explode( '/', substr( substr( $node[ $this-&gt;__lineage ], 2 ), 0, -1 ) ) );
+ 
+-            if ( $includeSelf == false ) $this-&gt;where( $this-&gt;__id . ' IN (&quot;' . implode( '&quot;,&quot;', $nodes ) . '&quot;)' );
+-			else                         $this-&gt;where( $this-&gt;__id . ' IN (&quot;' . implode( '&quot;,&quot;', $nodes ) . '&quot;) OR ' . $this-&gt;__id . ' = ' . intval( $id ) );
++            if ( $includeSelf == false ) $this-&gt;where( $this-&gt;getTable() . '.' . $this-&gt;__id . ' IN (' . $this-&gt;escapeSqlArray( $nodes ) . ')' );
++			else                         $this-&gt;where( $this-&gt;getTable() . '.' . $this-&gt;__id . ' IN (' . $this-&gt;escapeSqlArray( $nodes ) . ') OR ' . $this-&gt;__id . ' = ' . intval( $id ) );
+ 
+ 			$this-&gt;find();
+ 
+@@ -356,9 +355,12 @@
+          */
+         function isDescendantOf( $descendant_id, $ancestor_id ) {
+ 
+-			$this-&gt;resetValues();
++			// if ancertor is root, element is descendant if exist
++			if ( $ancestor_id == 1 ) return ( $this-&gt;getNode( $descendant_id ) != false );
++
++			$this-&gt;reset();
+ 			
+-			return _isDescendantOf( $descendant_id, $ancestor_id );
++			return $this-&gt;_isDescendantOf( $descendant_id, $ancestor_id );
+         }
+ 
+ 
+@@ -393,7 +395,7 @@
+          */
+         function isChildOf( $child_id, $parent_id ) {
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			// check if there is a id that equals $child_id
+ 			$this-&gt;set( $this-&gt;__id, intval( $child_id ) );
+@@ -415,7 +417,7 @@
+          */
+         function numDescendants( $id ) {
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			return $this-&gt;_numDescendants( $id );
+         }
+@@ -430,22 +432,11 @@
+          */
+         function _numDescendants( $id ) {
+ 
+-			// register a custom select
+-			$this-&gt;registerSelect( 'num_descendants', 'COUNT(*)' );
+-			
+-			// search all nodes that contains this id in lineage
+-			$this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
++			// search all nodes that contains this id in lineage. if node is root, count all nodes
++			if ( $id &gt; 1 ) $this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
+ 
+ 			// find them
+-			$this-&gt;find();
+-			
+-			// get total
+-			$total = $this-&gt;get( 'num_descendants' );
+-
+-			// unregister select. otherwise could be used on by other method
+-			$this-&gt;unregisterSelect( 'num_descendants' );
+-
+-			return $total;
++			return $this-&gt;find();
+         }
+ 
+ 
+@@ -458,7 +449,7 @@
+          */
+         function numChildren( $id ) {
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			// search all nodes that contains this id in lineage
+ 			$this-&gt;set( $this-&gt;__parent, intval( $id ) );
+@@ -483,7 +474,7 @@
+             // No node, return empty array
+             if ( ! $node ) return array();
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			// get elements that have parent $parent (this returns current element and brothers), that have id $parent (returns parent), and that have lineage like /$id/ (returns all children)
+ 			$this-&gt;where( $this-&gt;__parent . '=' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__id . ' = ' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
+@@ -491,7 +482,7 @@
+ 			$this-&gt;find();
+ 
+             // Execute the query and get the record
+-            return $this-&gt;getRecords();
++            return $this-&gt;getResults();
+         }
+ 
+ 
+@@ -526,7 +517,7 @@
+ 				$position = $total_brothers + 1;
+ 
+ 			// create an empty position. To do this we must increment position of nodes that have the same parent AND have position equal or bigger than $position
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			// position field must increment
+ 			$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
+@@ -538,7 +529,7 @@
+ 			$this-&gt;update();
+ 
+ 			// reset any previous value to create insert
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			// apply custom values
+ 			$this-&gt;setValues( $values );
+@@ -563,7 +554,7 @@
+          */
+         function updateNode( $values, $id ) {
+ 
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			// get reserved field names
+ 			$parent   = $this-&gt;__parent;
+@@ -603,7 +594,7 @@
+ 	            // get node details before delete. we must know the position
+ 	            $node = $this-&gt;getNode( $id );
+ 
+-				$this-&gt;resetValues();
++				$this-&gt;reset();
+ 
+ 				$this-&gt;set( $this-&gt;__id, intval( $id ) );
+ 
+@@ -612,7 +603,7 @@
+ 				
+ 				if ( $total == 0 ) return 0;
+ 
+-				$this-&gt;resetValues();
++				$this-&gt;reset();
+ 
+ 				// decrease positions
+ 				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
+@@ -626,7 +617,7 @@
+ 			}
+ 
+ 			// here we want do delete child only
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 
+ 			$this-&gt;set( $this-&gt;__parent, intval( $id ) );
+ 
+@@ -671,20 +662,20 @@
+ 			if ( $new_parent_id != $old_parent_id || $new_position != $old_position ){
+ 
+ 				// add position space for this node in new parent: increase positions of new brothers that have position bigger than this node position
+-				$this-&gt;resetValues();
++				$this-&gt;reset();
+ 				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
+ 				$this-&gt;where( $this-&gt;__parent . ' = ' . $new_parent_id . ' AND ' . $this-&gt;__position . ' &gt;= ' . $new_position );
+ 				$this-&gt;update();
+ 
+ 				// decrease positions of old brothers that have position bigger than this node position
+-				$this-&gt;resetValues();
++				$this-&gt;reset();
+ 				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
+ 				$this-&gt;where( $this-&gt;__parent . ' = ' . $old_parent_id . ' AND ' . $this-&gt;__position . ' &gt; ' . $old_position );
+ 				$this-&gt;update();
+ 			}
+ 
+ 			// update node
+-			$this-&gt;resetValues();
++			$this-&gt;reset();
+ 			$this-&gt;set( $this-&gt;__id,       intval( $id ) );
+ 			$this-&gt;set( $this-&gt;__parent,   intval( $new_parent_id ) );
+ 			$this-&gt;set( $this-&gt;__lineage,  $new_parent_node[ $this-&gt;__lineage ] . $new_parent_id . '/' );
+@@ -694,7 +685,7 @@
+ 			
+ 			// update lineages of node descendants ;)
+ 			if ( $new_parent_id != $old_parent_id ){
+-				$this-&gt;resetValues();
++				$this-&gt;reset();
+ 				$this-&gt;set( $this-&gt;__linage, 'REPLACE(' . $this-&gt;__lineage . ',&quot;' . $old_lineage . '/' . $id . '/&quot;,&quot;' . $new_lineage . '/' . $id . '/&quot;)' );
+ 				$this-&gt;update();
+ 			}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000776.html">[ydf-devel] r2215 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000778.html">[ydf-devel] r2217 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#777">[ date ]</a>
+              <a href="thread.html#777">[ thread ]</a>
+              <a href="subject.html#777">[ subject ]</a>
+              <a href="author.html#777">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

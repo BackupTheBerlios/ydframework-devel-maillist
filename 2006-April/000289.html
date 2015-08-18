@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDCM feedback
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C444518AC.1080102%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000288.html">
+   <LINK REL="Next"  HREF="000290.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDCM feedback</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDCM%20feedback&In-Reply-To=%3C444518AC.1080102%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDCM feedback">francisco at fusemail.com
+       </A><BR>
+    <I>Tue Apr 18 18:49:48 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000288.html">[ydf-devel] r1856 - in YDFramework2.0/trunk/examples: . forum forum/images forum/images/avatars forum/includes forum/languages forum/sql forum/templates
+</A></li>
+        <LI>Next message: <A HREF="000290.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Pieter
+
+I saw your initial commit about the cms and forum.. and i think we could 
+  share some ideas about it.
+
+IMHO, a content framework must:
+
+- _not_ include specific code (eg: design/templating code), otherwise in 
+most cases it will be useless.
+
+- should be a collection of modules that have all _logic_ about all 
+possible operations about that module.
+
+I saw that you are creating some modules extending a sqlclass (that has 
+only a simple contructor about a connection).. and this doesn't seems 
+the best approach because almost all forum logic implements what 
+YDDatabaseObject already does (updates/deletes/inserts...).. all we need 
+is a YDDatabaseObject extension and 80% of the job about the forum is 
+done ;)
+
+I propose that every module (eg: forum) has:
+- a YDDatabaseObject extension that contains all possible operations
+
+- a language directory that contains all language files about the module 
+(no news here)
+
+- a sql directory that contains the sql needed and a DBDesigner4 source 
+file (this is free and excellent for db designing and exporting)
+
+... and these, imho, could be included has a &quot;ydf addon/module&quot; or  &quot;ydf 
+cm addon/module&quot; and not has a example.
+
+.. in the ydf &quot;example&quot; directory i think we could add a demonstration 
+class (that uses the YDDatabaseObject extension about that module) and 
+the correspondent templating directory that shows how the module works.
+
+
+.. just my 0.02
+
+Francisco A
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000288.html">[ydf-devel] r1856 - in YDFramework2.0/trunk/examples: . forum forum/images forum/images/avatars forum/includes forum/languages forum/sql forum/templates
+</A></li>
+	<LI>Next message: <A HREF="000290.html">[ydf-devel] YDCM feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

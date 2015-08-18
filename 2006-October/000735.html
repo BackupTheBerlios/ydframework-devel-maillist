@@ -1,0 +1,1239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Query builder
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Query%20builder&In-Reply-To=%3C1162310584.v1.fusewebmail-15630%40f%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000734.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Query builder</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Query%20builder&In-Reply-To=%3C1162310584.v1.fusewebmail-15630%40f%3E"
+       TITLE="[ydf-devel] Query builder">francisco at fusemail.com
+       </A><BR>
+    <I>Tue Oct 31 17:03:04 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000734.html">[ydf-devel] Query builder
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#735">[ date ]</a>
+              <a href="thread.html#735">[ thread ]</a>
+              <a href="subject.html#735">[ subject ]</a>
+              <a href="author.html#735">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Graeme
+
+I don't see how filters can be used in writes (inserts).. for updates i
+can see (but i don't think i would use, if you ask me).
+My primary intention was for selects and to be used with YDDatabaseObject
+only.
+
+so, filters can be:
+
+- a &quot;is&quot; value in range.  eg,  COLOR  is   &lt;select&gt;
+  some value in a pre-defined select box
+
+- a &quot;is one or more&quot;.  eg,  COLOR  is  &lt;multi select&gt;
+  some value(s) in a pre-defined &quot;multiple select&quot; or &quot;checkboxgroup&quot;
+
+- a &quot;like&quot; value.  eg,  COLOR  contains  &lt;text&gt;
+  a value that is like some string inserted in a text box
+
+- a &quot;is&quot; value.  eg,  PRICE  is  &lt;text&gt;
+  a value that is equal to some &quot;text&quot;
+
+- a &quot;between&quot;.  eg,  PRICE is between  &lt;text1&gt; and &lt;text2&gt;
+ a value that is between 2 text box values
+
+
+What do you think? More ideas?
+
+regards
+Francisco A
+
+
+----- Original Message -----
+&gt;<i>   Hi Francisco,
+</I>&gt;<i>
+</I>&gt;<i> This sounds like a great idea. It would be a good alternative to views.I
+</I>&gt;<i> really like the proposal for filter ranges rather than individualvalues.
+</I>&gt;<i>
+</I>&gt;<i> You should also think about ways to set defaults that allow filteredfields
+</I>&gt;<i> to be automatically populated for insert and update clauses.That way the
+</I>&gt;<i> filter can be used for reads and writes.
+</I>&gt;<i>
+</I>&gt;<i> My modification to YDDatabaseTree does this. I mentioned that I wasworking
+</I>&gt;<i> on that some time ago. Have a look at:
+</I>&gt;<i>
+</I>&gt;<i>    setFilterByArray
+</I>&gt;<i>    setAddDefaults
+</I>&gt;<i>    getFilter
+</I>&gt;<i>    _getFilter
+</I>&gt;<i>    getWhereFilter
+</I>&gt;<i>
+</I>&gt;<i>  in the attached. I haven't had the time to put together an
+</I>&gt;<i> updatedexample.
+</I>&gt;<i>
+</I>&gt;<i> I haven't spent much time on it but it works for the purpose ofallowing
+</I>&gt;<i> multiple trees to be stored in a single table.
+</I>&gt;<i>
+</I>&gt;<i> YDDatabaseTree seems to be based on pure SQL and could certainlybenefit
+</I>&gt;<i> from a change to base it on YDDatabaseObject.
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> Graeme
+</I>&gt;<i>
+</I>&gt;<i> Francisco Azevedo wrote:
+</I>&gt;<i> Hi db, Hi allI have an idea about sql and a way to handle filters in a
+</I>&gt;<i> automated wayand i would like to discuss with you the best way to create
+</I>&gt;<i> it.Currently we have YDDatabaseObject that handles db operations, but what
+</I>&gt;<i> doyou think of a new object (that integrates with YDDatabaseObject)
+</I>&gt;<i> tohandle filters?All select results are (almost) always diaplayed in
+</I>&gt;<i> tables and we havefilters for that. Filters are just pre-defined 'where'
+</I>&gt;<i> clauses.Imagine a cars table:CAR  | COLOR | PRICEfiat | red   | 100ford |
+</I>&gt;<i> red   |  10audi | blue  |  99We could define pre-defined filters:- user
+</I>&gt;<i> can filter by 'color' value- user can filter by 'price' intervalThis could
+</I>&gt;<i> be done as:$filter = new YDDatabaseFilter();$filter-&gt;addField( 'color',
+</I>&gt;<i> 'is', array( 'red', 'blue' ) );$filter-&gt;addField( 'price', 'between', 5,
+</I>&gt;<i> 500 );this filter means that color must be 'red' or 'blue' and price must
+</I>&gt;<i> bebetween '5' and '500'.How to use the filter====================The
+</I>&gt;<i> filter can have 2 uses: - be displayed with master
+</I>&gt;<i>  select results as a form - be used to create result with YDDatabase (on a
+</I>&gt;<i> response) when displayed ============== $filter-&gt;toHTML(); or $form = &amp;
+</I>&gt;<i> $filter-&gt;getForm(); returns the html/form code needed to manage the
+</I>&gt;<i> filter. in the previous example this will generate a YDForm with 2
+</I>&gt;<i> elements'color' and 'price'. - 'color' will be a 'select' box with values
+</I>&gt;<i> 'red' and 'blue' - 'price' will be a 'text' element where the user will
+</I>&gt;<i> set the price wewants. when integrated with YDDatabaseObject
+</I>&gt;<i> ===================================== $dbObject-&gt;resetValues();
+</I>&gt;<i> $dbObject-&gt;userFilter( $filter ); $dbObject-&gt;findAll(); this means that
+</I>&gt;<i> our YDDatabaseObject will read the filter and apply all'where'
+</I>&gt;<i> internally. basically, in the example, this is the same as doing it by
+</I>&gt;<i> hand like: $dbObject-&gt;resetValues(); $dbObject-&gt;set( 'color',
+</I>&gt;<i> $color_value ); $dbObject-&gt;set( 'price', $price_value );
+</I>&gt;<i> $dbObject-&gt;findAll();This seems a good feature to me, that can make
+</I>&gt;<i> development much moreeasier :)Imagine..  *
+</I>&gt;<i>  more complex filters (and how they could be automated)...  * saving
+</I>&gt;<i> filters in db..What do you think?Francisco
+</I>&gt;<i> A_______________________________________________YDFramework-devel mailing
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">listYDFramework-devel at lists.berlios.dehttps</A>://lists.berlios.de/mailman/listinfo/ydframework-devel
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------
+</I>&gt;<i> Want to start your own business? Learn how on  Yahoo! Small Business.
+</I>&gt;<i> &lt;?php
+</I>&gt;<i>
+</I>&gt;<i>     /*
+</I>&gt;<i>
+</I>&gt;<i>         Yellow Duck Framework version 2.0
+</I>&gt;<i>         (c) Copyright 2002-2005 Pieter Claerhout
+</I>&gt;<i>
+</I>&gt;<i>         This library is free software; you can redistribute it and/or
+</I>&gt;<i>         modify it under the terms of the GNU Lesser General Public
+</I>&gt;<i>         License as published by the Free Software Foundation; either
+</I>&gt;<i>         version 2.1 of the License, or (at your option) any later version.
+</I>&gt;<i>
+</I>&gt;<i>         This library is distributed in the hope that it will be useful,
+</I>&gt;<i>         but WITHOUT ANY WARRANTY; without even the implied warranty of
+</I>&gt;<i>         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+</I>&gt;<i>         Lesser General Public License for more details.
+</I>&gt;<i>
+</I>&gt;<i>         You should have received a copy of the GNU Lesser General Public
+</I>&gt;<i>         License along with this library; if not, write to the Free
+</I>&gt;<i> Software
+</I>&gt;<i>         Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+</I>&gt;<i> 02111-1307 USA
+</I>&gt;<i>
+</I>&gt;<i>     */
+</I>&gt;<i>
+</I>&gt;<i>     // Check if the framework is loaded
+</I>&gt;<i>     if ( ! defined( 'YD_FW_NAME' ) ) {
+</I>&gt;<i>         die( 'Yellow Duck Framework is not loaded.' );
+</I>&gt;<i>     }
+</I>&gt;<i>
+</I>&gt;<i>     // Includes
+</I>&gt;<i>     include_once( YD_DIR_HOME_CLS . '/YDDatabase.php' );
+</I>&gt;<i>
+</I>&gt;<i>     /**
+</I>&gt;<i>      *  This class implements a database tree as described on:
+</I>&gt;<i>      *
+</I>&gt;<i> <A HREF="http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/">http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/</A>
+</I>&gt;<i>      */
+</I>&gt;<i>     class YDDatabaseTree2 extends YDBase {
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Constructor. Set the database table name and necessary field
+</I>&gt;<i> names
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $db             The YDDatabase instance name or object
+</I>&gt;<i> pointing to the database
+</I>&gt;<i>          *  @param $table          Name of the tree database table
+</I>&gt;<i>          *  @param $idField        (optional) Name of the primary key ID
+</I>&gt;<i> field. Default is id.
+</I>&gt;<i>          *  @param $parentField    (optional) Name of the parent ID field.
+</I>&gt;<i> Default is parent_id.
+</I>&gt;<i>          *  @param $sortField      (optional) Name of the field to sort
+</I>&gt;<i> data. Default is position, title.
+</I>&gt;<i>          */
+</I>&gt;<i>         function YDDatabaseTree2( $db='default', $table, $idField='id',
+</I>&gt;<i> $parentField='parent_id', $sortField='position, title' ) {
+</I>&gt;<i>
+</I>&gt;<i>             $this-&gt;db = YDDatabase::getNamedInstance( $db );
+</I>&gt;<i>
+</I>&gt;<i>             $this-&gt;table = $table;
+</I>&gt;<i>             $this-&gt;fields = array(
+</I>&gt;<i>                 'id' =&gt; $idField, 'parent' =&gt; $parentField, 'sort' =&gt;
+</I>&gt;<i> $sortField,
+</I>&gt;<i>                 'nleft' =&gt; 'nleft', 'nright' =&gt; 'nright', 'nlevel' =&gt;
+</I>&gt;<i> 'nlevel', 'position' =&gt; 'position'
+</I>&gt;<i>             );
+</I>&gt;<i>             $this-&gt;_use_query_cache = true;
+</I>&gt;<i>             $this-&gt;_query_cache = array();
+</I>&gt;<i> 			$this-&gt;_use_filter = false;
+</I>&gt;<i> 			$this-&gt;_filter_criteria = '';
+</I>&gt;<i> 			$this-&gt;_add_defaults = array();
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  A utility function to return an array of the fields that need
+</I>&gt;<i> to be selected in SQL select queries.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns array   An indexed array of fields to select
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @internal
+</I>&gt;<i>          */
+</I>&gt;<i>         function _getFields() {
+</I>&gt;<i>             return array_values( $this-&gt;fields );
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Get the fields joined as single string.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns A single string with the fields joined as a string
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @internal
+</I>&gt;<i>          */
+</I>&gt;<i>         function _getFieldsAsString() {
+</I>&gt;<i>             return join( ',', $this-&gt;_getFields() );
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /*
+</I>&gt;<i>          *  Convert an array to an object.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param The array to convert.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns The array as an object.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @internal
+</I>&gt;<i>          */
+</I>&gt;<i>         function _arrayToObj( $arr ) {
+</I>&gt;<i>             $obj = new YDBase();
+</I>&gt;<i>             foreach ( $arr as $key =&gt; $val ) {
+</I>&gt;<i>                 $obj-&gt;$key = $val;
+</I>&gt;<i>             }
+</I>&gt;<i>             return $obj;
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /*
+</I>&gt;<i>          *  Function to convert an object to a node array
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $node    The node to convert to a node array.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @return The node as a node array.
+</I>&gt;<i>          */
+</I>&gt;<i>         function _toNodeArray( $node ) {
+</I>&gt;<i>             $arr = array();
+</I>&gt;<i>
+</I>&gt;<i>             foreach ( $this-&gt;fields as $f )
+</I>&gt;<i>                 if ( isset( $node[ $f ] ) ) $arr[ $f ] = $node[ $f ];
+</I>&gt;<i>
+</I>&gt;<i>             return $arr;
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /*
+</I>&gt;<i>          *  Function to convert a node array to a object
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $node    The node to convert to an object.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @return The node as an object.
+</I>&gt;<i>          */
+</I>&gt;<i>         function _fromNodeArray( $node ) {
+</I>&gt;<i>             return $node;
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Function to clear the query cache.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @internal
+</I>&gt;<i>          */
+</I>&gt;<i>         function _clearCache() {
+</I>&gt;<i>             $this-&gt;_query_cache = array();
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  This function is a cache-enabled version of the $db-&gt;getRecord
+</I>&gt;<i> function.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @internal
+</I>&gt;<i>          */
+</I>&gt;<i>         function _getRecord( $query ) {
+</I>&gt;<i>             if ( $this-&gt;_use_query_cache &amp;&amp; isset( $this-&gt;_query_cache[
+</I>&gt;<i> '[_getRecord]' . $query ] ) ) {
+</I>&gt;<i>                 return $this-&gt;_query_cache[ '[_getRecord]' . $query ];
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 $result = $this-&gt;db-&gt;getRecord( $query );
+</I>&gt;<i>                 $this-&gt;_query_cache[ '[_getRecord]' . $query ] = $result;
+</I>&gt;<i>                 return $result;
+</I>&gt;<i>             }
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  This function is a cache-enabled version of the
+</I>&gt;<i> $db-&gt;getRecords function.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @internal
+</I>&gt;<i>          */
+</I>&gt;<i>         function _getRecords( $query ) {
+</I>&gt;<i>             if ( $this-&gt;_use_query_cache &amp;&amp; isset( $this-&gt;_query_cache[
+</I>&gt;<i> '[_getRecords]' . $query ] ) ) {
+</I>&gt;<i>                 return $this-&gt;_query_cache[ '[_getRecords]' . $query ];
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 $result = $this-&gt;db-&gt;getRecords( $query );
+</I>&gt;<i>                 $this-&gt;_query_cache[ '[_getRecords]' . $query ] = $result;
+</I>&gt;<i>                 return $result;
+</I>&gt;<i>             }
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Add a field to the list of fields to will get returned by this
+</I>&gt;<i> class.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param  $name   The name of the field that should be added.
+</I>&gt;<i>          */
+</I>&gt;<i>         function addField( $name ) {
+</I>&gt;<i>             if ( ! in_array( $name, $this-&gt;fields ) ) {
+</I>&gt;<i>                 $this-&gt;fields[ $name ] = $name;
+</I>&gt;<i>             }
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Add a number of fields to the list of fields to will get
+</I>&gt;<i> returned by this class.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param  $names   The name of the field that should be added.
+</I>&gt;<i>          */
+</I>&gt;<i>         function addFields( $names ) {
+</I>&gt;<i>             if ( is_array( $names ) ) {
+</I>&gt;<i>                 foreach ( $names as $name ) {
+</I>&gt;<i>                     $this-&gt;addField( $name );
+</I>&gt;<i>                 }
+</I>&gt;<i>             }
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Set the sort field.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $sortField      (optional) Name of the field to sort
+</I>&gt;<i> data. Default is title.
+</I>&gt;<i>          */
+</I>&gt;<i>         function setSortField( $sortField='title' ) {
+</I>&gt;<i>             $this-&gt;fields[ 'sort' ] = $sortField;
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Set the filter.
+</I>&gt;<i> 		 *  Conditions for the filter will be combined via AND with remainder of
+</I>&gt;<i> query.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $filter      Filter Conditions (as array).
+</I>&gt;<i>          */
+</I>&gt;<i>         function setFilterByArray( $filter ) {
+</I>&gt;<i>
+</I>&gt;<i> 			if ( is_array( $filter ) ) {
+</I>&gt;<i>
+</I>&gt;<i> 				// clear any existing filter / add defaults
+</I>&gt;<i> 				$this-&gt;_filter_criteria = '';
+</I>&gt;<i> 				$this-&gt;_add_defaults = array();
+</I>&gt;<i>
+</I>&gt;<i> 				// initialise filter and defaults
+</I>&gt;<i> 				foreach ( $filter as $field =&gt; $value ) {
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 					if ( $this-&gt;_filter_criteria != '' ) {
+</I>&gt;<i> 						$this-&gt;_filter_criteria .= 'and ( ' . $field . ' = \'' . $value .
+</I>&gt;<i> '\' ) ';
+</I>&gt;<i> 					} else {
+</I>&gt;<i> 						$this-&gt;_filter_criteria .= '( ' . $field . ' = \'' . $value . '\' )
+</I>&gt;<i> ';
+</I>&gt;<i> 					}
+</I>&gt;<i>
+</I>&gt;<i> 					$this-&gt;_add_defaults[ $field ] = $value;
+</I>&gt;<i> 				}
+</I>&gt;<i>
+</I>&gt;<i> 				$this-&gt;_use_filter = true;
+</I>&gt;<i>
+</I>&gt;<i> 			} else {
+</I>&gt;<i>
+</I>&gt;<i> 				$this-&gt;_use_filter = true;
+</I>&gt;<i> 				return false;
+</I>&gt;<i>
+</I>&gt;<i> 			}
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i> 		/**
+</I>&gt;<i> 		 *  Set the add default values.
+</I>&gt;<i> 		 *
+</I>&gt;<i> 		 *  These values will be set by default when a node is added.
+</I>&gt;<i> 		 *
+</I>&gt;<i> 		 *  @param $defaults	Array of keys and values.
+</I>&gt;<i> 		 */
+</I>&gt;<i> 		 function setAddDefaults( $defaults ) {
+</I>&gt;<i>
+</I>&gt;<i> 			// clear any existing add defaults
+</I>&gt;<i> 			$this-&gt;_add_defaults = array();
+</I>&gt;<i>
+</I>&gt;<i> 		 	if ( is_array( $defaults ) ) {
+</I>&gt;<i>
+</I>&gt;<i> 				// initialise defaults
+</I>&gt;<i> 				foreach ( $defaults as $key =&gt; $value ) {
+</I>&gt;<i> 					$this-&gt;_add_defaults[ $key ] = $value;
+</I>&gt;<i> 				}
+</I>&gt;<i>
+</I>&gt;<i> 				return true;
+</I>&gt;<i> 			} else {
+</I>&gt;<i>
+</I>&gt;<i> 				return false;
+</I>&gt;<i> 			}
+</I>&gt;<i> 		 }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 		/**
+</I>&gt;<i> 		 *  Get the filter.
+</I>&gt;<i> 		 *
+</I>&gt;<i> 		 *  @returns			The filter conditions or empty string otherwise.
+</I>&gt;<i> 		 */
+</I>&gt;<i> 		function getFilter(  ) {
+</I>&gt;<i> 			return ( $this-&gt;_use_filter ) ? $this-&gt;_filter_criteria : '';
+</I>&gt;<i> 		}
+</I>&gt;<i>
+</I>&gt;<i> 		/**
+</I>&gt;<i> 		 *  Get the filter.
+</I>&gt;<i> 		 *
+</I>&gt;<i> 		 *  @internal
+</I>&gt;<i> 		 */
+</I>&gt;<i> 		function _getFilter( $use_and = true ) {
+</I>&gt;<i> 			if ( $use_and == true ) {
+</I>&gt;<i> 				return ( $this-&gt;_use_filter ) ? '( ' . $this-&gt;_filter_criteria . ')
+</I>&gt;<i> AND ' : '';
+</I>&gt;<i> 			} else {
+</I>&gt;<i> 				return ( $this-&gt;_use_filter ) ? '( ' . $this-&gt;_filter_criteria . ') '
+</I>&gt;<i> : '';
+</I>&gt;<i> 			}
+</I>&gt;<i> 		}
+</I>&gt;<i>
+</I>&gt;<i> 		function _getWhereFilter() {
+</I>&gt;<i> 				return ( $this-&gt;_use_filter ) ? 'where ( ' . $this-&gt;_filter_criteria .
+</I>&gt;<i> ') ' : '';
+</I>&gt;<i> 		}
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Fetch the node data for the node identified by $id.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $id      The ID of the node to fetch.
+</I>&gt;<i>          *  @param $field   The unique field to select on. Defaults to
+</I>&gt;<i> null, which means that the ID field specified
+</I>&gt;<i>          *                  when the object was instantiated will be used.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns An object containing the node's data, or false if
+</I>&gt;<i> node not found
+</I>&gt;<i>          */
+</I>&gt;<i>         function getNode( $id, $field=null ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Get the name of the field
+</I>&gt;<i>             $field = is_null( $field ) ? $this-&gt;fields['id'] : $field;
+</I>&gt;<i>             $field = empty( $field )   ? $this-&gt;fields['id'] : $field;
+</I>&gt;<i>
+</I>&gt;<i>             // The query to execute
+</I>&gt;<i>             if ( is_int( $id ) ) {
+</I>&gt;<i>                 $query = sprintf(
+</I>&gt;<i>                     'select %s from %s where %s %s = %d',
+</I>&gt;<i> $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $field, $id
+</I>&gt;<i>                 );
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 $query = sprintf(
+</I>&gt;<i>                     'select %s from %s where %s %s = \'%s\'',
+</I>&gt;<i> $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $field, $id
+</I>&gt;<i>                 );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Execute the query and return the record
+</I>&gt;<i>             return $this-&gt;_fromNodeArray( $this-&gt;_getRecord( $query ) );
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Fetch the descendants of a node, or if no node is specified,
+</I>&gt;<i> fetch the entire tree. Optionally, only return
+</I>&gt;<i>          *  child data instead of all descendant data.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $id              (optional) The ID of the node to fetch
+</I>&gt;<i> descendant data for. Specify an  invalid ID
+</I>&gt;<i>          *                          (e.g. 0) to retrieve all data.
+</I>&gt;<i>          *  @param $includeSelf     (optional) Whether or not to include
+</I>&gt;<i> the passed node in the the results. This has no
+</I>&gt;<i>          *                          meaning if fetching entire tree.
+</I>&gt;<i>          *  @param $childrenOnly    (optional) True if only returning
+</I>&gt;<i> children data. False if returning all descendant
+</I>&gt;<i>          *                          data.
+</I>&gt;<i>          *  @param $max_level       (optional) Maximum level to retrieve.
+</I>&gt;<i> Default is all.
+</I>&gt;<i>          *  @param $order           (optional) The order of the records to
+</I>&gt;<i> return.
+</I>&gt;<i>          *  @param $specificPart    (optional) Return array should be
+</I>&gt;<i> not-associative (using a specific key to filter)
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns The descendants of the passed now
+</I>&gt;<i>          */
+</I>&gt;<i>         function getDescendants( $id=0, $includeSelf=false,
+</I>&gt;<i> $childrenOnly=false, $max_level=null, $order=null,
+</I>&gt;<i> $specificPart=null ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Get the ID field
+</I>&gt;<i>             $idField = $this-&gt;fields['id'];
+</I>&gt;<i>
+</I>&gt;<i>             // Get the node
+</I>&gt;<i>             $node = $this-&gt;_toNodeArray( $this-&gt;getNode( $id ) );
+</I>&gt;<i>
+</I>&gt;<i>             // Find nleft, nright and parent_id
+</I>&gt;<i>             if ( ! $node ) {
+</I>&gt;<i>                 $nleft = 0;
+</I>&gt;<i>                 $nright = 0;
+</I>&gt;<i>                 $parent_id = 0;
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 $nleft = $node['nleft'];
+</I>&gt;<i>                 $nright = $node['nright'];
+</I>&gt;<i>                 $parent_id = $node[$idField];
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Get the order
+</I>&gt;<i>             if ( empty( $order ) ) {
+</I>&gt;<i>                 $order = 'order by nleft';
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 $order = 'order by ' . $order . ', nleft';
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Children only
+</I>&gt;<i>             if ( $childrenOnly ) {
+</I>&gt;<i>
+</I>&gt;<i>                 // Include ourselves?
+</I>&gt;<i>                 if ( $includeSelf ) {
+</I>&gt;<i>                     $query = sprintf(
+</I>&gt;<i>                         'select %s from %s where %s %s = %d or %s = %d
+</I>&gt;<i> %s',
+</I>&gt;<i>                         $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $this-&gt;fields['id'],
+</I>&gt;<i> $parent_id, $this-&gt;fields['parent'], $parent_id,
+</I>&gt;<i> $order
+</I>&gt;<i>                     );
+</I>&gt;<i>                 } else {
+</I>&gt;<i>                     $query = sprintf(
+</I>&gt;<i>                         'select %s from %s where %s %s = %d %s',
+</I>&gt;<i>                         $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $this-&gt;fields['parent'],
+</I>&gt;<i> $parent_id, $order
+</I>&gt;<i>                     );
+</I>&gt;<i>                 }
+</I>&gt;<i>
+</I>&gt;<i>             } else {
+</I>&gt;<i>
+</I>&gt;<i>                 // Include all
+</I>&gt;<i>                 if ( $nleft &gt; 0 &amp;&amp; $includeSelf ) {
+</I>&gt;<i>                     $query = sprintf(
+</I>&gt;<i>                         'select %s from %s where %s nleft &gt;= %d and nright
+</I>&gt;<i> &lt;= %d %s',
+</I>&gt;<i>                          $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $nleft, $nright, $order
+</I>&gt;<i>                     );
+</I>&gt;<i>                 } else if ( $nleft &gt; 0 ) {
+</I>&gt;<i>                     $query = sprintf(
+</I>&gt;<i>                         'select %s from %s where %s nleft &gt; %d and nright
+</I>&gt;<i> &lt; %d %s',
+</I>&gt;<i>                         $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $nleft, $nright, $order
+</I>&gt;<i>                     );
+</I>&gt;<i>                 } else {
+</I>&gt;<i>                     $query = sprintf( 'select %s from %s where %s id &gt; 0
+</I>&gt;<i> %s', $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $order );
+</I>&gt;<i>                 }
+</I>&gt;<i>
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Add the level constraint
+</I>&gt;<i>             if ( ! is_null( $max_level ) ) {
+</I>&gt;<i>                 $max_level = ( $includeSelf ) ? $max_level : $max_level +
+</I>&gt;<i> 1;
+</I>&gt;<i>                 $max_level = ( $includeSelf ) ? $node['nlevel'] +
+</I>&gt;<i> $max_level - 1 : $node['nlevel'] + $max_level;
+</I>&gt;<i>                 $query = str_replace( 'where ', 'where nlevel &lt;= ' .
+</I>&gt;<i> $max_level . ' and ', $query );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Get the results as an array
+</I>&gt;<i>             $records = $this-&gt;_getRecords( $query );
+</I>&gt;<i>
+</I>&gt;<i>             // Reformat the array
+</I>&gt;<i>             $arr = array();
+</I>&gt;<i>             foreach ( $records as $record ) {
+</I>&gt;<i>                 $arr[ $record[$idField] ] = $this-&gt;_fromNodeArray( $record
+</I>&gt;<i> );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // check if we want a specific column
+</I>&gt;<i>             if ( !is_null( $specificPart ) ){
+</I>&gt;<i>
+</I>&gt;<i>                 // init temporary array
+</I>&gt;<i>                 $nodes = array();
+</I>&gt;<i>                 foreach ( $arr as $node )
+</I>&gt;<i>                     array_push( $nodes, $node[ $specificPart ] );
+</I>&gt;<i>
+</I>&gt;<i>                 return $nodes;
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Return the result
+</I>&gt;<i>             return $arr;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Fetch the children of a node, or if no node is specified,
+</I>&gt;<i> fetch the top level items.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $id             (optional) The ID of the node to fetch
+</I>&gt;<i> child data for.
+</I>&gt;<i>          *  @param $includeSelf    (optional) Whether or not to include
+</I>&gt;<i> the passed node in the the results.
+</I>&gt;<i>          *  @param $order          (optional) The order of the records to
+</I>&gt;<i> return.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns The children of the passed node
+</I>&gt;<i>          */
+</I>&gt;<i>         function getChildren( $id=0, $includeSelf=false, $order=null ) {
+</I>&gt;<i>             return $this-&gt;getDescendants( $id, $includeSelf, true, null,
+</I>&gt;<i> $order );
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Fetch the path to a node. If an invalid node is passed, an
+</I>&gt;<i> empty array is returned. If a top level node is
+</I>&gt;<i>          *  passed, an array containing on that node is included (if
+</I>&gt;<i> 'includeSelf' is set to true, otherwise an empty
+</I>&gt;<i>          *  array).
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $id             (optional) The ID of the node to fetch
+</I>&gt;<i> child data for.
+</I>&gt;<i>          *  @param $includeSelf    (optional) Whether or not to include
+</I>&gt;<i> the passed node in the the results.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns An array of each node to passed node
+</I>&gt;<i>          */
+</I>&gt;<i>         function getPath( $id=0, $includeSelf=false ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Get the ID field
+</I>&gt;<i>             $idField = $this-&gt;fields['id'];
+</I>&gt;<i>
+</I>&gt;<i>             // Get the node
+</I>&gt;<i>             $node = $this-&gt;_toNodeArray( $this-&gt;getNode( $id ) );
+</I>&gt;<i>
+</I>&gt;<i>             // No node, return empty array
+</I>&gt;<i>             if ( ! $node ) {
+</I>&gt;<i>                 return array();
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Include ourselves?
+</I>&gt;<i>             if ( $includeSelf ) {
+</I>&gt;<i>                 $query = sprintf(
+</I>&gt;<i>                     'select %s from %s where %s nleft &lt;= %d and nright &gt;=
+</I>&gt;<i> %d order by nlevel',
+</I>&gt;<i>                     $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $node['nleft'], $node['nright']
+</I>&gt;<i>                 );
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 $query = sprintf(
+</I>&gt;<i>                     'select %s from %s where %s nleft &lt; %d and nright &gt; %d
+</I>&gt;<i> order by nlevel',
+</I>&gt;<i>                     $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $node['nleft'], $node['nright']
+</I>&gt;<i>                 );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Get the results as an array
+</I>&gt;<i>             $records = $this-&gt;_getRecords( $query );
+</I>&gt;<i>
+</I>&gt;<i>             // Reformat the array
+</I>&gt;<i>             $arr = array();
+</I>&gt;<i>             foreach ( $records as $record ) {
+</I>&gt;<i>                 $arr[ $record[$idField] ] = $this-&gt;_fromNodeArray( $record
+</I>&gt;<i> );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Return the result
+</I>&gt;<i>             return $arr;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Check if one node descends from another node. If either node
+</I>&gt;<i> is not found, then false is returned.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $descendant_id  The node that potentially descends
+</I>&gt;<i>          *  @param $ancestor_id    The node that is potentially descended
+</I>&gt;<i> from
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns True if $descendant_id descends from $ancestor_id,
+</I>&gt;<i> false otherwise
+</I>&gt;<i>          */
+</I>&gt;<i>         function isDescendantOf( $descendant_id, $ancestor_id ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Get the node
+</I>&gt;<i>             $node = $this-&gt;_toNodeArray( $this-&gt;getNode( $ancestor_id ) );
+</I>&gt;<i>
+</I>&gt;<i>             // No node, return empty array
+</I>&gt;<i>             if ( ! $node ) {
+</I>&gt;<i>                 return false;
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // The query
+</I>&gt;<i>             $query = sprintf(
+</I>&gt;<i>                 'select count(*) as is_descendant from %s where %s %s = %d
+</I>&gt;<i> and nleft &gt; %d and nright &lt; %d',
+</I>&gt;<i>                 $this-&gt;table, $this-&gt;_getFilter(), $this-&gt;fields['id'],
+</I>&gt;<i> $descendant_id, $node['nleft'], $node['nright']
+</I>&gt;<i>             );
+</I>&gt;<i>
+</I>&gt;<i>             // Execute the query and get the record
+</I>&gt;<i>             $record = $this-&gt;_getRecord( $query );
+</I>&gt;<i>
+</I>&gt;<i>             // Return the result
+</I>&gt;<i>             if ( $record ) {
+</I>&gt;<i>                 return $record['is_descendant'] &gt; 0;
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 return false;
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Check if one node is a child of another node. If either node
+</I>&gt;<i> is not found, then false is returned.
+</I>&gt;<i>          *
+</I>&gt;<i>          * @param $child_id       The node that is possibly a child
+</I>&gt;<i>          * @param $parent_id      The node that is possibly a parent
+</I>&gt;<i>          *
+</I>&gt;<i>          * @returns True if $child_id is a child of $parent_id, false
+</I>&gt;<i> otherwise
+</I>&gt;<i>          */
+</I>&gt;<i>         function isChildOf( $child_id, $parent_id ) {
+</I>&gt;<i>
+</I>&gt;<i>             // The query
+</I>&gt;<i>             $query = sprintf(
+</I>&gt;<i>                 'select count(*) as is_child from %s where %s %s = %d and
+</I>&gt;<i> %s = %d',
+</I>&gt;<i>                 $this-&gt;table, $this-&gt;_getFilter(), $this-&gt;fields['id'],
+</I>&gt;<i> $child_id, $this-&gt;fields['parent'], $parent_id
+</I>&gt;<i>             );
+</I>&gt;<i>
+</I>&gt;<i>             // Execute the query and get the record
+</I>&gt;<i>             $record = $this-&gt;_getRecord( $query );
+</I>&gt;<i>
+</I>&gt;<i>             // Return the result
+</I>&gt;<i>             if ( $record ) {
+</I>&gt;<i>                 return $record['is_child'] &gt; 0;
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 return false;
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Find the number of descendants a node has
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $id     The ID of the node to search for. Pass 0 to
+</I>&gt;<i> count all nodes in the tree.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns The number of descendants the node has, or -1 if the
+</I>&gt;<i> node isn't found.
+</I>&gt;<i>          */
+</I>&gt;<i>         function numDescendants( $id ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Check for the ID
+</I>&gt;<i>             if ( $id == 0 ) {
+</I>&gt;<i>
+</I>&gt;<i>                 // The query
+</I>&gt;<i>                 $query = sprintf('select count(*) as num_descendants from
+</I>&gt;<i> %s where', $this-&gt;table, $this-&gt;_getFilter() );
+</I>&gt;<i>
+</I>&gt;<i>                 // Execute the query and get the record
+</I>&gt;<i>                 $record = $this-&gt;_getRecord( $query );
+</I>&gt;<i>
+</I>&gt;<i>                 // Return the number of descendants for the node
+</I>&gt;<i>                 if ( $record ) {
+</I>&gt;<i>                     return intval( $row['num_descendants'] );
+</I>&gt;<i>                 }
+</I>&gt;<i>
+</I>&gt;<i>             } else {
+</I>&gt;<i>
+</I>&gt;<i>                 // Get the node
+</I>&gt;<i>                 $node = $this-&gt;getNode( $id );
+</I>&gt;<i>
+</I>&gt;<i>                 // Return the number of descendants
+</I>&gt;<i>                 if ( $node ) {
+</I>&gt;<i>                     return ( $node['nright'] - $node['nleft'] - 1 ) / 2;
+</I>&gt;<i>                 }
+</I>&gt;<i>
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // No descendants
+</I>&gt;<i>             return -1;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Find the number of children a node has
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $id     The ID of the node to search for. Pass 0 to
+</I>&gt;<i> count the first level items
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns The number of descendants the node has, or -1 if the
+</I>&gt;<i> node isn't found.
+</I>&gt;<i>          */
+</I>&gt;<i>         function numChildren( $id ) {
+</I>&gt;<i>
+</I>&gt;<i>             // The query
+</I>&gt;<i>             $query = sprintf(
+</I>&gt;<i>                 'select count(*) as num_children from %s where %s %s =
+</I>&gt;<i> %d', $this-&gt;table, $this-&gt;_getFilter(),
+</I>&gt;<i> $this-&gt;fields['parent'], $id
+</I>&gt;<i>             );
+</I>&gt;<i>
+</I>&gt;<i>             // Execute the query and get the record
+</I>&gt;<i>             $record = $this-&gt;_getRecord( $query );
+</I>&gt;<i>
+</I>&gt;<i>             // Return the number of descendants for the node
+</I>&gt;<i>             if ( $record ) {
+</I>&gt;<i>                 return intval( $record['num_children'] );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Return -1
+</I>&gt;<i>             return -1;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Fetch the immediately family of a node. More specifically,
+</I>&gt;<i> fetch a node's parent, siblings and children. If
+</I>&gt;<i>          *  the node isn't valid, fetch the first level of nodes from the
+</I>&gt;<i> tree.
+</I>&gt;<i>          *
+</I>&gt;<i>          * @param $id   The ID of the node to fetch child data for.
+</I>&gt;<i>          *
+</I>&gt;<i>          * @returns An array of each node in the family
+</I>&gt;<i>          */
+</I>&gt;<i>         function getImmediateFamily( $id ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Get the node
+</I>&gt;<i>             $node = $this-&gt;_toNodeArray( $this-&gt;getNode( $id ) );
+</I>&gt;<i>
+</I>&gt;<i>             // The ID and parent field
+</I>&gt;<i>             $idField = $this-&gt;fields['id'];
+</I>&gt;<i>             $parentField = $this-&gt;fields['parent'];
+</I>&gt;<i>
+</I>&gt;<i>             // Is the passed node valid?
+</I>&gt;<i>             if ( $node[$idField] &gt; 0 ) {
+</I>&gt;<i>                 $query = sprintf(
+</I>&gt;<i>                     'select %s from %s where %s %s = %s or %s = %s or %s =
+</I>&gt;<i> %s order by nleft',
+</I>&gt;<i>                     $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $idField, $node[$parentField],
+</I>&gt;<i> $parentField,
+</I>&gt;<i>                     $node[$parentField], $parentField, $node[$idField]
+</I>&gt;<i>                 );
+</I>&gt;<i>
+</I>&gt;<i>             } else {
+</I>&gt;<i>                 $query = sprintf(
+</I>&gt;<i>                     'select %s from %s where %s %s = 0 order by nleft',
+</I>&gt;<i>                     $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getFilter(), $parentField
+</I>&gt;<i>                 );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             //  Get the result
+</I>&gt;<i>             $records = $this-&gt;_getRecords( $query );
+</I>&gt;<i>
+</I>&gt;<i>             // Get the result
+</I>&gt;<i>             $arr = array();
+</I>&gt;<i>             foreach ( $records as $record ) {
+</I>&gt;<i>                 $record['num_descendants'] = ( $record['nright'] -
+</I>&gt;<i> $record['nleft'] - 1 ) / 2;
+</I>&gt;<i>                 $arr[ $record[$idField] ] = $this-&gt;_fromNodeArray( $record
+</I>&gt;<i> );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Return the result
+</I>&gt;<i>             return $arr;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Fetch the tree data, nesting within each node references to
+</I>&gt;<i> the node's children
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns The tree with the node's child data
+</I>&gt;<i>          */
+</I>&gt;<i>         function getTreeWithChildren() {
+</I>&gt;<i>
+</I>&gt;<i>             // The ID and parent field
+</I>&gt;<i>             $idField = $this-&gt;fields['id'];
+</I>&gt;<i>             $parentField = $this-&gt;fields['parent'];
+</I>&gt;<i>
+</I>&gt;<i>             // The query
+</I>&gt;<i>             $query = sprintf(
+</I>&gt;<i>                 'select %s from %s %s order by %s',
+</I>&gt;<i> $this-&gt;_getFieldsAsString(), $this-&gt;table,
+</I>&gt;<i> $this-&gt;_getWhereFilter(false), $this-&gt;fields['sort']
+</I>&gt;<i>             );
+</I>&gt;<i>
+</I>&gt;<i>             // Get the records
+</I>&gt;<i>             $records = $this-&gt;_getRecords( $query );
+</I>&gt;<i>
+</I>&gt;<i>             // create a root node to hold child data about first level
+</I>&gt;<i> items
+</I>&gt;<i>             $root = new YDBase();
+</I>&gt;<i>             $root-&gt;$idField = 0;
+</I>&gt;<i>             $root-&gt;children = array();
+</I>&gt;<i>             $arr = array( $root );
+</I>&gt;<i>
+</I>&gt;<i>             // populate the array and create an empty children array
+</I>&gt;<i>             foreach ( $records as $record ) {
+</I>&gt;<i>                 $record = $this-&gt;_arrayToObj( $record );
+</I>&gt;<i>                 $arr[ $record-&gt;$idField ] = $record;
+</I>&gt;<i>                 $arr[ $record-&gt;$idField ]-&gt;children = array();
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // now process the array and build the child data
+</I>&gt;<i>             foreach ( $arr as $id =&gt; $row ) {
+</I>&gt;<i>                 if ( isset( $row-&gt;$parentField ) ) {
+</I>&gt;<i>                     $arr[ $row-&gt;$parentField ]-&gt;children[ $id ] = $id;
+</I>&gt;<i>                 }
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Return the array
+</I>&gt;<i>             return $arr;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Rebuilds the tree data and saves it to the database
+</I>&gt;<i>          */
+</I>&gt;<i>         function rebuild() {
+</I>&gt;<i>
+</I>&gt;<i>             // Clear the cache
+</I>&gt;<i>             $this-&gt;_clearCache();
+</I>&gt;<i>
+</I>&gt;<i>             // Get the complete tree
+</I>&gt;<i>             $data = $this-&gt;getTreeWithChildren();
+</I>&gt;<i>
+</I>&gt;<i>             // Keep the original data (we need to optimize the updates)
+</I>&gt;<i>             $data_ori = array_merge( $data );
+</I>&gt;<i>
+</I>&gt;<i>             // Keep track of the number and level
+</I>&gt;<i>             $n     = 0; // Need a variable to hold the running n tally
+</I>&gt;<i>             $level = 0; // Need a variable to hold the running level tally
+</I>&gt;<i>
+</I>&gt;<i>             // Invoke the recursive function. Start it processing on the
+</I>&gt;<i> fake &quot;root node&quot; generated in
+</I>&gt;<i>             // getTreeWithChildren(). because this node doesn't really
+</I>&gt;<i> exist in the database, we give it an initial
+</I>&gt;<i>             // nleft value of 0 and an nlevel of 0.
+</I>&gt;<i>             $this-&gt;_generateTreeData( $data, 0, 0, $n );
+</I>&gt;<i>
+</I>&gt;<i>             // At this point the the root node will have nleft of 0,
+</I>&gt;<i> nlevel of 0 and nright of (tree size * 2 + 1)
+</I>&gt;<i>             foreach ( $data as $id=&gt;$row ) {
+</I>&gt;<i>                 if ( $id == 0 ) {
+</I>&gt;<i>                     continue;
+</I>&gt;<i>                 }
+</I>&gt;<i>                 $query = sprintf(
+</I>&gt;<i>                     'update %s set nlevel = %d, nleft = %d, nright = %d
+</I>&gt;<i> where %s %s = %d',
+</I>&gt;<i>                     $this-&gt;table, $row-&gt;nlevel, $row-&gt;nleft, $row-&gt;nright,
+</I>&gt;<i> $this-&gt;_getFilter(), $this-&gt;fields['id'], $id
+</I>&gt;<i>                 );
+</I>&gt;<i>                 $this-&gt;db-&gt;executeSql( $query );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Generate the tree data. A single call to this generates the
+</I>&gt;<i> n-values for 1 node in the tree. This function
+</I>&gt;<i>          *  assigns the passed in n value as the node's nleft value. It
+</I>&gt;<i> then processes all the node's children (which in
+</I>&gt;<i>          *  turn recursively processes that node's children and so on),
+</I>&gt;<i> and when it is finally done, it takes the update
+</I>&gt;<i>          *  n-value and assigns it as its nright value. Because it is
+</I>&gt;<i> passed as a reference, the subsequent changes in
+</I>&gt;<i>          *  subrequests are held over to when control is returned so the
+</I>&gt;<i> nright can be assigned.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param &amp;$arr   A reference to the data array, since we need to
+</I>&gt;<i> be able to update the data in it
+</I>&gt;<i>          *  @param $id     The ID of the current node to process
+</I>&gt;<i>          *  @param $level  The nlevel to assign to the current node
+</I>&gt;<i>          *  @param &amp;$n     A reference to the running tally for the
+</I>&gt;<i> n-value
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @internal
+</I>&gt;<i>          */
+</I>&gt;<i>         function _generateTreeData( &amp;$arr, $id, $level, &amp;$n ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Assign nlevel and nleft
+</I>&gt;<i>             $arr[$id]-&gt;nlevel = $level;
+</I>&gt;<i>             $arr[$id]-&gt;nleft = $n++;
+</I>&gt;<i>
+</I>&gt;<i>             // Loop over the node's children and process their data before
+</I>&gt;<i> assigning the nright value
+</I>&gt;<i>             foreach ( $arr[$id]-&gt;children as $child_id ) {
+</I>&gt;<i>                 $this-&gt;_generateTreeData( $arr, $child_id, $level + 1, $n
+</I>&gt;<i> );
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Assign nright
+</I>&gt;<i>             $arr[$id]-&gt;nright = $n++;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  This function adds a node to the database.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $values      The field values of the node.
+</I>&gt;<i>          *  @param $parent_id   (optional) The parent ID of the node. The
+</I>&gt;<i> default takes it from the $values.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns    The ID of the newly inserted node.
+</I>&gt;<i>          */
+</I>&gt;<i>         function addNode( $values, $parent_id=null ) {
+</I>&gt;<i>
+</I>&gt;<i> 			// load the defaults first
+</I>&gt;<i> 			foreach ( $this-&gt;_add_defaults as $key =&gt; $value ) {
+</I>&gt;<i> 				$values[ $key ] = $value;
+</I>&gt;<i> 			}
+</I>&gt;<i>
+</I>&gt;<i>             // Convert the values from an ojbect to an array
+</I>&gt;<i>             $values = $this-&gt;_toNodeArray( $values );
+</I>&gt;<i>
+</I>&gt;<i> 			if ( $this-&gt;_use_filter == true ) {
+</I>&gt;<i> 				foreach ( $this-&gt;_filter_criteria as $key =&gt; $value ) {
+</I>&gt;<i> 					$values[ $key ] = $value;
+</I>&gt;<i> 				}
+</I>&gt;<i> 			}
+</I>&gt;<i>
+</I>&gt;<i>             // Clear the cache
+</I>&gt;<i>             $this-&gt;_clearCache();
+</I>&gt;<i>
+</I>&gt;<i>             // Add the parent field if needed
+</I>&gt;<i>             $parentField = $this-&gt;fields['parent'];
+</I>&gt;<i>             if ( ! is_null( $parent_id ) &amp;&amp; ! isset( $values[ $parentField
+</I>&gt;<i> ] ) ) {
+</I>&gt;<i>                 $values[ $parentField ] = $parent_id;
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Use 0 if no parent ID specified (the root element)
+</I>&gt;<i>             if ( ! isset( $values[ $parentField ] ) ) {
+</I>&gt;<i>                 $values[ $parentField ] = 0;
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Check if the parent node exists
+</I>&gt;<i>             if ( isset( $values[ $parentField ] ) &amp;&amp; intval( $values[
+</I>&gt;<i> $parentField ] ) != 0 ) {
+</I>&gt;<i>                 $node = $this-&gt;getNode( $values[ $parentField ] );
+</I>&gt;<i>                 if ( ! $node ) {
+</I>&gt;<i>                     trigger_error( 'Parent node (' . $values[ $parentField
+</I>&gt;<i> ] . ') does not exist in the tree!', YD_ERROR );
+</I>&gt;<i>                 }
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Perform the insert
+</I>&gt;<i>             $this-&gt;db-&gt;executeInsert( $this-&gt;table, $values );
+</I>&gt;<i>
+</I>&gt;<i>             // Get the ID of the new node
+</I>&gt;<i>             $id = $this-&gt;db-&gt;getLastInsertID();
+</I>&gt;<i>
+</I>&gt;<i>             // Rebuild the tree
+</I>&gt;<i>             $this-&gt;rebuild();
+</I>&gt;<i>
+</I>&gt;<i>             // Return the ID
+</I>&gt;<i>             return $id;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  This function updates a node in the database.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $values      The field values of the node.
+</I>&gt;<i>          *  @param $id          (optional) The ID of the node to update.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @returns    The values of the node that is updated.
+</I>&gt;<i>          */
+</I>&gt;<i>         function updateNode( $values, $id=null ) {
+</I>&gt;<i>
+</I>&gt;<i>             // The ID and parent field
+</I>&gt;<i>             $idField = $this-&gt;fields['id'];
+</I>&gt;<i>
+</I>&gt;<i>             // Convert the values from an ojbect to an array
+</I>&gt;<i>             $values = $this-&gt;_toNodeArray( $values );
+</I>&gt;<i>
+</I>&gt;<i>             // Clear the cache
+</I>&gt;<i>             $this-&gt;_clearCache();
+</I>&gt;<i>
+</I>&gt;<i>             // Get the ID of the node to update
+</I>&gt;<i>             $id = empty( $id ) ? $values['id'] : $id;
+</I>&gt;<i>
+</I>&gt;<i>             // Perform the insert
+</I>&gt;<i>             $this-&gt;db-&gt;executeUpdate(
+</I>&gt;<i>                 $this-&gt;table, $values, sprintf( '%s %s = %s',
+</I>&gt;<i> $this-&gt;_getFilter(), $idField, $this-&gt;db-&gt;escapeSql( $id )
+</I>&gt;<i> )
+</I>&gt;<i>             );
+</I>&gt;<i>
+</I>&gt;<i>             // Rebuild the tree
+</I>&gt;<i>             $this-&gt;rebuild();
+</I>&gt;<i>
+</I>&gt;<i>             // Return the node
+</I>&gt;<i>             return $values;
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Delete the node and it's children.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param $id             The ID of the node to delete.
+</I>&gt;<i>          *  @param $includeParent  (Optional) Delete id and all children
+</I>&gt;<i> (true by default. if false, deletes children only)
+</I>&gt;<i>          */
+</I>&gt;<i>         function deleteNode( $id, $includeParent = true ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Clear the cache
+</I>&gt;<i>             $this-&gt;_clearCache();
+</I>&gt;<i>
+</I>&gt;<i>             // Get the node details
+</I>&gt;<i>             $node = $this-&gt;getNode( $id );
+</I>&gt;<i>
+</I>&gt;<i>             // Return if unknown node
+</I>&gt;<i>             if ( ! $node ) {
+</I>&gt;<i>                 return;
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             // Get the list of IDs to delete
+</I>&gt;<i> 			$nodes_to_delete = $this-&gt;getDescendants( $id, $includeParent, false,
+</I>&gt;<i> null, null, $this-&gt;fields['id'] );
+</I>&gt;<i>
+</I>&gt;<i>             // Check if there is something to delete
+</I>&gt;<i>             if ( sizeof( $nodes_to_delete ) &gt; 0 ) {
+</I>&gt;<i>
+</I>&gt;<i>                 // The query to execute
+</I>&gt;<i>                 $query = 'delete from ' . $this-&gt;table . ' where ' .
+</I>&gt;<i> $this-&gt;_getFilter() . ' ' . $this-&gt;fields['id'] . ' in ( '
+</I>&gt;<i> . join( ', ', $nodes_to_delete ) . ' )';
+</I>&gt;<i>
+</I>&gt;<i>                 // Delete the nodes
+</I>&gt;<i>                 $this-&gt;db-&gt;executeSql( $query );
+</I>&gt;<i>
+</I>&gt;<i>                 // Rebuild the tree
+</I>&gt;<i>                 $this-&gt;rebuild();
+</I>&gt;<i>
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>         /**
+</I>&gt;<i>          *  Move a node to a different parent node.
+</I>&gt;<i>          *
+</I>&gt;<i>          *  @param  $id         The ID of the node to move.
+</I>&gt;<i>          *  @param  $parent_id  The ID of the new parent node
+</I>&gt;<i>          */
+</I>&gt;<i>         function moveNode( $id, $parent_id ) {
+</I>&gt;<i>
+</I>&gt;<i>             // Clear the cache
+</I>&gt;<i>             $this-&gt;_clearCache();
+</I>&gt;<i>
+</I>&gt;<i>             // The ID and parent field
+</I>&gt;<i>             $idField = $this-&gt;fields['id'];
+</I>&gt;<i>             $parentField = $this-&gt;fields['parent'];
+</I>&gt;<i>
+</I>&gt;<i>             // Update the new parent id
+</I>&gt;<i>             $values = array();
+</I>&gt;<i>             $values[ $parentField ] = $parent_id;
+</I>&gt;<i>
+</I>&gt;<i>             // Execute the update
+</I>&gt;<i>             $this-&gt;db-&gt;executeUpdate( $this-&gt;table, $values,
+</I>&gt;<i> $this-&gt;_getFilter() . ' ' . $idField . ' = ' . $id );
+</I>&gt;<i>
+</I>&gt;<i>             // Rebuild the tree
+</I>&gt;<i>             $this-&gt;rebuild();
+</I>&gt;<i>
+</I>&gt;<i>         }
+</I>&gt;<i>
+</I>&gt;<i>     }
+</I>&gt;<i>
+</I>&gt;<i> ?&gt;
+</I>&gt;<i> --------------090008040201020508070901--_______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">https://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000734.html">[ydf-devel] Query builder
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#735">[ date ]</a>
+              <a href="thread.html#735">[ thread ]</a>
+              <a href="subject.html#735">[ subject ]</a>
+              <a href="author.html#735">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

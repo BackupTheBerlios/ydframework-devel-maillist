@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2306 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2306%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200701131758.l0DHwnFK016916%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000897.html">
+   <LINK REL="Next"  HREF="000899.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2306 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2306%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200701131758.l0DHwnFK016916%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2306 - YDFramework2.0/trunk/YDFramework2">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 13 18:58:49 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000897.html">[ydf-devel] r2305 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000899.html">[ydf-devel] r2307 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDLoadconfig
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#898">[ date ]</a>
+              <a href="thread.html#898">[ thread ]</a>
+              <a href="subject.html#898">[ subject ]</a>
+              <a href="author.html#898">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-13 18:58:36 +0100 (Sat, 13 Jan 2007)
+New Revision: 2306
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+- added YDBase::unsetVar that deletes a variable
+- added gettext and array support to compatibility
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-13 17:53:46 UTC (rev 2305)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-13 17:58:36 UTC (rev 2306)
+@@ -226,6 +226,8 @@
+      */
+     function YDIncludeCompatibility() {
+         include_once( dirname( __FILE__ ) . '/3rdparty/upgrade/upgrade.php' );
++        include_once( dirname( __FILE__ ) . '/3rdparty/upgrade/ext/gettext.php' );
++        include_once( dirname( __FILE__ ) . '/3rdparty/upgrade/ext/array.php' );
+     }
+ 
+     /**
+@@ -355,6 +357,15 @@
+         } 
+ 
+         /**
++         *  This function deletes a variable in the object.
++         *
++         *  @param  $name   The variable name.
++         */
++        function unsetVar( $name ) { 
++            if ( isset( $this-&gt;$name ) ) unset( $this-&gt;$name ); 
++        } 
++
++        /**
+          *  This function indicates if a variable in the object exists or not.
+          *
+          *  @param  $name   The variable name.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000897.html">[ydf-devel] r2305 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000899.html">[ydf-devel] r2307 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDLoadconfig
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#898">[ date ]</a>
+              <a href="thread.html#898">[ thread ]</a>
+              <a href="subject.html#898">[ subject ]</a>
+              <a href="author.html#898">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

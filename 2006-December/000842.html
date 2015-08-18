@@ -1,0 +1,1341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2251 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	3rdparty/captcha 3rdparty/fonts YDClasses	YDClasses/YDFormElements addons addons/YDCaptcha
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2251%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%203rdparty%0A%093rdparty/captcha%203rdparty/fonts%20YDClasses%0A%09YDClasses/YDFormElements%20addons%20addons/YDCaptcha&In-Reply-To=%3C200612092133.kB9LXANt007133%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000841.html">
+   <LINK REL="Next"  HREF="000843.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2251 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	3rdparty/captcha 3rdparty/fonts YDClasses	YDClasses/YDFormElements addons addons/YDCaptcha</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2251%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%203rdparty%0A%093rdparty/captcha%203rdparty/fonts%20YDClasses%0A%09YDClasses/YDFormElements%20addons%20addons/YDCaptcha&In-Reply-To=%3C200612092133.kB9LXANt007133%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2251 - in YDFramework2.0/trunk/YDFramework2: 3rdparty	3rdparty/captcha 3rdparty/fonts YDClasses	YDClasses/YDFormElements addons addons/YDCaptcha">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Dec  9 22:33:10 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000841.html">[ydf-devel] r2250 - in YDFramework2.0/trunk/YDFramework2: .	3rdparty 3rdparty/upgrade 3rdparty/upgrade/contrib	3rdparty/upgrade/dtools 3rdparty/upgrade/ext 3rdparty/upgrade/tests
+</A></li>
+        <LI>Next message: <A HREF="000843.html">[ydf-devel] r2252 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#842">[ date ]</a>
+              <a href="thread.html#842">[ thread ]</a>
+              <a href="subject.html#842">[ subject ]</a>
+              <a href="author.html#842">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-12-09 22:31:11 +0100 (Sat, 09 Dec 2006)
+New Revision: 2251
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/
+   YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/COPYRIGHT.TXT
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/README.TXT
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/RELEASENOTES.TXT
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/Vera.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraBI.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraBd.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraIt.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoBI.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoBd.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoIt.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMono.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraSe.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraSeBd.ttf
+   YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/local.conf
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+- added new YDForm element: CAPTCHA  :)
+- added new form rule 'captcha' that checks if a captcha element is valid
+- added new YD addon YDCaptcha for captcha creation
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/captcha/php-captcha.inc.php	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -0,0 +1,490 @@
++&lt;?php
++   /***************************************************************/
++   /* PhpCaptcha - A visual and audio CAPTCHA generation library
++   
++      Software License Agreement (BSD License)
++   
++      Copyright (C) 2005-2006, Edward Eliot.
++      All rights reserved.
++      
++      Redistribution and use in source and binary forms, with or without
++      modification, are permitted provided that the following conditions are met:
++
++         * Redistributions of source code must retain the above copyright
++           notice, this list of conditions and the following disclaimer.
++         * Redistributions in binary form must reproduce the above copyright
++           notice, this list of conditions and the following disclaimer in the
++           documentation and/or other materials provided with the distribution.
++         * Neither the name of Edward Eliot nor the names of its contributors 
++           may be used to endorse or promote products derived from this software 
++           without specific prior written permission of Edward Eliot.
++
++      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS &quot;AS IS&quot; AND ANY
++      EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
++      WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
++      DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY
++      DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
++      (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++      LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
++      ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++      (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
++      SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++   
++      Last Updated:  18th April 2006                               */
++   /***************************************************************/
++   
++   /************************ Documentation ************************/
++   /*
++   
++   Documentation is available at <A HREF="http://www.ejeliot.com/pages/2">http://www.ejeliot.com/pages/2</A>
++   
++   */
++   /************************ Default Options **********************/
++   
++   // start a PHP session - this class uses sessions to store the generated 
++   // code. Comment out if you are calling already from your application
++   // session_start();
++   
++   // class defaults - change to effect globally
++   
++   define('CAPTCHA_SESSION_ID', 'php_captcha');
++   define('CAPTCHA_WIDTH', 200); // max 500
++   define('CAPTCHA_HEIGHT', 50); // max 200
++   define('CAPTCHA_NUM_CHARS', 5);
++   define('CAPTCHA_NUM_LINES', 70);
++   define('CAPTCHA_CHAR_SHADOW', false);
++   define('CAPTCHA_OWNER_TEXT', '');
++   define('CAPTCHA_CHAR_SET', ''); // defaults to A-Z
++   define('CAPTCHA_CASE_INSENSITIVE', true);
++   define('CAPTCHA_BACKGROUND_IMAGES', '');
++   define('CAPTCHA_MIN_FONT_SIZE', 16);
++   define('CAPTCHA_MAX_FONT_SIZE', 25);
++   define('CAPTCHA_USE_COLOUR', false);
++   define('CAPTCHA_FILE_TYPE', 'jpeg');
++   define('CAPTCHA_FLITE_PATH', '/usr/bin/flite');
++   define('CAPTCHA_AUDIO_PATH', '/tmp/'); // must be writeable by PHP process
++   
++   /************************ End Default Options **********************/
++   
++   // don't edit below this line (unless you want to change the class!)
++   
++   class PhpCaptcha {
++      var $oImage;
++      var $aFonts;
++      var $iWidth;
++      var $iHeight;
++      var $iNumChars;
++      var $iNumLines;
++      var $iSpacing;
++      var $bCharShadow;
++      var $sOwnerText;
++      var $aCharSet;
++      var $bCaseInsensitive;
++      var $vBackgroundImages;
++      var $iMinFontSize;
++      var $iMaxFontSize;
++      var $bUseColour;
++      var $sFileType;
++      var $sCode = '';
++      
++      function PhpCaptcha(
++         $aFonts, // array of TrueType fonts to use - specify full path
++         $iWidth = CAPTCHA_WIDTH, // width of image
++         $iHeight = CAPTCHA_HEIGHT // height of image
++      ) {
++         // get parameters
++         $this-&gt;aFonts = $aFonts;
++         $this-&gt;SetNumChars(CAPTCHA_NUM_CHARS);
++         $this-&gt;SetNumLines(CAPTCHA_NUM_LINES);
++         $this-&gt;DisplayShadow(CAPTCHA_CHAR_SHADOW);
++         $this-&gt;SetOwnerText(CAPTCHA_OWNER_TEXT);
++         $this-&gt;SetCharSet(CAPTCHA_CHAR_SET);
++         $this-&gt;CaseInsensitive(CAPTCHA_CASE_INSENSITIVE);
++         $this-&gt;SetBackgroundImages(CAPTCHA_BACKGROUND_IMAGES);
++         $this-&gt;SetMinFontSize(CAPTCHA_MIN_FONT_SIZE);
++         $this-&gt;SetMaxFontSize(CAPTCHA_MAX_FONT_SIZE);
++         $this-&gt;UseColour(CAPTCHA_USE_COLOUR);
++         $this-&gt;SetFileType(CAPTCHA_FILE_TYPE);   
++         $this-&gt;SetWidth($iWidth);
++         $this-&gt;SetHeight($iHeight);
++      }
++      
++      function CalculateSpacing() {
++         $this-&gt;iSpacing = (int)($this-&gt;iWidth / $this-&gt;iNumChars);
++      }
++      
++      function SetWidth($iWidth) {
++         $this-&gt;iWidth = $iWidth;
++         if ($this-&gt;iWidth &gt; 500) $this-&gt;iWidth = 500; // to prevent perfomance impact
++         $this-&gt;CalculateSpacing();
++      }
++      
++      function SetHeight($iHeight) {
++         $this-&gt;iHeight = $iHeight;
++         if ($this-&gt;iHeight &gt; 200) $this-&gt;iHeight = 200; // to prevent performance impact
++      }
++      
++      function SetNumChars($iNumChars) {
++         $this-&gt;iNumChars = $iNumChars;
++         $this-&gt;CalculateSpacing();
++      }
++      
++      function SetNumLines($iNumLines) {
++         $this-&gt;iNumLines = $iNumLines;
++      }
++      
++      function DisplayShadow($bCharShadow) {
++         $this-&gt;bCharShadow = $bCharShadow;
++      }
++      
++      function SetOwnerText($sOwnerText) {
++         $this-&gt;sOwnerText = $sOwnerText;
++      }
++      
++      function SetCharSet($vCharSet) {
++         // check for input type
++         if (is_array($vCharSet)) {
++            $this-&gt;aCharSet = $vCharSet;
++         } else {
++            if ($vCharSet != '') {
++               // split items on commas
++               $aCharSet = explode(',', $vCharSet);
++            
++               // initialise array
++               $this-&gt;aCharSet = array();
++            
++               // loop through items 
++               foreach ($aCharSet as $sCurrentItem) {
++                  // a range should have 3 characters, otherwise is normal character
++                  if (strlen($sCurrentItem) == 3) {
++                     // split on range character
++                     $aRange = explode('-', $sCurrentItem);
++                  
++                     // check for valid range
++                     if (count($aRange) == 2 &amp;&amp; $aRange[0] &lt; $aRange[1]) {
++                        // create array of characters from range
++                        $aRange = range($aRange[0], $aRange[1]);
++                     
++                        // add to charset array
++                        $this-&gt;aCharSet = array_merge($this-&gt;aCharSet, $aRange);
++                     }
++                  } else {
++                     $this-&gt;aCharSet[] = $sCurrentItem;
++                  }
++               }
++            }
++         }
++      }
++      
++      function CaseInsensitive($bCaseInsensitive) {
++         $this-&gt;bCaseInsensitive = $bCaseInsensitive;
++      }
++      
++      function SetBackgroundImages($vBackgroundImages) {
++         $this-&gt;vBackgroundImages = $vBackgroundImages;
++      }
++      
++      function SetMinFontSize($iMinFontSize) {
++         $this-&gt;iMinFontSize = $iMinFontSize;
++      }
++      
++      function SetMaxFontSize($iMaxFontSize) {
++         $this-&gt;iMaxFontSize = $iMaxFontSize;
++      }
++      
++      function UseColour($bUseColour) {
++         $this-&gt;bUseColour = $bUseColour;
++      }
++      
++      function SetFileType($sFileType) {
++         // check for valid file type
++         if (in_array($sFileType, array('gif', 'png', 'jpeg'))) {
++            $this-&gt;sFileType = $sFileType;
++         } else {
++            $this-&gt;sFileType = 'jpeg';
++         }
++      }
++      
++      function DrawLines() {
++         for ($i = 0; $i &lt; $this-&gt;iNumLines; $i++) {
++            // allocate colour
++            if ($this-&gt;bUseColour) {
++               $iLineColour = imagecolorallocate($this-&gt;oImage, rand(100, 250), rand(100, 250), rand(100, 250));
++            } else {
++               $iRandColour = rand(100, 250);
++               $iLineColour = imagecolorallocate($this-&gt;oImage, $iRandColour, $iRandColour, $iRandColour);
++            }
++            
++            // draw line
++            imageline($this-&gt;oImage, rand(0, $this-&gt;iWidth), rand(0, $this-&gt;iHeight), rand(0, $this-&gt;iWidth), rand(0, $this-&gt;iHeight), $iLineColour);
++         }
++      }
++      
++      function DrawOwnerText() {
++         // allocate owner text colour
++         $iBlack = imagecolorallocate($this-&gt;oImage, 0, 0, 0);
++         // get height of selected font
++         $iOwnerTextHeight = imagefontheight(2);
++         // calculate overall height
++         $iLineHeight = $this-&gt;iHeight - $iOwnerTextHeight - 4;
++         
++         // draw line above text to separate from CAPTCHA
++         imageline($this-&gt;oImage, 0, $iLineHeight, $this-&gt;iWidth, $iLineHeight, $iBlack);
++         
++         // write owner text
++         imagestring($this-&gt;oImage, 2, 3, $this-&gt;iHeight - $iOwnerTextHeight - 3, $this-&gt;sOwnerText, $iBlack);
++         
++         // reduce available height for drawing CAPTCHA
++         $this-&gt;iHeight = $this-&gt;iHeight - $iOwnerTextHeight - 5;
++      }
++      
++      function GenerateCode() {
++         // reset code
++         $this-&gt;sCode = '';
++         
++         // loop through and generate the code letter by letter
++         for ($i = 0; $i &lt; $this-&gt;iNumChars; $i++) {
++            if (count($this-&gt;aCharSet) &gt; 0) {
++               // select random character and add to code string
++               $this-&gt;sCode .= $this-&gt;aCharSet[array_rand($this-&gt;aCharSet)];
++            } else {
++               // select random character and add to code string
++               $this-&gt;sCode .= chr(rand(65, 90));
++            }
++         }
++         
++         // save code in session variable
++         if ($this-&gt;bCaseInsensitive) {
++            $_SESSION[CAPTCHA_SESSION_ID] = strtoupper($this-&gt;sCode);
++         } else {
++            $_SESSION[CAPTCHA_SESSION_ID] = $this-&gt;sCode;
++         }
++      }
++      
++      function DrawCharacters() {
++         // loop through and write out selected number of characters
++         for ($i = 0; $i &lt; strlen($this-&gt;sCode); $i++) {
++            // select random font
++            $sCurrentFont = $this-&gt;aFonts[array_rand($this-&gt;aFonts)];
++            
++            // select random colour
++            if ($this-&gt;bUseColour) {
++               $iTextColour = imagecolorallocate($this-&gt;oImage, rand(0, 100), rand(0, 100), rand(0, 100));
++            
++               if ($this-&gt;bCharShadow) {
++                  // shadow colour
++                  $iShadowColour = imagecolorallocate($this-&gt;oImage, rand(0, 100), rand(0, 100), rand(0, 100));
++               }
++            } else {
++               $iRandColour = rand(0, 100);
++               $iTextColour = imagecolorallocate($this-&gt;oImage, $iRandColour, $iRandColour, $iRandColour);
++            
++               if ($this-&gt;bCharShadow) {
++                  // shadow colour
++                  $iRandColour = rand(0, 100);
++                  $iShadowColour = imagecolorallocate($this-&gt;oImage, $iRandColour, $iRandColour, $iRandColour);
++               }
++            }
++            
++            // select random font size
++            $iFontSize = rand($this-&gt;iMinFontSize, $this-&gt;iMaxFontSize);
++            
++            // select random angle
++            $iAngle = rand(-30, 30);
++            
++            // get dimensions of character in selected font and text size
++            $aCharDetails = imageftbbox($iFontSize, $iAngle, $sCurrentFont, $this-&gt;sCode[$i], array());
++            
++            // calculate character starting coordinates
++            $iX = $this-&gt;iSpacing / 4 + $i * $this-&gt;iSpacing;
++            $iCharHeight = $aCharDetails[2] - $aCharDetails[5];
++            $iY = $this-&gt;iHeight / 2 + $iCharHeight / 4; 
++            
++            // write text to image
++            imagefttext($this-&gt;oImage, $iFontSize, $iAngle, $iX, $iY, $iTextColour, $sCurrentFont, $this-&gt;sCode[$i], array());
++            
++            if ($this-&gt;bCharShadow) {
++               $iOffsetAngle = rand(-30, 30);
++               
++               $iRandOffsetX = rand(-5, 5);
++               $iRandOffsetY = rand(-5, 5);
++               
++               imagefttext($this-&gt;oImage, $iFontSize, $iOffsetAngle, $iX + $iRandOffsetX, $iY + $iRandOffsetY, $iShadowColour, $sCurrentFont, $this-&gt;sCode[$i], array());
++            }
++         }
++      }
++      
++      function WriteFile($sFilename) {
++         if ($sFilename == '') {
++            // tell browser that data is jpeg
++            header(&quot;Content-type: image/$this-&gt;sFileType&quot;);
++         }
++         
++         switch ($this-&gt;sFileType) {
++            case 'gif':
++               $sFilename != '' ? imagegif($this-&gt;oImage, $sFilename) : imagegif($this-&gt;oImage);
++               break;
++            case 'png':
++               $sFilename != '' ? imagepng($this-&gt;oImage, $sFilename) : imagepng($this-&gt;oImage);
++               break;
++            default:
++               $sFilename != '' ? imagejpeg($this-&gt;oImage, $sFilename) : imagejpeg($this-&gt;oImage);
++         }
++      }
++      
++      function Create($sFilename = '') {
++         // check for required gd functions
++         if (!function_exists('imagecreate') || !function_exists(&quot;image$this-&gt;sFileType&quot;) || ($this-&gt;vBackgroundImages != '' &amp;&amp; !function_exists('imagecreatetruecolor'))) {
++            return false;
++         }
++         
++         // get background image if specified and copy to CAPTCHA
++         if (is_array($this-&gt;vBackgroundImages) || $this-&gt;vBackgroundImages != '') {
++            // create new image
++            $this-&gt;oImage = imagecreatetruecolor($this-&gt;iWidth, $this-&gt;iHeight);
++            
++            // create background image
++            if (is_array($this-&gt;vBackgroundImages)) {
++               $iRandImage = array_rand($this-&gt;vBackgroundImages);
++               $oBackgroundImage = imagecreatefromjpeg($this-&gt;vBackgroundImages[$iRandImage]);
++            } else {
++               $oBackgroundImage = imagecreatefromjpeg($this-&gt;vBackgroundImages);
++            }
++            
++            // copy background image
++            imagecopy($this-&gt;oImage, $oBackgroundImage, 0, 0, 0, 0, $this-&gt;iWidth, $this-&gt;iHeight);
++            
++            // free memory used to create background image
++            imagedestroy($oBackgroundImage);
++         } else {
++            // create new image
++            $this-&gt;oImage = imagecreate($this-&gt;iWidth, $this-&gt;iHeight);
++         }
++         
++         // allocate white background colour
++         imagecolorallocate($this-&gt;oImage, 255, 255, 255);
++         
++         // check for owner text
++         if ($this-&gt;sOwnerText != '') {
++            $this-&gt;DrawOwnerText();
++         }
++         
++         // check for background image before drawing lines
++         if (!is_array($this-&gt;vBackgroundImages) &amp;&amp; $this-&gt;vBackgroundImages == '') {
++            $this-&gt;DrawLines();
++         }
++         
++         $this-&gt;GenerateCode();
++         $this-&gt;DrawCharacters();
++         
++         // write out image to file or browser
++         $this-&gt;WriteFile($sFilename);
++         
++         // free memory used in creating image
++         imagedestroy($this-&gt;oImage);
++         
++         return true;
++      }
++      
++      // call this method statically
++      function Validate($sUserCode, $bCaseInsensitive = true) {
++         if ($bCaseInsensitive) {
++            $sUserCode = strtoupper($sUserCode);
++         }
++         
++         if (!empty($_SESSION[CAPTCHA_SESSION_ID]) &amp;&amp; $sUserCode == $_SESSION[CAPTCHA_SESSION_ID]) {
++            // clear to prevent re-use
++            unset($_SESSION[CAPTCHA_SESSION_ID]);
++            
++            return true;
++         }
++         
++         return false;
++      }
++   }
++   
++   // this class will only work correctly if a visual CAPTCHA has been created first using PhpCaptcha
++   class AudioPhpCaptcha {
++      var $sFlitePath;
++      var $sAudioPath;
++      var $sCode;
++      
++      function AudioPhpCaptcha(
++         $sFlitePath = CAPTCHA_FLITE_PATH, // path to flite binary
++         $sAudioPath = CAPTCHA_AUDIO_PATH // the location to temporarily store the generated audio CAPTCHA
++      ) {
++         $this-&gt;SetFlitePath($sFlitePath);
++         $this-&gt;SetAudioPath($sAudioPath);
++         
++         // retrieve code if already set by previous instance of visual PhpCaptcha
++         if (isset($_SESSION[CAPTCHA_SESSION_ID])) {
++            $this-&gt;sCode = $_SESSION[CAPTCHA_SESSION_ID];
++         }
++      }
++      
++      function SetFlitePath($sFlitePath) {
++         $this-&gt;sFlitePath = $sFlitePath;
++      }
++      
++      function SetAudioPath($sAudioPath) {
++         $this-&gt;sAudioPath = $sAudioPath;
++      }
++      
++      function Mask($sText) {
++         $iLength = strlen($sText);
++         
++         // loop through characters in code and format
++         $sFormattedText = '';
++         for ($i = 0; $i &lt; $iLength; $i++) {
++            // comma separate all but first and last characters
++            if ($i &gt; 0 &amp;&amp; $i &lt; $iLength - 1) {
++               $sFormattedText .= ', ';
++            } elseif ($i == $iLength - 1) { // precede last character with &quot;and&quot;
++               $sFormattedText .= ' and ';
++            }
++            $sFormattedText .= $sText[$i];
++         }
++         
++         $aPhrases = array(
++            &quot;The %1\$s characters are as follows: %2\$s&quot;,
++            &quot;%2\$s, are the %1\$s letters&quot;,
++            &quot;Here are the %1\$s characters: %2\$s&quot;,
++            &quot;%1\$s characters are: %2\$s&quot;,
++            &quot;%1\$s letters: %2\$s&quot;
++         );
++         
++         $iPhrase = array_rand($aPhrases);
++         
++         return sprintf($aPhrases[$iPhrase], $iLength, $sFormattedText);
++      }
++      
++      function Create() {
++         $sText = $this-&gt;Mask($this-&gt;sCode);
++         $sFile = md5($this-&gt;sCode.time());
++         
++         // create file with flite
++         shell_exec(&quot;$this-&gt;sFlitePath -t \&quot;$sText\&quot; -o $this-&gt;sAudioPath$sFile.wav&quot;);
++         
++         // set headers
++         header('Content-type: audio/x-wav');
++         header(&quot;Content-Disposition: attachment;filename=$sFile.wav&quot;);
++         
++         // output to browser
++         echo file_get_contents(&quot;$this-&gt;sAudioPath$sFile.wav&quot;);
++         
++         // delete temporary file
++         @unlink(&quot;$this-&gt;sAudioPath$sFile.wav&quot;);
++      }
++   }
++   
++   // example sub class
++   class PhpCaptchaColour extends PhpCaptcha {
++      function PhpCaptchaColour($aFonts, $iWidth = CAPTCHA_WIDTH, $iHeight = CAPTCHA_HEIGHT) {
++         // call parent constructor
++         parent::PhpCaptcha($aFonts, $iWidth, $iHeight);
++         
++         // set options
++         $this-&gt;UseColour(true);
++      }
++   }
++?&gt;
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/COPYRIGHT.TXT
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/COPYRIGHT.TXT	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/COPYRIGHT.TXT	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -0,0 +1,124 @@
++Bitstream Vera Fonts Copyright
++
++The fonts have a generous copyright, allowing derivative works (as
++long as &quot;Bitstream&quot; or &quot;Vera&quot; are not in the names), and full
++redistribution (so long as they are not *sold* by themselves). They
++can be be bundled, redistributed and sold with any software.
++
++The fonts are distributed under the following copyright:
++
++Copyright
++=========
++
++Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream
++Vera is a trademark of Bitstream, Inc.
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of the fonts accompanying this license (&quot;Fonts&quot;) and associated
++documentation files (the &quot;Font Software&quot;), to reproduce and distribute
++the Font Software, including without limitation the rights to use,
++copy, merge, publish, distribute, and/or sell copies of the Font
++Software, and to permit persons to whom the Font Software is furnished
++to do so, subject to the following conditions:
++
++The above copyright and trademark notices and this permission notice
++shall be included in all copies of one or more of the Font Software
++typefaces.
++
++The Font Software may be modified, altered, or added to, and in
++particular the designs of glyphs or characters in the Fonts may be
++modified and additional glyphs or characters may be added to the
++Fonts, only if the fonts are renamed to names not containing either
++the words &quot;Bitstream&quot; or the word &quot;Vera&quot;.
++
++This License becomes null and void to the extent applicable to Fonts
++or Font Software that has been modified and is distributed under the
++&quot;Bitstream Vera&quot; names.
++
++The Font Software may be sold as part of a larger software package but
++no copy of one or more of the Font Software typefaces may be sold by
++itself.
++
++THE FONT SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
++OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL
++BITSTREAM OR THE GNOME FOUNDATION BE LIABLE FOR ANY CLAIM, DAMAGES OR
++OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL,
++OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR
++OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT
++SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
++
++Except as contained in this notice, the names of Gnome, the Gnome
++Foundation, and Bitstream Inc., shall not be used in advertising or
++otherwise to promote the sale, use or other dealings in this Font
++Software without prior written authorization from the Gnome Foundation
++or Bitstream Inc., respectively. For further information, contact:
++fonts at gnome dot org.
++
++Copyright FAQ
++=============
++
++   1. I don't understand the resale restriction... What gives?
++
++      Bitstream is giving away these fonts, but wishes to ensure its
++      competitors can't just drop the fonts as is into a font sale system
++      and sell them as is. It seems fair that if Bitstream can't make money
++      from the Bitstream Vera fonts, their competitors should not be able to
++      do so either. You can sell the fonts as part of any software package,
++      however.
++
++   2. I want to package these fonts separately for distribution and
++      sale as part of a larger software package or system.  Can I do so?
++
++      Yes. A RPM or Debian package is a &quot;larger software package&quot; to begin 
++      with, and you aren't selling them independently by themselves. 
++      See 1. above.
++
++   3. Are derivative works allowed?
++      Yes!
++
++   4. Can I change or add to the font(s)?
++      Yes, but you must change the name(s) of the font(s).
++
++   5. Under what terms are derivative works allowed?
++
++      You must change the name(s) of the fonts. This is to ensure the
++      quality of the fonts, both to protect Bitstream and Gnome. We want to
++      ensure that if an application has opened a font specifically of these
++      names, it gets what it expects (though of course, using fontconfig,
++      substitutions could still could have occurred during font
++      opening). You must include the Bitstream copyright. Additional
++      copyrights can be added, as per copyright law. Happy Font Hacking!
++
++   6. If I have improvements for Bitstream Vera, is it possible they might get 
++       adopted in future versions?
++
++      Yes. The contract between the Gnome Foundation and Bitstream has
++      provisions for working with Bitstream to ensure quality additions to
++      the Bitstream Vera font family. Please contact us if you have such
++      additions. Note, that in general, we will want such additions for the
++      entire family, not just a single font, and that you'll have to keep
++      both Gnome and Jim Lyles, Vera's designer, happy! To make sense to add
++      glyphs to the font, they must be stylistically in keeping with Vera's
++      design. Vera cannot become a &quot;ransom note&quot; font. Jim Lyles will be
++      providing a document describing the design elements used in Vera, as a
++      guide and aid for people interested in contributing to Vera.
++
++   7. I want to sell a software package that uses these fonts: Can I do so?
++
++      Sure. Bundle the fonts with your software and sell your software
++      with the fonts. That is the intent of the copyright.
++
++   8. If applications have built the names &quot;Bitstream Vera&quot; into them, 
++      can I override this somehow to use fonts of my choosing?
++
++      This depends on exact details of the software. Most open source
++      systems and software (e.g., Gnome, KDE, etc.) are now converting to
++      use fontconfig (see www.fontconfig.org) to handle font configuration,
++      selection and substitution; it has provisions for overriding font
++      names and subsituting alternatives. An example is provided by the
++      supplied local.conf file, which chooses the family Bitstream Vera for
++      &quot;sans&quot;, &quot;serif&quot; and &quot;monospace&quot;.  Other software (e.g., the XFree86
++      core server) has other mechanisms for font substitution.
++
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/README.TXT
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/README.TXT	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/README.TXT	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -0,0 +1,11 @@
++Contained herin is the Bitstream Vera font family.
++
++The Copyright information is found in the COPYRIGHT.TXT file (along
++with being incoporated into the fonts themselves).
++
++The releases notes are found in the file &quot;RELEASENOTES.TXT&quot;.
++
++We hope you enjoy Vera!
++
++                        Bitstream, Inc.
++			The Gnome Project
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/RELEASENOTES.TXT
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/RELEASENOTES.TXT	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/RELEASENOTES.TXT	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -0,0 +1,162 @@
++Bitstream Vera Fonts - April 16, 2003
++=====================================
++
++The version number of these fonts is 1.10 to distinguish them from the
++beta test fonts.
++
++Note that the Vera copyright is incorporated in the fonts themselves.
++The License field in the fonts contains the copyright license as it
++appears below. The TrueType copyright field is not large enough to
++contain the full license, so the license is incorporated (as you might
++think if you thought about it) into the license field, which
++unfortunately can be obscure to find.  (In pfaedit, see: Element-&gt;Font
++Info-&gt;TTFNames-&gt;License).
++
++Our apologies for it taking longer to complete the fonts than planned.
++Beta testers requested a tighter line spacing (less leading) and Jim
++Lyles redesigned Vera's accents to bring its line spacing to more
++typical of other fonts.  This took additional time and effort.  Our
++thanks to Jim for this effort above and beyond the call of duty.
++
++There are four monospace and sans faces (normal, oblique, bold, bold
++oblique) and two serif faces (normal and bold). Fontconfig/Xft2 (see
++www.fontconfig.org) can artificially oblique the serif faces for you:
++this loses hinting and distorts the faces slightly, but is visibly
++different than normal and bold, and reasonably pleasing.
++
++On systems with fontconfig 2.0 or 2.1 installed, making your sans,
++serif and monospace fonts default to these fonts is very easy.  Just
++drop the file local.conf into your /etc/fonts directory.  This will
++make the Bitstream fonts your default fonts for all applications using
++fontconfig (if sans, serif, or monospace names are used, as they often
++are as default values in many desktops). The XML in local.conf may
++need modification to enable subpixel decimation, if appropriate,
++however, the commented out phrase does so for XFree86 4.3, in the case
++that the server does not have sufficient information to identify the
++use of a flat panel.  Fontconfig 2.2 adds Vera to the list of font
++families and will, by default use it as the default sans, serif and
++monospace fonts.
++
++During the testing of the final Vera fonts, we learned that screen
++fonts in general are only typically hinted to work correctly at
++integer pixel sizes.  Vera is coded internally for integer sizes only.
++We need to investigate further to see if there are commonly used fonts
++that are hinted to be rounded but are not rounded to integer sizes due
++to oversights in their coding.
++
++Most fonts work best at 8 pixels and below if anti-aliased only, as
++the amount of work required to hint well at smaller and smaller sizes
++becomes astronomical.  GASP tables are typically used to control
++whether hinting is used or not, but Freetype/Xft does not currently
++support GASP tables (which are present in Vera).
++
++To mitigate this problem, both for Vera and other fonts, there will be
++(very shortly) a new fontconfig 2.2 release that will, by default not
++apply hints if the size is below 8 pixels. if you should have a font
++that in fact has been hinted more agressively, you can use fontconfig
++to note this exception. We believe this should improve many hinted
++fonts in addition to Vera, though implemeting GASP support is likely
++the right long term solution.
++
++Font rendering in Gnome or KDE is the combination of algorithms in
++Xft2 and Freetype, along with hinting in the fonts themselves. It is
++vital to have sufficient information to disentangle problems that you
++may observe.
++
++Note that having your font rendering system set up correctly is vital
++to proper judgement of problems of the fonts:
++
++    * Freetype may or may not be configured to in ways that may
++      implement execution of possibly patented (in some parts of the world)
++      TrueType hinting algorithms, particularly at small sizes.  Best
++      results are obtained while using these algorithms.
++
++    * The freetype autohinter (used when the possibly patented
++      algorithms are not used) continues to improve with each release. If
++      you are using the autohinter, please ensure you are using an up to
++      date version of freetype before reporting problems.
++
++    * Please identify what version of freetype you are using in any
++      bug reports, and how your freetype is configured.
++
++    * Make sure you are not using the freetype version included in
++      XFree86 4.3, as it has bugs that significantly degrade most fonts,
++      including Vera. if you build XFree86 4.3 from source yourself, you may
++      have installed this broken version without intending it (as I
++      did). Vera was verified with the recently released Freetype 2.1.4. On
++      many systems, 'ldd&quot; can be used to see which freetype shared library
++      is actually being used.
++
++    * Xft/X Render does not (yet) implement gamma correction.  This
++      causes significant problems rendering white text on a black background
++      (causing partial pixels to be insufficiently shaded) if the gamma of
++      your monitor has not been compensated for, and minor problems with
++      black text on a while background.  The program &quot;xgamma&quot; can be used to
++      set a gamma correction value in the X server's color pallette. Most
++      monitors have a gamma near 2.
++
++    * Note that the Vera family uses minimal delta hinting. Your
++      results on other systems when not used anti-aliased may not be
++      entirely satisfying. We are primarily interested in reports of
++      problems on open source systems implementing Xft2/fontconfig/freetype
++      (which implements antialiasing and hinting adjustements, and
++      sophisticated subpixel decimation on flatpanels).  Also, the
++      algorithms used by Xft2 adjust the hints to integer widths and the
++      results are crisper on open source systems than on Windows or
++      MacIntosh.
++
++    * Your fontconfig may (probably does) predate the release of
++      fontconfig 2.2, and you may see artifacts not present when the font is
++      used at very small sizes with hinting enabled. &quot;vc-list -V&quot; can be
++      used to see what version you have installed.
++
++We believe and hope that these fonts will resolve the problems
++reported during beta test.  The largest change is the reduction of
++leading (interline spacing), which had annoyed a number of people, and
++reduced Vera's utility for some applcations.  The Vera monospace font
++should also now make '0' and 'O' and '1' and 'l' more clearly
++distinguishable.
++
++The version of these fonts is version 1.10.  Fontconfig should be
++choosing the new version of the fonts if both the released fonts and
++beta test fonts are installed (though please discard them: they have
++names of form tt20[1-12]gn.ttf).  Note that older versions of
++fontconfig sometimes did not rebuild their cache correctly when new
++fonts are installed: please upgrade to fontconfig 2.2. &quot;fc-cache -f&quot;
++can be used to force rebuilding fontconfig's cache files.
++
++If you note problems, please send them to fonts at gnome dot org, with
++exactly which face and size and unicode point you observe the problem
++at. The xfd utility from XFree86 CVS may be useful for this (e.g. &quot;xfd
++-fa sans&quot;).  A possibly more useful program to examine fonts at a
++variety of sizes is the &quot;waterfall&quot; program found in Keith Packard's
++CVS.
++
++        $ cvs -d :pserver:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">anoncvs at keithp.com</A>:/local/src/CVS login
++        Logging in to :pserver:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">anoncvs at keithp.com</A>:2401/local/src/CVS
++        CVS password: &lt;hit return&gt;
++        $ cvs -d :pserver:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">anoncvs at keithp.com</A>:/local/src/CVS co waterfall
++        $ cd waterfall
++        $ xmkmf -a
++        $ make
++        # make install
++        # make install.man
++
++Again, please make sure you are running an up-to-date freetype, and
++that you are only examining integer sizes.
++
++Reporting Problems
++==================
++
++Please send problem reports to fonts at gnome org, with the following
++information:
++
++   1. Version of Freetype, Xft2 and fontconfig
++   2. Whether TT hinting is being used, or the autohinter
++   3. Application being used
++   4. Character/Unicode code point that has problems (if applicable)
++   5. Version of which operating system
++   6. Please include a screenshot, when possible.
++
++Please check the fonts list archives before reporting problems to cut
++down on duplication.
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/Vera.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/Vera.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraBI.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraBI.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraBd.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraBd.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraIt.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraIt.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoBI.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoBI.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoBd.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoBd.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoIt.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMoIt.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMono.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraMono.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraSe.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraSe.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraSeBd.ttf
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/VeraSeBd.ttf
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/local.conf
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/local.conf	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/fonts/local.conf	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -0,0 +1,32 @@
++&lt;?xml version=&quot;1.0&quot;?&gt;
++&lt;!DOCTYPE fontconfig SYSTEM &quot;fonts.dtd&quot;&gt;
++&lt;!-- /etc/fonts.conf file to configure system font access --&gt;
++&lt;fontconfig&gt;
++        &lt;!--  Enable sub-pixel rendering
++        &lt;match target=&quot;font&quot;&gt;
++                &lt;test qual=&quot;all&quot; name=&quot;rgba&quot;&gt;
++                        &lt;const&gt;unknown&lt;/const&gt;
++                &lt;/test&gt;
++                &lt;edit name=&quot;rgba&quot; mode=&quot;assign&quot;&gt;&lt;const&gt;rgb&lt;/const&gt;&lt;/edit&gt;
++        &lt;/match&gt;
++         --&gt;
++
++        &lt;alias&gt;
++                &lt;family&gt;serif&lt;/family&gt;
++                &lt;prefer&gt;
++                        &lt;family&gt;Bitstream Vera Serif&lt;/family&gt;
++                &lt;/prefer&gt;
++        &lt;/alias&gt;
++        &lt;alias&gt;
++                &lt;family&gt;sans-serif&lt;/family&gt;
++                &lt;prefer&gt;
++                        &lt;family&gt;Bitstream Vera Sans&lt;/family&gt;
++                &lt;/prefer&gt;
++        &lt;/alias&gt;
++        &lt;alias&gt;
++                &lt;family&gt;monospace&lt;/family&gt;
++                &lt;prefer&gt;
++                        &lt;family&gt;Bitstream Vera Sans Mono&lt;/family&gt;
++                &lt;/prefer&gt;
++        &lt;/alias&gt;
++&lt;/fontconfig&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -132,6 +132,7 @@
+             $this-&gt;registerElement( 'autocompleter', 'YDFormElement_Autocompleter', 'YDFormElement_Autocompleter.php' );
+             $this-&gt;registerElement( 'switchmenu', 'YDFormElement_SwitchMenu', 'YDFormElement_SwitchMenu.php' );
+             $this-&gt;registerElement( 'grid', 'YDFormElement_Grid', 'YDFormElement_Grid.php' );
++            $this-&gt;registerElement( 'captcha', 'YDFormElement_Captcha', 'YDFormElement_Captcha.php' );
+ 
+ 
+             // Add the rules
+@@ -172,6 +173,7 @@
+             $this-&gt;registerRule( 'rangelength_escape', array( 'YDValidateRules', 'rangelength_escape' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'httpurl', array( 'YDValidateRules', 'httpurl' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'maxhyperlinks', array( 'YDValidateRules', 'maxhyperlinks' ), 'YDValidateRules.php' );
++            $this-&gt;registerRule( 'captcha', array( 'YDValidateRules', 'captcha' ), 'YDValidateRules.php' );
+ 
+             // Add the filters
+             $this-&gt;registerFilter( 'trim', 'trim' );
+@@ -571,6 +573,8 @@
+                 $this-&gt;_rules[ $element ] = array();
+             }
+             array_push( $this-&gt;_rules[ $element ], array( 'rule' =&gt; $rule, 'error' =&gt; $error, 'options' =&gt; $options ) );
++
++            if ( $rule == 'captcha' ) $this-&gt;addRule( $element, 'required', $error, $options );
+         }
+ 
+         /**
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -0,0 +1,121 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
++    include_once( YD_DIR_HOME . '/3rdparty/captcha/php-captcha.inc.php' );
++
++    /**
++     *	This is the class that define a captcha form element.
++     */
++    class YDFormElement_Captcha extends YDFormElement {
++
++        /**
++         *	This is the class constructor for the YDFormElement_Captcha class.
++         *
++         *	@param $form		The name of the form to which this element is connected.
++         *	@param $name		The name of the form element.
++         *	@param $label		(optional) The label for the form element.
++         *	@param $attributes	(optional) The attributes for the form element.
++         *	@param $options		(optional) The options for the elment.
++         */
++        function YDFormElement_Captcha( $form, $name, $label='', $attributes=array(), $options=array() ) {
++
++            // init parent
++            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
++
++            // set type
++            $this-&gt;_type = 'captcha';
++			
++			// create default image url
++			$this-&gt;_url = YDRequest::getCurrentUrl( true ) . '?do=ShowCaptcha';
++        }
++
++
++        /**
++         *	This function will return the element as HTML.
++         *
++         *	@returns	The form element as HTML text.
++         */
++        function toHtml() {
++
++            // Create the list of attributes
++            $attribs = array(
++                'type' =&gt; 'text', 'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name, 'value' =&gt; $this-&gt;_value, 'size' =&gt; 8
++            );
++            $attribs = array_merge( $this-&gt;_attributes, $attribs );
++
++            // Get the HTML
++            return '&lt;img src=&quot;' . $this-&gt;_url . '&quot; style=&quot;vertical-align: middle&quot;/&gt; &lt;input' . YDForm::_convertToHtmlAttrib( $attribs ) . ' /&gt;';
++
++        }
++
++
++        /**
++         *	This function returns the default javascript event of this element
++         */
++        function getJSEvent(){ 
++
++            return 'onchange';
++        }
++
++
++        /**
++         *	This function gets an element value using javascript
++         *
++         *	@param $options		(optional) The options for the elment.
++         */
++        function getJS( $options = null ){ 
++
++            // return js code
++            return 'return document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;).value;';
++        }
++
++
++        /**
++         *	This function sets an element value using javascript
++         *
++         *	@param $result		The result value
++         *	@param $attribute	(optional) Element attribute
++         *	@param $options		(optional) The options for the elment.
++         */
++        function setJS( $result, $attribute = null, $options = null ){ 
++
++             // if atribute is not defined we must create the default one
++             if ( is_null( $attribute ) ) $attribute = 'value';
++
++             // convert $result
++             $result = htmlspecialchars( $result );
++
++             // assign result
++             return 'document.getElementById(&quot;' . $this-&gt;getAttribute( 'id' ) . '&quot;).' . $attribute . ' = &quot;' . $result . '&quot;;';
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -736,6 +736,20 @@
+ 
+         }
+ 
++        /**
++         *	This function returns true if the variable matches captcha image
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	(not required)
++         */
++        function captcha( $val, $opts='' ) {
++
++            include_once( YD_DIR_HOME . '/3rdparty/captcha/php-captcha.inc.php' );
++
++            return PhpCaptcha::Validate( $val );
++        }
++
++
+     }
+ 
+ ?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2006-12-09 18:13:10 UTC (rev 2250)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2006-12-09 21:31:11 UTC (rev 2251)
+@@ -0,0 +1,106 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// include antispam lib
++    include_once( YD_DIR_HOME . '/3rdparty/captcha/php-captcha.inc.php' );
++
++
++    /**
++     *  This class handles a captcha image
++     */
++    class YDCaptcha extends YDAddOnModule {
++
++        /**
++         *  Class constructor for the YDCaptcha class.
++         */
++        function YDCaptcha() {
++
++            // Initializes YDBase
++            $this-&gt;YDAddOnModule();
++
++            // Setup the module
++            $this-&gt;_author = 'Francisco Azevedo';
++            $this-&gt;_version = '1.0';
++            $this-&gt;_copyright = '(c) 2006 Francisco Azevedo, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>';
++            $this-&gt;_description = 'This class manages a captcha image system.';
++
++			// compute fonts directory
++			$fdir = YD_DIR_HOME . '/3rdparty/fonts/';
++
++			// define fonts to use
++			$fonts = array( $fdir . 'VeraBd.ttf', $fdir . 'VeraIt.ttf', $fdir . 'Vera.ttf');
++
++			// create image object
++			$this-&gt;_img = new PhpCaptcha( $fonts, 150, 40 );
++			
++			$this-&gt;_img-&gt;DisplayShadow( false );
++			$this-&gt;_img-&gt;UseColour( false );
++			$this-&gt;_img-&gt;SetNumChars( 4 );
++        }
++
++
++        /**
++         *	This function set the number of characters to display
++         *
++         *	@param $num		Number of characters
++         */
++        function setNumChars( $num ){
++			$this-&gt;_img-&gt;setNumChars( $num );
++		}
++
++
++        /**
++         *	This function defines use of shadows
++         *
++         *	@param $flag		True or false boolean
++         */
++        function displayShadow( $flag ){
++			$this-&gt;_img-&gt;displayShadow( $flag );
++		}
++
++
++        /**
++         *	This function defines use of colours
++         *
++         *	@param $flag		True or false boolean
++         */
++        function useColour( $flag ){
++			$this-&gt;_img-&gt;useColour( $flag );
++		}
++
++
++        /**
++         *  This function exports the image
++         */
++        function create() {
++			return $this-&gt;_img-&gt;Create();
++        }
++
++  }
++
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000841.html">[ydf-devel] r2250 - in YDFramework2.0/trunk/YDFramework2: .	3rdparty 3rdparty/upgrade 3rdparty/upgrade/contrib	3rdparty/upgrade/dtools 3rdparty/upgrade/ext 3rdparty/upgrade/tests
+</A></li>
+	<LI>Next message: <A HREF="000843.html">[ydf-devel] r2252 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#842">[ date ]</a>
+              <a href="thread.html#842">[ thread ]</a>
+              <a href="subject.html#842">[ subject ]</a>
+              <a href="author.html#842">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,2793 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2317 - in YDFramework2.0/trunk: . YDFramework2	YDFramework2/YDClasses YDFramework2/YDClasses/YDDatabaseDrivers	YDFramework2/YDClasses/YDFormElements	YDFramework2/YDClasses/YDFormRenderers	YDFramework2/addons/YDAjax YDFramework2/addons/YDAjax/editors	YDFramework2/addons/YDAkismet YDFramework2/addons/YDBBCode	YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDCaptcha YDFramework2/addons/YDCart	YDFramework2/addons/YDDatabaseObject	YDFramework2/addons/YDDatabaseQuery	YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers	YDFramework2/addons/YDFeedCreator YDFramework2/addons/YDGraph	YDFramework2/addons/YDGraphPie YDFramework2/addons/YDInstaller	YDFramework2/addons/YDLoadconfig YDFramework2/addons/YDMysqlDump	YDFramework2/addons/YDPdfReport doc doc_src examples/database	examples/forum examples/weblog
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2317%20-%20in%20YDFramework2.0/trunk%3A%20.%20YDFramework2%0A%09YDFramework2/YDClasses%20YDFramework2/YDClasses/YDDatabaseDrivers%0A%09YDFramework2/YDClasses/YDFormElements%0A%09YDFramework2/YDClasses/YDFormRenderers%0A%09YDFramework2/addons/YDAjax%20YDFramework2/addons/YDAjax/editors%0A%09YDFramework2/addons/YDAkismet%20YDFramework2/addons/YDBBCode%0A%09YDFramework2/addons/YDCMComponent%0A%09YDFramework2/addons/YDCaptcha%20YDFramework2/addons/YDCart%0A%09YDFramework2/addons/YDDatabaseObject%0A%09YDFramework2/addons/YDDatabaseQuery%0A%09YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers%0A%09YDFramework2/addons/YDFeedCreator%20YDFramework2/addons/YDGraph%0A%09YDFramework2/addons/YDGraphPie%20YDFramework2/addons/YDInstaller%0A%09YDFramework2/addons/YDLoadconfig%20YDFramework2/addons/YDMysqlDump%0A%09YDFramework2/addons/YDPdfReport%20doc%20doc_src%20examples/database%0A%09examples/forum%20examples/weblog&In-Reply-To=%3C200701162009.l0GK9spT017219%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000909.html">
+   <LINK REL="Next"  HREF="000911.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2317 - in YDFramework2.0/trunk: . YDFramework2	YDFramework2/YDClasses YDFramework2/YDClasses/YDDatabaseDrivers	YDFramework2/YDClasses/YDFormElements	YDFramework2/YDClasses/YDFormRenderers	YDFramework2/addons/YDAjax YDFramework2/addons/YDAjax/editors	YDFramework2/addons/YDAkismet YDFramework2/addons/YDBBCode	YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDCaptcha YDFramework2/addons/YDCart	YDFramework2/addons/YDDatabaseObject	YDFramework2/addons/YDDatabaseQuery	YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers	YDFramework2/addons/YDFeedCreator YDFramework2/addons/YDGraph	YDFramework2/addons/YDGraphPie YDFramework2/addons/YDInstaller	YDFramework2/addons/YDLoadconfig YDFramework2/addons/YDMysqlDump	YDFramework2/addons/YDPdfReport doc doc_src examples/database	examples/forum examples/weblog</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2317%20-%20in%20YDFramework2.0/trunk%3A%20.%20YDFramework2%0A%09YDFramework2/YDClasses%20YDFramework2/YDClasses/YDDatabaseDrivers%0A%09YDFramework2/YDClasses/YDFormElements%0A%09YDFramework2/YDClasses/YDFormRenderers%0A%09YDFramework2/addons/YDAjax%20YDFramework2/addons/YDAjax/editors%0A%09YDFramework2/addons/YDAkismet%20YDFramework2/addons/YDBBCode%0A%09YDFramework2/addons/YDCMComponent%0A%09YDFramework2/addons/YDCaptcha%20YDFramework2/addons/YDCart%0A%09YDFramework2/addons/YDDatabaseObject%0A%09YDFramework2/addons/YDDatabaseQuery%0A%09YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers%0A%09YDFramework2/addons/YDFeedCreator%20YDFramework2/addons/YDGraph%0A%09YDFramework2/addons/YDGraphPie%20YDFramework2/addons/YDInstaller%0A%09YDFramework2/addons/YDLoadconfig%20YDFramework2/addons/YDMysqlDump%0A%09YDFramework2/addons/YDPdfReport%20doc%20doc_src%20examples/database%0A%09examples/forum%20examples/weblog&In-Reply-To=%3C200701162009.l0GK9spT017219%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2317 - in YDFramework2.0/trunk: . YDFramework2	YDFramework2/YDClasses YDFramework2/YDClasses/YDDatabaseDrivers	YDFramework2/YDClasses/YDFormElements	YDFramework2/YDClasses/YDFormRenderers	YDFramework2/addons/YDAjax YDFramework2/addons/YDAjax/editors	YDFramework2/addons/YDAkismet YDFramework2/addons/YDBBCode	YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDCaptcha YDFramework2/addons/YDCart	YDFramework2/addons/YDDatabaseObject	YDFramework2/addons/YDDatabaseQuery	YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers	YDFramework2/addons/YDFeedCreator YDFramework2/addons/YDGraph	YDFramework2/addons/YDGraphPie YDFramework2/addons/YDInstaller	YDFramework2/addons/YDLoadconfig YDFramework2/addons/YDMysqlDump	YDFramework2/addons/YDPdfReport doc doc_src examples/database	examples/forum examples/weblog">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 16 21:09:54 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000909.html">[ydf-devel] Yellow Duck Framework 2.1 released
+</A></li>
+        <LI>Next message: <A HREF="000911.html">[ydf-devel] r2318 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#910">[ date ]</a>
+              <a href="thread.html#910">[ thread ]</a>
+              <a href="subject.html#910">[ subject ]</a>
+              <a href="author.html#910">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-16 21:09:38 +0100 (Tue, 16 Jan 2007)
+New Revision: 2317
+
+Added:
+   YDFramework2.0/trunk/doc/build_api.sh
+   YDFramework2.0/trunk/doc_src/build_html.sh
+   YDFramework2.0/trunk/doc_src/build_pdf.sh
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/html2pdf.php
+   YDFramework2.0/trunk/_default.htaccess
+   YDFramework2.0/trunk/doc/docs_api.dxy
+   YDFramework2.0/trunk/doc/docs_api_footer.html
+   YDFramework2.0/trunk/doc/index.html
+   YDFramework2.0/trunk/doc_src/_ydframework.xml
+   YDFramework2.0/trunk/doc_src/build_html.bat
+   YDFramework2.0/trunk/doc_src/build_pdf.bat
+   YDFramework2.0/trunk/doc_src/fixfo.vbs
+   YDFramework2.0/trunk/doc_src/installing.xml
+   YDFramework2.0/trunk/examples/database/.htaccess
+   YDFramework2.0/trunk/examples/forum/.htaccess
+   YDFramework2.0/trunk/examples/weblog/.htaccess
+   YDFramework2.0/trunk/index.php
+Log:
+Updated the copyrights and version notices (forgot to do that for 2.1.0-final). Will fix it in a 2.1.1-final).
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree2.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDate.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDEncryption.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDError.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFileSystem.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Autocompleter.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_BBTextArea.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Button.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Captcha.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Checkbox.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateSelect.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_DateTimeSelect.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Div.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_File.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Hidden.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Image.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Img.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Link.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Password.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Reset.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Select.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SelectImage.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Span.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Submit.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Text.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextArea.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TextAreaCounter.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_TimeSelect.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Timezone.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_xml.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDHttpClient.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDLog.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDResult.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUtil.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDXml.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDXmlRpc.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+@@ -26,7 +26,7 @@
+      *	The Yellow Duck Framework is web application framework created by Pieter Claerhout. More information can be
+      *	found on <A HREF="http://ydframework.berlios.de/.">http://ydframework.berlios.de/.</A>
+      *
+-     *	(c) Copyright 2002-2005 Pieter Claerhout
++     *	(c) Copyright 2002-2007 Pieter Claerhout
+      *
+      *	Webpage: <A HREF="http://ydframework.berlios.de/">http://ydframework.berlios.de/</A>
+      *
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_process.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_process.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/editors/YDAjaxEditor.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+@@ -45,7 +45,7 @@
+             // Setup the module
+             $this-&gt;_author = 'Pieter Claerhout';
+             $this-&gt;_version = '1.0';
+-            $this-&gt;_copyright = '(c) Copyright 2002-2005 Pieter Claerhout';
++            $this-&gt;_copyright = '(c) Copyright 2002-2007 Pieter Claerhout';
+             $this-&gt;_description = 'This class is an interface to the Akismet comment spam checking webservice.';
+ 
+             // Set the variables
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDBBCode/YDBBCode.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+@@ -50,7 +50,7 @@
+             // Setup the module
+             $this-&gt;_author = 'Pieter Claerhout';
+             $this-&gt;_version = '1.0';
+-            $this-&gt;_copyright = '(c) Copyright 2002-2005 Pieter Claerhout';
++            $this-&gt;_copyright = '(c) Copyright 2002-2007 Pieter Claerhout';
+             $this-&gt;_description = 'This class implements a BBCode parser. By default, it supports a number of standard '
+                                . 'codes that can be implemented. The following codes are supported by default: img, '
+                                . 'url, mail, email, color, b, i, u, code, quote, p, size';
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMAudit.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComp.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMForum.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMHelpdesk.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLanguages.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLink.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMLocks.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPage.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMRootmenu.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_system.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMStatistics_visits.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTemplates.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCart/YDCart.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+  
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_oracle.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_postgres.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQueryDrivers/YDDatabaseQueryDriver_sqlite.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator/YDFeedCreator.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+@@ -49,7 +49,7 @@
+             // Setup the module
+             $this-&gt;_author = 'Pieter Claerhout';
+             $this-&gt;_version = '1.0';
+-            $this-&gt;_copyright = '(c) 2005 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
++            $this-&gt;_copyright = '(c) 2002-2007 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>';
+             $this-&gt;_description = 'This addon class defines a RSS/ATOM feed. You can use this class to create RSS and '
+                                . 'Atom feeds in a very easy and straightforward way. If you set up your class instance, '
+                                . 'you can automatically output to the different versions of RSS and ATOM with the same '
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDGraph/YDGraph.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This program is free software; you can redistribute it and/or
+         modify it under the terms of the GNU General Public License
+@@ -140,8 +140,10 @@
+          *                 A float value between 0 and 1. 
+          *                 Default: 0.1
+          */
+-        function setPadding( $value = 0.1 ){
+-            $this-&gt;up_padding = $value;
++        function setPadding( $value = 0.1 ){
++
++            $this-&gt;up_padding = $value;
++
+         }
+ 
+         /**
+@@ -549,10 +551,13 @@
+ 
+             // plot graph
+             foreach($this-&gt;m_series as $series){
+-                
+-                $cnt = count($series-&gt;m_values);
+-                if ($cnt == 0) continue;
+                 
++
++                $cnt = count($series-&gt;m_values);
++
++                if ($cnt == 0) continue;
++
++                
+                 // LINE PLOT
+                 if($series-&gt;m_type == 'line'){
+                     $this-&gt;_set_style($this-&gt;m_image,$series-&gt;m_style,$series-&gt;m_strokeColor, $this-&gt;m_fillColor);
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDGraphPie/YDGraphPie.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This program is free software; you can redistribute it and/or
+         modify it under the terms of the GNU General Public License
+@@ -32,15 +32,20 @@
+     // Check if the framework is loaded
+     if ( ! defined( 'YD_FW_NAME' ) ) {
+         die( 'Yellow Duck Framework is not loaded.' );
+-    }
++    }
++
+     
+     include_once( YD_DIR_HOME_ADD .'/YDGraph/YDGraph.php' );
+-    
++    
++
+     /**
+      * This class implements an addon module that is able to draw pie graphs using the GD library.
+-     */
+-    class YDGraphPie extends YDAddOnModule {
+-        
++     */
++
++    class YDGraphPie extends YDAddOnModule {
++
++        
++
+         /**
+          *  This is the class constructor for the YDGraphPie class.
+          *
+@@ -48,30 +53,42 @@
+          *  @param  $height             (optional) the height of the graph in pixels
+          *  @param  $margin             (optional) the margin to keep around the graph
+          *  @param  $backgroundColor    (optional) the background color for the graph
+-         */
+-        function YDGraphPie( $width=400, $height=300, $margin=7, $backgroundColor='#ffffff' ) {
+-            
++         */
++
++        function YDGraphPie( $width=400, $height=300, $margin=7, $backgroundColor='#ffffff' ) {
++
++            
++
+             // Initialize the parent class
+-            $this-&gt;YDAddOnModule();
+-            
++            $this-&gt;YDAddOnModule();
++
++            
++
+             // Setup the module
+             $this-&gt;_author = &quot;David Bittencourt&quot;;
+             $this-&gt;_version = &quot;1.3&quot;;
+             $this-&gt;_copyright = &quot;(c) 2005 David Bittencourt, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">muitocomplicado at hotmail.com</A>&quot;;
+-            $this-&gt;_description = &quot;This class implements a pie chart rendering utility&quot;;
+-            
++            $this-&gt;_description = &quot;This class implements a pie chart rendering utility&quot;;
++
++            
++
+             // Setup the defaults
+             $this-&gt;m_title = &quot;&quot;;
+             $this-&gt;m_width = $width;
+             $this-&gt;m_height = $height;
+             $this-&gt;m_image = imagecreate ($this-&gt;m_width, $this-&gt;m_height);
+             $this-&gt;m_margin = $margin;
+-            $vBackColor = YDGraph::_decode_color($backgroundColor);
+-            $this-&gt;m_backgroundColor = imagecolorallocate ($this-&gt;m_image, $vBackColor[0], $vBackColor[1], $vBackColor[2]);
+-            
++            $vBackColor = YDGraph::_decode_color($backgroundColor);
++
++            $this-&gt;m_backgroundColor = imagecolorallocate ($this-&gt;m_image, $vBackColor[0], $vBackColor[1], $vBackColor[2]);
++
++            
++
+             $this-&gt;m_strokeColor = imagecolorallocate ($this-&gt;m_image, $vBackColor[0], $vBackColor[1], $vBackColor[2]);
+-            $this-&gt;m_fillColor = $this-&gt;m_backgroundColor;
+-            
++            $this-&gt;m_fillColor = $this-&gt;m_backgroundColor;
++
++            
++
+             $this-&gt;m_numberOfDecimals = 0;
+             $this-&gt;m_thousandsSeparator = ',';
+             $this-&gt;m_decimalSeparator = '.';
+@@ -79,35 +96,54 @@
+             $this-&gt;m_showtotal   = false;
+             $this-&gt;m_total       = null;
+             $this-&gt;m_formattotal = true;
+-            $this-&gt;m_totalstring = 'Total: ';
+-            
+-        }
+-        
++            $this-&gt;m_totalstring = 'Total: ';
++
++            
++
++        }
++
++        
++
+         /**
+-         *  This function creates the graph and either sends it to the browser
++         *  This function creates the graph and either sends it to the browser
++
+          *  of saves it to a file.
+          *
+-         *  @param  $file   (optional) If specified, the graph will be saved to
+-         *                  the indicated file. If left as default, the graph
++         *  @param  $file   (optional) If specified, the graph will be saved to
++
++         *                  the indicated file. If left as default, the graph
++
+          *                  will be outputted to the browser.
+-         */
+-        function plot( $file='' ) {
+-            
++         */
++
++        function plot( $file='' ) {
++
++            
++
+             // margins
+             $margin=$this-&gt;m_margin;
+             $marginy = $margin;
+-            $marginx = $margin+5;
+-            
++            $marginx = $margin+5;
++
++            
++
+             if($this-&gt;m_title){
+                 $marginy += $this-&gt;m_fontHeight*1.5;
+-            }
++            }
++
+             
+-            $marginbottom = $margin+5;
+-            $height = $this-&gt;m_height - $marginy - $marginbottom;
+-            $width = $this-&gt;m_width - $marginx - $margin;
+-            
+-            imagefilledrectangle($this-&gt;m_image, $marginx, $marginy, $marginx + $width, $marginy+$height , $this-&gt;m_fillColor);
+-            
++            $marginbottom = $margin+5;
++
++            $height = $this-&gt;m_height - $marginy - $marginbottom;
++
++            $width = $this-&gt;m_width - $marginx - $margin;
++
++            
++
++            imagefilledrectangle($this-&gt;m_image, $marginx, $marginy, $marginx + $width, $marginy+$height , $this-&gt;m_fillColor);
++
++            
++
+             // plot title
+             if($this-&gt;m_title){
+                 imagestring ($this-&gt;m_image,
+@@ -116,116 +152,223 @@
+                         $margin,
+                         $this-&gt;m_title,
+                         $this-&gt;m_textColor);
+-            }
+-            
+-            YDGraph::_set_style( $this-&gt;m_image, SOLID, $this-&gt;m_strokeColor, $this-&gt;m_fillColor );
+-            
+-            $sum = array_sum( $this-&gt;m_values );
+-                    
+-            $colors = array( '#CC3232', '#70DBDB', '#66CD00', '#FF4040', '#8A2BE2', '#5F9F9F', '#EED2EE', '#E9967A', '#6666FF', '#A2C257', '#EEB4B4', '#8F5E99', '#EEC900',  '#EE799F', '#B2DFEE', '#70DB93', '#F4A460', '#AAAAFF',     '#CC3232', '#70DBDB', '#66CD00', '#FF4040', '#8A2BE2', '#5F9F9F', '#EED2EE', '#E9967A', '#6666FF', '#A2C257', '#EEB4B4', '#8F5E99', '#EEC900',  '#EE799F', '#B2DFEE', '#70DB93', '#F4A460', '#AAAAFF' );
+-            
+-            // pieces
+-            $degrees = array();
+-            for($i=0; $i&lt;count( $this-&gt;m_values); $i++){
+-                $value = ( $this-&gt;m_values[$i]/$sum ) * 360;
+-                if( $value &gt; 0 &amp;&amp; floor( ( $value/360 ) * 100 ) &gt; 0 ) {
+-                    $degrees[$i] = $value;
+-                }
+-            }
+-            
+-            // sizes
+-            $diamx = $width/2;
+-            $diamy = $height;
+-            
+-            if ( $diamx &gt; $diamy ) {
+-                $diam = $diamy;
+-            } else {
+-                $diam = $diamx;
+-            }
+-            $radius = $diam/2;
+-            
+-            $x = $marginx + $radius;
+-            $y = $marginy + $radius;
+-            
+-            imagearc( $this-&gt;m_image, $x, $y, $diam, $diam, 0, 360, $this-&gt;m_strokeColor );
+-            
+-            // lines
+-            $last_angle = 0;
+-            foreach ( $degrees as $i =&gt; $deg ) {
+-                
+-                $last_angle = $last_angle+$deg;
+-                $end_x = floor($x + ($radius * cos($last_angle*pi()/180)));
+-                $end_y = floor($y + ($radius * sin($last_angle*pi()/180)));
+-                
+-                imageline( $this-&gt;m_image, $x, $y, $end_x, $end_y, $this-&gt;m_strokeColor );
++            }
++
++            
++
++            YDGraph::_set_style( $this-&gt;m_image, SOLID, $this-&gt;m_strokeColor, $this-&gt;m_fillColor );
++
++            
++
++            $sum = array_sum( $this-&gt;m_values );
++
++                    
++
++            $colors = array( '#CC3232', '#70DBDB', '#66CD00', '#FF4040', '#8A2BE2', '#5F9F9F', '#EED2EE', '#E9967A', '#6666FF', '#A2C257', '#EEB4B4', '#8F5E99', '#EEC900',  '#EE799F', '#B2DFEE', '#70DB93', '#F4A460', '#AAAAFF',     '#CC3232', '#70DBDB', '#66CD00', '#FF4040', '#8A2BE2', '#5F9F9F', '#EED2EE', '#E9967A', '#6666FF', '#A2C257', '#EEB4B4', '#8F5E99', '#EEC900',  '#EE799F', '#B2DFEE', '#70DB93', '#F4A460', '#AAAAFF' );
++
++            
++
++            // pieces
++
++            $degrees = array();
++
++            for($i=0; $i&lt;count( $this-&gt;m_values); $i++){
++
++                $value = ( $this-&gt;m_values[$i]/$sum ) * 360;
++
++                if( $value &gt; 0 &amp;&amp; floor( ( $value/360 ) * 100 ) &gt; 0 ) {
++
++                    $degrees[$i] = $value;
++
++                }
++
++            }
++
++            
++
++            // sizes
++
++            $diamx = $width/2;
++
++            $diamy = $height;
++
++            
++
++            if ( $diamx &gt; $diamy ) {
++
++                $diam = $diamy;
++
++            } else {
++
++                $diam = $diamx;
++
++            }
++
++            $radius = $diam/2;
++
++            
++
++            $x = $marginx + $radius;
++
++            $y = $marginy + $radius;
++
++            
++
++            imagearc( $this-&gt;m_image, $x, $y, $diam, $diam, 0, 360, $this-&gt;m_strokeColor );
++
++            
++
++            // lines
++
++            $last_angle = 0;
++
++            foreach ( $degrees as $i =&gt; $deg ) {
++
+                 
+-            }
+-            // colors
+-            $last_angle =0;
+-            $pointer = 0;
+-            $max_len = 0;
+-            foreach ( $degrees as $i =&gt; $deg ) {
+-                
+-                $pointer = $last_angle + $deg;
+-                $this_angle = ($last_angle + $pointer) / 2;
+-                $last_angle = $pointer;
+-                
+-                $end_x = floor($x + ($radius * cos($this_angle*pi()/180)));
+-                $end_y = floor($y + ($radius * sin($this_angle*pi()/180)));
+-                
+-                $mid_x = floor(($x+($end_x))/2);
+-                $mid_y = floor(($y+($end_y))/2);
+-                
+-                $hex_split = YDGraph::_decode_color( $colors[$i] );
+-                if ( isset( $this-&gt;m_colors[$i] ) ) {
+-                    $hex_split = YDGraph::_decode_color( $this-&gt;m_colors[$i] );
+-                }
+-                $piece_color = imagecolorallocate( $this-&gt;m_image, $hex_split[0],$hex_split[1],$hex_split[2]);
+-                imagefilltoborder( $this-&gt;m_image, $mid_x, $mid_y, $this-&gt;m_strokeColor, $piece_color );
+-                
+-                $percent = number_format( ( $deg/360 ) * 100, $this-&gt;m_numberOfDecimals, $this-&gt;m_decimalSeparator, $this-&gt;m_thousandsSeparator );
+-                $max_len = strlen( $percent ) &gt; $max_len ? strlen( $percent ) : $max_len;
+-                
+-            }
+-            
+-            // labels
+-            $last_position = $marginy;
+-            foreach ( $degrees as $i =&gt; $deg ) {
+-                
+-                $percent = number_format( ( $deg/360 ) * 100, $this-&gt;m_numberOfDecimals, $this-&gt;m_decimalSeparator, $this-&gt;m_thousandsSeparator );
+-                
+-                $align = 0;
+-                switch ( $this-&gt;m_labelsFont ) {
+-                    case 1: $align = 1; break;
+-                    case 2: $align = -1; break;
+-                    case 3:
+-                    case 4: $align = -2; break;
+-                    case 5:
+-                    case 6:
+-                    case 7:
+-                    case 8: $align = -3; break;
+-                }
+-                
+-                if ( $this-&gt;m_labelsFontHeight + 3 &gt;= 15 ) {
+-                    $last_position += $this-&gt;m_labelsFontHeight + 3;
+-                } else {
+-                    $last_position += 15;
+-                }
+-                
+-                $hex_split = YDGraph::_decode_color( $colors[$i] );
+-                if ( isset( $this-&gt;m_colors[$i] ) ) {
+-                    $hex_split = YDGraph::_decode_color( $this-&gt;m_colors[$i] );
+-                }
+-                $piece_color = imagecolorallocate( $this-&gt;m_image, $hex_split[0],$hex_split[1],$hex_split[2]);
+-                
+-                $w = $x+$radius;
+-                $h = $last_position;
+-                
+-                imagefilledrectangle( $this-&gt;m_image, $w+20, $h, $w+30, $h+10, $piece_color );
+-                imagestring( $this-&gt;m_image, $this-&gt;m_labelsFont, $w+40, $h+$align, str_repeat( ' ', ( $max_len - strlen( $percent ) ) ) . $percent . &quot;% &quot; . $this-&gt;m_labels[$i], $this-&gt;m_labelsTextColor );
+-                
++
++                $last_angle = $last_angle+$deg;
++
++                $end_x = floor($x + ($radius * cos($last_angle*pi()/180)));
++
++                $end_y = floor($y + ($radius * sin($last_angle*pi()/180)));
++
++                
++
++                imageline( $this-&gt;m_image, $x, $y, $end_x, $end_y, $this-&gt;m_strokeColor );
++
++                
+             }
+ 
++            // colors
++
++            $last_angle =0;
++
++            $pointer = 0;
++
++            $max_len = 0;
++
++            foreach ( $degrees as $i =&gt; $deg ) {
++
++                
++
++                $pointer = $last_angle + $deg;
++
++                $this_angle = ($last_angle + $pointer) / 2;
++
++                $last_angle = $pointer;
++
++                
++
++                $end_x = floor($x + ($radius * cos($this_angle*pi()/180)));
++
++                $end_y = floor($y + ($radius * sin($this_angle*pi()/180)));
++
++                
++
++                $mid_x = floor(($x+($end_x))/2);
++
++                $mid_y = floor(($y+($end_y))/2);
++
++                
++
++                $hex_split = YDGraph::_decode_color( $colors[$i] );
++
++                if ( isset( $this-&gt;m_colors[$i] ) ) {
++
++                    $hex_split = YDGraph::_decode_color( $this-&gt;m_colors[$i] );
++
++                }
++
++                $piece_color = imagecolorallocate( $this-&gt;m_image, $hex_split[0],$hex_split[1],$hex_split[2]);
++
++                imagefilltoborder( $this-&gt;m_image, $mid_x, $mid_y, $this-&gt;m_strokeColor, $piece_color );
++
++                
++
++                $percent = number_format( ( $deg/360 ) * 100, $this-&gt;m_numberOfDecimals, $this-&gt;m_decimalSeparator, $this-&gt;m_thousandsSeparator );
++
++                $max_len = strlen( $percent ) &gt; $max_len ? strlen( $percent ) : $max_len;
++
++                
++
++            }
++
++            
++
++            // labels
++
++            $last_position = $marginy;
++
++            foreach ( $degrees as $i =&gt; $deg ) {
++
++                
++
++                $percent = number_format( ( $deg/360 ) * 100, $this-&gt;m_numberOfDecimals, $this-&gt;m_decimalSeparator, $this-&gt;m_thousandsSeparator );
++
++                
++
++                $align = 0;
++
++                switch ( $this-&gt;m_labelsFont ) {
++
++                    case 1: $align = 1; break;
++
++                    case 2: $align = -1; break;
++
++                    case 3:
++
++                    case 4: $align = -2; break;
++
++                    case 5:
++
++                    case 6:
++
++                    case 7:
++
++                    case 8: $align = -3; break;
++
++                }
++
++                
++
++                if ( $this-&gt;m_labelsFontHeight + 3 &gt;= 15 ) {
++
++                    $last_position += $this-&gt;m_labelsFontHeight + 3;
++
++                } else {
++
++                    $last_position += 15;
++
++                }
++
++                
++
++                $hex_split = YDGraph::_decode_color( $colors[$i] );
++
++                if ( isset( $this-&gt;m_colors[$i] ) ) {
++
++                    $hex_split = YDGraph::_decode_color( $this-&gt;m_colors[$i] );
++
++                }
++
++                $piece_color = imagecolorallocate( $this-&gt;m_image, $hex_split[0],$hex_split[1],$hex_split[2]);
++
++                
++
++                $w = $x+$radius;
++
++                $h = $last_position;
++
++                
++
++                imagefilledrectangle( $this-&gt;m_image, $w+20, $h, $w+30, $h+10, $piece_color );
++
++                imagestring( $this-&gt;m_image, $this-&gt;m_labelsFont, $w+40, $h+$align, str_repeat( ' ', ( $max_len - strlen( $percent ) ) ) . $percent . &quot;% &quot; . $this-&gt;m_labels[$i], $this-&gt;m_labelsTextColor );
++
++                
++
++            }
++
+             if ( $this-&gt;m_showtotal ) {
+                 if ( isset( $this-&gt;m_total ) ) {
+                     $sum = $this-&gt;m_total;
+@@ -235,7 +378,8 @@
+                 }
+                 imagestring( $this-&gt;m_image, $this-&gt;m_labelsFont, $w+20, $h+20, $this-&gt;m_totalstring . $sum, $this-&gt;m_labelsTextColor );
+             }
+-            
++            
++
+             if( strlen($file) &gt; 0 ){
+                 switch ( YDConfig::get( 'YD_GRAPH_TYPE' ) ) {
+                     case IMG_GIF:
+@@ -266,10 +410,14 @@
+                         break;
+                 }
+ 
+-            }
+-            
+-        }
+-        
++            }
++
++            
++
++        }
++
++        
++
+         /**
+          *  This function sets the display format
+          *
+@@ -281,8 +429,10 @@
+             $this-&gt;m_numberOfDecimals = $numberOfDecimals;
+             $this-&gt;m_thousandsSeparator = $thousandsSeparator;
+             $this-&gt;m_decimalSeparator = $decimalSeparator;
+-        }
+-        
++        }
++
++        
++
+         /**
+          *  This function sets labels
+          *
+@@ -297,17 +447,24 @@
+             $this-&gt;m_labelsFont = $font;
+             $this-&gt;m_labelsFontWidth = imagefontwidth($font);
+             $this-&gt;m_labelsFontHeight = imagefontheight($font);
+-        }
+-        
++        }
++
++        
++
+         /**
+          *  This function sets the values
+          *
+          *  @param $values       Array of values
+-         */
+-        function setValues( &amp; $values ) {
+-            $this-&gt;m_values = &amp; $values;
+-        }
+-        
++         */
++
++        function setValues( &amp; $values ) {
++
++            $this-&gt;m_values = &amp; $values;
++
++        }
++
++        
++
+         /**
+          *  This function sets the title
+          *
+@@ -323,15 +480,20 @@
+             $this-&gt;m_font = $font;
+             $this-&gt;m_fontWidth = imagefontwidth($font);
+             $this-&gt;m_fontHeight = imagefontheight($font);
+-        }
+-        
++        }
++
++        
++
+         /**
+          *  This function sets the background colors of the pieces
+          *
+          *  @param $colors       An array with the colors
+-         */
+-        function setColors( &amp; $colors ) {
+-            $this-&gt;m_colors = &amp; $colors;
++         */
++
++        function setColors( &amp; $colors ) {
++
++            $this-&gt;m_colors = &amp; $colors;
++
+         }
+         
+         /**
+@@ -355,8 +517,10 @@
+         function showTotal( $string='Total: ', $show=true ) {
+             $this-&gt;m_showtotal   = (boolean) $show;
+             $this-&gt;m_totalstring = $string;
+-        }
+-        
++        }
++
++        
++
+     }
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This program is free software; you can redistribute it and/or
+         modify it under the terms of the GNU General Public License
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDInstaller/YDInstaller_renderer.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDLoadconfig/YDLoadconfig.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/YDPdfReport.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,7 +2,7 @@
+  
+     /*
+ 
+-        Yellow Duck Framework version 2.0
++        Yellow Duck Framework version 2.1
+         Copyright (C) (c) copyright 2004 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/html2pdf.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/html2pdf.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDPdfReport/html2pdf.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,7 +2,7 @@
+  
+     /*
+ 
+-        Yellow Duck Framework version 2.0
++        Yellow Duck Framework version 2.1
+         Copyright (C) (c) copyright 2004 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+
+Modified: YDFramework2.0/trunk/_default.htaccess
+===================================================================
+--- YDFramework2.0/trunk/_default.htaccess	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/_default.htaccess	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,5 +1,5 @@
+-# Yellow Duck Framework version 2.0
+-# (c) copyright 2002-2005 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
++# Yellow Duck Framework version 2.1
++# (c) copyright 2002-2007 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+ 
+ # Denying direct access to the templates
+ &lt;FilesMatch &quot;(.tpl|config.php)$&quot;&gt;
+
+Added: YDFramework2.0/trunk/doc/build_api.sh
+===================================================================
+--- YDFramework2.0/trunk/doc/build_api.sh	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc/build_api.sh	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -0,0 +1,5 @@
++#!/bin/bash
++rm -Rf ./api
++mkdir api
++doxygen ./docs_api.dxy
++open -a Safari api/index.html
+
+
+Property changes on: YDFramework2.0/trunk/doc/build_api.sh
+___________________________________________________________________
+Name: svn:executable
+   + *
+Name: svn:eol-style
+   + native
+
+Modified: YDFramework2.0/trunk/doc/docs_api.dxy
+===================================================================
+--- YDFramework2.0/trunk/doc/docs_api.dxy	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc/docs_api.dxy	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -4,7 +4,7 @@
+ # General configuration options
+ #---------------------------------------------------------------------------
+ PROJECT_NAME           = &quot;Yellow Duck Framework&quot;
+-PROJECT_NUMBER         = &quot;version 2.0&quot;
++PROJECT_NUMBER         = &quot;version 2.1&quot;
+ OUTPUT_DIRECTORY       = 
+ OUTPUT_LANGUAGE        = English
+ #USE_WINDOWS_ENCODING   = YES
+
+Modified: YDFramework2.0/trunk/doc/docs_api_footer.html
+===================================================================
+--- YDFramework2.0/trunk/doc/docs_api_footer.html	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc/docs_api_footer.html	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,7 +2,7 @@
+ &lt;hr size=&quot;1&quot; noshade&gt;
+ &lt;address&gt;
+     &lt;small&gt;
+-        Yellow Duck Framework 2.0 by Pieter Claerhout,
++        Yellow Duck Framework 2.1 by Pieter Claerhout,
+         &lt;a href=&quot;ydframework.berlios.de&quot;&gt;ydframework.berlios.de&lt;/a&gt;
+     &lt;/small&gt;
+ &lt;/address&gt;
+
+Modified: YDFramework2.0/trunk/doc/index.html
+===================================================================
+--- YDFramework2.0/trunk/doc/index.html	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc/index.html	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,7 +1,7 @@
+ &lt;html&gt;
+ 
+ &lt;head&gt;
+-    &lt;title&gt;Yellow Duck Framework 2.0&lt;/title&gt;
++    &lt;title&gt;Yellow Duck Framework 2.1&lt;/title&gt;
+     &lt;style&gt;
+         td { border-bottom: 1px solid #FFCC00; }
+         P,TD,LI,INPUT,SELECT,TEXTAREA{background-color:#FFE9A6;font:13px/1.3 Verdana}
+@@ -30,15 +30,15 @@
+ &lt;body&gt;
+ 
+     &lt;div class=&quot;header&quot;&gt;
+-        &lt;h2&gt;Yellow Duck Framework 2.0&lt;/h2&gt;
++        &lt;h2&gt;Yellow Duck Framework 2.1&lt;/h2&gt;
+     &lt;/div&gt;
+ 
+     &lt;div class=&quot;page&quot;&gt;
+         &lt;h3&gt;Documentation&lt;/h3&gt;
+         &lt;br /&gt;
+-        &gt; &lt;a href=&quot;userguide/index.html&quot;&gt;Yellow Duck Framework 2.0 User Guide&lt;/a&gt; (HTML)
++        &gt; &lt;a href=&quot;userguide/index.html&quot;&gt;Yellow Duck Framework 2.1 User Guide&lt;/a&gt; (HTML)
+         &lt;br /&gt;
+-        &gt; &lt;a href=&quot;api/index.html&quot;&gt;Yellow Duck Framework 2.0 API&lt;/a&gt; (HTML)
++        &gt; &lt;a href=&quot;api/index.html&quot;&gt;Yellow Duck Framework 2.1 API&lt;/a&gt; (HTML)
+         &lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+         &lt;h3&gt;License&lt;/h3&gt;
+         &lt;br /&gt;
+@@ -50,7 +50,7 @@
+     &lt;/div&gt;
+ 
+     &lt;div class=&quot;copyright&quot;&gt;
+-        (c) Copyright 2002-2005 by &lt;a href=&quot;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&quot;&gt;Pieter Claerhout&lt;/a&gt;. All rights reserved.
++        (c) Copyright 2002-2007 by &lt;a href=&quot;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&quot;&gt;Pieter Claerhout&lt;/a&gt;. All rights reserved.
+     &lt;/div&gt;
+ 
+ &lt;/body&gt;
+
+Modified: YDFramework2.0/trunk/doc_src/_ydframework.xml
+===================================================================
+--- YDFramework2.0/trunk/doc_src/_ydframework.xml	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc_src/_ydframework.xml	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -50,7 +50,7 @@
+ &lt;book&gt;
+ 
+     &lt;bookinfo&gt;
+-        &lt;title&gt;Yellow Duck Framework 2.0&lt;/title&gt;
++        &lt;title&gt;Yellow Duck Framework 2.1&lt;/title&gt;
+         &lt;subtitle&gt;User Guide&lt;/subtitle&gt;
+         &lt;authorgroup&gt;
+             &lt;author&gt;
+@@ -59,11 +59,11 @@
+             &lt;/author&gt;
+         &lt;/authorgroup&gt;
+         &lt;copyright&gt;
+-            &lt;year&gt;2002&lt;/year&gt;&lt;year&gt;2005&lt;/year&gt;
++            &lt;year&gt;2002&lt;/year&gt;&lt;year&gt;2007&lt;/year&gt;
+             &lt;holder role=&quot;mailto:<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>&quot;&gt;Pieter Claerhout&lt;/holder&gt;
+         &lt;/copyright&gt;
+         &lt;abstract&gt;
+-            &lt;para&gt;This document contains the user guide for the Yellow Duck Framework version 2.0.&lt;/para&gt;
++            &lt;para&gt;This document contains the user guide for the Yellow Duck Framework version 2.1.&lt;/para&gt;
+             &lt;para&gt;The Yellow Duck Framework is an object oriented framework written in &lt;ulink url=&quot;<A HREF="http://www.php.net/">http://www.php.net/</A>&quot;&gt;PHP&lt;/ulink&gt; which makes it a lot easier and faster to create websites and web applications.&lt;/para&gt;
+         &lt;/abstract&gt;
+     &lt;/bookinfo&gt;
+
+Modified: YDFramework2.0/trunk/doc_src/build_html.bat
+===================================================================
+--- YDFramework2.0/trunk/doc_src/build_html.bat	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc_src/build_html.bat	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,7 +1,7 @@
+ @echo off
+ 
+-rem Yellow Duck Framework version 2.0
+-rem Copyright (c) copyright 2002-2005 Pieter Claerhout
++rem Yellow Duck Framework version 2.1
++rem Copyright (c) copyright 2002-2007 Pieter Claerhout
+ rem
+ rem This library is free software; you can redistribute it and/or
+ rem modify it under the terms of the GNU Lesser General Public
+
+Added: YDFramework2.0/trunk/doc_src/build_html.sh
+===================================================================
+--- YDFramework2.0/trunk/doc_src/build_html.sh	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc_src/build_html.sh	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -0,0 +1,43 @@
++#!/bin/bash
++
++# Yellow Duck Framework version 2.1
++# Copyright (c) copyright 2002-2007 Pieter Claerhout
++# rem
++# This library is free software; you can redistribute it and/or
++# modify it under the terms of the GNU Lesser General Public
++# License as published by the Free Software Foundation; either
++# version 2.1 of the License, or (at your option) any later version.
++# rem
++# This library is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++# Lesser General Public License for more details.
++# rem
++# You should have received a copy of the GNU Lesser General Public
++# License along with this library; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++# Print some general info
++echo Yellow Duck Framework 2.1
++echo Building HTML version of the User Guide
++echo
++
++# Delete the previous directories
++rm -Rf html
++
++# Create the directories
++mkdir html
++
++# Copy the images
++cp images/*.gif html
++cp docbook/images/note.gif html
++cp docbook/images/warning.gif html
++
++# Copy the stylesheet
++cp style.css html
++
++# Create outputs
++xsltproc --xinclude --output html/index.html xsl_html.xsl _ydframework.xml
++
++# Open the result
++open -a Safari html/index.html
+
+
+Property changes on: YDFramework2.0/trunk/doc_src/build_html.sh
+___________________________________________________________________
+Name: svn:executable
+   + *
+Name: svn:eol-style
+   + native
+
+Modified: YDFramework2.0/trunk/doc_src/build_pdf.bat
+===================================================================
+--- YDFramework2.0/trunk/doc_src/build_pdf.bat	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc_src/build_pdf.bat	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,7 +1,7 @@
+ @echo off
+ 
+-rem Yellow Duck Framework version 2.0
+-rem Copyright (c) copyright 2002-2005 Pieter Claerhout
++rem Yellow Duck Framework version 2.1
++rem Copyright (c) copyright 2002-2007 Pieter Claerhout
+ rem
+ rem This library is free software; you can redistribute it and/or
+ rem modify it under the terms of the GNU Lesser General Public
+
+Added: YDFramework2.0/trunk/doc_src/build_pdf.sh
+===================================================================
+--- YDFramework2.0/trunk/doc_src/build_pdf.sh	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc_src/build_pdf.sh	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -0,0 +1,57 @@
++#!/bin/bash
++
++# Yellow Duck Framework version 2.1
++# Copyright (c) copyright 2002-2007 Pieter Claerhout
++# rem
++# This library is free software; you can redistribute it and/or
++# modify it under the terms of the GNU Lesser General Public
++# License as published by the Free Software Foundation; either
++# version 2.1 of the License, or (at your option) any later version.
++# rem
++# This library is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++# Lesser General Public License for more details.
++# rem
++# You should have received a copy of the GNU Lesser General Public
++# License along with this library; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++# Print some general info
++echo Yellow Duck Framework 2.1
++echo Building PDF version of the User Guide
++echo
++
++# Delete the previous directories
++rm -Rf pdf
++
++# Create the directories
++mkdir pdf
++
++# Copy the images
++cp images/*.gif pdf
++cp images/*.svg pdf
++cp docbook/images/note.gif pdf
++cp docbook/images/warning.gif pdf
++
++# Create outputs
++echo Creating YDFramework2.fo
++xsltproc --xinclude --output pdf/YDFramework2.fo xsl_fo.xsl _ydframework.xml
++
++# Fix the FO document
++echo Fixing fontsizes
++python fixfo.py pdf/YDFramework2.fo
++
++# Create the PDF
++echo Converting YDFramework2.fo to PDF
++fop -q -c fop_config.xml pdf/YDFramework2.fo pdf/YDFramework2.pdf
++
++# Cleanup
++rm -f pdf/YDFramework2.fo
++rm -f pdf/*.gif
++rm -f pdf/*.svg
++
++# Open the result
++open -a Preview pdf/YDFramework2.pdf
++
++pause
+\ No newline at end of file
+
+
+Property changes on: YDFramework2.0/trunk/doc_src/build_pdf.sh
+___________________________________________________________________
+Name: svn:executable
+   + *
+Name: svn:eol-style
+   + native
+
+Modified: YDFramework2.0/trunk/doc_src/fixfo.vbs
+===================================================================
+--- YDFramework2.0/trunk/doc_src/fixfo.vbs	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc_src/fixfo.vbs	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,5 +1,5 @@
+-' Yellow Duck Framework version 2.0
+-' Copyright (C) (c) copyright 2004 Pieter Claerhout
++' Yellow Duck Framework version 2.1
++' Copyright (C) (c) copyright 2002-2007 Pieter Claerhout
+ ' 
+ ' This library is free software; you can redistribute it and/or
+ ' modify it under the terms of the GNU Lesser General Public
+
+Modified: YDFramework2.0/trunk/doc_src/installing.xml
+===================================================================
+--- YDFramework2.0/trunk/doc_src/installing.xml	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/doc_src/installing.xml	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -16,7 +16,7 @@
+             &lt;listitem&gt;Webserver capable of executing PHP scripts, such as &lt;ulink url=&quot;<A HREF="http://httpd.apache.org/">http://httpd.apache.org/</A>&quot;&gt;Apache&lt;/ulink&gt; or &lt;ulink url=&quot;<A HREF="http://www.microsoft.com/iis/">http://www.microsoft.com/iis/</A>&quot;&gt;Microsoft IIS&lt;/ulink&gt;&lt;/listitem&gt;
+         &lt;/itemizedlist&gt;
+ 
+-        &lt;para&gt;The Yellow Duck Framework was primarily tested on the Windows platform and also has undergone extensive testing on Linux based systems. Currently, the Yellow Duck Framework is only supported with PHP version 4. PHP 5 works but the Yellow Duck Framework 2.0 will not take advantage of the new features provided with PHP 5 (such as exceptions and the new object model). The testing is mainly done using the Apache webserver.&lt;/para&gt;
++        &lt;para&gt;The Yellow Duck Framework was primarily tested on the Windows platform and also has undergone extensive testing on Linux based systems. Currently, the Yellow Duck Framework is only supported with PHP version 4. PHP 5 works but the Yellow Duck Framework 2.1 will not take advantage of the new features provided with PHP 5 (such as exceptions and the new object model). The testing is mainly done using the Apache webserver.&lt;/para&gt;
+ 
+         &lt;warning&gt;It is preferred to run PHP as an Apache module or as an Microsft IIS ISAPI module for achieving the best performance. The Yellow Duck Framework works equally well under a CGI as well as under an mod_php environment.&lt;/warning&gt;
+ 
+@@ -32,7 +32,7 @@
+ 
+         &lt;xi:include xmlns:xi=&quot;<A HREF="http://www.w3.org/2001/XInclude">http://www.w3.org/2001/XInclude</A>&quot; href=&quot;examples/installing_001.xml&quot; /&gt;
+ 
+-        &lt;para&gt;The main directory of the framework, called &lt;literal&gt;YDFramework-2.0&lt;/literal&gt; in this example, contains all the different files for the framework, including documentation, examples and license information. In this directory, there is a directory called &lt;literal&gt;YDFramework2&lt;/literal&gt;, which contains the core framework files. There are a number of subdirectories in the &lt;literal&gt;YDFramework2&lt;/literal&gt; directory which each have a specific function:&lt;/para&gt;
++        &lt;para&gt;The main directory of the framework, called &lt;literal&gt;YDFramework2&lt;/literal&gt; in this example, contains all the different files for the framework, including documentation, examples and license information. In this directory, there is a directory called &lt;literal&gt;YDFramework2&lt;/literal&gt;, which contains the core framework files. There are a number of subdirectories in the &lt;literal&gt;YDFramework2&lt;/literal&gt; directory which each have a specific function:&lt;/para&gt;
+ 
+         &lt;itemizedlist spacing=&quot;compact&quot;&gt;
+             &lt;listitem&gt;&lt;emphasis role=&quot;bold&quot;&gt;&lt;literal&gt;3rdparty&lt;/literal&gt;:&lt;/emphasis&gt; This directory contains the third party libraries that are needed for the Yellow Duck Framework to work properly. In here, you will find copies of &lt;ulink url=&quot;<A HREF="http://smarty.php.net/">http://smarty.php.net/</A>&quot;&gt;Smarty&lt;/ulink&gt; and &lt;ulink url=&quot;<A HREF="http://phpmailer.sourceforge.net/">http://phpmailer.sourceforge.net/</A>&quot;&gt;PHP Mailer&lt;/ulink&gt;.&lt;/listitem&gt;
+
+Modified: YDFramework2.0/trunk/examples/database/.htaccess
+===================================================================
+--- YDFramework2.0/trunk/examples/database/.htaccess	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/examples/database/.htaccess	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,5 +1,5 @@
+-# Yellow Duck Framework version 2.0
+-# (c) copyright 2004 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
++# Yellow Duck Framework version 2.1
++# (c) copyright 2002-2007 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+ 
+ # Denying direct access to the templates
+ &lt;FilesMatch &quot;(tpl|config.php|includes|index.db)$&quot;&gt;
+
+Modified: YDFramework2.0/trunk/examples/forum/.htaccess
+===================================================================
+--- YDFramework2.0/trunk/examples/forum/.htaccess	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/examples/forum/.htaccess	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,5 +1,5 @@
+-# Yellow Duck Framework version 2.0
+-# (c) copyright 2004 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
++# Yellow Duck Framework version 2.1
++# (c) copyright 2002-2007 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+ 
+ # Denying direct access to the templates
+ &lt;FilesMatch &quot;(.tpl|config.php)$&quot;&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/.htaccess
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/.htaccess	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/examples/weblog/.htaccess	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -1,5 +1,5 @@
+-# Yellow Duck Framework version 2.0
+-# (c) copyright 2004 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
++# Yellow Duck Framework version 2.1
++# (c) copyright 2002-2007 Pieter Claerhout, <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A>
+ 
+ # Denying direct access to the templates
+ &lt;FilesMatch &quot;(.tpl)$&quot;&gt;
+
+Modified: YDFramework2.0/trunk/index.php
+===================================================================
+--- YDFramework2.0/trunk/index.php	2007-01-16 12:59:08 UTC (rev 2316)
++++ YDFramework2.0/trunk/index.php	2007-01-16 20:09:38 UTC (rev 2317)
+@@ -2,8 +2,8 @@
+ 
+     /*
+ 
+-        Yellow Duck Framework version 2.0
+-        Copyright (c) copyright 2002-2005 Pieter Claerhout
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
+ 
+         This library is free software; you can redistribute it and/or
+         modify it under the terms of the GNU Lesser General Public
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000909.html">[ydf-devel] Yellow Duck Framework 2.1 released
+</A></li>
+	<LI>Next message: <A HREF="000911.html">[ydf-devel] r2318 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#910">[ date ]</a>
+              <a href="thread.html#910">[ thread ]</a>
+              <a href="subject.html#910">[ subject ]</a>
+              <a href="author.html#910">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

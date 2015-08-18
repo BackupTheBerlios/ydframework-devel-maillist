@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2231 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2231%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage&In-Reply-To=%3C200611201952.kAKJq7ag020040%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000793.html">
+   <LINK REL="Next"  HREF="000795.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2231 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2231%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20include/languages%20manage&In-Reply-To=%3C200611201952.kAKJq7ag020040%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2231 - in YDFramework2.0/trunk/examples/weblog: .	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 20 20:52:07 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000793.html">[ydf-devel] r2230 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000795.html">[ydf-devel] Akismet feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#794">[ date ]</a>
+              <a href="thread.html#794">[ thread ]</a>
+              <a href="subject.html#794">[ subject ]</a>
+              <a href="author.html#794">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-20 20:52:06 +0100 (Mon, 20 Nov 2006)
+New Revision: 2231
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+Log:
+Changed the comment mechanism to allow only 1 comment each 10 seconds for each individual IP number. This should reduce the number of spam messages that actually get to the system.
+
+I mainly did this because yellowduck.be is suffering quite heavily from comment spam and it's affecting the used bandwidth. By just spawning a small error message in case of a spam attack, this should now be better.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-20 19:25:23 UTC (rev 2230)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-20 19:52:06 UTC (rev 2231)
+@@ -132,6 +132,13 @@
+             $sql = 'DELETE FROM #_comments WHERE is_spam = 1 AND created &lt; (unix_timestamp()-604800)';
+             $this-&gt;db-&gt;executeSql( $sql );
+ 
++            // Delete the old IP numbers from spam check
++            $comment_interval = YDConfig::get( 'comment_interval', 10 );
++            if ( $comment_interval != '' &amp;&amp; is_numeric( $comment_interval ) ) {
++                $sql = 'DELETE FROM #_spamcheck WHERE lastvisit &lt; (unix_timestamp()-' . $comment_interval . ')';
++                $this-&gt;db-&gt;executeSql( $sql );
++            }
++
+             // Check against akismet if a key is there
+             if ( YDConfig::get( 'akismet_key', '' ) != '' ) {
+ 
+@@ -188,7 +195,7 @@
+         function upgradeSchemaIfNeeded() {
+ 
+             // The current weblog schema version
+-            $current_schema = 6;
++            $current_schema = 7;
+ 
+             // Get the schema version
+             $installed_schema = $this-&gt;getSchemaVersion();
+@@ -250,6 +257,19 @@
+                     );
+                 }
+ 
++                // Create the spamcheck table
++                if ( ! $this-&gt;dbmeta-&gt;tableExists( '#_spamcheck' ) ) {
++                    $this-&gt;db-&gt;executeSql(
++                          'CREATE TABLE #_spamcheck ('
++                        . '  id int(11) NOT NULL auto_increment,'
++                        . '  userip varchar(20) default NULL,'
++                        . '  lastvisit int(11) default NULL,'
++                        . '  PRIMARY KEY  (id),'
++                        . '  UNIQUE KEY userip (userip)'
++                        . ')'
++                    );
++                }
++
+                 // Update the schema information
+                 $this-&gt;setSchemaVersion( $current_schema );
+ 
+@@ -903,6 +923,24 @@
+             $this-&gt;db-&gt;executeSql( $sql );
+         }
+ 
++        // Check if we are in the spam_check table, which means we have a spam attack
++        function inSpamAttack() {
++            $comment_interval = YDConfig::get( 'comment_interval', 10 );
++            if ( $comment_interval != '' &amp;&amp; is_numeric( $comment_interval ) ) {
++                $sql = 'SELECT * FROM #_spamcheck WHERE userip = ' . $this-&gt;str( $_SERVER['REMOTE_ADDR'] );
++                return $this-&gt;db-&gt;getRecord( $sql );
++            }
++        }
++
++        // Mark ourselves in the spam check table
++        function spamCheckMark() {
++            $comment_interval = YDConfig::get( 'comment_interval', 10 );
++            if ( $comment_interval != '' &amp;&amp; is_numeric( $comment_interval ) ) {
++                $values = array( 'userip' =&gt; $_SERVER['REMOTE_ADDR'], 'lastvisit' =&gt; time() );
++                $this-&gt;db-&gt;executeInsert( '#_spamcheck', $values );
++            }
++        }
++
+         // Function to resize an uploaded image. Takes a YDFSImage object as it's argument
+         function resizeUploadedImage( $image ) {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-20 19:25:23 UTC (rev 2230)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-20 19:52:06 UTC (rev 2231)
+@@ -301,6 +301,8 @@
+ $GLOBALS['t']['cfg_blocked_ips'] = 'Blocked IP addresses separated by comma\'s. An asterix can be used as a wildcard.';
+ $GLOBALS['t']['cfg_akismet_key'] = 'Akismet API key (&lt;a href=&quot;<A HREF="http://wordpress.com/signup/">http://wordpress.com/signup/</A>&quot; target=&quot;_blank&quot;&gt;get one here&lt;/a&gt;)';
+ $GLOBALS['t']['cfg_max_img_size'] = 'Maximum image size';
++$GLOBALS['t']['cfg_comment_interval'] = 'Comment interval in seconds';
++$GLOBALS['t']['err_comment_interval_num'] = 'Comment interval should be numeric';
+ 
+ // manage/item.tpl
+ $GLOBALS['t']['item_title'] = 'Item Title';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-20 19:25:23 UTC (rev 2230)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-20 19:52:06 UTC (rev 2231)
+@@ -301,6 +301,8 @@
+ $GLOBALS['t']['cfg_blocked_ips'] = 'Geblokkeerde IP adressen gescheiden door comma\'s. Je kan een sterretje gebruiken als wildcard.';
+ $GLOBALS['t']['cfg_akismet_key'] = 'Akismet API key (&lt;a href=&quot;<A HREF="http://wordpress.com/signup/">http://wordpress.com/signup/</A>&quot; target=&quot;_blank&quot;&gt;hier te verkrijgen&lt;/a&gt;)';
+ $GLOBALS['t']['cfg_max_img_size'] = 'Maximale beeldgrootte';
++$GLOBALS['t']['cfg_comment_interval'] = 'Commentaar interval in seconden';
++$GLOBALS['t']['err_comment_interval_num'] = 'Commentaar interval moet een getal zijn';
+ 
+ // manage/item.tpl
+ $GLOBALS['t']['item_title'] = 'Item Titel';
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-11-20 19:25:23 UTC (rev 2230)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-11-20 19:52:06 UTC (rev 2231)
+@@ -82,6 +82,13 @@
+             // Process the form
+             if ( $form-&gt;validate() === true ) {
+ 
++                // Post request, so check comment interval
++                if ( $this-&gt;weblog-&gt;inSpamAttack() ) {
++                    die( '&lt;b&gt;ERROR:&lt;/b&gt; Comment interval exceeded. Refusing request.' );
++                } else {
++                    $this-&gt;weblog-&gt;spamCheckMark();
++                }
++
+                 // Get the form values
+                 $values = $form-&gt;getValues();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-11-20 19:25:23 UTC (rev 2230)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-11-20 19:52:06 UTC (rev 2231)
+@@ -98,6 +98,7 @@
+ 
+             $form-&gt;addElement( 'textarea', 'blocked_ips', t( 'cfg_blocked_ips' ), array( 'class' =&gt; 'tfMNoMCE' ) );
+             $form-&gt;addElement( 'text', 'akismet_key', t( 'cfg_akismet_key' ), array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'text', 'comment_interval', t( 'cfg_comment_interval' ), array( 'class' =&gt; 'tfM' ) );
+ 
+             $form-&gt;addElement( 'submit', '_cmdSubmit', t('OK'), array( 'class' =&gt; 'button' ) );
+ 
+@@ -113,6 +114,7 @@
+             $form-&gt;addRule( 'weblog_entries_fp', 'numeric', t( 'err_weblog_entries_fp_num' ) );
+             $form-&gt;addRule( 'max_syndicated_items', 'required', t( 'err_max_syndicated_items' ) );
+             $form-&gt;addRule( 'max_syndicated_items', 'numeric', t( 'err_max_syndicated_items_num' ) );
++            $form-&gt;addRule( 'comment_interval', 'numeric', t( 'err_comment_interval_num' ) );
+ 
+             // Add the filters
+             $form-&gt;addFilters( 
+@@ -174,6 +176,7 @@
+             $config['akismet_key']          = YDConfig::get( 'akismet_key',          '' );
+             $config['max_img_size_x']       = YDConfig::get( 'max_img_size_x',       '' );
+             $config['max_img_size_y']       = YDConfig::get( 'max_img_size_y',       '' );
++            $config['comment_interval']     = YDConfig::get( 'comment_interval',     10 );
+ 
+             // Return the configuration
+             return $config;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-11-20 19:25:23 UTC (rev 2230)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-11-20 19:52:06 UTC (rev 2231)
+@@ -144,6 +144,10 @@
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_akismet_key&quot;}&lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{$config.akismet_key|default:'-'}&lt;/td&gt;
+         &lt;/tr&gt;
++        &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_comment_interval&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;{$config.comment_interval|default:'-'}&lt;/td&gt;
++        &lt;/tr&gt;
+     &lt;/table&gt;
+     &lt;p&gt;&lt;input type=&quot;button&quot; class=&quot;button&quot; onClick=&quot;window.location='{$YD_SELF_SCRIPT}?do=edit';&quot; value=&quot;{t w=&quot;change_config&quot;}&quot; /&gt;
+ {/if}
+@@ -286,6 +290,10 @@
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.akismet_key.label_html}&lt;/td&gt;
+                 &lt;td class=&quot;adminRowL&quot;&gt;{$form.akismet_key.html}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.comment_interval.label_html}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$form.comment_interval.html}&lt;/td&gt;
++            &lt;/tr&gt;
+         &lt;/table&gt;
+         &lt;p&gt;{$form._cmdSubmit.html}&lt;/p&gt;
+     {$form.endtag}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000793.html">[ydf-devel] r2230 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000795.html">[ydf-devel] Akismet feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#794">[ date ]</a>
+              <a href="thread.html#794">[ thread ]</a>
+              <a href="subject.html#794">[ subject ]</a>
+              <a href="author.html#794">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

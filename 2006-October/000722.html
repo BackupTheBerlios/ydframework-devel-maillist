@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2185 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2185%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200610262206.k9QM6e9N019299%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000721.html">
+   <LINK REL="Next"  HREF="000723.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2185 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2185%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200610262206.k9QM6e9N019299%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2185 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Oct 27 00:06:40 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000721.html">[ydf-devel] r2184 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000723.html">[ydf-devel] r2186 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#722">[ date ]</a>
+              <a href="thread.html#722">[ thread ]</a>
+              <a href="subject.html#722">[ subject ]</a>
+              <a href="author.html#722">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-10-27 00:06:39 +0200 (Fri, 27 Oct 2006)
+New Revision: 2185
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+Log:
+on YDFormElement:
+  * new YDFormElement::getLabel(), returns the html label of an form element
+  * new YDFormElement::setLabelAttribute(), sets label attributes by placing the label inside a custom span when exporting
+  * new YDFormElement::toFullHTML(), returns the html of an element (including the label), useful for debugging
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-10-26 22:01:00 UTC (rev 2184)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-10-26 22:06:39 UTC (rev 2185)
+@@ -1277,6 +1277,7 @@
+             $this-&gt;_default = null;
+             $this-&gt;_raw_default = false;
+             $this-&gt;_isButton = false;
++			$this-&gt;_label_attributes = array();
+ 
+             // Indicate where the label should be
+             $this-&gt;_placeLabel = 'before';
+@@ -1486,13 +1487,30 @@
+         /**
+          *      Gets the label of the form element.
+          *
++         *      @param  $html   (Optional) Return label as html
+          *      @returns        The label of the form element.
+          */
+-        function getLabel() {
++        function getLabel( $html = false ) {
++
++			if ( $html ) return '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_label_attributes ) . '&gt;&lt;label for=&quot;' . $this-&gt;_attributes['id'] . '&quot;&gt;' . $this-&gt;_label . '&lt;/label&gt;&lt;/span&gt;';
++
+             return $this-&gt;_label;
+         }
+ 
++
+         /**
++         *      Sets label attribute
++         *
++         *      @param  $attribute	Attribute name
++         *      @param  $value 		Attribute value
++         */
++        function setLabelAttribute( $attribute, $value ) {
++
++			$this-&gt;_label_attributes[ $attribute ] = $value;
++        }
++
++
++        /**
+          *      This function returns a boolean indicating if the element value was
+          *      modified from it's default value.
+          *
+@@ -1541,7 +1559,7 @@
+                 'type'        =&gt; $this-&gt;_type,
+                 'label'       =&gt; $this-&gt;_label,
+                 'attributes'  =&gt; $this-&gt;_attributes,
+-                'label_html'  =&gt; '&lt;label for=&quot;' . $this-&gt;_attributes['id'] . '&quot;&gt;' . $this-&gt;_label . '&lt;/label&gt;',
++                'label_html'  =&gt; $this-&gt;getLabel( true ),
+                 'options'     =&gt; $this-&gt;_options,
+                 'placeLabel'  =&gt; $this-&gt;_placeLabel,
+                 'html'        =&gt; $this-&gt;toHtml(),
+@@ -1557,7 +1575,19 @@
+         function toHtml() {
+         }
+ 
++
+         /**
++         *  This function returns the element as HTML with label
++         *
++         *  @returns    The form element as HTML text.
++         */
++        function toFullHtml( $separator = '', $begin = '', $end = '') {
++		
++			return $begin . $this-&gt;getLabel( true ) . $separator . $this-&gt;toHTML() . $end;
++        }
++
++
++        /**
+          *	This function returns the default javascript event of this element
+          */
+         function getJSEvent(){ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000721.html">[ydf-devel] r2184 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000723.html">[ydf-devel] r2186 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#722">[ date ]</a>
+              <a href="thread.html#722">[ thread ]</a>
+              <a href="subject.html#722">[ subject ]</a>
+              <a href="author.html#722">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

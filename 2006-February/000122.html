@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1709 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1709%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples&In-Reply-To=%3C200602210943.k1L9hHF1006802%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000139.html">
+   <LINK REL="Next"  HREF="000123.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1709 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1709%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples&In-Reply-To=%3C200602210943.k1L9hHF1006802%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1709 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 21 10:43:17 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000139.html">[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000123.html">[ydf-devel] r1710 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#122">[ date ]</a>
+              <a href="thread.html#122">[ thread ]</a>
+              <a href="subject.html#122">[ subject ]</a>
+              <a href="author.html#122">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-21 10:42:48 +0100 (Tue, 21 Feb 2006)
+New Revision: 1709
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+   YDFramework2.0/trunk/examples/db_metadata.db
+   YDFramework2.0/trunk/examples/db_metadata.php
+Modified:
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+Added the YDDatabaseMetaData class which you can use to:
+- List tables in a database
+- List fields in a database table
+- List indexes in a database table.
+
+I also added an example on how to use the class.
+
+Feature Request #1772
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2006-02-21 08:04:45 UTC (rev 1708)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseMetaData.php	2006-02-21 09:42:48 UTC (rev 1709)
+@@ -0,0 +1,232 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDDatabase.php' );
++
++    /**
++     *  This class allows you to query the internal metadata from a database. It allows you to list tables, fields and
++     *  indexes for all supported database engines in the Yellow Duck Framework.
++     */
++    class YDDatabaseMetaData extends YDBase {
++
++        /**
++         *  Constructor. Set the database connection
++         *
++         *  @param $db             The YDDatabase object pointing to the database
++         */
++        function YDDatabaseMetaData( $db ) {
++            $this-&gt;db    = $db;
++        }
++
++        /**
++         *  This function lists the tables available for the current user in the database.
++         *
++         *  @returns The names of the tables as an array.
++         */
++        function getTables() {
++
++            // Start with an empty array
++            $tables = array();
++
++            // Check the database type
++            switch ( $this-&gt;db-&gt;getDriver() ) {
++
++                // MySQL
++                case 'mysql':
++                    $sql = 'show tables from ' . $this-&gt;db-&gt;getDatabase();
++                    $tables = $this-&gt;db-&gt;getValuesByName( $sql, 'tables_in_' . $this-&gt;db-&gt;getDatabase() );
++                    $tables = array_map( 'strtolower', $tables );
++                    break;
++
++                // PostgreSQL
++                case 'postgres':
++                    $sql = 'SELECT c.relname FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace '
++                         . 'WHERE c.relkind IN (\'r\',\'\') AND n.nspname NOT IN (\'pg_catalog\', \'pg_toast\') '
++                         . 'AND pg_catalog.pg_table_is_visible(c.oid)';
++                    $tables = $this-&gt;db-&gt;getValuesByName( $sql, 'relname' );
++                    break;
++
++                // Oracle
++                case 'oracle':
++                    $sql = 'select lower( table_name ) as table_name from user_tables';
++                    $tables = $this-&gt;db-&gt;getValuesByName( $sql, 'table_name' );
++                    break;
++
++                // SQLite
++                case 'sqlite':
++                    $sql = 'select lower( name ) as name from sqlite_master where type = \'table\'';
++                    $tables = $this-&gt;db-&gt;getValuesByName( $sql, 'name' );
++                    break;
++
++                // Default
++                default:
++                    trigger_error( $this-&gt;db-&gt;getDriver() . ' is not a supported database driver.', YD_ERROR );
++
++            }
++
++            // Return the list of tables
++            return $tables;
++
++        }
++
++        /**
++         *  This function lists the fields available in the specified table.
++         *
++         *  @param $table   The name of the table.
++         *
++         *  @returns The names of the fields in the table as an array.
++         */
++        function getFields( $table ) {
++
++            // Add the prefix to the table
++            $table = $this-&gt;_prefixTable( $table );
++
++            // Start with an empty array
++            $fields = array();
++
++            // Check the database type
++            switch ( $this-&gt;db-&gt;getDriver() ) {
++
++                // MySQL
++                case 'mysql':
++                    $sql = 'SHOW FIELDS FROM ' . $table;
++                    $fields = $this-&gt;db-&gt;getValuesByName( $sql, 'field' );
++                    $fields = array_map( 'strtolower', $fields );
++                    break;
++
++                // PostgreSQL
++                case 'postgres':
++                    $sql = 'SELECT a.attname FROM pg_catalog.pg_attribute a '
++                         . 'LEFT JOIN pg_catalog.pg_class c ON a.attrelid = c.oid '
++                         . 'WHERE c.relname = lower( \'' . $table . '\') AND a.attnum &gt; 0 AND NOT a.attisdropped;';
++                    $fields = $this-&gt;db-&gt;getValuesByName( $sql, 'attname' );
++                    break;
++
++                // Oracle
++                case 'oracle':
++                    $sql = 'select lower( column_name ) as column_name from sys.dba_tab_columns where table_name = upper( \'' . $table . '\' )';
++                    $fields = $this-&gt;db-&gt;getValuesByName( $sql, 'column_name' );
++                    break;
++
++                // SQLite
++                case 'sqlite':
++                    $sql = 'PRAGMA table_info( \'' . $table . '\' )';
++                    $fields = $this-&gt;db-&gt;getValuesByName( $sql, 'name' );
++                    $fields = array_map( 'strtolower', $fields );
++                    break;
++
++                // Default
++                default:
++                    trigger_error( $this-&gt;db-&gt;getDriver() . ' is not a supported database driver.', YD_ERROR );
++
++            }
++
++            // Return the list of tables
++            return $fields;
++
++        }
++
++        /**
++         *  This function lists the indexes available in the specified table.
++         *
++         *  @param $table   The name of the table.
++         *
++         *  @returns The names of the indexes in the table as an array.
++         */
++        function getIndexes( $table ) {
++
++            // Add the prefix to the table
++            $table = $this-&gt;_prefixTable( $table );
++
++            // Start with an empty array
++            $indexes = array();
++
++            // Check the database type
++            switch ( $this-&gt;db-&gt;getDriver() ) {
++
++                // MySQL
++                case 'mysql':
++                    $sql = 'SHOW KEYS FROM ' . $table;
++                    $indexes = $this-&gt;db-&gt;getValuesByName( $sql, 'key_name' );
++                    $indexes = array_map( 'strtolower', $indexes );
++                    break;
++
++                // PostgreSQL
++                case 'postgres':
++                    $sql = 'select c.relname from pg_catalog.pg_class c '
++                         . 'LEFT JOIN pg_catalog.pg_roles r ON r.oid = c.relowner '
++                         . 'LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace '
++                         . 'LEFT JOIN pg_catalog.pg_index i ON i.indexrelid = c.oid '
++                         . 'LEFT JOIN pg_catalog.pg_class c2 ON i.indrelid = c2.oid '
++                         . 'WHERE c.relkind IN (\'i\',\'\') '
++                         . 'AND n.nspname NOT IN (\'pg_catalog\', \'pg_toast\') '
++                         . 'AND pg_catalog.pg_table_is_visible(c.oid) '
++                         . 'and c2.relname = lower( \'' . $table . '\' )';
++                    $indexes = $this-&gt;db-&gt;getValuesByName( $sql, 'relname' );
++                    break;
++
++                // Oracle
++                case 'oracle':
++                    $sql = 'select lower( index_name ) as index_name from user_indexes where table_name = upper( \'' . $table . '\' )';
++                    $indexes = $this-&gt;db-&gt;getValuesByName( $sql, 'index_name' );
++                    break;
++
++                // SQLite
++                case 'sqlite':
++                    $sql = 'select lower( name ) as name from sqlite_master where type = \'index\'';
++                    $indexes = $this-&gt;db-&gt;getValuesByName( $sql, 'name' );
++                    break;
++
++                // Default
++                default:
++                    trigger_error( $this-&gt;db-&gt;getDriver() . ' is not a supported database driver.', YD_ERROR );
++
++            }
++
++            // Return the list of tables
++            return $indexes;
++
++        }
++
++        /**
++         *  Internal function to update the table name with the prefix
++         *
++         *  @param $table   The name of the table
++         *
++         *  @returns The table name with the prefix.
++         *
++         *  @internal
++         */
++        function _prefixTable( $table ) {
++            return YDConfig::get( 'YD_DB_TABLEPREFIX', '' ) . $table;
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/db_metadata.db
+===================================================================
+(Binary files differ)
+
+
+Property changes on: YDFramework2.0/trunk/examples/db_metadata.db
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: YDFramework2.0/trunk/examples/db_metadata.php
+===================================================================
+--- YDFramework2.0/trunk/examples/db_metadata.php	2006-02-21 08:04:45 UTC (rev 1708)
++++ YDFramework2.0/trunk/examples/db_metadata.php	2006-02-21 09:42:48 UTC (rev 1709)
+@@ -0,0 +1,59 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDDatabase.php' );
++    YDInclude( 'YDDatabaseMetaData.php' );
++
++    // Class definition
++    class db_metadata extends YDRequest {
++
++        // Class constructor
++        function db_metadata() {
++            $this-&gt;YDRequest();
++        }
++
++        // Default action
++        function actionDefault() {
++
++            // Get the database connections
++            $db1 = YDDatabase::getInstance( 'mysql', 'ydweblog', 'root', '', 'localhost' );
++            $db2 = YDDatabase::getInstance( 'oracle', 'creodb_directeur', 'prinergy', 'araxi' );
++            $db3 = YDDatabase::getInstance( 'postgres', 'test_db', 'postgres', 'Ster4484', 'localhost' );
++            $db4 = YDDatabase::getInstance( 'sqlite', 'db_metadata.db' );
++
++            // Get the metadata
++            $db1_meta = new YDDatabaseMetaData( $db1 );
++            $db2_meta = new YDDatabaseMetaData( $db2 );
++            $db3_meta = new YDDatabaseMetaData( $db3 );
++            $db4_meta = new YDDatabaseMetaData( $db4 );
++
++            // Get the list of tables
++            YDDebugUtil::dump( $db1_meta-&gt;getTables(), 'mysql - getTables' );
++            YDDebugUtil::dump( $db2_meta-&gt;getTables(), 'oracle - getTables' );
++            YDDebugUtil::dump( $db3_meta-&gt;getTables(), 'postgres - getTables' );
++            YDDebugUtil::dump( $db4_meta-&gt;getTables(), 'sqlite - getTables' );
++
++            // Get the list of fields for a table
++            YDDebugUtil::dump( $db1_meta-&gt;getFields( 'ydw_items' ), 'mysql - getFields' );
++            YDDebugUtil::dump( $db2_meta-&gt;getFields( 'dbcs_jacket' ), 'oracle - getFields' );
++            YDDebugUtil::dump( $db3_meta-&gt;getFields(), 'postgres - getFields' );
++            YDDebugUtil::dump( $db4_meta-&gt;getFields( 'notes' ), 'sqlite - getFields' );
++
++            // Get the list of indexes for a table
++            YDDebugUtil::dump( $db1_meta-&gt;getIndexes( 'ydw_items' ), 'mysql - getIndexes' );
++            YDDebugUtil::dump( $db2_meta-&gt;getIndexes( 'dbcs_jacket' ), 'oracle - getIndexes' );
++            YDDebugUtil::dump( $db3_meta-&gt;getIndexes(), 'postgres - getIndexes' );
++            YDDebugUtil::dump( $db4_meta-&gt;getIndexes( 'notes' ), 'sqlite - getIndexes' );
++
++        }
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-02-21 08:04:45 UTC (rev 1708)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-02-21 09:42:48 UTC (rev 1709)
+@@ -316,7 +316,7 @@
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-            &lt;td rowspan=&quot;10&quot; valign=&quot;top&quot;&gt;
++            &lt;td rowspan=&quot;11&quot; valign=&quot;top&quot;&gt;
+             &lt;p&gt;&nbsp;&lt;/p&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database.php&quot;&gt;Database connectivity - Native functions&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+@@ -393,6 +393,14 @@
+             &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++            &lt;td valign=&quot;top&quot;&gt;
++                &lt;a href=&quot;db_metadata.php&quot;&gt;Querying database metadata&lt;/a&gt;&lt;br/&gt;
++            &lt;/td&gt;
++            &lt;td valign=&quot;top&quot;&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=db_metadata.php&quot;&gt;db_metadata.php&lt;/a&gt;
++            &lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using files, images and directories&lt;/b&gt;&lt;/td&gt;
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000139.html">[ydf-devel] r1708 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000123.html">[ydf-devel] r1710 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#122">[ date ]</a>
+              <a href="thread.html#122">[ thread ]</a>
+              <a href="subject.html#122">[ subject ]</a>
+              <a href="author.html#122">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

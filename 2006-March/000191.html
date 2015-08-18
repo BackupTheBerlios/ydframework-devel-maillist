@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1769 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1769%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20YDDatabaseObject%20YDDatabaseQuery&In-Reply-To=%3C200603062100.k26L0PeN030038%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000190.html">
+   <LINK REL="Next"  HREF="000192.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1769 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1769%20-%20in%20YDFramework2.0/trunk/YDFramework2/addons%3A%20YDDatabaseObject%20YDDatabaseQuery&In-Reply-To=%3C200603062100.k26L0PeN030038%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1769 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery">david_db at berlios.de
+       </A><BR>
+    <I>Mon Mar  6 22:00:25 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000190.html">[ydf-devel] r1768 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+        <LI>Next message: <A HREF="000192.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#191">[ date ]</a>
+              <a href="thread.html#191">[ thread ]</a>
+              <a href="subject.html#191">[ subject ]</a>
+              <a href="author.html#191">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-03-06 22:00:16 +0100 (Mon, 06 Mar 2006)
+New Revision: 1769
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+Log:
+Added to YDDatabaseObject the possibility of updating and inserting values as expressions, like NOW(), not interpreted as strings.
+
+Feature Request # 1944
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-03-06 13:11:54 UTC (rev 1768)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2006-03-06 21:00:16 UTC (rev 1769)
+@@ -990,12 +990,12 @@
+         /**
+          *  This function executes an INSERT query based on the values of the object.
+          *
+-         *  @param $auto  (optional) Defines if the auto increment field (if any)
+-         *                should be kept in the query. Default: true.
++         *  @param $values_noquote  (optional) Associative array that defines values that
++         *                          will not be quoted as strings, e.g. NOW().
+          *
+          *  @returns  The last autoincrement value if any.
+          */
+-        function insert( $auto=true ) {
++        function insert( $values_noquote=array() ) {
+ 
+             // before insert callbacks
+             $res = $this-&gt;_executeCallbacks( 'insert', true );
+@@ -1006,19 +1006,14 @@
+ 
+             $values = $this-&gt;getValues( true, true, true );
+ 
+-            $auto_field = current( $this-&gt;_getFieldsByMethod( 'isAutoIncrement' ) );
+-            
+-            if ( ! $auto &amp;&amp; $auto_field ) {
+-                unset( $values[ $auto_field-&gt;getColumn() ] );
+-            }
+-
+-            if ( ! sizeof( $values ) ) {
++            if ( ! sizeof( $values ) &amp;&amp; ! sizeof( $values_noquote ) ) {
+                 return;
+             }
+ 
+             $this-&gt;_query-&gt;insert();
+             $this-&gt;_query-&gt;into( $this-&gt;getTable() );
+             $this-&gt;_query-&gt;values( $values );
++            $this-&gt;_query-&gt;values( $values_noquote, true, false );
+             $sql = $this-&gt;_query-&gt;getQuery();
+ 
+             YDDebugUtil::debug( YDStringUtil::removeWhiteSpace( $sql ) );
+@@ -1030,6 +1025,8 @@
+             $result = $this-&gt;_db-&gt;executeSql( $sql );
+             $success = ( $result == -1 || $result === false ) ? false : true;
+             
++            $auto_field = current( $this-&gt;_getFieldsByMethod( 'isAutoIncrement' ) );
++            
+             if ( is_numeric( $result ) &amp;&amp; $auto_field ) {
+                 $result = $this-&gt;_db-&gt;getLastInsertID();
+                 $this-&gt;set( $auto_field-&gt;getName(), $result );
+@@ -1052,9 +1049,12 @@
+          *  This function executes an UPDATE query based on the values of the object
+          *  and any value set by where.
+          *
++         *  @param $values_noquote  (optional) Associative array that defines values that
++         *                          will not be quoted as strings, e.g. NOW().
++         *
+          *  @returns  The number of rows affected.
+          */
+-        function update() {
++        function update( $values_noquote=array() ) {
+ 
+             // before update callbacks
+             $res = $this-&gt;_executeCallbacks( 'update', true );
+@@ -1077,7 +1077,7 @@
+             }
+             
+             // return if no values to set
+-            if ( ! sizeof( $values ) ) {
++            if ( ! sizeof( $values ) &amp;&amp; ! sizeof( $values_noquote ) ) {
+                 return;
+             }
+ 
+@@ -1090,6 +1090,7 @@
+             $this-&gt;_query-&gt;update();
+             $this-&gt;_query-&gt;table( $this-&gt;getTable() );
+             $this-&gt;_query-&gt;set( $values );
++            $this-&gt;_query-&gt;set( $values_noquote, true, false );
+             $sql = $this-&gt;_query-&gt;getQuery();
+ 
+             YDDebugUtil::debug( YDStringUtil::removeWhiteSpace( $sql ) );
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-03-06 13:11:54 UTC (rev 1768)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseQuery/YDDatabaseQuery.php	2006-03-06 21:00:16 UTC (rev 1769)
+@@ -125,6 +125,8 @@
+         var $reserved = '`';
+         var $quote    = &quot;'&quot;;
+         var $filter   = true;
++        var $values_noquote = array();
++        var $filter_noquote = true;
+         
+         /**
+          *  The class constructor.
+@@ -464,10 +466,16 @@
+          *                   as keys and it's values.
+          *  @param $filter   (optional) Don't include columns that start with underscore.
+          *                   Default: true.
++         *  @param $quote    (optional) If false, don't quote the value as a string. Default: true.
+          */
+-        function set( $values, $filter=true ) {
+-            $this-&gt;values = $values;
+-            $this-&gt;filter = $filter;
++        function set( $values, $filter=true, $quote=true ) {
++            if ( ! $quote ) {
++                $this-&gt;values_noquote = $values;
++                $this-&gt;filter_noquote = $filter;
++            } else {
++                $this-&gt;values = $values;
++                $this-&gt;filter = $filter;
++            }
+         }
+ 
+         /**
+@@ -477,9 +485,10 @@
+          *                   as keys and it's values.
+          *  @param $filter   (optional) Don't include columns that start with underscore.
+          *                   Default: true.
++         *  @param $quote    (optional) If false, don't quote the value as a string. Default: true.
+          */
+-        function values( $values, $filter=true ) {
+-            $this-&gt;set( $values, $filter );
++        function values( $values, $filter=true, $quote=true ) {
++            $this-&gt;set( $values, $filter, $quote );
+         }
+         
+         /**
+@@ -716,20 +725,24 @@
+          */
+         function getInsert() {
+ 
+-            if ( ! sizeof( $this-&gt;values ) ) {
++            if ( ! sizeof( $this-&gt;values ) &amp;&amp; ! sizeof( $this-&gt;values_noquote ) ) {
+                 trigger_error( 'No values were added for the INSERT query.', YD_ERROR );
+             }
+ 
+-            $columns = array();
+             $values = array();
+             foreach ( $this-&gt;values as $key =&gt; $value ) {
+                 if ( $this-&gt;filter &amp;&amp; substr( $key, 0, 1 ) == '_' ) {
+                     continue;
+                 }
+-                $columns[] = $this-&gt;reserved( $key );
+-                $values[]  = $this-&gt;escapeSql( $value );
++                $values[ $this-&gt;reserved( $key ) ] = $this-&gt;escapeSql( $value );
+             }
+-            return ' ( ' . implode( ', ', $columns ) . ' ) VALUES ( ' . implode( ', ', $values ) . ' )';
++            foreach ( $this-&gt;values_noquote as $key =&gt; $value ) {
++                if ( $this-&gt;filter_noquote &amp;&amp; substr( $key, 0, 1 ) == '_' ) {
++                    continue;
++                }
++                $values[ $this-&gt;reserved( $key ) ] = $this-&gt;escape( $value );
++            }
++            return ' ( ' . implode( ', ', array_keys( $values ) ) . ' ) VALUES ( ' . implode( ', ', array_values( $values ) ) . ' )';
+         }
+ 
+         /**
+@@ -739,7 +752,7 @@
+          */
+         function getUpdate() {
+ 
+-            if ( ! sizeof( $this-&gt;values ) ) {
++            if ( ! sizeof( $this-&gt;values ) &amp;&amp; ! sizeof( $this-&gt;values_noquote ) ) {
+                 trigger_error( 'No values were added for the UPDATE query.', YD_ERROR );
+             }
+ 
+@@ -748,9 +761,15 @@
+                 if ( $this-&gt;filter &amp;&amp; substr( $key, 0, 1 ) == '_' ) {
+                     continue;
+                 }
+-                $update[] = $this-&gt;reserved( $key ) . &quot; = &quot; . $this-&gt;escapeSql( $value );
++                $update[ $this-&gt;reserved( $key ) ] = $this-&gt;reserved( $key ) . &quot; = &quot; . $this-&gt;escapeSql( $value );
+             }
+-            return ' SET ' . implode( ', ', $update );
++            foreach ( $this-&gt;values_noquote as $key =&gt; $value ) {
++                if ( $this-&gt;filter_noquote &amp;&amp; substr( $key, 0, 1 ) == '_' ) {
++                    continue;
++                }
++                $update[ $this-&gt;reserved( $key ) ] = $this-&gt;reserved( $key ) . &quot; = &quot; . $this-&gt;escape( $value );
++            }
++            return ' SET ' . implode( ', ', array_values( $update ) );
+         }
+ 
+         /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000190.html">[ydf-devel] r1768 - YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+	<LI>Next message: <A HREF="000192.html">[ydf-devel] YDDatabaseObject indirect relations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#191">[ date ]</a>
+              <a href="thread.html#191">[ thread ]</a>
+              <a href="subject.html#191">[ subject ]</a>
+              <a href="author.html#191">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

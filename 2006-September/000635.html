@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2116 - in YDFramework2.0/trunk/examples/weblog:	include manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2116%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200609081833.k88IXFWS028658%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000634.html">
+   <LINK REL="Next"  HREF="000636.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2116 - in YDFramework2.0/trunk/examples/weblog:	include manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2116%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20manage&In-Reply-To=%3C200609081833.k88IXFWS028658%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2116 - in YDFramework2.0/trunk/examples/weblog:	include manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep  8 20:33:15 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000634.html">[ydf-devel] r2115 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+        <LI>Next message: <A HREF="000636.html">[ydf-devel] r2117 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#635">[ date ]</a>
+              <a href="thread.html#635">[ thread ]</a>
+              <a href="subject.html#635">[ subject ]</a>
+              <a href="author.html#635">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-08 20:33:15 +0200 (Fri, 08 Sep 2006)
+New Revision: 2116
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+Log:
+The image metadata is now deleted from the database when an item gets deleted.
+
+See also: [ Bug #8710 ] Delete image leaves metadata
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 18:22:19 UTC (rev 2115)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-09-08 18:33:15 UTC (rev 2116)
+@@ -362,8 +362,8 @@
+             return $items;
+         }
+ 
+-        // Get the title and description for an item image
+-        function getItemImageMetaData( $image ) {
++        // Function to initialize image metadata
++        function initImageMetaData() {
+ 
+             // Get the image metadata if not there yet
+             if ( is_null( $this-&gt;imagemetadata ) ) {
+@@ -374,6 +374,14 @@
+                 }
+             }
+ 
++        }
++
++        // Get the title and description for an item image
++        function getItemImageMetaData( $image ) {
++
++            // Initialize the image data
++            $this-&gt;initImageMetaData();
++
+             // Start with the default settings
+             $image-&gt;title = $image-&gt;getBasenameNoExt();
+             $image-&gt;description = '';
+@@ -400,6 +408,12 @@
+             return $result;
+         }
+ 
++        // Function to delete the image data for an item in the database
++        function removeImageMetaData( $image ) {
++            $sql = 'DELETE FROM #_imagemetadata WHERE img_path = ' . $this-&gt;str( $image );
++            return $this-&gt;db-&gt;executeSql( $sql );
++        }
++
+         // Function to get a single item
+         function getItem( $where ) {
+             $result = $this-&gt;getItems( 1, 0, 'created desc, title', $where );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-09-08 18:22:19 UTC (rev 2115)
++++ YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-09-08 18:33:15 UTC (rev 2116)
+@@ -137,6 +137,9 @@
+             $image = $this-&gt;getImage();
+             $this-&gt;redirectIfMissing( $image );
+ 
++            // Remove the image metadata
++            $this-&gt;weblog-&gt;removeImageMetaData( $image );
++
+             // The path to the image
+             $path = realpath( '../' . YDConfig::get( 'dir_uploads', 'uploads' ) . '/' . $image );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000634.html">[ydf-devel] r2115 - in YDFramework2.0/trunk/examples/weblog:	include manage
+</A></li>
+	<LI>Next message: <A HREF="000636.html">[ydf-devel] r2117 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#635">[ date ]</a>
+              <a href="thread.html#635">[ thread ]</a>
+              <a href="subject.html#635">[ subject ]</a>
+              <a href="author.html#635">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

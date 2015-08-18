@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2360 - in YDFramework2.0/trunk/YDFramework2: YDClasses	addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2360%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%0A%09addons/YDAjax&In-Reply-To=%3C200701241607.l0OG7SON000940%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000952.html">
+   <LINK REL="Next"  HREF="000954.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2360 - in YDFramework2.0/trunk/YDFramework2: YDClasses	addons/YDAjax</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2360%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20YDClasses%0A%09addons/YDAjax&In-Reply-To=%3C200701241607.l0OG7SON000940%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2360 - in YDFramework2.0/trunk/YDFramework2: YDClasses	addons/YDAjax">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Jan 24 17:07:28 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000952.html">[ydf-devel] r2359 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000954.html">[ydf-devel] r2361 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#953">[ date ]</a>
+              <a href="thread.html#953">[ thread ]</a>
+              <a href="subject.html#953">[ subject ]</a>
+              <a href="author.html#953">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-24 17:07:17 +0100 (Wed, 24 Jan 2007)
+New Revision: 2360
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+- javascript code added to window onload is better manage now.
+  it also affects YDAjax
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-24 16:05:11 UTC (rev 2359)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-01-24 16:07:17 UTC (rev 2360)
+@@ -95,7 +95,7 @@
+ 
+                 // custom javascript code
+                 $this-&gt;customJavascript       = '';
+-                $this-&gt;customJavascriptOnload = '';
++                $this-&gt;customJavascriptOnload = array();
+ 
+                 // custom Css code
+                 $this-&gt;customCss = '';
+@@ -234,12 +234,15 @@
+                 }
+ 
+                 // add onload code to custom javascript code
+-                if ( $this-&gt;customJavascriptOnload != '' )
+-                    $this-&gt;customJavascript .= &quot;window.onload = function() {&quot; . $this-&gt;customJavascriptOnload . &quot;}\n&quot;;
+-
++                if ( ! empty( $this-&gt;customJavascriptOnload ) ){ 
++					$onLoad = &quot;window.onload = function() {&quot; . implode( '', $this-&gt;customJavascriptOnload ) . &quot;}\n&quot;; 
++				}else{
++					$onLoad = '';
++				}
++				
+                 // test if customJavascript is set
+                 if ( $this-&gt;customJavascript != '' ) 
+-                    $code .= &quot;\n&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot; . $this-&gt;customJavascript . &quot;&lt;/script&gt;\n&quot;;
++                    $code .= &quot;\n&lt;script type=\&quot;text/javascript\&quot;&gt;\n&quot; . $this-&gt;customJavascript . $onLoad . &quot;&lt;/script&gt;\n&quot;;
+ 
+                 if ( $code == '' ) return $tpl_source;
+ 
+@@ -257,16 +260,19 @@
+              */
+             function addJavascript( $jsCode, $prepend = false, $onload = false ) {
+ 
++				// check if we really have js code
++				if ( empty( $jsCode ) ) return;
++
+                 if ( $onload ){
+-                    if ( !$prepend ) $this-&gt;customJavascriptOnload = $this-&gt;customJavascriptOnload . $jsCode . &quot;\n&quot;;
+-                    else             $this-&gt;customJavascriptOnload = $jsCode . $this-&gt;customJavascriptOnload . &quot;\n&quot;;
+-                    return;
++                    if ( $prepend ) return array_unshift( $this-&gt;customJavascriptOnload, $jsCode );
++                    else            return array_push(    $this-&gt;customJavascriptOnload, $jsCode );
+                 }
+ 
+-                if (!$prepend) $this-&gt;customJavascript = $this-&gt;customJavascript . $jsCode . &quot;\n&quot;;
+-                else           $this-&gt;customJavascript = $jsCode . $this-&gt;customJavascript . &quot;\n&quot;;
++                if ( $prepend ) return $this-&gt;customJavascript = $jsCode . $this-&gt;customJavascript . &quot;\n&quot;;
++				else            return $this-&gt;customJavascript = $this-&gt;customJavascript . $jsCode . &quot;\n&quot;;
+             }
+ 
++
+             /**
+              *	This function will add custom javascript url to the template head
+              *
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-24 16:05:11 UTC (rev 2359)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2007-01-24 16:07:17 UTC (rev 2360)
+@@ -174,22 +174,23 @@
+ 			$this-&gt;template-&gt;addJavascript( trim( $html ), true );
+ 
+ 			// compute ONLOAD code
+-			$onload = '';
++			$onload = array();
+ 
+ 				// export effects js
+ 				foreach( $this-&gt;effects as $eff_name =&gt; $eff_code )
+-					$onload  .= &quot;\n\t&quot; . $eff_code;
++					$onload[] = $eff_code;
+ 
+ 				// send js waiting message creation code
+ 				if( $this-&gt;waitingMessageCode != '' )
+-					$onload  .= &quot;\n\t&quot; . $this-&gt;waitingMessageCode;
++					$onload[] = $this-&gt;waitingMessageCode;
+ 
+ 				// send autocompleter functions code
+ 				if( !empty( $this-&gt;autocompleterCodeFunctions ) )
+-					$onload  .= &quot;\n\t&quot; . implode( &quot;\n\t&quot;, $this-&gt;autocompleterCodeFunctions );
++					$onload[] = implode( &quot;\n\t&quot;, $this-&gt;autocompleterCodeFunctions );
+ 
+ 			// add all code to template html
+-			$this-&gt;template-&gt;addJavascript( $onload, false, true );
++			if ( ! empty( $onLoad ) )
++				$this-&gt;template-&gt;addJavascript( implode( '', $onload ), false, true );
+ 		}
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000952.html">[ydf-devel] r2359 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000954.html">[ydf-devel] r2361 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#953">[ date ]</a>
+              <a href="thread.html#953">[ thread ]</a>
+              <a href="subject.html#953">[ subject ]</a>
+              <a href="author.html#953">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

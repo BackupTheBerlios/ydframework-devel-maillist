@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2491 - in YDFramework2.0/trunk/YDFramework2:	3rdparty/smarty/libs/plugins YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2491%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%093rdparty/smarty/libs/plugins%20YDClasses&In-Reply-To=%3C200710032118.l93LIOrL023510%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001084.html">
+   <LINK REL="Next"  HREF="001086.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2491 - in YDFramework2.0/trunk/YDFramework2:	3rdparty/smarty/libs/plugins YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2491%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%0A%093rdparty/smarty/libs/plugins%20YDClasses&In-Reply-To=%3C200710032118.l93LIOrL023510%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2491 - in YDFramework2.0/trunk/YDFramework2:	3rdparty/smarty/libs/plugins YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Oct  3 23:18:24 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001084.html">[ydf-devel] r2490 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="001086.html">[ydf-devel] r2492 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1085">[ date ]</a>
+              <a href="thread.html#1085">[ thread ]</a>
+              <a href="subject.html#1085">[ subject ]</a>
+              <a href="author.html#1085">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-10-03 23:17:48 +0200 (Wed, 03 Oct 2007)
+New Revision: 2491
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/resource.string.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+on YDTemplate:
+ NEW: support for smarty resources
+ NEW: added resource 'string'. Now it's possible to parse string content (and not only files):
+        eg,  $template-&gt;display( 'string:This is a string that will be parsed with {$YD_FW_NAME}' );
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/resource.string.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/resource.string.php	2007-10-01 22:00:11 UTC (rev 2490)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/resource.string.php	2007-10-03 21:17:48 UTC (rev 2491)
+@@ -0,0 +1,24 @@
++&lt;?php
++
++function smarty_resource_string_source($tpl_name, &amp;$tpl_source, &amp;$smarty){
++
++   $tpl_source = $tpl_name;
++   return true;
++}
++
++function smarty_resource_string_timestamp($tpl_name, &amp;$tpl_timestamp, &amp;$smarty){
++
++  $tpl_timestamp = time();
++  return true;
++}
++
++function smarty_resource_string_secure($tpl_name, &amp;$smarty){
++
++  return true;
++}
++
++function smarty_resource_string_trusted($tpl_name, &amp;$smarty){
++
++  return true;
++}
++?&gt; 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-10-01 22:00:11 UTC (rev 2490)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-10-03 21:17:48 UTC (rev 2491)
+@@ -156,6 +156,17 @@
+                 $this-&gt;assign( 'YD_FW_REVISION', YD_FW_REVISION );
+                 $this-&gt;assign( 'YD_ACTION', YDRequest::getActionName() );
+ 
++                // check if a custom resource is defined
++                if ( strpos( $file, ':' ) !== false ){
++
++                    // display or return the result
++                    if ( $display == true ) {
++                        echo( parent::fetch( $file ) );
++                        return;
++                    }
++                    return parent::fetch( $file );
++                }
++
+                 // Add custom javascript
+                 $this-&gt;register_outputfilter( array( &amp;$this, &quot;__assignHeadCode&quot;) );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001084.html">[ydf-devel] r2490 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="001086.html">[ydf-devel] r2492 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1085">[ date ]</a>
+              <a href="thread.html#1085">[ thread ]</a>
+              <a href="subject.html#1085">[ subject ]</a>
+              <a href="author.html#1085">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

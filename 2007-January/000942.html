@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2349 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2349%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200701231642.l0NGgwkE024024%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000941.html">
+   <LINK REL="Next"  HREF="000943.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2349 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2349%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200701231642.l0NGgwkE024024%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2349 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 17:42:58 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000941.html">[ydf-devel] r2348 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext
+</A></li>
+        <LI>Next message: <A HREF="000943.html">[ydf-devel] r2350 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#942">[ date ]</a>
+              <a href="thread.html#942">[ thread ]</a>
+              <a href="subject.html#942">[ subject ]</a>
+              <a href="author.html#942">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-23 17:42:43 +0100 (Tue, 23 Jan 2007)
+New Revision: 2349
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+Log:
+- small speedup on YDDatabaseObject
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-23 16:41:38 UTC (rev 2348)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-01-23 16:42:43 UTC (rev 2349)
+@@ -1082,7 +1082,7 @@
+ 
+ 			// convert dates
+ 			foreach( $values as $element =&gt; $value )
+-				if ( is_array( $value ) ) $values[ $element ] = YDStringUtil::formatDate( $form-&gt;getValue( $element ), $onDate );
++				if ( is_array( $value ) ) $values[ $element ] = YDStringUtil::formatDate( $value, $onDate );
+ 
+ 			// apply values
+             $this-&gt;setValues( $values );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000941.html">[ydf-devel] r2348 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext
+</A></li>
+	<LI>Next message: <A HREF="000943.html">[ydf-devel] r2350 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#942">[ date ]</a>
+              <a href="thread.html#942">[ thread ]</a>
+              <a href="subject.html#942">[ subject ]</a>
+              <a href="author.html#942">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

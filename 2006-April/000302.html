@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1858 - YDFramework2.0/trunk/YDFramework2
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1858%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200604211543.k3LFhktk019473%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000301.html">
+   <LINK REL="Next"  HREF="000303.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1858 - YDFramework2.0/trunk/YDFramework2</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1858%20-%20YDFramework2.0/trunk/YDFramework2&In-Reply-To=%3C200604211543.k3LFhktk019473%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1858 - YDFramework2.0/trunk/YDFramework2">ximian at berlios.de
+       </A><BR>
+    <I>Fri Apr 21 17:43:46 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000301.html">[ydf-devel] r1857 - in YDFramework2.0/trunk/examples/cms: includes modules modules/ydcmfgallery modules/ydcmfgalleryalbum modules/ydcmfgalleryitem modules/ydcmfhome
+</A></li>
+        <LI>Next message: <A HREF="000303.html">[ydf-devel] r1859 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDCMComponent addons addons/YDCMLanguages addons/YDCMLink addons/YDCMLocks addons/YDCMPage addons/YDCMRootmenu addons/YDCMTree addons/YDCMUsers addons/YDCMUsers/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#302">[ date ]</a>
+              <a href="thread.html#302">[ thread ]</a>
+              <a href="subject.html#302">[ subject ]</a>
+              <a href="author.html#302">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-21 17:43:27 +0200 (Fri, 21 Apr 2006)
+New Revision: 1858
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+Log:
+FIX: YDLocale::set must include always (because of previous array initialization).
+     now works even on special cases.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_init.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-04-20 15:00:17 UTC (rev 1857)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_init.php	2006-04-21 15:43:27 UTC (rev 1858)
+@@ -483,7 +483,7 @@
+             // if directories array exist we must include all files
+             if ( isset( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] ) )
+                 foreach ( $GLOBALS[ 'YD_LANGUAGES_DIRECTORIES' ] as $dir )
+-                    @include_once( $dir . '/' . YDLocale::get() . '.php' );
++                    @include( $dir . '/' . YDLocale::get() . '.php' );
+         }
+ 
+         /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000301.html">[ydf-devel] r1857 - in YDFramework2.0/trunk/examples/cms: includes modules modules/ydcmfgallery modules/ydcmfgalleryalbum modules/ydcmfgalleryitem modules/ydcmfhome
+</A></li>
+	<LI>Next message: <A HREF="000303.html">[ydf-devel] r1859 - in YDFramework2.0/trunk/YDFramework2: YDClasses YDClasses/YDCMComponent addons addons/YDCMLanguages addons/YDCMLink addons/YDCMLocks addons/YDCMPage addons/YDCMRootmenu addons/YDCMTree addons/YDCMUsers addons/YDCMUsers/languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#302">[ date ]</a>
+              <a href="thread.html#302">[ thread ]</a>
+              <a href="subject.html#302">[ subject ]</a>
+              <a href="author.html#302">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

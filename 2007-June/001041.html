@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2447 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2447%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200706241741.l5OHf5sx028755%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001040.html">
+   <LINK REL="Next"  HREF="001042.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2447 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2447%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200706241741.l5OHf5sx028755%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2447 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sun Jun 24 19:41:05 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001040.html">[ydf-devel] r2446 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="001042.html">[ydf-devel] r2448 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1041">[ date ]</a>
+              <a href="thread.html#1041">[ thread ]</a>
+              <a href="subject.html#1041">[ subject ]</a>
+              <a href="author.html#1041">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-06-24 19:40:58 +0200 (Sun, 24 Jun 2007)
+New Revision: 2447
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+Log:
+on all date form elements:
+  * its now possible to define a custom field to retrieve with getValue()
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-06-24 17:39:34 UTC (rev 2446)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2007-06-24 17:40:58 UTC (rev 2447)
+@@ -132,12 +132,18 @@
+         /**
+          *      This function returns the value of the element.
+          *
+-         *      @returns        Value of this object.
++         *      @param  $field     (Optional) Custom field to retrieve.
++         *      @returns        	Value of this object.
+          */
+-        function getValue() {
++        function getValue( $field = null ) {
+ 
+             // add timestamp to values array
+             $this-&gt;_value['timestamp'] = $this-&gt;getTimeStamp();
++
++            if ( is_string( $field ) ){
++                return $this-&gt;_value[ $field ];
++            }
++
+             return $this-&gt;_value;
+         }
+         
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001040.html">[ydf-devel] r2446 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="001042.html">[ydf-devel] r2448 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1041">[ date ]</a>
+              <a href="thread.html#1041">[ thread ]</a>
+              <a href="subject.html#1041">[ subject ]</a>
+              <a href="author.html#1041">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

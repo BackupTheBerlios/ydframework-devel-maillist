@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2293 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2293%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701021322.l02DMWDc008734%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000884.html">
+   <LINK REL="Next"  HREF="000886.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2293 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2293%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200701021322.l02DMWDc008734%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2293 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan  2 14:22:32 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000884.html">[ydf-devel] r2292 - in YDFramework2.0/trunk/examples/weblog:	include/languages manage
+</A></li>
+        <LI>Next message: <A HREF="000886.html">[ydf-devel] r2294 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#885">[ date ]</a>
+              <a href="thread.html#885">[ thread ]</a>
+              <a href="subject.html#885">[ subject ]</a>
+              <a href="author.html#885">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-02 14:22:31 +0100 (Tue, 02 Jan 2007)
+New Revision: 2293
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php
+   YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl
+Log:
+You can now see the details for the HTTP Post Requests in Bad Behavior.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-02 12:53:12 UTC (rev 2292)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2007-01-02 13:22:31 UTC (rev 2293)
+@@ -979,6 +979,12 @@
+             return $this-&gt;db-&gt;getRecords( &quot;SELECT * FROM &quot; . $settings['log_table'] . &quot; WHERE `key` NOT LIKE '00000000' ORDER BY DATE DESC&quot; );
+         }
+ 
++        // Get the bad behavior request by it's id
++        function getBadBehaviorRequestById( $id ) {
++            $settings = bb2_read_settings();
++            return $this-&gt;db-&gt;getRecord( &quot;SELECT * FROM &quot; . $settings['log_table'] . &quot; WHERE id = &quot; . $this-&gt;str( $id ) );
++        }
++
+         // Get the bad behavior post requests
+         function getBadBehaviorPostRequests() {
+             $settings = bb2_read_settings();
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-02 12:53:12 UTC (rev 2292)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2007-01-02 13:22:31 UTC (rev 2293)
+@@ -385,5 +385,12 @@
+ $GLOBALS['t']['ip'] = 'IP';
+ $GLOBALS['t']['request_method'] = 'Method';
+ $GLOBALS['t']['url'] = 'URL';
++$GLOBALS['t']['request_details'] = 'Request Details';
++$GLOBALS['t']['id'] = 'ID';
++$GLOBALS['t']['server_protocol'] = 'Server Protocol';
++$GLOBALS['t']['http_headers'] = 'HTTP Headers';
++$GLOBALS['t']['user_agent'] = 'User Agent';
++$GLOBALS['t']['request_entity'] = 'Request Entity';
++$GLOBALS['t']['key'] = 'Key';
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-02 12:53:12 UTC (rev 2292)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2007-01-02 13:22:31 UTC (rev 2293)
+@@ -385,5 +385,12 @@
+ $GLOBALS['t']['ip'] = 'IP';
+ $GLOBALS['t']['request_method'] = 'Methode';
+ $GLOBALS['t']['url'] = 'URL';
++$GLOBALS['t']['request_details'] = 'Details request';
++$GLOBALS['t']['id'] = 'ID';
++$GLOBALS['t']['server_protocol'] = 'Server Protocol';
++$GLOBALS['t']['http_headers'] = 'HTTP Headers';
++$GLOBALS['t']['user_agent'] = 'User Agent';
++$GLOBALS['t']['request_entity'] = 'Request Entiteit';
++$GLOBALS['t']['key'] = 'Code';
+ 
+ ?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php	2007-01-02 12:53:12 UTC (rev 2292)
++++ YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.php	2007-01-02 13:22:31 UTC (rev 2293)
+@@ -14,21 +14,41 @@
+         // Default action
+         function actionDefault() {
+ 
+-            // Get the count and number of requests
+-            $requests_count = $this-&gt;weblog-&gt;getBadBehaviorRequestsCount();
+-            //$requests = $this-&gt;weblog-&gt;getBadBehaviorRequests();
+-            $requests = $this-&gt;weblog-&gt;getBadBehaviorPostRequests();
++            // Get the ID from the query string
++            $id = $this-&gt;getIdFromQS();
+ 
+-            // Get the pagesize and current page from the URL
+-            $page = @ $_GET['page'];
++            // If there is nothing, show the list
++            if ( $id == -1 ) {
+ 
+-            // Create the YDRecordSet object
+-            $requests = new YDRecordSet( $requests, $page, YDConfig::get( 'YD_DB_DEFAULTPAGESIZE', 20 ) );
++                // Get the count and number of requests
++                $requests_count = $this-&gt;weblog-&gt;getBadBehaviorRequestsCount();
++                $requests = $this-&gt;weblog-&gt;getBadBehaviorPostRequests();
+ 
+-            // Assign it to the template
+-            $this-&gt;tpl-&gt;assign( 'requests_count', $requests_count );
+-            $this-&gt;tpl-&gt;assign( 'requests', $requests );
++                // Get the pagesize and current page from the URL
++                $page = @ $_GET['page'];
+ 
++                // Create the YDRecordSet object
++                $requests = new YDRecordSet( $requests, $page, YDConfig::get( 'YD_DB_DEFAULTPAGESIZE', 20 ) );
++
++                // Assign it to the template
++                $this-&gt;tpl-&gt;assign( 'requests_count', $requests_count );
++                $this-&gt;tpl-&gt;assign( 'requests', $requests );
++
++            } else {
++
++                // Get the request data
++                $request = $this-&gt;weblog-&gt;getBadBehaviorRequestById( $id );
++
++                // Redirect if nothing found
++                if ( ! $request ) {
++                    $this-&gt;redirectToAction();
++                }
++
++                // Add it to the template
++                $this-&gt;tpl-&gt;assign( 'request', $request );
++
++            }
++
+             // Display the template
+             $this-&gt;display();
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl	2007-01-02 12:53:12 UTC (rev 2292)
++++ YDFramework2.0/trunk/examples/weblog/manage/bad_behavior.tpl	2007-01-02 13:22:31 UTC (rev 2293)
+@@ -5,40 +5,93 @@
+ {if $YD_ACTION == 'default'}
+ 
+     &lt;table width=&quot;700&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt;
+-        &lt;tr&gt;
+-            &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-                &raquo; {t w=&quot;total_bad_requests_stopped&quot;}
+-            &lt;/th&gt;
+-        &lt;/tr&gt;
+-        &lt;tr&gt;&lt;td colspan=&quot;7&quot; class=&quot;adminRowL&quot;&gt;{$requests_count} {t w=&quot;requests&quot;}&lt;/td&gt;&lt;/tr&gt;
+-        {if $requests-&gt;set}
+-            &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++        {if $requests}
+             &lt;tr&gt;
+                 &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
+-                    &raquo; {t w=&quot;post_requests&quot;}
++                    &raquo; {t w=&quot;total_bad_requests_stopped&quot;}
+                 &lt;/th&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;&lt;td colspan=&quot;7&quot; class=&quot;adminRowL&quot;&gt;{$requests_count} {t w=&quot;requests&quot;}&lt;/td&gt;&lt;/tr&gt;
++            {if $requests-&gt;set}
++                &lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;&nbsp;&lt;/td&gt;&lt;/tr&gt;
++                &lt;tr&gt;
++                    &lt;th class=&quot;adminRowLG&quot; colspan=&quot;7&quot;&gt;
++                        &raquo; {t w=&quot;post_requests&quot;}
++                    &lt;/th&gt;
++                &lt;/tr&gt;
++                &lt;tr&gt;
++                    &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
++                    &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;ip&quot;}&lt;/th&gt;
++                    &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;request_method&quot;}&lt;/th&gt;
++                    &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;url&quot;}&lt;/th&gt;
++                    &lt;th class=&quot;adminRowR&quot;&gt;{t w=&quot;actions&quot;}&lt;/th&gt;
++                &lt;/tr&gt;
++                &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$requests-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++                {foreach from=$requests-&gt;set item=&quot;request&quot;}
++                    &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
++                        &lt;td class=&quot;adminRowL&quot;&gt;{$request.date}&lt;/td&gt;
++                        &lt;td class=&quot;adminRowL&quot;&gt;{$request.ip}&lt;/td&gt;
++                        &lt;td class=&quot;adminRowL&quot;&gt;{$request.request_method}&lt;/td&gt;
++                        &lt;td class=&quot;adminRowL&quot;&gt;{$request.request_uri}&lt;/td&gt;
++                        &lt;td class=&quot;adminRowR&quot;&gt;&lt;a href=&quot;{$YD_SELF_SCRIPT}?id={$request.id}&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;&lt;/td&gt;
++                    &lt;/tr&gt;
++                {/foreach}
++                &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$requests-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
++                &lt;tr&gt;
++                    &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;5&quot;&gt;
++                        &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$requests-&gt;totalRows}&lt;/p&gt;
++                    &lt;/td&gt;
++                &lt;/tr&gt;
++            {/if}
++        {else}
+             &lt;tr&gt;
+-                &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;ip&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;request_method&quot;}&lt;/th&gt;
+-                &lt;th class=&quot;adminRowL&quot;&gt;{t w=&quot;url&quot;}&lt;/th&gt;
++                &lt;th class=&quot;adminRowLG&quot;&gt;
++                    &raquo; {t w=&quot;request_details&quot;}: {$request.id}
++                &lt;/th&gt;
++                &lt;th class=&quot;adminRowLGR&quot;&gt;
++                    &raquo; &lt;a href=&quot;{$YD_SELF_SCRIPT}&quot;&gt;&lt;b&gt;{t w=&quot;back&quot;}&lt;/b&gt;&lt;/a&gt;
++                &lt;/th&gt;
+             &lt;/tr&gt;
+-            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$requests-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+-            {foreach from=$requests-&gt;set item=&quot;request&quot;}
+-                &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;{$request.date}&lt;/td&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;{$request.ip}&lt;/td&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;{$request.request_method}&lt;/td&gt;
+-                    &lt;td class=&quot;adminRowL&quot;&gt;{$request.request_uri}&lt;/td&gt;
+-                &lt;/tr&gt;
+-            {/foreach}
+-            &lt;tr&gt;&lt;td class=&quot;adminRowR&quot; colspan=&quot;5&quot;&gt;{$requests-&gt;getBrowseBar()}&lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+-                &lt;td class=&quot;adminRowLNB&quot; colspan=&quot;5&quot;&gt;
+-                    &lt;p class=&quot;subline&quot;&gt;{t w=&quot;total&quot;}: {$requests-&gt;totalRows}&lt;/p&gt;
+-                &lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;250&quot;&gt;{t w=&quot;id&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot; width=&quot;450&quot;&gt;{$request.id}&lt;/td&gt;
+             &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;ip&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.ip}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;date&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.date}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;request_method&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.request_method}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;url&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.request_uri}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;server_protocol&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.server_protocol}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;http_headers&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.http_headers|nl2br}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;user_agent&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.user_agent}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;request_entity&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.request_entity|nl2br}&lt;/td&gt;
++            &lt;/tr&gt;
++            &lt;tr&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;key&quot;}&lt;/td&gt;
++                &lt;td class=&quot;adminRowL&quot;&gt;{$request.key}&lt;/td&gt;
++            &lt;/tr&gt;
+         {/if}
+     &lt;/table&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000884.html">[ydf-devel] r2292 - in YDFramework2.0/trunk/examples/weblog:	include/languages manage
+</A></li>
+	<LI>Next message: <A HREF="000886.html">[ydf-devel] r2294 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#885">[ date ]</a>
+              <a href="thread.html#885">[ thread ]</a>
+              <a href="subject.html#885">[ subject ]</a>
+              <a href="author.html#885">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

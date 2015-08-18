@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2467 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2467%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha&In-Reply-To=%3C200708062250.l76Mo2sf003195%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001060.html">
+   <LINK REL="Next"  HREF="001062.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2467 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2467%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha&In-Reply-To=%3C200708062250.l76Mo2sf003195%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2467 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  7 00:50:02 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001060.html">[ydf-devel] r2466 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001062.html">[ydf-devel] r2468 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1061">[ date ]</a>
+              <a href="thread.html#1061">[ thread ]</a>
+              <a href="subject.html#1061">[ subject ]</a>
+              <a href="author.html#1061">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-08-07 00:49:35 +0200 (Tue, 07 Aug 2007)
+New Revision: 2467
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+Log:
+on capcha:
+ - ENHANCEMENT: on captcha rendering, when gd lib is not present, the default YD error image is displayed.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-08-06 22:40:10 UTC (rev 2466)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha/YDCaptcha.php	2007-08-06 22:49:35 UTC (rev 2467)
+@@ -137,7 +137,11 @@
+             $this-&gt;_img-&gt;_green = hexdec( substr( $bgcolor, 3, 2 ) );
+             $this-&gt;_img-&gt;_blue  = hexdec( substr( $bgcolor, 5, 2 ) );
+ 
+-            return $this-&gt;_img-&gt;Create();
++            if( $this-&gt;_img-&gt;Create() == false ){
++
++                YDInclude( 'YDFilesystem.php' );
++                YDFSImage::_error( 'YD_gd_not_installed' );
++            }
+         }
+ 
+   }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001060.html">[ydf-devel] r2466 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001062.html">[ydf-devel] r2468 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1061">[ date ]</a>
+              <a href="thread.html#1061">[ thread ]</a>
+              <a href="subject.html#1061">[ subject ]</a>
+              <a href="author.html#1061">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

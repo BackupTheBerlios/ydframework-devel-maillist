@@ -1,0 +1,730 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2207 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2207%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611162327.kAGNRwnx028147%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000761.html">
+   <LINK REL="Next"  HREF="000764.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2207 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2207%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611162327.kAGNRwnx028147%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2207 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Nov 17 00:27:58 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000761.html">[ydf-devel] r2206 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000764.html">[ydf-devel] Is YDDatabaseTree2::moveNode working?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#763">[ date ]</a>
+              <a href="thread.html#763">[ thread ]</a>
+              <a href="subject.html#763">[ subject ]</a>
+              <a href="author.html#763">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-17 00:27:38 +0100 (Fri, 17 Nov 2006)
+New Revision: 2207
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+Log:
+- new class YDDatabaseTree3: the lineage tree algorithm implemented as a YDDatabaseObject extension
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-16 17:29:56 UTC (rev 2206)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-16 23:27:38 UTC (rev 2207)
+@@ -0,0 +1,653 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// add YDF libs needed by this class
++	YDInclude( 'YDDatabaseObject.php' );
++
++
++    /** Database scheme example
++		
++	    CREATE TABLE nested_tree (
++            id int NOT NULL auto_increment,
++            parent_id int NULL,
++			lineage varchar(255) NOT NULL default '//',
++            level int NOT NULL default '1',
++            position int NOT NULL default '1',
++            title varchar(255) NOT NULL default '',
++            PRIMARY KEY (id),
++			FOREIGN KEY (parent_id)
++                REFERENCES nested_tree(id)
++                     ON DELETE CASCADE
++                     ON UPDATE CASCADE
++        )TYPE=InnoDB;
++
++		Note: root node must have ID 1, PARENT null and LINEAGE '' !
++
++        INSERT INTO nested_tree VALUES ( 1, null, '',         0, 1, '');
++        INSERT INTO nested_tree VALUES ( 2,    1, '//',       1, 1, 'General Resources');
++        INSERT INTO nested_tree VALUES ( 3,    2, '//2/',     2, 1, 'Code Paste');
++        INSERT INTO nested_tree VALUES ( 4,    2, '//2/',     2, 2, 'Documentation');
++        INSERT INTO nested_tree VALUES ( 5,    2, '//2/',     2, 3, 'Books &amp; Publications');
++        INSERT INTO nested_tree VALUES ( 6,    5, '//2/5/',   3, 1, 'Apache');
++        INSERT INTO nested_tree VALUES ( 7,    5, '//2/5/',   3, 2, 'PostgreSQL');
++        INSERT INTO nested_tree VALUES ( 8,    5, '//2/4/',   3, 3, 'MySQL');
++        INSERT INTO nested_tree VALUES ( 9,    2, '//2/',     2, 1, 'Links');
++        INSERT INTO nested_tree VALUES (10,    9, '//2/9/',   3, 1, 'Databases');
++        INSERT INTO nested_tree VALUES (11,    9, '//2/10/',  3, 1, 'Generators');
++        INSERT INTO nested_tree VALUES (12,    9, '//2/10/',  3, 2, 'Portals');
++     */
++
++    /**
++     *	This is the actual implementation of the lineage tree algorithm but as an YDDatabaseObject
++     */
++    class YDDatabaseTree3 extends YDDatabaseObject {
++    
++        function YDDatabaseTree3( $table, $db = 'default', $idField = 'id', $parentField = 'parent_id', $lineageField = 'lineage', $levelField = 'level', $positionField = 'position' ) {
++        
++			// init DB object
++            $this-&gt;YDDatabaseObject();
++
++			// register database
++            $this-&gt;registerDatabase( $db );
++
++			// register table
++            $this-&gt;registerTable( $table );
++
++			// register reserved fields
++			$this-&gt;registerKey( $idField, true );
++			$this-&gt;registerField( $parentField );
++			$this-&gt;registerField( $lineageField );
++			$this-&gt;registerField( $levelField );
++			$this-&gt;registerField( $positionField );
++
++			// save field names for future use
++			$this-&gt;__id       = $idField;
++			$this-&gt;__parent   = $parentField;
++			$this-&gt;__lineage  = $lineageField;
++			$this-&gt;__level    = $levelField;
++			$this-&gt;__position = $positionField;
++		}
++
++
++        /**
++         *  Returns the node level based on the lineage string
++         *
++         *  @returns  level int value
++         */
++        function _getLevel( $lineage ) {
++			return substr_count( $lineage, '/' ) - 1;
++        }
++
++
++        /**
++         *  Fetch the node data for the node identified by $id.
++         *
++         *  @param $id      The ID of the node to fetch.
++         *  @param $field   (Optional) The unique field to select on. Defaults to id, which means that the ID field specified
++         *                  when the object was instantiated will be used.
++         *
++         *  @returns An object containing the node's data, or false if node not found
++         */
++        function getNode( $id, $field = null ) {
++
++			$this-&gt;resetValues();
++
++			// if field not defined, field is id
++			if ( is_null( $field ) ) $field = $this-&gt;__id;
++	
++			// set field
++			$this-&gt;set( $field, $id );
++
++            // get node
++            return $this-&gt;_getNode();
++        }
++
++
++        /**
++         *  Helper method to fetch a node.
++         *
++         *  @returns An object containing the node's data, or false if node not found
++         */
++        function _getNode() {
++
++			// check results
++			if ( $this-&gt;find() == 0 ) return false;
++
++            // Execute the query and return the record
++            return $this-&gt;getValues();
++        }
++
++
++        /**
++         *  Fetch the descendants of a node. NOTE: To get all elements use getTreeElements()
++         *
++         *  @param $id              The ID of the node to fetch descendant data for. 
++         *  @param $includeSelf     (optional) Whether or not to include the passed node in results. 
++         *
++         *  @returns The descendants of the passed now
++         */
++        function getDescendants( $id, $includeSelf = false ) {
++
++			$this-&gt;resetValues();
++
++			return $this-&gt;_getDescendants( $id, $includeSelf );
++		}
++
++
++        /**
++         *  Helper to fetch the descendants of a node
++         *
++         *  @param $id              The ID of the node to fetch descendant data for. 
++         *  @param $includeSelf     (optional) Whether or not to include the passed node in results. 
++         *
++         *  @returns The descendants of id
++         */
++        function _getDescendants( $id, $includeSelf = false ) {
++
++            // get just children
++			if ( $includeSelf == false ) $this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
++			else                         $this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot; OR ' . $this-&gt;__id . ' = ' . intval( $id ) );
++
++			// find nodes
++			$this-&gt;find();
++
++			// return all nodes
++			return $this-&gt;getResults();
++		}
++
++
++        /**
++         *  Fetch all elements of a tree
++         *
++         *  @returns All tree nodes
++         */
++        function getTreeElements() {
++
++			$this-&gt;resetValues();
++
++			return $this-&gt;_getTreeElements();
++		}
++
++
++        /**
++         *  Helper to fetch all elements of a tree
++         *
++         *  @returns All tree nodes
++         */
++        function _getTreeElements() {
++
++			// get all elements except root
++			$this-&gt;where( $this-&gt;__id . ' &gt; 1' );
++
++			// find elements
++			$this-&gt;find();
++
++			// return all nodes
++			return $this-&gt;getResults();
++		}
++
++
++        /**
++         *  Fetch the children of a node, or if no node is specified, fetch the top level items.
++         *
++         *  @param $id             The ID of the node to fetch child data for.
++         *
++         *  @returns The children of the passed id
++         */
++        function getChildren( $id, $includeSelf = false ){
++
++			$this-&gt;resetValues();
++			
++			return $this-&gt;_getChildren( $id, $includeSelf );
++        }
++
++
++        /**
++         *  Helper to fetch the children of a node, or if no node is specified, fetch the top level items.
++         *
++         *  @param $id             The ID of the node to fetch child data for.
++         *
++         *  @returns The children of the passed id
++         */
++        function _getChildren( $id, $includeSelf = false ){
++
++            // get just children
++			if ( $includeSelf == false ) $this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) );
++			else                         $this-&gt;where( $this-&gt;__parent . ' = ' . intval( $id ) . ' OR ' . $this-&gt;__parent . ' = ' . intval( $id ) );
++
++			$this-&gt;find();
++
++			return $this-&gt;getResults();
++        }
++
++
++        /**
++         *  Fetch the path to a node. If an invalid node is passed, an empty array is returned. If a top level node is 
++         *  passed, an array containing on that node is included (if 'includeSelf' is set to true, otherwise an empty
++         *  array).
++         *
++         *  @param $id             The ID of the node to fetch child data for.
++         *  @param $includeSelf    (optional) Whether or not to include the passed node in the the results.
++         *
++         *  @returns An array of each node to passed node
++         */
++        function getPath( $id, $includeSelf=false ) {
++
++			$this-&gt;resetValues();
++
++			return $this-&gt;_getPath( $id, $includeSelf );
++        }
++
++
++        /**
++         *  Helper to fetch the path to a node. 
++         *
++         *  @param $id             The ID of the node to fetch child data for.
++         *  @param $includeSelf    (optional) Whether or not to include the passed node in the the results.
++         *
++         *  @returns An array of each node to passed node
++         */
++        function _getPath( $id, $includeSelf = false ) {
++
++            // Get the node
++            $node = $this-&gt;getNode( $id ) ;
++
++            // No node, return empty array
++            if ( ! $node ) return array();
++
++			// compute parents of this node. Read lineage, delete first '//', last '/', apply 'intval' to all elements and implode
++			$nodes = implode( '&quot;,&quot;', array_map( 'intval', explode('/', substr( substr( $node[ $this-&gt;__lineage ], 2 ), 0, -1 ) ) ) );
++
++            if ( $includeSelf == false ) $this-&gt;where( $this-&gt;__id . ' IN (&quot;' . implode( '&quot;,&quot;', $nodes ) . '&quot;)' );
++			else                         $this-&gt;where( $this-&gt;__id . ' IN (&quot;' . implode( '&quot;,&quot;', $nodes ) . '&quot;) OR ' . $this-&gt;__id . ' = ' . intval( $id ) );
++
++			$this-&gt;find();
++
++			return $this-&gt;getResults();
++        }
++
++
++        /**
++         *  Check if one node descends from another node. If either node is not found, then false is returned.
++         *
++         *  @param $descendant_id  The node that potentially descends
++         *  @param $ancestor_id    The node that is potentially descended from
++         *
++         *  @returns True if $descendant_id descends from $ancestor_id, false otherwise
++         */
++        function isDescendantOf( $descendant_id, $ancestor_id ) {
++
++			$this-&gt;resetValues();
++			
++			return _isDescendantOf( $descendant_id, $ancestor_id );
++        }
++
++
++        /**
++         *  Helper to check if one node descends from another node.
++         *
++         *  @param $descendant_id  The node that potentially descends
++         *  @param $ancestor_id    The node that is potentially descended from
++         *
++         *  @returns True if $descendant_id descends from $ancestor_id, false otherwise
++         */
++        function _isDescendantOf( $descendant_id, $ancestor_id ) {
++
++			// id must be the descendant
++			$this-&gt;set( $this-&gt;__id, intval( $descendant_id ) );
++
++			// check if descendant has the ancestor in lineage ;)
++			$this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $ancestor_id ) . '/%&quot;' );
++		
++			// get total of rows
++			return ( $this-&gt;find() == 1 );
++        }
++
++
++        /**
++         *  Check if one node is a child of another node. If either node is not found, then false is returned.
++         *
++         * @param $child_id       The node that is possibly a child
++         * @param $parent_id      The node that is possibly a parent
++         *
++         * @returns True if $child_id is a child of $parent_id, false otherwise
++         */
++        function isChildOf( $child_id, $parent_id ) {
++
++			$this-&gt;resetValues();
++
++			// check if there is a id that equals $child_id
++			$this-&gt;set( $this-&gt;__id, intval( $child_id ) );
++
++			// check if there is a parent that equals $parent_id
++			$this-&gt;set( $this-&gt;__parent, intval( $parent_id ) );
++
++			// get total of rows
++			return ( $this-&gt;find() == 1 );
++        }
++
++
++        /**
++         *  Find the number of descendants a node has
++         *
++         *  @param $id     The ID of the node to search for.
++         *
++         *  @returns The number of descendants the node has
++         */
++        function numDescendants( $id ) {
++
++			$this-&gt;resetValues();
++
++			return $this-&gt;_numDescendants( $id );
++        }
++
++
++        /**
++         *  Helper to find the number of descendants a node has
++         *
++         *  @param $id     The ID of the node to search for.
++         *
++         *  @returns The number of descendants the node has
++         */
++        function _numDescendants( $id ) {
++
++			// register a custom select
++			$this-&gt;registerSelect( 'num_descendants', 'COUNT(*)' );
++			
++			// search all nodes that contains this id in lineage
++			$this-&gt;where( $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
++
++			// find them
++			$this-&gt;find();
++			
++			// get total
++			$total = $this-&gt;get( 'num_descendants' );
++
++			// unregister select. otherwise could be used on by other method
++			$this-&gt;unregisterSelect( 'num_descendants' );
++
++			return $total;
++        }
++
++
++        /**
++         *  Find the number of children a node has
++         *
++         *  @param $id     The ID of the node to search for. Pass 0 to count the first level items
++         *
++         *  @returns The number of descendants the node has, or -1 if the node isn't found.
++         */
++        function numChildren( $id ) {
++
++			$this-&gt;resetValues();
++
++			// search all nodes that contains this id in lineage
++			$this-&gt;set( $this-&gt;__parent, intval( $id ) );
++
++			// find them
++			return $this-&gt;find();
++        }
++
++
++        /**
++         *  Fetch the immediately family of a node. More specifically, fetch a node's parent, siblings and children. 
++         *
++         * @param $id   The ID of the node to fetch child data for.
++         *
++         * @returns An array of each node in the family
++         */
++        function getImmediateFamily( $id ) {
++
++            // Get the node parent
++            $node = $this-&gt;getNode( $id );
++
++            // No node, return empty array
++            if ( ! $node ) return array();
++
++			$this-&gt;resetValues();
++
++			// get elements that have parent $parent (this returns current element and brothers), that have id $parent (returns parent), and that have lineage like /$id/ (returns all children)
++			$this-&gt;where( $this-&gt;__parent . '=' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__id . ' = ' . $node[ $this-&gt;__parent ] . ' OR ' . $this-&gt;__lineage . ' LIKE &quot;%/' . intval( $id ) . '/%&quot;' );
++
++			$this-&gt;find();
++
++            // Execute the query and get the record
++            return $this-&gt;getRecords();
++        }
++
++
++        /**
++         *  This function adds a node to the database.
++         *
++         *  @param $values      The field values of the node. Do NOT define parent_id here!
++         *  @param $parent_id   The parent ID of the node. If not set, node will be added as a root child (its parent will be 1)
++         *  @param $position    (optional) Node position. If not set, node will be added at the end position
++         *
++         *  @returns    The ID of the newly inserted node.
++         */
++        function addNode( $values, $parent_id = 1, $position = null ) {
++
++            // compute linege. to do that we must check if we want to add node to root
++            if ( $parent_id == 1 ) { 
++
++				// compute lineage
++				$lineage = '//';
++			}else{
++
++				// get parent lineage and compute node lineage
++				$parent_node = $this-&gt;getNode( $parent_id );
++				$lineage     = $parent_node[ $this-&gt;__lineage ] . $parent_id . '/';
++			}
++
++			// get how much brothers we will have
++			$total_brothers = $this-&gt;numChildren( $parent_id );
++
++			// compute position. If passed in arg we check if really can be that value, otherwise place node at the end
++			if ( !is_numeric( $position ) || intval( $position ) &lt; 1 || intval( $position ) &gt; $total_brothers + 1 )
++				$position = $total_brothers + 1;
++
++			// create an empty position. To do this we must increment position of nodes that have the same parent AND have position equal or bigger than $position
++			$this-&gt;resetValues();
++
++			// position field must increment
++			$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
++
++			// only on new brothers with higher or equal position
++			$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $parent_id ) . ' AND ' .  $this-&gt;__position . ' &gt;= ' . intval( $position ) );
++
++			// lets update.
++			$this-&gt;update();
++
++			// reset any previous value to create insert
++			$this-&gt;resetValues();
++
++			// apply custom values
++			$this-&gt;setValues( $values );
++
++			// override reserved fields
++			$this-&gt;set( $this-&gt;__parent,   $parent_id );
++			$this-&gt;set( $this-&gt;__lineage,  $lineage );
++			$this-&gt;set( $this-&gt;__level,    $this-&gt;_getLevel( $lineage ) );
++			$this-&gt;set( $this-&gt;__position, $position );
++
++			return $this-&gt;insert();
++        }
++
++
++        /**
++         *  This function updates a node fields ( that are NOT RESERVED only )
++         *
++         *  @param $values      The field values of the node. Do NOT update position, parent_id, lineage or level
++         *  @param $id          (optional) The ID of the node to update.
++         *
++         *  @returns    Total of lines affected
++         */
++        function updateNode( $values, $id ) {
++
++			$this-&gt;resetValues();
++
++			// get reserved field names
++			$parent   = $this-&gt;__parent;
++			$lineage  = $this-&gt;__lineage;
++			$level    = $this-&gt;__level;
++			$position = $this-&gt;__position;
++
++			// apply custom values
++			$this-&gt;setValues( $values );
++			
++			// overwrite id
++			$this-&gt;set( $this-&gt;__id, intval( $id ) );
++
++			// unset reserved fields
++			unset( $this-&gt;$parent );
++			unset( $this-&gt;$lineage );
++			unset( $this-&gt;$level );
++			unset( $this-&gt;$position );
++
++			return $this-&gt;update();
++        }
++
++
++        /**
++         *  Delete the node and it's children. NOTE: Make shure your table is in InnoDB !
++         *
++         *  @param $id             The ID of the node to delete.
++         *  @param $deleteAll     (Optional) Delete id and all children (true by default. if false, deletes children only)
++         *
++         *  @returns    Total of lines affected
++         */
++        function deleteNode( $id, $deleteAll = true ) {
++
++            // if we want to delete $id (and all children) we must update positions in all $id brothers after delete
++			if ( $deleteAll ){
++
++	            // get node details before delete. we must know the position
++	            $node = $this-&gt;getNode( $id );
++
++				$this-&gt;resetValues();
++
++				$this-&gt;set( $this-&gt;__id, intval( $id ) );
++
++				// if delete didn't affect any rows we don't need to update brothers
++				$total = $this-&gt;delete();
++				
++				if ( $total == 0 ) return 0;
++
++				$this-&gt;resetValues();
++
++				// decrease positions
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
++
++				// in all elements with same parent AND position bigger than our
++				$this-&gt;where( $this-&gt;__parent . ' = ' . intval( $node[ $this-&gt;__parent ] ) . ' AND ' . $this-&gt;__position . ' &gt; ' . intval( $node[ $this-&gt;__position ] ) );
++
++				$this-&gt;update();
++				
++				return $total;
++			}
++
++			// here we want do delete child only
++			$this-&gt;resetValues();
++
++			$this-&gt;set( $this-&gt;__parent, intval( $id ) );
++
++			return $this-&gt;delete();
++        }
++
++
++        /**
++         *  Move a node to a different parent node.
++         *
++         *  @param  $id         	The ID of the node to move
++         *  @param  $new_parent_id  (optional) The ID of the new parent node. If not set, will be moved in same parent
++         *  @param  $position   	(optional) The new position.
++         */
++        function moveNode( $id, $new_parent_id = null, $new_position = null ) {
++
++            // get old node details before move
++            $old_node      = $this-&gt;getNode( $id );
++            $old_parent_id = $old_node[ $this-&gt;__parent ];
++            $old_position  = $old_node[ $this-&gt;__position ];
++            $old_lineage   = $old_node[ $this-&gt;__lineage ];
++
++			// compute new parent id
++			if ( ! is_numeric( $new_parent_id ) ) $new_parent_id = $old_parent_id;
++
++			// if position not set, we will move node to the end of the new parent
++			$total_new_brothers = $this-&gt;numChildren( $new_parent_id );
++
++			// if custom position is not valid add node at end
++			if ( ! is_numeric( $new_position ) || intval( $new_position ) &lt; 1 || intval( $new_position ) &gt; $total_new_brothers + 1 )
++				$new_position = 1 + $total_new_brothers;
++
++			// get information of old parent
++            $old_parent_node = $this-&gt;getNode( $old_parent_id );
++
++			// get information of new parent if diferent than old parent
++			if ( $new_parent_id == $old_parent_id ) $new_parent_node = $old_parent_node;
++            else                                    $new_parent_node = $this-&gt;getNode( $new_parent_id );
++
++			// if new parent is diferent than old parent we must update their child positions
++			if ( $new_parent_id != $old_parent_id ){
++
++				// add position space for this node in new parent: increase positions of new brothers that have position bigger than this node position
++				$this-&gt;resetValues();
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' + 1' );
++				$this-&gt;where( $this-&gt;__parent . ' = ' . $new_parent_id . ' AND ' . $this-&gt;__position . ' &gt; ' . $new_position );
++				$this-&gt;update();
++
++				// decrease positions of old brothers that have position bigger than this node position
++				$this-&gt;resetValues();
++				$this-&gt;set( $this-&gt;__position, $this-&gt;__position . ' - 1' );
++				$this-&gt;where( $this-&gt;__parent . ' = ' . $old_parent_id . ' AND ' . $this-&gt;__position . ' &gt; ' . $old_position );
++				$this-&gt;update();
++			}
++	
++			// update node
++			$this-&gt;resetValues();
++			$this-&gt;set( $this-&gt;__id,       intval( $id ) );
++			$this-&gt;set( $this-&gt;__parent,   intval( $new_parent_id ) );
++			$this-&gt;set( $this-&gt;__lineage,  $new_parent_node[ $this-&gt;__lineage ] . $new_parent_id . '/' );
++			$this-&gt;set( $this-&gt;__level,    $this-&gt;_getLevel( $new_lineage ) );
++			$this-&gt;set( $this-&gt;__position, intval( $new_position ) );
++			$res = $this-&gt;update();
++			
++			// update lineages of node descendants ;)
++			if ( $new_parent_id != $old_parent_id ){
++				$this-&gt;resetValues();
++				$this-&gt;set( $this-&gt;__linage, 'REPLACE(' . $this-&gt;__lineage . ',&quot;' . $old_lineage . '/' . $id . '/&quot;,&quot;' . $new_lineage . '/' . $id . '/&quot;)' );
++				$this-&gt;update();
++			}
++
++			return $res;
++        }
++
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000761.html">[ydf-devel] r2206 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000764.html">[ydf-devel] Is YDDatabaseTree2::moveNode working?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#763">[ date ]</a>
+              <a href="thread.html#763">[ thread ]</a>
+              <a href="subject.html#763">[ subject ]</a>
+              <a href="author.html#763">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

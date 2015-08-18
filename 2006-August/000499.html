@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1992 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1992%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608081554.k78Fssj4005525%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000498.html">
+   <LINK REL="Next"  HREF="000500.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1992 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1992%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608081554.k78Fssj4005525%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1992 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  8 17:54:54 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000498.html">[ydf-devel] r1991 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000500.html">[ydf-devel] r1993 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#499">[ date ]</a>
+              <a href="thread.html#499">[ thread ]</a>
+              <a href="subject.html#499">[ subject ]</a>
+              <a href="author.html#499">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-08 17:54:33 +0200 (Tue, 08 Aug 2006)
+New Revision: 1992
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+Log:
+- added new alpha version of YDCMUsers::addUserForm method to add new users based on form values
+
+- db scheme cannot have foreign key in YDCMUsers table because of null incompatibilities with YDDatabaseTree
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-08-08 14:07:10 UTC (rev 1991)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-08-08 15:54:33 UTC (rev 1992)
+@@ -583,15 +583,15 @@
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1758&quot; ColName=&quot;type &quot; PrevColName=&quot;type_2&quot; Pos=&quot;19&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(100)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;\aYDCMVisitor\a&quot; Comments=&quot;\aYDCMAdministrator\a or \aYDCMVisitor\a&quot;&gt;
++&lt;COLUMN ID=&quot;1793&quot; ColName=&quot;parent_id&quot; PrevColName=&quot;&quot; Pos=&quot;20&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
++&lt;OPTIONSELECT Value=&quot;1&quot; /&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+-&lt;COLUMN ID=&quot;1239&quot; ColName=&quot;parent_id&quot; PrevColName=&quot;parent&quot; Pos=&quot;2&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;(10)&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;0&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;1&quot; DefaultValue=&quot;0&quot; Comments=&quot;optional parent of this user&quot;&gt;
++&lt;COLUMN ID=&quot;1758&quot; ColName=&quot;type &quot; PrevColName=&quot;type_2&quot; Pos=&quot;19&quot; idDatatype=&quot;20&quot; DatatypeParams=&quot;(100)&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;\aYDCMVisitor\a&quot; Comments=&quot;\aYDCMAdministrator\a or \aYDCMVisitor\a&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+ &lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+-&lt;OPTIONSELECT Value=&quot;0&quot; /&gt;
+ &lt;/OPTIONSELECTED&gt;
+ &lt;/COLUMN&gt;
+ &lt;COLUMN ID=&quot;1240&quot; ColName=&quot;nleft&quot; PrevColName=&quot;path&quot; Pos=&quot;3&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;0&quot; Prec=&quot;0&quot; PrimaryKey=&quot;0&quot; NotNull=&quot;1&quot; AutoInc=&quot;0&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;optional nleft&quot;&gt;
+@@ -689,14 +689,12 @@
+ &lt;RELATIONS_START&gt;
+ &lt;RELATION_START ID=&quot;1383&quot; /&gt;
+ &lt;RELATION_START ID=&quot;1436&quot; /&gt;
+-&lt;RELATION_START ID=&quot;1648&quot; /&gt;
+ &lt;RELATION_START ID=&quot;1410&quot; /&gt;
+ &lt;RELATION_START ID=&quot;1741&quot; /&gt;
+ &lt;RELATION_START ID=&quot;1784&quot; /&gt;
+ &lt;/RELATIONS_START&gt;
+ &lt;RELATIONS_END&gt;
+ &lt;RELATION_END ID=&quot;1366&quot; /&gt;
+-&lt;RELATION_END ID=&quot;1648&quot; /&gt;
+ &lt;/RELATIONS_END&gt;
+ &lt;INDICES&gt;
+ &lt;INDEX ID=&quot;1279&quot; IndexName=&quot;PRIMARY&quot; IndexKind=&quot;0&quot; FKRefDef_Obj_id=&quot;-1&quot;&gt;
+@@ -1095,7 +1093,6 @@
+ &lt;RELATION ID=&quot;1436&quot; RelationName=&quot;user_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1430&quot; FKFields=&quot;user_id=user_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;4&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;6&quot; CaptionOffsetY=&quot;4&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;28&quot; /&gt;
+ &lt;RELATION ID=&quot;1437&quot; RelationName=&quot;content_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1162&quot; DestTable=&quot;1430&quot; FKFields=&quot;content_id=content_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;12&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;31&quot; CaptionOffsetY=&quot;-6&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;29&quot; /&gt;
+ &lt;RELATION ID=&quot;1646&quot; RelationName=&quot;parent_id&quot; Kind=&quot;5&quot; SrcTable=&quot;1162&quot; DestTable=&quot;1162&quot; FKFields=&quot;content_id=parent_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;1&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;51&quot; /&gt;
+-&lt;RELATION ID=&quot;1648&quot; RelationName=&quot;parent_id&quot; Kind=&quot;5&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1168&quot; FKFields=&quot;user_id=parent_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;4&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;52&quot; /&gt;
+ &lt;RELATION ID=&quot;1692&quot; RelationName=&quot;content_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1162&quot; DestTable=&quot;1678&quot; FKFields=&quot;content_id=content_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;3&quot; MidOffset=&quot;-3&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;-44&quot; CaptionOffsetY=&quot;-24&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;47&quot; /&gt;
+ &lt;RELATION ID=&quot;1693&quot; RelationName=&quot;language_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1165&quot; DestTable=&quot;1678&quot; FKFields=&quot;language_id=language_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;4&quot; MidOffset=&quot;31&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;19&quot; CaptionOffsetY=&quot;-72&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;48&quot; /&gt;
+ &lt;RELATION ID=&quot;1410&quot; RelationName=&quot;user_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1401&quot; FKFields=&quot;user_id=user_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;14&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;1&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;28&quot; /&gt;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-08 14:07:10 UTC (rev 1991)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-08 15:54:33 UTC (rev 1992)
+@@ -211,6 +211,41 @@
+ 
+ 
+         /**
++         *  This function adds a new user based on form values
++         *
++         *  @param $id          Static parent id
++         *  @param $formvalues  Array with user attributes
++         *
++         *  @returns    true if updated, array with form errors otherwise
++         */
++		function addUserForm( $id, $formvalues = array() ){
++
++			// check form validation
++			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
++				return $this-&gt;form-&gt;getErrors();
++
++			// parse values
++			$values = array();
++			$values['name']         = $this-&gt;form-&gt;getValue( 'name' );
++			$values['email']        = $this-&gt;form-&gt;getValue( 'email' );
++			$values['username']     = $this-&gt;form-&gt;getValue( 'username' );
++			$values['other']        = $this-&gt;form-&gt;getValue( 'other' );
++			$values['state']        = $this-&gt;form-&gt;getValue( 'state' );
++			$values['type']         = 'YDCMUseradministrator';
++			$values['nlevel']       = 1;
++			$values['created_user'] = $this-&gt;currentID();
++			$values['created_date'] = YDStringUtil::formatDate( time(), 'datetimesql' );
++			$values['language_id']  = $this-&gt;form-&gt;getValue( 'language_id' );
++			$values['login_start']  = YDStringUtil::formatDate( $this-&gt;form-&gt;getValue( 'login_start' ), 'datetimesql' );
++			$values['login_end']    = YDStringUtil::formatDate( $this-&gt;form-&gt;getValue( 'login_end' ),   'datetimesql' );
++
++			// add user to YDUsers table
++			return $this-&gt;tree-&gt;addNode( $values, $id );
++		}
++
++
++
++        /**
+          *  This function updates the current user attributes (ignoring passwords and statistics) using form values
+          *
+          *  @param $id          Static user id
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000498.html">[ydf-devel] r1991 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000500.html">[ydf-devel] r1993 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#499">[ date ]</a>
+              <a href="thread.html#499">[ thread ]</a>
+              <a href="subject.html#499">[ subject ]</a>
+              <a href="author.html#499">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2462 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2462%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200708012149.l71Lnusu004933%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001055.html">
+   <LINK REL="Next"  HREF="001057.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2462 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2462%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200708012149.l71Lnusu004933%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2462 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug  1 23:49:56 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001055.html">[ydf-devel] r2461 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+</A></li>
+        <LI>Next message: <A HREF="001057.html">[ydf-devel] r2463 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1056">[ date ]</a>
+              <a href="thread.html#1056">[ thread ]</a>
+              <a href="subject.html#1056">[ subject ]</a>
+              <a href="author.html#1056">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-08-01 23:49:45 +0200 (Wed, 01 Aug 2007)
+New Revision: 2462
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+Log:
+on checkboxgroup:
+ - ENHANCEMENT: when setting values, sub checkboxes are checked first
+ - FEATURE: when using columns, width is the same on each column (useful when we use more than one checkboxgroup in same form)
+ - OPTIMIZATION: options are not passed to sub checkboxes (because they don't use options)
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-08-01 21:43:54 UTC (rev 2461)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2007-08-01 21:49:45 UTC (rev 2462)
+@@ -48,7 +48,7 @@
+          *	@param $name		The name of the form element.
+          *	@param $label		(optional) The label for the form element.
+          *	@param $attributes	(optional) The attributes for the form element.
+-         *	@param $options		(optional) The options for the elment.
++         *	@param $options		(optional) The options for the element.
+          */
+         function YDFormElement_CheckboxGroup( $form, $name, $label='', $attributes=array(), $options=array() ) {
+ 
+@@ -80,8 +80,8 @@
+ 
+             // Add the subitems
+             $this-&gt;_items = array();
+-            foreach ( $options as $key=&gt;$val ) {
+-                $item = new YDFormElement_Checkbox( $form, $name . '[' . $key . ']', $val, $attributes, $options );
++            foreach ( $this-&gt;_options as $key=&gt;$val ) {
++                $item = new YDFormElement_Checkbox( $form, $name . '[' . $key . ']', $val, $attributes );
+                 $this-&gt;_items[ $key ] = $item;
+ 
+                 // delete attribute. otherwise we would get a 'sep' attribute in html
+@@ -136,7 +136,11 @@
+                 $this-&gt;_items[ intval( $val ) ]-&gt;setValue( 1 );
+             }elseif ( is_array( $val ) ){
+                 foreach ( $val as $k=&gt;$v ) {
+-                    $this-&gt;_items[$k]-&gt;setValue( $v );
++
++                    // if checkbox checkbox exist, set value
++                    if ( isset( $this-&gt;_items[$k] ) ){
++                        $this-&gt;_items[$k]-&gt;setValue( $v );
++                    }
+                 }
+             }
+         }
+@@ -299,14 +303,17 @@
+ 				// init table header
+ 				$table = '&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;';
+ 			
++				// compute width of each column
++				$width = 'width=&quot;' . intval( 100 / $this-&gt;_columns ) . '%&quot;';
++			
+ 				// if 'select all' is defined to be on top, add a row with 'select all' column and other cols empty
+ 				if ( $selall_html != '' &amp;&amp; ! $this-&gt;_addSelectAll_onBottom ){
+ 				
+ 					$table .= '&lt;tr&gt;';
+-					$table .= '&lt;td&gt;' . $selall_html . '&lt;/td&gt;';
++					$table .= '&lt;td ' . $width . '&gt;' . $selall_html . '&lt;/td&gt;';
+ 					
+ 					for( $k = 1; $k &lt; $this-&gt;_columns; $k++ )
+-						$table .= '&lt;td&gt;&nbsp;&lt;/td&gt;';
++						$table .= '&lt;td ' . $width . '&gt;&nbsp;&lt;/td&gt;';
+ 					
+ 					$table .= '&lt;/tr&gt;';
+ 				}
+@@ -319,8 +326,8 @@
+ 					for( $k = 0; $k &lt; $this-&gt;_columns; $k++ ){
+ 						
+ 						// if we have a checkbox just add it. otherwise add an empty char
+-						if ( isset( $output[ $i ] ) ) $table .= '&lt;td&gt;' . $output[ $i ] . '&lt;/td&gt;';
+-						else                          $table .= '&lt;td&gt;&nbsp;&lt;/td&gt;';
++						if ( isset( $output[ $i ] ) ) $table .= '&lt;td ' . $width . '&gt;' . $output[ $i ] . '&lt;/td&gt;';
++						else                          $table .= '&lt;td ' . $width . '&gt;&nbsp;&lt;/td&gt;';
+ 					
+ 						$i++;
+ 					}
+@@ -335,9 +342,9 @@
+ 					$table .= '&lt;tr&gt;';
+ 					
+ 					for( $k = 1; $k &lt; $this-&gt;_columns; $k++ )
+-						$table .= '&lt;td&gt;&nbsp;&lt;/td&gt;';
++						$table .= '&lt;td ' . $width . '&gt;&nbsp;&lt;/td&gt;';
+ 
+-					$table .= '&lt;td&gt;' . $selall_html . '&lt;/td&gt;';
++					$table .= '&lt;td ' . $width . '&gt;' . $selall_html . '&lt;/td&gt;';
+ 					$table .= '&lt;/tr&gt;';
+ 				}
+ 					
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001055.html">[ydf-devel] r2461 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+</A></li>
+	<LI>Next message: <A HREF="001057.html">[ydf-devel] r2463 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1056">[ date ]</a>
+              <a href="thread.html#1056">[ thread ]</a>
+              <a href="subject.html#1056">[ subject ]</a>
+              <a href="author.html#1056">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

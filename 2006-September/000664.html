@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2145 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2145%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609151344.k8FDiCAf000937%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000663.html">
+   <LINK REL="Next"  HREF="000665.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2145 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2145%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200609151344.k8FDiCAf000937%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2145 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep 15 15:44:12 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000663.html">[ydf-devel] r2144 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+        <LI>Next message: <A HREF="000665.html">[ydf-devel] r2146 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#664">[ date ]</a>
+              <a href="thread.html#664">[ thread ]</a>
+              <a href="subject.html#664">[ subject ]</a>
+              <a href="author.html#664">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-15 15:44:12 +0200 (Fri, 15 Sep 2006)
+New Revision: 2145
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+Log:
+Added an option to the functions that return the value of a query parameter to specify if the keys or values of the values array should be used.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-09-14 16:32:56 UTC (rev 2144)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2006-09-15 13:44:12 UTC (rev 2145)
+@@ -85,15 +85,17 @@
+         /**
+          *  Get the value of a query string variable.
+          *
+-         *  @param  $name    The name of the query string variable.
+-         *  @param  $default (optional) The default value if the query string variable is not existing.
+-         *  @param  $values  (optional) The allowed values as an array.
++         *  @param  $name       The name of the query string variable.
++         *  @param  $default    (optional) The default value if the query string variable is not existing.
++         *  @param  $values     (optional) The allowed values as an array.
++         *  @param  $use_keys   (optional) Use the keys from the values array instead of the values. Defaults to false.
+          *
+          *  @returns    The value of the query string variable as a string.
+          */
+-        function getQueryStringParameter( $name, $default='', $values=null ) {
++        function getQueryStringParameter( $name, $default='', $values=null, $use_keys=false ) {
+             if ( isset( $_GET[$name] ) ) {
+                 if ( ! is_null( $values ) ) {
++                    $values = $use_keys ? array_keys( $values ) : array_values( $values );;
+                     if ( in_array( $_GET[$name], $values ) ) {
+                         return $_GET[$name];
+                     } else {
+@@ -113,11 +115,12 @@
+          *  @param  $name    The name of the query string variable.
+          *  @param  $default (optional) The default value if the query string variable is not existing.
+          *  @param  $values  (optional) The allowed values as an array.
++         *  @param  $use_keys   (optional) Use the keys from the values array instead of the values. Defaults to false.
+          *
+          *  @returns    The value of the query string variable as an integer.
+          */
+-        function getQueryStringParameterAsInt( $name, $default=null, $values=null ) {
+-            $value = $this-&gt;getQueryStringParameter( $name, $default, $values );
++        function getQueryStringParameterAsInt( $name, $default=null, $values=null, $use_keys=false ) {
++            $value = $this-&gt;getQueryStringParameter( $name, $default, $values, $use_keys );
+             return is_numeric( $value ) ? intval( $value ) : $default;
+         }
+ 
+@@ -129,11 +132,12 @@
+          *  @param  $default            (optional) The default value if the query string variable is not existing.
+          *  @param  $values             (optional) The allowed values as an array.
+          *  @param  $action_if_fails    (optional) The action to redirect of if the parameter is invalid.
++         *  @param  $use_keys   (optional) Use the keys from the values array instead of the values. Defaults to false.
+          *
+          *  @returns    The value of the query string variable as a string.
+          */
+-        function getRequiredQueryStringParameter( $name, $default, $values=null, $action_if_fails='default' ) {
+-            $result = $this-&gt;getQueryStringParameter( $name, $default, $values );
++        function getRequiredQueryStringParameter( $name, $default, $values=null, $action_if_fails='default', $use_keys=false ) {
++            $result = $this-&gt;getQueryStringParameter( $name, $default, $values, $use_keys );
+             if ( empty( $result ) ) {
+                 $this-&gt;redirectToAction( $action_if_fails );
+             } else {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000663.html">[ydf-devel] r2144 - YDFramework2.0/trunk/examples/cm/backend
+</A></li>
+	<LI>Next message: <A HREF="000665.html">[ydf-devel] r2146 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#664">[ date ]</a>
+              <a href="thread.html#664">[ thread ]</a>
+              <a href="subject.html#664">[ subject ]</a>
+              <a href="author.html#664">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

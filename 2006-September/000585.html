@@ -1,0 +1,2601 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2071 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMUsers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2071%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent%3A%20.%0A%09languages%20languages/YDCMUsers&In-Reply-To=%3C200609041639.k84GdhxW029739%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000584.html">
+   <LINK REL="Next"  HREF="000586.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2071 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMUsers</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2071%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent%3A%20.%0A%09languages%20languages/YDCMUsers&In-Reply-To=%3C200609041639.k84GdhxW029739%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2071 - in	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent: .	languages languages/YDCMUsers">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Sep  4 18:39:43 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000584.html">[ydf-devel] r2070 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000586.html">[ydf-devel] r2072 - in YDFramework2.0/trunk/examples: . cm	cm/backend
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#585">[ date ]</a>
+              <a href="thread.html#585">[ thread ]</a>
+              <a href="subject.html#585">[ subject ]</a>
+              <a href="author.html#585">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-04 18:38:40 +0200 (Mon, 04 Sep 2006)
+New Revision: 2071
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+Removed:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermissions.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUsers.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/pt.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php
+Log:
+- cleaner code on YDCMComponent: new user management db scheme based on tree objects (like the content).. much much better
+- added group mamanagement
+- added permission management
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMComponent.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -30,7 +30,7 @@
+     YDInclude( 'YDDatabaseObject.php' );
+ 	YDInclude( 'YDDatabaseTree.php' );
+ 	YDInclude( 'YDUrl.php' );
+-	YDInclude( 'YDError.php' );
++	YDInclude( 'YDResult.php' );
+ 
+ 	// include YDCM libs
+ 	YDInclude( 'YDCMComp.php' );
+@@ -189,6 +189,7 @@
+ 			// check if we have a custom id
+ 			if( is_null( $id ) ) $id = $this-&gt;_id;
+ 
++			// TODO: check if return element is a array
+ 			return $tree-&gt;getDescendants( $id );
+ 		}
+ 
+@@ -374,33 +375,4 @@
+     }
+ 
+ 
+-	@define ( YD_ERROR_OK, 1000 );
+-	
+-    YDConfig::set( 'YD_ERROR_LEVELS', array(
+-            YD_ERROR_NOTICE  =&gt; 'Notice',
+-            YD_ERROR_WARNING =&gt; 'Warning',
+-            YD_ERROR_FATAL   =&gt; 'Fatal',
+-            YD_ERROR_OK      =&gt; 'Ok'
+-        ));
+-
+-	// experimental class to handle all YDCM method results
+-	class YDResult extends YDError{
+-	
+-        /**
+-         *  This method creates a OK type
+-         *
+-         *  @param  $message  The message.
+-         *  @param  $value    (optional) A custom value
+-         *
+-         *  @returns     An YDCMResult object.
+-         *
+-         *  @static
+-         */
+-        function ok( $message, $value = null ) {
+-            return YDError::_error( YD_ERROR_OK, $message, $value );
+-        }
+-
+-
+-	}
+-
+ ?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMGroup.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -0,0 +1,375 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// set components path
++	YDConfig::set( 'YD_DBOBJECT_PATH', YD_DIR_HOME_ADD . '/YDCMComponent', false );
++
++	// add translations directory
++	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
++	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMGroup/' );
++
++	// add YDF libs needed by this class
++	YDInclude( 'YDDatabaseObject.php' );
++	YDInclude( 'YDValidateRules.php' );
++	YDInclude( 'YDResult.php' );
++
++	// add YDCM libs
++	YDInclude( 'YDCMUserobject.php' );
++
++
++	// user class
++    class YDCMGroup extends YDDatabaseObject {
++    
++        function YDCMGroup() {
++        
++			// init DB object
++            $this-&gt;YDDatabaseObject();
++
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMGroup' );
++
++			// register fields
++			$this-&gt;registerField( 'group_id' );
++			$this-&gt;registerField( 'name' );
++			$this-&gt;registerField( 'description' );			
++
++			// init relation with userobject
++            $rel = &amp; $this-&gt;registerRelation( 'ydcmuserobject', false, 'ydcmuserobject' );
++			$rel-&gt;setLocalKey( 'group_id' );
++            $rel-&gt;setForeignKey( 'userobject_id' );
++		}
++
++
++        /**
++         *  This method checks if a group ID is valid ( will check if group_id is on its 2 tables )
++         *
++         *  @param $group_id        Group id
++         *
++         *  @returns    TRUE if valid, FALSE otherwise
++         */
++		function validID( $group_id ){
++		
++			// reset values
++			$this-&gt;resetAll();
++
++			// find all rows this user id
++			$this-&gt;where( 'group_id = ' . intval( $group_id ) );
++
++			// join all tables when finding (to check if group_id really belongs to all 3 tables)
++			return ( $this-&gt;findAll() == 1 );
++		}
++
++
++        /**
++         *  This method deletes a group
++         *
++         *  @param $group_id       Group id
++         *
++         *  @returns    delete()
++         */
++		function deleteUser( $group_id ){
++		
++			// reset stuff
++			$this-&gt;resetAll();
++			
++			$this-&gt;set( 'group_id', intval( $group_id ) );
++			
++			return $this-&gt;delete();
++		}
++
++
++        /**
++         *  This method adds form elements for group editing
++		 *
++		 * @param $group_id     Group id to edit
++		 *
++		 * @param $editable     (Optional) Boolean flag that defines if elements are editable
++         */
++		function addFormEdit( $group_id, $editable = true ){
++
++		 	return $this-&gt;_addFormDetails( $group_id, true, $editable );
++		}
++
++
++        /**
++         *  This method adds form elements for addind a new group
++		 *
++		 * @param $parent_group_id    (Optional) Parent id
++         */
++		function addFormNew( $parent_group_id = null ){
++
++		 	return $this-&gt;_addFormDetails( $parent_group_id, false, true );
++		}
++		 
++		
++        /**
++         *  Helper method for user management
++		 *
++		 * @param $id           If you will EDIT some group this is the group id to edit
++         *                      If you will ADD a new group this is the parent id. Use NULL to add it to the root tree
++         *
++		 * @param $edit         TRUE: We are editing a group, FALSE: we are creating a group
++		 *
++		 * @param $editable     When editing a group, this boolean flag defines if form elements are editable (default true)
++         */
++		function _addFormDetails( $id, $edit, $editable ){
++
++			YDInclude( 'YDForm.php' );
++
++			// init form
++			$this-&gt;_form = new YDForm( 'YDCMGroup' );
++
++			// add name and drecription
++			if ( $editable ){
++				$this-&gt;_form-&gt;addElement( 'text',     'name',        t( 'group name' ) );
++				$this-&gt;_form-&gt;addElement( 'textarea', 'description', t( 'group description' ), array( 'rows' =&gt; 4, 'cols' =&gt; 40 ) );
++				$this-&gt;_form-&gt;addElement( 'select',   'state',       t( 'group state' ), array(), array( 0 =&gt; t( 'Blocked' ), 1 =&gt; t( 'Active' ) ) );
++
++				$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkgroup' ), array( $edit, $id ) );
++
++			}else{
++				$this-&gt;_form-&gt;addElement( 'span', 'name',        t( 'group name' ) );
++				$this-&gt;_form-&gt;addElement( 'span', 'description', t( 'group description' ) );
++			}
++
++			// if we are editing a group, set form defaults
++			if ( $edit ){
++
++				// add submit button
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'save' ) );
++
++				// set form defaults based on user attributes
++				$this-&gt;_form-&gt;setDefaults( $this-&gt;getGroup( $id ) );
++
++			}else{
++
++				// add submit button
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'add' ) );
++			}
++
++		}
++
++
++        /**
++         *  Internal method to check if a group name already exists 
++         */
++		function _checkgroup( $values, $options ){
++
++			$this-&gt;resetAll();
++			
++			$this-&gt;set( 'name', $values[ 'name' ] );
++
++			// check if we are editing. if yes, we should check if the name is already used only by another group than current
++			if ( $options[0] == true )
++				$this-&gt;where( 'group_id != ' . intval( $options[1] ) );
++			
++			if ( $this-&gt;find() == 0 ) return true;
++			
++			return array( '__ALL__' =&gt; t( 'group exists' ) );
++		}
++
++
++        /**
++         *  This method updates group attributes
++         *
++         *  @param $id           Group id to save attributes
++         *  @param $formvalues   (Optional) Custom array with attributes
++         *
++         *  @returns    YDResult object. OK      - form updated
++		 *                               WARNING - there are form errors
++         *                               FATAL   - was not possible to update
++         */
++		function saveFormEdit( $id, $formvalues = null ){
++
++			return $this-&gt;_saveFormDetails( $id, true, $formvalues );
++		}
++
++
++        /**
++         *  This method adds a new group
++         *
++         *  @param $parent_id    (Optional) Parent id of this new group
++         *  @param $formvalues   (Optional) Custom array with attributes
++         *
++         *  @returns    YDResult object. OK      - form added
++		 *                               WARNING - there are form errors
++         *                               FATAL   - was not possible to add
++         */
++		function saveFormNew( $parent_id = null, $formvalues = null ){
++
++			return $this-&gt;_saveFormDetails( $parent_id, false, $formvalues );
++		}
++
++
++        /**
++         *  This method adds/saves a group
++         *
++         *  @param $id           If we are editing, $id is the group id. If we are adding, $id is the parent_id
++         *  @param $edit         Boolean flag that defines if we are editing $id or adding to $id
++         *  @param $formvalues   (Optional) Custom array with attributes
++         *
++         *  @returns    YDResult
++         */
++		function _saveFormDetails( $id, $edit, $formvalues = null ){
++
++			// check form validation
++			if ( !$this-&gt;_form-&gt;validate( $formvalues ) )
++				return YDResult::warning( t( 'form errors' ), $this-&gt;_form-&gt;getErrors() );
++
++			// get form values EXCLUDING spans
++			$values = $this-&gt;_form-&gt;getValues();
++
++			// check if we are editing or adding an element
++			if ( $edit ){
++
++				// create userobject node
++				$userobject = array();
++				$userobject['type']  = 'YDCMGroup';
++				$userobject['reference'] = $values[ 'name' ];
++//				$userobject['state']     = $values[ 'state' ];
++
++				// update userobject
++				$uobj = new YDCMUserobject();
++				$res  = $uobj-&gt;updateNode( $userobject, $id );
++
++				// create user row
++				$group = array();
++				$group['name']        = $values[ 'name' ];
++				$group['description'] = $values[ 'description' ];
++
++				// update user
++				$this-&gt;resetValues();
++				$this-&gt;setValues( $group );
++				$this-&gt;where( 'group_id = '. $id ); 
++
++				$res = $this-&gt;update();
++				
++				// check update result and return
++				if ( $res &gt; 0 ) return YDResult::ok( t( 'group details updated' ), $res );
++				else            return YDResult::warning( t( 'group not updated' ), $res );
++
++			}else{
++
++				// create userobject node
++				$userobject = array();
++				$userobject['type']      = 'YDCMGroup';
++				$userobject['reference'] = $values[ 'name' ];
++				$userobject['state']     = isset( $values[ 'state' ] ) ? $values[ 'state' ] : 0;
++
++				// check default parent id
++				if ( is_null( $id ) ) $id = 1;
++
++				// TODO: check if group is valid (and, eg,  is not a user node)
++
++				// update userobject and get new id
++				$uobj = new YDCMUserobject();
++				$res  = $uobj-&gt;addNode( $userobject, intval( $id ) );
++
++				// create user row
++				$group = array();
++				$group[ 'group_id' ]    = $res;
++				$group[ 'name' ]        = $values[ 'name' ];
++				$group[ 'description' ] = $values[ 'description' ];
++
++				// reset object
++				$this-&gt;resetAll();
++				$this-&gt;setValues( $group );
++
++				// insert values
++				if ( $this-&gt;insert() ) return YDResult::ok( t( 'group added' ), $res );
++				else                   return YDResult::fatal( t( 'group not added' ), $res );
++			}
++
++		}
++
++
++        /**
++         *  This returns the form
++         *
++         *  @param $defaults  (Optional) default values array to apply in form
++         *
++         *  @returns    YDForm object
++         */
++		function &amp; getForm( $defaults = false ){
++
++			// check if we have form defaults and apply them
++			if ( is_array( $defaults ) ) $this-&gt;_form-&gt;setDefaults( $defaults );
++
++			return $this-&gt;_form;
++		}
++
++
++        /**
++         *  This method returns user attributes
++         *
++         *  @param      $group_id    Group id or group name
++         *
++         *  @returns    FALSE if group not valid, ARRAY with details otherwise
++         */
++		function getGroup( $group_id ){
++
++			$this-&gt;resetAll();
++
++			// set group id to search for
++			if ( is_numeric( $group_id ) ) $this-&gt;set( 'group_id',  intval( $group_id ) );
++			else                           $this-&gt;set( 'name',      strval( $group_id ) );
++
++			// get all attributes
++			if ( $this-&gt;findAll() != 1 ) return false;
++
++			return $this-&gt;getValues();
++		}
++
++
++        /**
++         *  This method returns a specific group attribute
++         *
++         *  @param      $group_id    Group id to use
++         *  @param      $attribute   Attribute name string
++         *
++         *  @returns    FALSE if group not valid, attribute string otherwise
++         */
++		function getGroupAttribute( $group_id, $attribute ){
++
++			$this-&gt;resetAll();
++
++			// set user id
++			$this-&gt;set( 'group_id', intval( $group_id ) );
++
++			// get all attributes
++			if ( $this-&gt;find() != 1 ) return false;
++
++			return $this-&gt;get( $attribute );
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermission.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -0,0 +1,236 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// set components path
++	YDConfig::set( 'YD_DBOBJECT_PATH', YD_DIR_HOME_ADD . '/YDCMComponent', false );
++
++	// include YDF libs
++	YDInclude( 'YDDatabaseObject.php' );
++
++
++
++    class YDCMPermission extends YDDatabaseObject {
++    
++        function YDCMPermission() {
++
++			// init component as non default
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMPermission' );
++
++			// register fields	
++			$this-&gt;registerField( 'permission_id' );
++			$this-&gt;registerField( 'class' );
++			$this-&gt;registerField( 'action' );
++
++			// init relation with userobject
++            $rel = &amp; $this-&gt;registerRelation( 'ydcmuserobject', false, 'ydcmuserobject' );
++			$rel-&gt;setLocalKey( 'permission_id' );
++            $rel-&gt;setForeignKey( 'userobject_id' );
++
++			// init valid actions
++			$this-&gt;_actions = array();
++		}
++
++
++        /**
++         *  This function return an array of permissions
++         *
++         *  @param     $userobject_id    Userobject id
++         *  @param     $translate        (Optional) Translate permissions
++		 *
++         *  @returns    An array with all permissions
++         */
++		function getPermissions( $userobject_id, $translate = false ){
++		
++			$this-&gt;resetAll();
++			$this-&gt;set( 'permission_id', intval( $userobject_id ) );
++			$this-&gt;findAll();
++
++			$permissions = $this-&gt;getResultsAsAssocArray( array( 'class', 'action' ) );
++
++			// filter permissions
++			foreach ( $permissions as $class =&gt; $actions )
++				foreach( $actions as $action =&gt; $info )
++					if ( ! $this-&gt;actionIsRegistered( $class, $action ) ) unset( $permissions[ $class ][ $action ] );
++
++			// cycle all classes to see if there are empty classes. on the above unset some classes could be without actions
++			foreach ( $permissions as $class =&gt; $actions )
++				if ( empty( $actions ) ) unset( $permissions[ $class ] );
++
++			// if we don't want to translated permissions, just return
++			if ( !$translate ) return $permissions;
++
++			$arr_translated = array();
++
++			// cycle classes and compute translated actions
++			foreach( $permissions as $class =&gt; $actions ){
++
++				// get translations of this component
++				YDLocale::addDirectory( YD_DIR_HOME_ADD . '/YDCMComponent/languages/' . $class );
++
++				// add class to new array
++				if ( !isset( $arr_translated[ $class ] ) ) $arr_translated[] = $class;
++
++				// cycle actions to compute translated string
++				foreach( $actions as $action =&gt; $info )
++					$arr_translated[ $class ][ t( &quot;permission $class $action&quot; ) ] = $info;
++			}
++			
++			return $arr_translated;
++		}
++
++
++        /**
++         *  This function returns all permissions of a userobject
++         *
++         *  @param     $userobject_id   Userobject id (or array of userobjects ) to delete
++         *
++         *  @returns   Boolean TRUE if deleted, FALSE otherwise
++         */
++		function deletePermissions( $userobject_id ){
++
++			// check if argument is array
++			if ( !is_array( $userobject_id ) ) $userobject_id = array( $userobject_id );
++
++			$this-&gt;resetAll();
++
++			// delete all permissions of correspondent userobjects
++			$this-&gt;where( 'permission_id IN (&quot;' . implode( '&quot;,&quot;', $userobject_id ) . '&quot;)' );
++
++			return ( $this-&gt;delete() &gt; 0 );
++		}
++
++
++
++        /**
++         *  This function added a new action to database
++         *
++         *  @param     $userobject_id   Userobject id
++         *  @param     $class           Class name
++         *  @param     $action          Action name
++         *
++         *  @returns   Boolean TRUE if added, FALSE otherwise
++         */
++		function addPermission( $userobject_id, $class, $action ){
++
++			if ( ! $this-&gt;actionIsRegistered( $class, $action ) ) return false;
++
++			// reset old stuff
++			$this-&gt;resetAll();
++
++			// TODO: check if userobject exists
++			$this-&gt;set( 'permission_id', intval( $userobject_id ) );
++			$this-&gt;set( 'class', $class );
++			$this-&gt;set( 'action', $action );
++
++			// return insert result
++			return ( $this-&gt;insert() == 1 );
++		}
++
++
++        /**
++         *  This function registers a valid system permission
++         *
++         *  @param     $class    Class name
++         *  @param     $action   Action name
++         *
++         *  @returns   TRUE if added, FALSE is already exists
++         */
++		function registerAction( $class, $action ){
++
++			$this-&gt;_actions[ $class ][] = $action;
++
++			return true;
++		}
++
++
++        /**
++         *  This function checks if a class+action is registered
++         *
++         *  @param     $class    Class name
++         *  @param     $action   Action name
++         *
++         *  @returns   TRUE if registered, FALSE otherwise
++         */
++		function actionIsRegistered( $class, $action ){
++
++			if ( isset( $this-&gt;_actions[ $class ] ) &amp;&amp; in_array( $action, $this-&gt;_actions[ $class ] ) ) return true;
++
++			return false;
++		}
++
++
++        /**
++         *  This function returns all registered actions
++         *
++         *  @param     $class    (Optional) Class name. default NULL to get actions from all classes
++         *
++         *  @returns   Associative array:  array( CLASS =&gt; array( ACTION, ACTION, .. ) ), or array when class argument is defined
++         */
++		function getRegisteredActions( $class = null ){
++
++			// check if we want actions from all classes
++			if ( is_null( $class ) ) return $this-&gt;_actions;
++			
++			// check if action exists
++			if ( isset( $this-&gt;_actions[ $class ] ) ) return $this-&gt;_actions[ $class ];
++
++			return array();
++		}
++
++
++        /**
++         *  This function checks if a userobject if can do some action
++         *
++         *  @param     $userobject_id     Userobject id
++         *
++         *  @returns   Boolean TRUE or FALSE
++         */
++		function can( $userobject_id, $class, $action ){
++
++			// check if class and action are registed
++			if ( ! isset( $this-&gt;_actions[ $class ] ) || ! in_array( $action, $this-&gt;_actions[ $class ] ) ) return false;
++
++			$this-&gt;resetAll();
++			
++			// try to get a row joined with userobject
++			$this-&gt;set( 'permission_id', $userobject_id );
++			$this-&gt;set( 'class', $class );
++			$this-&gt;set( 'action', $action );
++
++			return ( $this-&gt;find( 'ydcmuserobject' ) == 1 );
++		}
++
++}
++
++?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermissions.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermissions.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMPermissions.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -1,184 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-
+-    class YDCMPermissions extends YDDatabaseObject {
+-    
+-        function YDCMPermissions() {
+-
+-			// init component as non default
+-            $this-&gt;YDDatabaseObject();
+-			
+-			// register database as default
+-            $this-&gt;registerDatabase();
+-
+-			// register table for this component
+-            $this-&gt;registerTable( 'YDCMPermissions' );
+-
+-            // register custom key
+-            $this-&gt;registerKey( 'permission_id', true );
+-
+-			// register fields	
+-			$this-&gt;registerField( 'user_id' );
+-			$this-&gt;registerField( 'object' );
+-			$this-&gt;registerField( 'object_action' );
+-		}
+-
+-
+-        /**
+-         *  This function return an array of permissions
+-         *
+-         *  @param     $user_id    User id to get permissions
+-         *  @param     $translate  (Optional) Translate permissions
+-		 *
+-         *  @returns    An array with all permission groupby object
+-         */
+-		function getPermissions( $user_id, $translate = false ){
+-		
+-			$this-&gt;resetValues();
+-			$this-&gt;user_id = intval( $user_id );
+-			$this-&gt;orderby( 'object DESC, object_action DESC' );
+-			$this-&gt;find();
+-
+-			$permissions = $this-&gt;getResultsAsAssocArray( array( 'object', 'object_action' ) );
+-			
+-			if ( !$translate ) return $permissions;
+-
+-			$arr_translated = array();
+-
+-			// cycle objects and compute translated actions
+-			foreach( $permissions as $obj =&gt; $perms ){
+-
+-				// get permission translations of this component
+-				YDLocale::addDirectory( YD_DIR_HOME_ADD . '/' . $obj . '/languages/' );
+-
+-				if (!isset( $arr_translated[ $obj ] ) ) $arr_translated[] = $obj;
+-
+-				foreach( $perms as $p )
+-					$arr_translated[ $obj ][] = t( $p );
+-			}
+-			
+-			return $arr_translated;
+-		}
+-
+-
+-        /**
+-         *  This function return an array of permissions
+-         *
+-         *  @param     $user_id   User id (or Array of ids ) to delete
+-         */
+-		function deletePermissions( $user_id ){
+-
+-			if ( !is_array( $user_id ) ) $user_id = array( $user_id );
+-
+-			$this-&gt;resetValues();
+-			$this-&gt;where( 'user_id IN (&quot;' . implode( '&quot;,&quot;', $user_id ) . '&quot;)' );
+-
+-			return $this-&gt;delete();
+-		}
+-
+-
+-        /**
+-         *  This function assigns an array of permissions to a user
+-         *
+-         *  @param     $user_id     User id to get permissions
+-         *  @param     $parend_id   Parent id form permission comparation
+-         *  @param     $permissions Array with permissions
+-         */
+-		function setPermissions( $user_id, $parent_id, $values ){
+-
+-			// init temp array permissions
+-			$permissions_valid  = array();
+-			$permissions_to_add = array();
+-			$permissions_to_del = array();
+-
+-			// get parent permissions
+-			$permissions_parent = $this-&gt;getPermissions( $parent_id );
+-
+-			// filter $values and get permissions that are in parent
+-			foreach( $permissions_parent as $obj =&gt; $perms )
+-				foreach( $perms as $p =&gt; $arr )
+-					if( isset( $values[ $obj ][ $p ] ) &amp;&amp; $values[ $obj ][ $p ] == 1 )
+-						$permissions_valid[ $obj ][] = $p;
+-
+-			// get user permissions
+-			$permissions_user = $this-&gt;getPermissions( $user_id );
+-
+-			// cycle user permissions to see the ones we need to delete
+-			foreach( $permissions_user as $obj =&gt; $perms )
+-				foreach( $perms as $p =&gt; $arr )
+-					if ( !isset( $permissions_valid[ $obj ] ) || !in_array( $p, $permissions_valid[ $obj ] ) ) 
+-						$permissions_to_del[ $obj ][] = $p;
+-
+-			// cycle current permissions to see the ones we need to add
+-			foreach( $permissions_valid as $obj =&gt; $perms )
+-				foreach( $perms as $p )
+-					if ( !isset( $permissions[ $obj ][$p] ) )
+-						$permissions_to_add[ $obj ][] = $p;
+-
+-
+-			$p_add = 0;
+-			$t_add = 0;
+-
+-			$p_del = 0;
+-			$t_del = 0;
+-
+-			// cycle permissions to delete and delete them from db
+-			foreach ( $permissions_to_del as $obj =&gt; $perms )
+-				foreach ( array_values( $perms ) as $p ){
+-
+-					$this-&gt;resetAll();
+-					$this-&gt;user_id        = $user_id;
+-					$this-&gt;object         = $obj;
+-					$this-&gt;object_action  = $p;
+-
+-					if ($this-&gt;delete()) $p_del++;
+-					$t_del++;
+-				}
+-
+-			// cycle permissions to add and insert them in db
+-			foreach ( $permissions_to_add as $obj =&gt; $perms )
+-				foreach ( array_values( $perms ) as $p ){
+-
+-					$this-&gt;resetAll();
+-					$this-&gt;user_id        = $user_id;
+-					$this-&gt;object         = $obj;
+-					$this-&gt;object_action  = $p;
+-
+-					if ($this-&gt;insert()) $p_add++;
+-					$t_add++;
+-				}
+-
+-			if ($p_add == $t_add &amp;&amp; $p_del == $t_del ) return true;
+-			
+-			return false;
+-		}
+-
+-}
+-
+-?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUser.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -0,0 +1,653 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++	// set components path
++	YDConfig::set( 'YD_DBOBJECT_PATH', YD_DIR_HOME_ADD . '/YDCMComponent', false );
++
++	// add translations directory
++	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/' );
++	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUsers/' );
++
++	// add YDF libs needed by this class
++	YDInclude( 'YDDatabaseObject.php' );
++	YDInclude( 'YDValidateRules.php' );
++	YDInclude( 'YDUtil.php' );
++	YDInclude( 'YDResult.php' );
++
++	// add YDCM libs
++	YDInclude( 'YDCMLanguages.php' );
++	YDInclude( 'YDCMTemplates.php' );
++	YDInclude( 'YDCMUserobject.php' );
++
++
++	// user class
++    class YDCMUser extends YDDatabaseObject {
++    
++        function YDCMUser() {
++        
++			// init DB object
++            $this-&gt;YDDatabaseObject();
++
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMUser' );
++
++			// register fields
++			$this-&gt;registerField( 'user_id' );
++			$this-&gt;registerField( 'username' );
++			$this-&gt;registerField( 'password' );
++			$this-&gt;registerField( 'name' );
++			$this-&gt;registerField( 'email' );			
++			$this-&gt;registerField( 'other' );	
++			$this-&gt;registerField( 'lang_id' );
++			$this-&gt;registerField( 'login_start' );
++			$this-&gt;registerField( 'login_end' );
++			$this-&gt;registerField( 'login_counter' );			
++			$this-&gt;registerField( 'login_last' );
++			$this-&gt;registerField( 'login_current' );
++			$this-&gt;registerField( 'template' );
++
++			// init relation with userobject
++            $rel = &amp; $this-&gt;registerRelation( 'ydcmuserobject', false, 'ydcmuserobject' );
++			$rel-&gt;setLocalKey( 'user_id' );
++            $rel-&gt;setForeignKey( 'userobject_id' );
++
++			// init relation with languages table
++            $rel = &amp; $this-&gt;registerRelation( 'ydcmlanguages', false, 'ydcmlanguages' );
++			$rel-&gt;setLocalKey( 'lang_id' );
++            $rel-&gt;setForeignKey( 'language_id' );
++		}
++
++
++        /**
++         *  This method checks if a username and password are valid
++         *
++         *  @param $username  User username
++         *  @param $password  User password (if password length is smaller than 32 we must md5 it, password form elements must have max 31)
++         *
++         *  @returns    user_id if valid, false otherwise
++         */
++		function valid( $username = '', $password = '' ){
++
++			// test username and password
++			if ( !YDValidateRules::alphanumeric( $username ) )   return false;
++			if ( !YDValidateRules::maxlength( $username, 100 ) ) return false;
++			if ( !YDValidateRules::alphanumeric( $password ) )   return false;
++			if ( !YDValidateRules::maxlength( $password, 32 ) )  return false;
++
++			// reset values
++			$this-&gt;resetAll();
++
++			// set username
++			$this-&gt;set( 'username', $username );
++
++			// if password is not in md5 format we must set it
++			if ( strlen( $password ) != 32 ) $password = md5( $password );
++
++			// set password
++			$this-&gt;set( 'password', $password );
++			
++			// check user state based on state and/or user login schedule
++			$now = YDStringUtil::formatDate( time(), 'datetimesql' );
++
++			// relation with userobject
++			$this-&gt;load( 'ydcmuserobject' );
++			$this-&gt;where( '(state = 1 OR (state = 2 AND login_start &lt; &quot;' . $now . '&quot; AND login_end &gt; &quot;' . $now . '&quot;))' );
++
++			// test if we get just one user
++			if ( $this-&gt;find( 'ydcmuserobject' ) == 1 ) return intval( $this-&gt;get( 'user_id' ) );
++
++			return false;
++		}
++
++
++        /**
++         *  This method checks if a user ID is valid ( will check if user_id is on its 3 tables )
++         *
++         *  @param $user_id        User id
++         *
++         *  @returns    TRUE if valid, FALSE otherwise
++         */
++		function validID( $user_id ){
++		
++			// reset values
++			$this-&gt;resetAll();
++
++			// find all rows this user id
++			$this-&gt;where( 'user_id = ' . intval( $user_id ) );
++
++			// join all tables when finding (to check if user_id really belongs to all 3 tables)
++			return ( $this-&gt;findAll() == 1 );
++		}
++
++
++        /**
++         *  This method deletes a user (and all children) or just the children
++         *
++         *  @param $user_id        User id
++         *  @param $includeParent  (Optional) Boolean TRUE (default) deletes user id and children, FALSE deletes children only
++         *
++         *  @returns    TRUE if deleted, ARRAY with form errors otherwise
++         */
++		function deleteUser( $user_id, $includeParent = true ){
++		
++			// get ids to delete
++			$ids = $this-&gt;tree-&gt;getDescendants( intval( $user_id ), $includeParent, false, null, null, 'user_id' );
++
++			// delete all permissions of this users
++			$this-&gt;perm-&gt;deletePermissions( $ids );
++
++			// delete node from users table
++			$this-&gt;tree-&gt;deleteNode( $user_id, $includeParent );
++		}
++
++
++        /**
++         *  This method adds form elements for user editing
++		 *
++		 * @param $user_id      User id to edit
++		 *
++		 * @param $editable     Array with form element names that are editable
++		 * @param $noneditable  (Optional) Array with form element names that are NOT editable
++		 * @param $translate    (Optional) User details should be translated
++         */
++		function addFormEdit( $id, $editable, $noneditable = array(), $translate = true ){
++
++		 	return $this-&gt;_addFormDetails( $id, true, $editable, $noneditable, $translate );
++		}
++
++
++        /**
++         *  This method adds form elements for addind a new user
++		 *
++		 * @param $parent_id    Group id of this new user
++		 * @param $editable     Array with form element names that are editable
++		 * @param $noneditable  (Optional) Array with form element names that are NOT editable
++		 * @param $translate    (Optional) User details should be translated
++         */
++		function addFormNew( $id, $editable, $noneditable = array(), $translate = true ){
++
++		 	return $this-&gt;_addFormDetails( $id, false, $editable, $noneditable, $translate );
++		}
++		 
++		
++        /**
++         *  Helper method for user management
++		 *
++		 * @param $id           If you will EDIT some user this is the user id to edit. On $edit (next argument) you must set TRUE
++         *                      If you will ADD a new user this is the parent id of the new user. On $edit (next argument) you must set FALSE
++         *
++		 * @param $editable     Array with form element names that are editable
++		 *
++		 * @param $noneditable  Array with form element names that are NOT editable
++		 *
++		 * @param $translate    User details should be translated
++         */
++		function _addFormDetails( $id, $edit, $editable, $noneditable, $translate ){
++
++			YDInclude( 'YDForm.php' );
++
++			// init form
++			$this-&gt;_form = new YDForm( 'YDCMUsers' );
++
++			// check arguments
++			if ( !is_array( $editable ) ) $editable = array( $editable );
++			if ( !is_array( $noneditable ) ) $noneditable = array( $noneditable );
++
++			// add username
++			if ( in_array( 'username', $editable ) ){
++				$this-&gt;_form-&gt;addElement( 'text', 'username', t('user_username') );
++				$this-&gt;_form-&gt;addFormRule( array( &amp; $this, '_checkuser' ), array( $edit, $id ) );
++
++			}else if ( in_array( 'username', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span', 'username', t('user_username') );
++			}
++
++			// add password
++			if ( in_array( 'password', $editable ) ){
++				$this-&gt;_form-&gt;addElement( 'password', 'password', t('user_password') );				
++			}
++
++			// add state
++			if ( in_array( 'state', $editable ) ){
++				$this-&gt;_form-&gt;addElement( 'select',         'state',       t('login_state'), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
++				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
++				$this-&gt;_form-&gt;addElement( 'datetimeselect', 'login_end',   t('login_end'));
++
++			}else if ( in_array( 'state', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span',           'state',       t('login_state') );
++				$this-&gt;_form-&gt;addElement( 'span',           'login_start', t('login_start') );
++				$this-&gt;_form-&gt;addElement( 'span',           'login_end',   t('login_end') );
++			}
++
++			// add common user details
++			if ( in_array( 'details', $editable ) ){
++				$this-&gt;_form-&gt;addElement( 'text',      'name',          t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
++				$this-&gt;_form-&gt;addElement( 'text',      'email',         t('user_email') );
++				$this-&gt;_form-&gt;addElement( 'textarea',  'other',         t('user_other'),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
++
++				$languages = new YDCMLanguages();
++				$languages = $languages-&gt;active();
++				$this-&gt;_form-&gt;addElement( 'select',    'lang_id',       t('user_language'), array(), $languages );
++
++				$templates = new YDCMTemplates();
++    	        $this-&gt;_form-&gt;addElement( 'select',    'template',      t('user_template'), array(), $templates-&gt;admin_templates() );
++
++				$this-&gt;_form-&gt;addRule( 'name',        'maxlength',      t('name too big'),  255 );
++				$this-&gt;_form-&gt;addRule( 'email',       'email',          t('email not valid') );
++				$this-&gt;_form-&gt;addRule( 'other',       'maxlength',      t('other too big'), 5000 );
++				$this-&gt;_form-&gt;addRule( 'language_id', 'in_array',       t('language not valid'), array_keys( $languages ) );
++				$this-&gt;_form-&gt;addRule( 'template',    'in_array',       t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
++
++			}else if ( in_array( 'details', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span',      'name',          t('user_name') );
++				$this-&gt;_form-&gt;addElement( 'span',      'email',         t('user_email') );
++				$this-&gt;_form-&gt;addElement( 'span',      'other',         t('user_other') );
++				$this-&gt;_form-&gt;addElement( 'span',      'lang_id',       t('user_language') );
++				$this-&gt;_form-&gt;addElement( 'span',      'template',      t('user_template') );
++			}
++
++			// add access information
++			if ( in_array( 'access', $noneditable ) ){
++				$this-&gt;_form-&gt;addElement( 'span', 'login_counter', t('login_counter') );
++    	        $this-&gt;_form-&gt;addElement( 'span', 'login_last',    t('login_last') );
++    	        $this-&gt;_form-&gt;addElement( 'span', 'login_current', t('login_current') );
++			}
++
++			// if we are editing a user it's a good idea to set form defaults with user node attributes
++			if ( $edit ){
++
++				// add submit button
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'save' ) );
++
++				// set form defaults based on user attributes
++				$this-&gt;_form-&gt;setDefaults( $this-&gt;getUser( $id, $translate ) );
++
++			}else{
++
++				// add submit button
++				$this-&gt;_form-&gt;addElement( 'submit', '_cmdSubmit', t( 'add' ) );
++
++				// when adding a user, if login_end date exists we setup 7 days interval
++				if ( $this-&gt;_form-&gt;isElement( 'login_end' ) )
++					$this-&gt;_form-&gt;setDefault( 'login_end', time() + 7 * 24 * 3600 );
++			}
++
++		}
++
++        /**
++         *  Internal method to check if a username already exists 
++         */
++		function _checkuser( $values, $options ){
++
++			$this-&gt;resetAll();
++			
++			$this-&gt;set( 'username', $values[ 'username' ] );
++
++			// check if we are editing. if yes, we should check if the username is already used only by another user than current
++			if ( $options[0] == true )
++				$this-&gt;where( 'user_id != ' . intval( $options[1] ) );
++			
++			if ( $this-&gt;find() == 0 ) return true;
++			
++			return array( '__ALL__' =&gt; t( 'username exists' ) );
++		}
++
++
++        /**
++         *  This method updates user attributes
++         *
++         *  @param $id           User id to save attributes
++         *  @param $formvalues   (Optional) Custom array with user attributes
++         *
++         *  @returns    YDResult object. OK      - form updated
++		 *                               WARNING - there are form errors
++         *                               FATAL   - was not possible to update
++         */
++		function saveFormEdit( $id, $formvalues = null ){
++
++			return $this-&gt;_saveFormDetails( $id, true, $formvalues );
++		}
++
++
++        /**
++         *  This method adds a new user
++         *
++         *  @param $parent_id    Parent id of this new user
++         *  @param $formvalues   (Optional) Custom array with user attributes
++         *
++         *  @returns    YDResult object. OK      - form added
++		 *                               WARNING - there are form errors
++         *                               FATAL   - was not possible to add
++         */
++		function saveFormNew( $parent_id, $formvalues = null ){
++
++			return $this-&gt;_saveFormDetails( $parent_id, false, $formvalues );
++		}
++
++
++        /**
++         *  This method adds/saves a user
++         *
++         *  @param $id           If we are editing, $id is the user id. If we are adding, $id is the parent_id
++         *  @param $edit         Boolean flag that defines if we are editing $id or adding to $id
++         *  @param $formvalues   (Optional) Custom array with user attributes
++         *
++         *  @returns    YDResult
++         */
++		function _saveFormDetails( $id, $edit, $formvalues = null ){
++
++			// check form validation
++			if ( !$this-&gt;_form-&gt;validate( $formvalues ) )
++				return YDResult::warning( t( 'form errors' ), $this-&gt;_form-&gt;getErrors() );
++
++			// get form values EXCLUDING spans
++			$values = $this-&gt;_form-&gt;getValues();
++
++			// check if we are editing or adding an element
++			if ( $edit ){
++
++				// create userobject node
++				$userobject = array();
++				$userobject['type']  = 'YDCMUser';
++				if ( isset( $values[ 'name' ] ) )  $userobject['reference'] = $values[ 'name' ];
++				if ( isset( $values[ 'state' ] ) ) $userobject['state']     = $values[ 'state' ];
++
++				// update userobject
++				$uobj = new YDCMUserobject();
++				$res  = $uobj-&gt;updateNode( $userobject, $id );
++
++				// create user row
++				$user = array();
++				if ( isset( $values[ 'password' ] ) ) $user['password'] = md5( $values[ 'password' ] );
++				if ( isset( $values[ 'username' ] ) ) $user['username'] = $values[ 'username' ];
++				if ( isset( $values[ 'name' ] ) )     $user['name']     = $values[ 'name' ];
++				if ( isset( $values[ 'email' ] ) )    $user['email']    = $values[ 'email' ];
++				if ( isset( $values[ 'other' ] ) )    $user['other']    = $values[ 'other' ];
++				if ( isset( $values[ 'lang_id' ] ) )  $user['lang_id']  = $values[ 'lang_id' ];
++				if ( isset( $values[ 'template' ] ) ) $user['template'] = $values[ 'template' ];
++
++				// check login schedule dates
++				if ( isset( $user['login_start'] ) ) $user[ 'login_start' ] = YDStringUtil::formatDate( $values[ 'login_start' ], 'datetimesql' );
++				if ( isset( $user['login_end'] ) )   $user[ 'login_end' ]   = YDStringUtil::formatDate( $values[ 'login_end' ], 'datetimesql' );
++
++				// update user
++				$this-&gt;resetValues();
++				$this-&gt;setValues( $user );
++				$this-&gt;where( 'user_id = '. $id ); 
++
++				$res = $this-&gt;update();
++				
++				// check update result and return
++				if ( $res &gt; 0 ) return YDResult::ok( t( 'user details updated' ), $res );
++				else            return YDResult::warning( t( 'user not updated' ), $res );
++
++			}else{
++
++				// create userobject node
++				$userobject = array();
++				$userobject['type']      = 'YDCMUser';
++				$userobject['reference'] = $values[ 'name' ];
++				$userobject['state']     = isset( $values[ 'state' ] ) ? $values[ 'state' ] : 0;
++				
++				// update userobject and get new id
++				$uobj = new YDCMUserobject();
++				$res  = $uobj-&gt;addNode( $userobject, $id );
++
++				// create user row
++				$user = array();
++
++				// add REQUIRED values
++				$user[ 'user_id' ]       = $res;
++				$user[ 'password' ]      = md5( $values[ 'password' ] );
++				$user[ 'username' ]      = $values[ 'username' ];
++				$user[ 'lang_id' ]       = $values[ 'lang_id' ];
++				$user[ 'template' ]      = $values[ 'template' ];
++
++				$user[ 'name' ]          = isset( $values[ 'name' ] )  ? $values[ 'name' ]  : '';
++				$user[ 'email' ]         = isset( $values[ 'email' ] ) ? $values[ 'email' ] : '';
++				$user[ 'other' ]         = isset( $values[ 'other' ] ) ? $values[ 'other' ] : '';
++				$user[ 'login_counter' ] = 0;
++				$user[ 'login_start' ]   = YDStringUtil::formatDate( 0, 'datetimesql' );
++				$user[ 'login_end' ]     = YDStringUtil::formatDate( 0, 'datetimesql' );
++				$user[ 'login_last' ]    = YDStringUtil::formatDate( 0, 'datetimesql' );
++				$user[ 'login_current' ] = YDStringUtil::formatDate( 0, 'datetimesql' );
++
++				// reset object
++				$this-&gt;resetAll();
++
++				$this-&gt;setValues( $user );
++
++				// insert values
++				if ( $this-&gt;insert() ) return YDResult::ok( t( 'user added' ), $res );
++				else                   return YDResult::fatal( t( 'user not added' ), $res );
++			}
++
++		}
++
++
++        /**
++         *  This function adds form elements for password changing
++         *
++         * @param $oldpassword  (Optional) Flag the defines if we should include a box with old password confirmation.
++         *                                 This box is used when the user wants to change its pass and not when we want to change another user pass
++         *                                 TRUE: include box; FALSE: don't include
++         */
++		function addFormPassword( $oldpassword = true ){
++
++			YDInclude( 'YDForm.php' );
++
++			// init form
++			$this-&gt;_form = new YDForm( 'YDCMUsers' );
++
++			// add new password box
++            $this-&gt;_form-&gt;addElement( 'password',    'new',          t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++			$this-&gt;_form-&gt;addRule(    'new',         'required',     t('passwords are required') );
++			$this-&gt;_form-&gt;addRule(    'new',         'maxlength',    t('passwords too big'), 31 );
++			$this-&gt;_form-&gt;addRule(    'new',         'alphanumeric', t('passwords not alphanumeric') );
++
++			// add new_confirm password box
++            $this-&gt;_form-&gt;addElement( 'password',    'new_confirm',  t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
++			$this-&gt;_form-&gt;addRule(    'new_confirm', 'required',     t('passwords are required') );
++			$this-&gt;_form-&gt;addRule(    'new_confirm', 'maxlength',    t('passwords too big'), 31 );
++			$this-&gt;_form-&gt;addRule(    'new_confirm', 'alphanumeric', t('passwords not alphanumeric') );
++
++			// add compare rule to new password and confirmation password
++			$this-&gt;_form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
++
++			// add old password box
++			if ( $oldpassword ){
++            	$this-&gt;_form-&gt;addElement( 'password', 'old',          t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
++				$this-&gt;_form-&gt;addRule(    'old',      'required',     t('passwords are required') );
++				$this-&gt;_form-&gt;addRule(    'old',      'maxlength',    t('passwords too big'), 31 );
++				$this-&gt;_form-&gt;addRule(    'old',      'alphanumeric', t('passwords not alphanumeric') );
++			}
++		}
++
++
++        /**
++         *  This function updates a user password
++         *
++         *  @param $user_id     User id to update password
++         *  @param $formvalues  (Otional) Custom array with 2 passwords (new and new_confirm)
++         *
++         *  @returns    YDResult object. OK      - password updated
++		 *                               WARNING - there are form errors
++         *                               FATAL   - was not possible to update
++         */
++		function saveFormPassword( $user_id, $formvalues = null ){
++
++			// check form validation
++			if ( !$this-&gt;_form-&gt;validate( $formvalues ) )
++				return YDResult::warning( t( 'form errors' ), $this-&gt;_form-&gt;getErrors() );
++
++			// reset values
++			$this-&gt;resetAll();
++
++			// set new password
++			$this-&gt;set( 'password', md5( $this-&gt;_form-&gt;getValue( 'new' ) ) );
++
++			$this-&gt;where( 'user_id = ' . intval( $user_id ) );
++
++			// update user and get result
++			if ( $this-&gt;update() == 1 ) return YDResult::ok( t('user password updated') );
++			else                        return YDResult::fatal( t('password not updated') );
++		}
++
++
++        /**
++         *  This returns the user form
++         *
++         *  @param $defaults  (Optional) default values array to apply in form
++         *
++         *  @returns    YDForm object
++         */
++		function &amp; getForm( $defaults = false ){
++
++			// check if we have form defaults and apply them
++			if ( is_array( $defaults ) ) $this-&gt;_form-&gt;setDefaults( $defaults );
++
++			return $this-&gt;_form;
++		}
++
++
++        /**
++         *  This method returns user attributes
++         *
++         *  @param      $user_id     User id or username
++         *  @param      $translate   (Optional) Boolean that defines if result must be translated
++         *
++         *  @returns    FALSE if user not found, user details array otherwise
++         */
++		function getUser( $user_id, $translate = false ){
++
++			$this-&gt;resetAll();
++
++			// set user id to search for
++			if ( is_numeric( $user_id ) ) $this-&gt;set( 'user_id',  intval( $user_id ) );
++			else                          $this-&gt;set( 'username', strval( $user_id ) );
++
++			// get all attributes
++			if ( $this-&gt;findAll() != 1 ) return false;
++
++			// password should be NOT visible
++			$this-&gt;set( 'password', '' );
++
++			// check if we want human readable elements
++			if ( $translate ){
++
++				// translate states
++				switch( intval( $this-&gt;get( 'ydcmuserobject_state' ) ) ){
++					case 0 : $this-&gt;set( 'ydcmuserobject_state', t('blocked') );
++							 $this-&gt;set( 'login_start',          t('not applicable') );
++							 $this-&gt;set( 'login_end',            t('not applicable') );
++							 break;
++					case 1 : $this-&gt;set( 'ydcmuserobject_state', t('active') );
++							 $this-&gt;set( 'login_start',          t('not applicable') );
++							 $this-&gt;set( 'login_end',            t('not applicable') );
++							 break;
++					case 2 : $this-&gt;set( 'ydcmuserobject_state', t('schedule') );
++							 break;
++				}
++
++			}
++
++			return $this-&gt;getValues();
++		}
++
++
++        /**
++         *  This method returns a specific user attribute
++         *
++         *  @param      $user_id     User id to use (instead of internal)
++         *  @param      $attribute   Attribute name string
++         *
++         *  @returns    FALSE if attribute not found, attribute string otherwise
++         */
++		function getUserAttribute( $user_id, $attribute ){
++
++			$this-&gt;resetValues();
++
++			// set user id
++			$this-&gt;set( 'user_id', intval( $user_id ) );
++
++			// get all attributes
++			if ( $this-&gt;find() != 1 ) return false;
++
++			return $this-&gt;get( $attribute );
++		}
++
++
++        /**
++         *  This function updates current user login details
++         *
++         *  @returns    true if user login details updated, false if user is not valid or details not updated
++         */
++		function updateLogin(){
++
++			$this-&gt;resetAll();
++			
++			// set our user_id for search
++			$this-&gt;set( 'user_id', $this-&gt;currentID() );
++
++			// get all attributes
++			$this-&gt;find();
++
++			// increase login counter value
++			$this-&gt;set( 'login_counter', 1 + $this-&gt;get( 'login_counter' ) );
++
++			// set last login date
++			$this-&gt;set( 'login_last', $this-&gt;get( 'login_current' ) );
++
++			// set current login
++			$this-&gt;set( 'login_current', YDStringUtil::formatDate( time(), 'datetimesql' ) );
++
++			// because we don't have a primary key we must do this
++			$this-&gt;where( 'user_id = ' . $this-&gt;get( 'user_id' ) );
++			
++			// return update result
++			if ( $this-&gt;update() == 1 ) return true;
++			
++			return false;
++		}
++		
++		
++        /**
++         *  This method returns the id of the current user if you use PHP_AUTH_USER and PHP_AUTH_PW for authentication
++         */
++		function currentID(){
++		
++			// check if user is valid and get user id
++			return $this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUserobject.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -0,0 +1,184 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++
++	// add YD libs
++//	YDInclude( 'YDForm.php' );
++	YDInclude( 'YDDatabaseTree.php' );
++//	YDInclude( 'YDDatabaseObject.php' );
++	// add YDCM libs
++//	YDInclude( 'YDCMPermissions.php' );
++
++	// add local translation directory
++//	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUsers/' );
++
++
++    class YDCMUserobject extends YDDatabaseObject {
++    
++        function YDCMUserobject() {
++        
++			// init DB object
++            $this-&gt;YDDatabaseObject();
++
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMUserobject' );
++
++            // register custom key
++            $this-&gt;registerKey( 'userobject_id', true );
++
++			// register custom fields
++			$this-&gt;registerField( 'parent_id' );
++			$this-&gt;registerField( 'nleft' );
++			$this-&gt;registerField( 'nright' );
++			$this-&gt;registerField( 'nlevel' );
++			$this-&gt;registerField( 'position' );
++			$this-&gt;registerField( 'type' );			
++			$this-&gt;registerField( 'reference' );			
++			$this-&gt;registerField( 'state' );
++
++			// create tree object
++			$this-&gt;tree = new YDDatabaseTree( 'default', 'YDCMUserobject', 'userobject_id', 'parent_id', 'parent_id' );
++
++			// add tree fields
++			$this-&gt;tree-&gt;addField( 'parent_id' );
++			$this-&gt;tree-&gt;addField( 'type' );
++			$this-&gt;tree-&gt;addField( 'reference' );			
++			$this-&gt;tree-&gt;addField( 'state' );			
++		}
++
++
++        /**
++         *  This method returns all sub users of a userobject
++         *
++         *  @param  $parent_id   Parent id
++         *
++         *  @returns    Array with user and children nodes
++         */
++		function getTreeElements( $parent_id, $includeNode = true ){
++
++			return $this-&gt;tree-&gt;getDescendants( $parent_id, $includeNode );
++		}
++
++
++        /**
++         *  This method checks if a userobject is descendant of another
++         *
++         *  @param      $userobject_id User id to test if id descendant
++         *  @param      $parent_id     Parent id
++         *
++         *  @returns    boolean. TRUE if is descendant, FALSE if not descendant
++         */
++		function isDescendantOf( $userobject_id, $parent_id ){
++
++			return $this-&gt;tree-&gt;isDescendantOf( intval( $userobject_id ), intval( $parent_id ) );
++		}
++
++
++        /**
++         *  This method deletes a userobject (and all children) or just the children
++         *
++         *  @param $userobject_id  Userobject id
++         *  @param $includeParent  (Optional) Boolean TRUE (default) deletes userobject id and children, FALSE deletes children only
++         *
++         *  @returns    TRUE if deleted, ARRAY with form errors otherwise
++         */
++		function deleteUser( $userobject_id, $includeParent = true ){
++		
++			// delete node from users table
++			$this-&gt;tree-&gt;deleteNode( $userobject_id, $includeParent );
++		}
++
++
++        /**
++         *  This method adds a userobject
++         *
++         *  @param $values     Array with values
++         *  @param $parent_id  Parent id
++         *
++         *  @returns    node id
++         */
++		function addNode( $values, $parent_id ){
++		
++			// add node
++			return $this-&gt;tree-&gt;addNode( $values, $parent_id );
++		}
++
++
++        /**
++         *  This method updates a userobject
++         *
++         *  @param $values  Array with values
++         *  @param $id      Userobject id
++         *
++         *  @returns    $values
++         */
++		function updateNode( $values, $id ){
++		
++			// update node
++			return $this-&gt;tree-&gt;updateNode( $values, $id );
++		}
++
++
++        /**
++         *  This method moves all direct children of a node up
++         *
++         *  @param $userobject_id  Userobject id
++         *
++         *  @returns    TRUE, FALSE  TODO: convert to YDResult
++         */
++		function moveChildrenUp( $userobject_id ){
++		
++			// reset possible old stuff
++			$this-&gt;resetAll();
++
++			// get parent_id of this userobject
++			$this-&gt;set( 'userobject_id', intval( $userobject_id ) );
++
++			// check if user is valid
++			if ( $this-&gt;find() != 1 ) return false;
++
++			// save parent_id for future use
++			$parent_id = $this-&gt;get( 'parent_id ' );
++
++			// reset all previous class values
++			$this-&gt;resetAll();
++
++			// update all children to new parent_id
++			$this-&gt;set( 'parent_id', intval( $parent_id ) );
++			$this-&gt;where( 'parent_id', $userobject_id );
++
++			// update node
++			return $this-&gt;update();
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUsers.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMUsers.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -1,705 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.0
+-        (c) Copyright 2002-2005 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-
+-	// add YD libs
+-	YDInclude( 'YDForm.php' );
+-
+-	// add YDCM libs
+-	YDInclude( 'YDCMPermissions.php' );
+-
+-	// add local translation directory
+-	YDLocale::addDirectory( dirname( __FILE__ ) . '/languages/YDCMUsers/' );
+-
+-
+-    class YDCMUsers extends YDDatabaseObject {
+-    
+-        function YDCMUsers() {
+-        
+-			// init DB object
+-            $this-&gt;YDDatabaseObject();
+-
+-			// register database as default
+-            $this-&gt;registerDatabase();
+-
+-			// register table for this component
+-            $this-&gt;registerTable( 'YDCMUsers' );
+-
+-            // register custom key
+-            $this-&gt;registerKey( 'user_id', true );
+-
+-			// register custom fields
+-			$this-&gt;registerField( 'parent_id' );
+-			$this-&gt;registerField( 'nleft' );
+-			$this-&gt;registerField( 'nright' );
+-			$this-&gt;registerField( 'nlevel' );
+-			$this-&gt;registerField( 'username' );
+-			$this-&gt;registerField( 'password' );
+-			$this-&gt;registerField( 'name' );
+-			$this-&gt;registerField( 'email' );			
+-			$this-&gt;registerField( 'other' );			
+-			$this-&gt;registerField( 'language_id' );
+-			$this-&gt;registerField( 'state' );
+-			$this-&gt;registerField( 'login_start' );
+-			$this-&gt;registerField( 'login_end' );
+-			$this-&gt;registerField( 'login_counter' );			
+-			$this-&gt;registerField( 'login_last' );
+-			$this-&gt;registerField( 'login_current' );
+-			$this-&gt;registerField( 'created_user' );
+-			$this-&gt;registerField( 'created_date' );
+-			$this-&gt;registerField( 'template' );
+-
+-			// relation with languages table
+-            $rel = &amp; $this-&gt;registerRelation( 'ydcmlanguages', false, 'ydcmlanguages' );
+-			$rel-&gt;setLocalKey( 'language_id' );
+-            $rel-&gt;setForeignKey( 'language_id' );
+-
+-			// create tree object
+-			$this-&gt;tree = new YDDatabaseTree( 'default', 'YDCMUsers', 'user_id', 'parent_id', 'parent_id' );
+-
+-			// add tree fields
+-			$this-&gt;tree-&gt;addField( 'parent_id' );
+-			$this-&gt;tree-&gt;addField( 'username' );
+-			$this-&gt;tree-&gt;addField( 'password' );
+-			$this-&gt;tree-&gt;addField( 'name' );
+-			$this-&gt;tree-&gt;addField( 'email' );			
+-			$this-&gt;tree-&gt;addField( 'other' );			
+-			$this-&gt;tree-&gt;addField( 'language_id' );
+-			$this-&gt;tree-&gt;addField( 'state' );			
+-			$this-&gt;tree-&gt;addField( 'login_start' );
+-			$this-&gt;tree-&gt;addField( 'login_end' );
+-			$this-&gt;tree-&gt;addField( 'login_counter' );			
+-			$this-&gt;tree-&gt;addField( 'login_last' );
+-			$this-&gt;tree-&gt;addField( 'login_current' );
+-			$this-&gt;tree-&gt;addField( 'type' );
+-			$this-&gt;tree-&gt;addField( 'created_user' );
+-			$this-&gt;tree-&gt;addField( 'created_date' );
+-			$this-&gt;tree-&gt;addField( 'template' );
+-
+-			// init permissions
+-			$this-&gt;perm = new YDCMPermissions();
+-		}
+-
+-
+-        /**
+-         *  This method returns all sub users of a user
+-         *
+-         *  @param  $parent_id   Parent id
+-         *
+-         *  @returns    Array with user and children nodes
+-         */
+-		function getTreeElements( $parent_id ){
+-
+-			return $this-&gt;tree-&gt;getDescendants( $parent_id, true );
+-		}
+-
+-
+-        /**
+-         *  This method checks if a user is descendant of another user
+-         *
+-         *  @param      $id          User id to test if id descendant
+-         *  @param      $parent_id   Parent id
+-         *
+-         *  @returns    boolean. TRUE if is descendant, FALSE if not descendant
+-         */
+-		function isDescendantOf( $user_id, $parent_id ){
+-
+-			return $this-&gt;tree-&gt;isDescendantOf( intval( $user_id ), intval( $parent_id ) );
+-		}
+-
+-
+-        /**
+-         *  This method checks if a username and password are valid
+-         *
+-         *  @param $username  User username
+-         *  @param $password  User password (if password length is smaller than 32 we must md5 it, password form elements must have max 31)
+-         *
+-         *  @returns    true if valid, false otherwise
+-         */
+-		function valid( $username = '', $password = '' ){
+-
+-			// teste username and password rules
+-			if (!YDValidateRules::alphanumeric(	$username))			return false;
+-			if (!YDValidateRules::maxlength(	$username, 100))	return false;
+-			if (!YDValidateRules::alphanumeric(	$password))			return false;
+-			if (!YDValidateRules::maxlength(	$password, 32))		return false;
+-
+-			// reset values
+-			$this-&gt;resetValues();
+-
+-			// set username
+-			$this-&gt;username = $username;
+-
+-			// if password is not in md5 format we must set it
+-			if ( strlen( $password ) != 32 ) $password = md5( $password );
+-
+-			// set password
+-			$this-&gt;password = $password;
+-			
+-			// check user state based on state and/or user login schedule
+-			$now = YDStringUtil::formatDate( time(), 'datetimesql' );
+-
+-			$this-&gt;where( '(state = 1 OR (state = 2 AND login_start &lt; &quot;' . $now . '&quot; AND login_end &gt; &quot;' . $now . '&quot;))' );
+-
+-			// test if we get just one user
+-			if ( $this-&gt;find() == 1 ) return true;
+-
+-			return false;
+-		}
+-
+-
+-        /**
+-         *  This method deletes a user (and all children) or just the children
+-         *
+-         *  @param $user_id        User id
+-         *  @param $includeParent  (Optional) Boolean TRUE (default) deletes user id and children, FALSE deletes children only
+-         *
+-         *  @returns    TRUE if deleted, ARRAY with form errors otherwise
+-         */
+-		function deleteUser( $user_id, $includeParent = true ){
+-		
+-			// get ids to delete
+-			$ids = $this-&gt;tree-&gt;getDescendants( intval( $user_id ), $includeParent, false, null, null, 'user_id' );
+-
+-			// delete all permissions of this users
+-			$this-&gt;perm-&gt;deletePermissions( $ids );
+-
+-			// delete node from users table
+-			$this-&gt;tree-&gt;deleteNode( $user_id, $includeParent );
+-		}
+-
+-
+-        /**
+-         *  This method adds form elements for user editing
+-		 *
+-		 * @param $user_id      User id to edit
+-		 *
+-		 * @param $username     (Optional) Defines if the username is a box (editable), a span for information only or inexistent
+-		 *                                 TRUE: is a box (editable); FALSE: is a span; NULL: inexistent
+-		 * 
+-		 * @param $password     (Optional) Defines if the password is a box (editable) or inexistent
+-		 *                                 TRUE: is a box (editable); NULL: inexistent
+-		 * 
+-		 * @param $logindetails (Optional) Defines if login details are editable (eg: login schedule dates)
+-		 *                                 TRUE: login details are editable; FALSE: login details are spans (just information); NULL: login details are inexistent
+-		 * 
+-		 * @param $userdetails  (Optional) Defines if user details are editable (eg: name, email, other info, template, language)
+-		 *                                 TRUE: user details are editable; FALSE: user details are spans (just information); NULL: inexistent
+-		 *
+-		 * @param $accessinfo   (Optional) Defines if we want to include access information
+-		 *                                 TRUE: include information (spans); FALSE or NULL: don't include
+-		 *
+-		 * @param $permissionediting  (Optional) Defines if permissions are editable
+-		 *                                       TRUE: permissions are checkboxgroups; FALSE or NULL: inexistent
+-         */
+-		function addFormEdit( $id, $username = null, $password = null, $logindetails = null, $userdetails = null, $accessinfo = null, $permissionediting = null ){
+-
+-		 	return $this-&gt;_addFormDetails( $id, true, $username, $password, $logindetails, $userdetails, $accessinfo, $permissionediting );
+-		}
+-
+-
+-        /**
+-         *  This method adds form elements for addind a new user
+-		 *
+-		 * @param $parent_id    Parent id of this new user
+-         *
+-		 * @param $username     (Optional) Defines if the username is a box (editable), a span for information only or inexistent
+-		 *                                 TRUE: is a box (editable); FALSE: is a span; NULL: inexistent
+-		 * 
+-		 * @param $password     (Optional) Defines if the password is a box (editable) or inexistent
+-		 *                                 TRUE: is a box (editable); NULL: inexistent
+-		 * 
+-		 * @param $logindetails (Optional) Defines if login details are editable (eg: login schedule dates)
+-		 *                                 TRUE: login details are editable; FALSE: login details are spans (just information); NULL: login details are inexistent
+-		 * 
+-		 * @param $userdetails  (Optional) Defines if user details are editable (eg: name, email, other info, template, language)
+-		 *                                 TRUE: user details are editable; FALSE: user details are spans (just information); NULL: inexistent
+-		 *
+-		 * @param $accessinfo   (Optional) Defines if we want to include access information
+-		 *                                 TRUE: include information (spans); FALSE or NULL: don't include
+-		 *
+-		 * @param $permissionediting  (Optional) Defines if permissions are editable
+-		 *                                       TRUE: permissions are checkboxgroups; FALSE or NULL: inexistent
+-         */
+-		function addFormNew( $id, $username = null, $password = null, $logindetails = null, $userdetails = null, $accessinfo = null, $permissionediting = null ){
+-
+-		 	return $this-&gt;_addFormDetails( $id, false, $username, $password, $logindetails, $userdetails, $accessinfo, $permissionediting );
+-		}
+-		 
+-		
+-        /**
+-         *  Helper method for user management
+-		 *
+-		 * @param $id           If you will EDIT some user this is the user id to edit. On $edit (next argument) you must set TRUE
+-         *                      If you will ADD a new user this is the parent id of the new user. On $edit (next argument) you must set FALSE
+-         *
+-		 * @param $edit         If you are editing a user set TRUE. If you are adding a new user set FALSE
+-		 *
+-		 * @param $username     (Optional) Defines if the username is a box (editable), a span for information only or inexistent
+-		 *                                 TRUE: is a box (editable); FALSE: is a span; NULL: inexistent
+-		 * 
+-		 * @param $password     (Optional) Defines if the password is a box (editable) or inexistent
+-		 *                                 TRUE: is a box (editable); NULL: inexistent
+-		 * 
+-		 * @param $logindetails (Optional) Defines if login details are editable (eg: login schedule dates)
+-		 *                                 TRUE: login details are editable; FALSE: login details are spans (just information); NULL: login details are inexistent
+-		 * 
+-		 * @param $userdetails  (Optional) Defines if user details are editable (eg: name, email, other info, template, language)
+-		 *                                 TRUE: user details are editable; FALSE: user details are spans (just information); NULL: inexistent
+-		 *
+-		 * @param $accessinfo   (Optional) Defines if we want to include access information
+-		 *                                 TRUE: include information (spans); FALSE or NULL: don't include
+-		 *
+-		 * @param $permissionediting  (Optional) Defines if permissions are editable
+-		 *                                       TRUE: permissions are checkboxgroups; FALSE or NULL: inexistent
+-         */
+-		function _addFormDetails( $id, $edit, $username = null, $password = null, $logindetails = null, $userdetails = null, $accessinfo = null, $permissionediting = null ){
+-
+-			// init form
+-			$this-&gt;form = new YDForm( 'YDCMUsers' );
+-
+-			// add username
+-			if ( $username === true )       $this-&gt;form-&gt;addElement( 'text', 'username', t('user_username') );
+-			else if ( $username === false ) $this-&gt;form-&gt;addElement( 'span', 'username', t('user_username') );
+-
+-			// add password
+-			if ( $password === true ) $this-&gt;form-&gt;addElement( 'password', 'password', t('user_password') );
+-
+-			// add login details
+-			if ( $logindetails === true ){
+-				$this-&gt;form-&gt;addElement( 'select',         'state',       t('login_state'), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+-				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
+-				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_end',   t('login_end'));
+-
+-			}else if ( $logindetails === false ){
+-				$this-&gt;form-&gt;addElement( 'span',           'state',       t('login_state') );
+-				$this-&gt;form-&gt;addElement( 'span',           'login_start', t('login_start') );
+-				$this-&gt;form-&gt;addElement( 'span',           'login_end',   t('login_end') );
+-			}
+-
+-			// add common user details
+-            if ( $userdetails === true ){
+-				$this-&gt;form-&gt;addElement( 'text',      'name',          t('user_name'),     array('size' =&gt; 50, 'maxlength' =&gt; 255) );
+-				$this-&gt;form-&gt;addElement( 'text',      'email',         t('user_email') );
+-				$this-&gt;form-&gt;addElement( 'textarea',  'other',         t('user_other'),    array('rows' =&gt; 4, 'cols' =&gt; 30) );
+-
+-				$languages = YDCMComponent::module( 'YDCMLanguages' );
+-				$languages = $languages-&gt;active();
+-				$this-&gt;form-&gt;addElement( 'select',    'language_id',   t('user_language'),      array(), $languages );
+-
+-				$templates = YDCMComponent::module( 'YDCMTemplates' );
+-    	        $this-&gt;form-&gt;addElement( 'select',    'template',      t('user_template'),      array(), $templates-&gt;admin_templates() );
+-
+-				$this-&gt;form-&gt;addRule( 'name',        'maxlength',      t('name too big'),  255 );
+-				$this-&gt;form-&gt;addRule( 'email',       'email',          t('email not valid') );
+-				$this-&gt;form-&gt;addRule( 'other',       'maxlength',      t('other too big'), 5000 );
+-				$this-&gt;form-&gt;addRule( 'language_id', 'in_array',       t('language not valid'), array_keys( $languages ) );
+-				$this-&gt;form-&gt;addRule( 'template',    'in_array',       t('template not valid'), array_keys( $templates-&gt;admin_templates() ) );
+-
+-			}else if ( $userdetails === false ){
+-				$this-&gt;form-&gt;addElement( 'span',      'name',          t('user_name') );
+-				$this-&gt;form-&gt;addElement( 'span',      'email',         t('user_email') );
+-				$this-&gt;form-&gt;addElement( 'span',      'other',         t('user_other') );
+-				$this-&gt;form-&gt;addElement( 'span',      'language_id',   t('user_language') );
+-				$this-&gt;form-&gt;addElement( 'span',      'template',      t('user_template') );
+-			}
+-
+-			// add access information
+-			if ( $accessinfo === true ){
+-				$this-&gt;form-&gt;addElement( 'span', 'login_counter', t('login_counter') );
+-    	        $this-&gt;form-&gt;addElement( 'span', 'login_last',    t('login_last') );
+-    	        $this-&gt;form-&gt;addElement( 'span', 'login_current', t('login_current') );
+-    	        $this-&gt;form-&gt;addElement( 'span', 'created_user',  t('created_user') );
+-    	        $this-&gt;form-&gt;addElement( 'span', 'created_date',  t('created_date') );
+-			}
+-
+-			// add submit button
+-			if ( $edit ) $this-&gt;form-&gt;addElement( 'submit', '_cmdSubmit', t( 'save' ) );
+-			else         $this-&gt;form-&gt;addElement( 'submit', '_cmdSubmit', t( 'add' ) );
+-
+-			// if we are editing a user it's a good idea to set form defaults with user node attributes
+-			if ( $edit ){
+-
+-				// get user attributes
+-				$node = $this-&gt;getUser( $id );
+-
+-				// set form defaults based on user attributes
+-				$this-&gt;form-&gt;setDefaults( $node );
+-			}
+-
+-
+-			// PERMISSION CHECKBOXGROUPS
+-//			if ( $permissionediting !== true ) return;
+-
+-			// check if we are editing or creating
+-			if ( $edit ){
+-
+-				// on editing, permissions avaiable are the parent permissions ( parent of $id )
+-				$permissions_avaiable = $this-&gt;perm-&gt;getPermissions( $node['parent_id'] );
+-
+-				// get current user permissions. We will need them to compare with parent permissions
+-				$permissions = $node[ 'permissions' ];
+-
+-			// on adding, permissions avaiable are the parent permissions ( $id permissions )
+-			}else{
+-				$permissions_avaiable = $this-&gt;perm-&gt;getPermissions( $id );
+-			}
+-
+-			// custom form variable that has the dynamic permissions checkboxgroups html
+-			$this-&gt;form-&gt;permissions_html = array();
+-
+-			// cycle parent permissions to create form checkboxgroup for this user
+-			foreach( $permissions_avaiable as $obj =&gt; $perm ){
+-
+-				// get permission translations of this component
+-				YDLocale::addDirectory( YD_DIR_HOME_ADD . '/' . $obj . '/languages/' );
+-
+-				// init checkboxgroup options
+-				$options  = array();
+-				$selected = array();
+-
+-				// cycle all permissions of this object to create checkboxgroup options array
+-				foreach( $perm as $p ){
+-				
+-					// add option with translated string
+-					// eg, if we are in 'YDCMPage' object and action is 'delete' we will add ( YDCMPage =&gt; array( 'delete' =&gt; t('YDCMPage_delete') ) )
+-					$options[ $p['object_action' ] ] = t( $obj . '_' . $p['object_action' ] );
+-
+-					// on editing we must check if this action is select of not ( checking if this action is in parent actions)
+-					if ( $edit &amp;&amp; isset( $permissions[ $obj ] ) &amp;&amp; in_array( $p['object_action' ], array_keys( $permissions[ $obj ] ) )){
+-						$selected[ $p['object_action' ] ] = 1;
+-					}
+-				}
+-
+-				// add object checkbox or spans
+-				if ( $permissionediting === true )       $el = &amp; $this-&gt;form-&gt;addElement( 'checkboxgroup', $obj, $obj, array(), $options );
+-				else if ( $permissionediting === false ) $el = &amp; $this-&gt;form-&gt;addElement( 'span', $obj, $obj );
+-
+-				// add default for this checkboxgroup if we are editing
+-				if ( $edit ){
+-					if ( $permissionediting === true )       $this-&gt;form-&gt;setDefault( $obj, $selected );
+-					else if ( $permissionediting === false ) $this-&gt;form-&gt;setDefault( $obj, implode( '&lt;br&gt;', array_keys( $selected ) ) );
+-				}
+-
+-				// this will store the checkboxgroups html in a variable for better templating placement
+-				$this-&gt;form-&gt;permissions_html[ $obj ] = $el-&gt;toHtml();
+-			}
+-
+-		}
+-
+-
+-        /**
+-         *  This method updates user attributes
+-         *
+-         *  @param $id           User id to save attributes
+-         *  @param $created_user User id that wants to create this new user
+-         *  @param $formvalues   (Optional) Custom array with user attributes
+-         *
+-         *  @returns    TRUE if updated, ARRAY with form errors otherwise
+-         */
+-		function saveFormEdit( $id, $created_user, $formvalues = null ){
+-
+-			return $this-&gt;_saveFormDetails( $id, true, $created_user, $formvalues );
+-		}
+-
+-
+-        /**
+-         *  This method adds a new user
+-         *
+-         *  @param $parent_id    Parent id of this new user
+-         *  @param $created_user User id that wants to create this new user
+-         *  @param $formvalues   (Optional) Custom array with user attributes
+-         *
+-         *  @returns    TRUE if added, ARRAY with form errors otherwise
+-         */
+-		function saveFormNew( $parent_id, $created_user, $formvalues = null ){
+-
+-			return $this-&gt;_saveFormDetails( $parent_id, false, $created_user, $formvalues );
+-		}
+-
+-
+-        /**
+-         *  This method adds/saves a user
+-         *
+-         *  @param $id           If we are editing $id is the user id. If we are adding, $id is the parent_id
+-         *  @param $edit         Boolean flag that defines we we are editing $id or adding to $id
+-         *  @param $created_user User id that wants to create this new user
+-         *  @param $formvalues   (Optional) Custom array with user attributes
+-         *
+-         *  @returns    TRUE if updated, ARRAY with form errors otherwise
+-         */
+-		function _saveFormDetails( $id, $edit, $created_user, $formvalues = null ){
+-
+-			// check form validation
+-			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+-				return $this-&gt;form-&gt;getErrors();
+-
+-			// get form values avaiable
+-			$values = $this-&gt;form-&gt;getValues();
+-		
+-			// parse fixed values
+-			$values['type']          = 'YDCMUseradministrator';
+-			$values['nlevel']        = 1;
+-			$values['created_user']  = intval( $created_user );
+-			$values['created_date']  = YDStringUtil::formatDate( time(), 'datetimesql' );
+-			$values['login_counter'] = 0;
+-
+-			// parse special elements
+-			if ( $this-&gt;form-&gt;isElement( 'login_start' ) ) $values['login_start'] = YDStringUtil::formatDate( $values['login_start'], 'datetimesql' );
+-			if ( $this-&gt;form-&gt;isElement( 'login_start' ) ) $values['login_end']   = YDStringUtil::formatDate( $values['login_end'],   'datetimesql' );
+-			if ( $this-&gt;form-&gt;isElement( 'password' ) )    $values['password']    = md5( $values['password'] );
+-
+-			// check if we are editing or adding an element
+-			if ( $edit ){
+-
+-				// update node to YDUsers table
+-				$res = $this-&gt;tree-&gt;updateNode( $values, $id );
+-	
+-				// change user permissions in YDCMPermissions
+-				return $this-&gt;perm-&gt;setPermissions( $id, $this-&gt;getUserAttribute( $id, 'parent_id' ), $values );
+-			}else{
+-			
+-				// add node to YDUsers table
+-				$newID = $this-&gt;tree-&gt;addNode( $values, $id );
+-
+-				// change user permissions in YDCMPermissions
+-				return $this-&gt;perm-&gt;setPermissions( $newID, $id, $values );
+-			}
+-
+-		}
+-
+-
+-        /**
+-         *  This function adds form elements for password changing
+-         *
+-         * @param $oldpassword  (Optional) Flag the defines if we should include a box with old password confirmation.
+-         *                                 This box is used when the user wants to change its pass and not when we want to change another user pass
+-         *                                 TRUE: include box; FALSE: don't include
+-         */
+-		function addFormPassword( $oldpassword = true ){
+-
+-			// init form
+-			$this-&gt;form = new YDForm( 'YDCMUsers' );
+-
+-			// add new password box
+-            $this-&gt;form-&gt;addElement( 'password',    'new',          t('password_new'),         array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+-			$this-&gt;form-&gt;addRule(    'new',         'required',     t('passwords are required') );
+-			$this-&gt;form-&gt;addRule(    'new',         'maxlength',    t('passwords too big'), 31 );
+-			$this-&gt;form-&gt;addRule(    'new',         'alphanumeric', t('passwords not alphanumeric') );
+-
+-			// add new_confirm password box
+-            $this-&gt;form-&gt;addElement( 'password',    'new_confirm',  t('password_new_confirm'), array('size' =&gt; 30, 'maxlength' =&gt; 31) );
+-			$this-&gt;form-&gt;addRule(    'new_confirm', 'required',     t('passwords are required') );
+-			$this-&gt;form-&gt;addRule(    'new_confirm', 'maxlength',    t('passwords too big'), 31 );
+-			$this-&gt;form-&gt;addRule(    'new_confirm', 'alphanumeric', t('passwords not alphanumeric') );
+-
+-			// add compare rule to new password and confirmation password
+-			$this-&gt;form-&gt;addCompareRule( array( 'new', 'new_confirm' ), 'equal', t('passwords dont match') );
+-
+-			// add old password box
+-			if ( $oldpassword ){
+-            	$this-&gt;form-&gt;addElement( 'password', 'old',          t('password_old'),         array('size' =&gt; 20, 'maxlength' =&gt; 31) );
+-				$this-&gt;form-&gt;addRule(    'old',      'required',     t('passwords are required') );
+-				$this-&gt;form-&gt;addRule(    'old',      'maxlength',    t('passwords too big'), 31 );
+-				$this-&gt;form-&gt;addRule(    'old',      'alphanumeric', t('passwords not alphanumeric') );
+-			}
+-		}
+-
+-
+-        /**
+-         *  This function updates a user password
+-         *
+-         *  @param $user_id     User id to update password
+-         *  @param $formvalues  (Otional) Custom array with 2 passwords (new and new_confirm)
+-         *
+-         *  @returns    true if updated or array with form errors otherwise
+-         */
+-		function saveFormPassword( $user_id, $formvalues = null ){
+-
+-			// check form validation
+-			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+-				return $this-&gt;form-&gt;getErrors();
+-
+-			// reset values
+-			$this-&gt;resetAll();
+-
+-			// set new password
+-			$this-&gt;user_id  = intval( $user_id );
+-			$this-&gt;password = md5( $this-&gt;form-&gt;getValue( 'new' ) );
+-
+-			// update user and get result
+-			if ( $this-&gt;update() == 1 ) return true;
+-
+-			return false;
+-		}
+-
+-
+-        /**
+-         *  This returns the user form
+-         *
+-         *  @param $defaults  (Optional) default values array to apply in form
+-         *
+-         *  @returns    YDForm object
+-         */
+-		function &amp; getForm( $defaults = false ){
+-
+-			// check if we have form defaults and apply them
+-			if ( is_array( $defaults ) ) $this-&gt;form-&gt;setDefaults( $defaults );
+-
+-			return $this-&gt;form;
+-		}
+-
+-
+-        /**
+-         *  This method returns user attributes
+-         *
+-         *  @param      $user_id     User id to use (instead of internal)
+-         *  @param      $translate   (Optional) Boolean that defines if result must be translated
+-         *
+-         *  @returns    User details
+-         */
+-		function getUser( $user_id, $translate = false ){
+-
+-			$this-&gt;resetValues();
+-
+-			// set user id
+-			$this-&gt;user_id = intval( $user_id );
+-
+-			// get all attributes
+-			if ( $this-&gt;findAll() != 1 ) return false;
+-
+-			// password should always empty
+-			$this-&gt;password = '';
+-
+-			// check if we want human readable elements
+-			if ( $translate ){
+-
+-				// check if state not schedule
+-				if ( $this-&gt;state != 2 ){
+-					$this-&gt;login_start = t('not applicable');
+-					$this-&gt;login_end   = t('not applicable');
+-				}
+-
+-				if ( $this-&gt;state == 0 )      $this-&gt;state = t('blocked');
+-				else if ( $this-&gt;state == 1 ) $this-&gt;state = t('active');
+-				else                          $this-&gt;state = t('schedule');
+-
+-				// check if user is root
+-				if ( $this-&gt;created_user == 0 ){
+-					$this-&gt;created_user = t('not applicable');
+-					$this-&gt;created_date = t('not applicable');
+-				}
+-			}
+-
+-			// add permissions
+-			$values = $this-&gt;getValues();
+-			$values[ 'permissions' ] = $this-&gt;perm-&gt;getPermissions( intval( $user_id ) );
+-			
+-			return $values;
+-		}
+-
+-
+-        /**
+-         *  This method returns a specific user attribute
+-         *
+-         *  @param      $user_id     User id to use (instead of internal)
+-         *  @param      $attribute   Attribute string
+-         *
+-         *  @returns    User details
+-         */
+-		function getUserAttribute( $user_id, $attribute ){
+-
+-			$this-&gt;resetValues();
+-
+-			// set user id
+-			$this-&gt;user_id = intval( $user_id );
+-
+-			// get all attributes
+-			if ( $this-&gt;find() != 1 ) return false;
+-
+-			return $this-&gt;get( $attribute );
+-		}
+-
+-
+-        /**
+-         *  This function updates current user login details
+-         *
+-         *  @returns    true if user login details updated, false if user is not valid or details not updated
+-         */
+-		function updateLogin(){
+-
+-			YDInclude( 'YDUtil.php' );
+-
+-			$this-&gt;resetValues();
+-			
+-			// get current user id
+-			$res = $this-&gt;currentID();
+-
+-			// check if user exists
+-			if ( $res == false ) return false;
+-			
+-			// get all attributes
+-			$this-&gt;find();
+-
+-			// increase login value
+-			$this-&gt;login_counter ++;
+-
+-			// set last login date
+-			$this-&gt;login_last = $this-&gt;login_current;
+-
+-			// set current login
+-			$this-&gt;login_current = YDStringUtil::formatDate( time(), 'datetimesql' );
+-
+-			// return update result
+-			if ( $this-&gt;update() == 1 ) return true;
+-			
+-			return false;
+-		}
+-		
+-		
+-        /**
+-         *  This method returns the id of the current user if you use PHP_AUTH_USER and PHP_AUTH_PW for authentication
+-         */
+-		function currentID(){
+-		
+-			// reset user values
+-			$this-&gt;resetValues();
+-		
+-			// check if user is valid and get user id ( YDCMUsers::valid does it )
+-			$valid = $this-&gt;valid( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
+-
+-			// if user is not valid we should return false
+-			if ( $valid === false ) return false;
+-
+-			// return user id found by $this-&gt;valid
+-			return $this-&gt;user_id;
+-		}
+-
+-
+-    }
+-?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/en.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/en.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -47,6 +47,9 @@
+ $GLOBALS['t']['password not updated'] = 'Password was not updated';
+ $GLOBALS['t']['user not updated'] = 'User was not updated';
+ $GLOBALS['t']['user added'] = 'New user added';
++$GLOBALS['t']['user not added'] = 'Impossible do add user';
++$GLOBALS['t']['username exists'] = 'User already exists';
++$GLOBALS['t']['administrator and move children up'] = 'Administrator and move children up';
+ $GLOBALS['t']['administrator and children'] = 'Administrator and children';
+ $GLOBALS['t']['children only'] = 'Children only';
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/pt.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMUsers/pt.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -47,8 +47,11 @@
+ $GLOBALS['t']['password not updated'] = 'A password n&atilde;o foi actualizada';
+ $GLOBALS['t']['user not updated'] = 'O utilizador n&atilde;o foi actualizado';
+ $GLOBALS['t']['user added'] = 'Utilizador adicionado';
+-$GLOBALS['t']['administrator and children'] = 'Administrador e sub-administratores';
+-$GLOBALS['t']['children only'] = 'Apenas sub-administratores';
++$GLOBALS['t']['user not added'] = 'Impossivel adicionar utilizador';
++$GLOBALS['t']['username exists'] = 'O utilizador ja existe';
++$GLOBALS['t']['administrator and move children up'] = 'Administrador e mover sub-admins para cima';
++$GLOBALS['t']['administrator and children'] = 'Administrador e sub-admins';
++$GLOBALS['t']['children only'] = 'Apenas sub-admins';
+ 
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/en.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -29,6 +29,8 @@
+ $GLOBALS['t']['state'] = 'State';
+ $GLOBALS['t']['add'] = 'Add';
+ $GLOBALS['t']['add component'] = 'Add component';
++$GLOBALS['t']['add user'] = 'Add user';
++$GLOBALS['t']['add group'] = 'Add group';
+ $GLOBALS['t']['move'] = 'Move';
+ $GLOBALS['t']['move up'] = 'Move up';
+ $GLOBALS['t']['move down'] = 'Move down';
+@@ -61,4 +63,6 @@
+ $GLOBALS['t']['audit'] = 'Audit';
+ $GLOBALS['t']['user management'] = 'User management';
+ $GLOBALS['t']['general configuration'] = 'General configuration';
++
++$GLOBALS['t']['form errors'] = 'Form errors';
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php	2006-09-04 08:15:31 UTC (rev 2070)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/pt.php	2006-09-04 16:38:40 UTC (rev 2071)
+@@ -29,6 +29,8 @@
+ $GLOBALS['t']['state'] = 'Estado';
+ $GLOBALS['t']['add'] = 'Adicionar';
+ $GLOBALS['t']['add component'] = 'Adicionar component';
++$GLOBALS['t']['add user'] = 'Adicionar utilizador';
++$GLOBALS['t']['add group'] = 'Adicionar grupo';
+ $GLOBALS['t']['move'] = 'Mover';
+ $GLOBALS['t']['move up'] = 'Mover para cima';
+ $GLOBALS['t']['move down'] = 'Mover para baixo';
+@@ -59,4 +61,8 @@
+ $GLOBALS['t']['general configuration'] = 'Configura&ccedil;&atilde;o geral';
+ 
+ 
++
++
++
++$GLOBALS['t']['form errors'] = 'Erros no formulario';
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000584.html">[ydf-devel] r2070 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000586.html">[ydf-devel] r2072 - in YDFramework2.0/trunk/examples: . cm	cm/backend
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#585">[ date ]</a>
+              <a href="thread.html#585">[ thread ]</a>
+              <a href="subject.html#585">[ subject ]</a>
+              <a href="author.html#585">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

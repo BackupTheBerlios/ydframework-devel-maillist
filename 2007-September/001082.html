@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2488 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2488%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree&In-Reply-To=%3C200709282234.l8SMYUTT011413%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001081.html">
+   <LINK REL="Next"  HREF="001083.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2488 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2488%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree&In-Reply-To=%3C200709282234.l8SMYUTT011413%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2488 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep 29 00:34:30 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001081.html">[ydf-devel] r2487 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001083.html">[ydf-devel] r2489 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1082">[ date ]</a>
+              <a href="thread.html#1082">[ thread ]</a>
+              <a href="subject.html#1082">[ subject ]</a>
+              <a href="author.html#1082">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-09-29 00:34:16 +0200 (Sat, 29 Sep 2007)
+New Revision: 2488
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php
+Log:
+- ENH: on YDDatabaseObjectTree, if a node moves to a undefined parent, the parent id will be defined (instead of null).
+       This is an exception that should be checked before move. Anyway, YDDatabaseObjectTree will not set empty values anymore.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php	2007-09-28 22:29:50 UTC (rev 2487)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree/YDDatabaseObjectTree.php	2007-09-28 22:34:16 UTC (rev 2488)
+@@ -151,7 +151,7 @@
+          *  @param $class   (optional) Relation name
+          *  @param $prefix  (optional) Adds the relation's vars as prefixes to the keys. Default: false.
+          *
+-         *  @returns An object containing the node's data, or false if node not found
++         *  @returns An array containing the node's data, or false if node not found
+          */
+         function getNode( $id, $field = null, $class = null, $prefix = false ) {
+ 
+@@ -171,7 +171,7 @@
+          *  @param $class   (optional) Relation name
+          *  @param $prefix  (optional) Adds the relation's vars as prefixes to the keys. Default: true.
+          *
+-         *  @returns An object containing the node's data, or false if node not found
++         *  @returns An array containing the node's data, or false if node not found
+          */
+         function _getNode( $id, $field = null, $class = null, $prefix = true ) {
+ 
+@@ -785,9 +785,14 @@
+ 				$this-&gt;update( array(), $this-&gt;__position );
+ 			}
+ 
+-			// compute lineage
+-			if ( $new_parent_id == 1 ) $new_lineage = '//';
+-			else                       $new_lineage = $new_parent_node[ $this-&gt;__lineage ] . $new_parent_id . '/';
++			// compute lineage. check if new parent id is root, if new parent is defined but node don't exist in db, or normal
++			if ( $new_parent_id == 1 ){
++				$new_lineage = '//';
++			}elseif( $new_parent_node == false ){
++				$new_lineage = '//' . $new_parent_id . '/';
++			}else{
++				$new_lineage = $new_parent_node[ $this-&gt;__lineage ] . $new_parent_id . '/';
++			}
+ 
+ 			// update node
+ 			$this-&gt;resetAll();
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001081.html">[ydf-devel] r2487 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001083.html">[ydf-devel] r2489 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1082">[ date ]</a>
+              <a href="thread.html#1082">[ thread ]</a>
+              <a href="subject.html#1082">[ subject ]</a>
+              <a href="author.html#1082">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

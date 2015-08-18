@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1912 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1912%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200605080940.k489eJhf012625%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000375.html">
+   <LINK REL="Next"  HREF="000377.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1912 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1912%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDAjax&In-Reply-To=%3C200605080940.k489eJhf012625%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1912 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax">ximian at berlios.de
+       </A><BR>
+    <I>Mon May  8 11:40:19 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000375.html">[ydf-devel] r1911 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages
+</A></li>
+        <LI>Next message: <A HREF="000377.html">[ydf-devel] r1913 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#376">[ date ]</a>
+              <a href="thread.html#376">[ thread ]</a>
+              <a href="subject.html#376">[ subject ]</a>
+              <a href="author.html#376">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-08 11:39:39 +0200 (Mon, 08 May 2006)
+New Revision: 1912
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+Log:
+YDAjax now shows waiting message correctly h-centered in screen
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-05-04 16:35:02 UTC (rev 1911)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAjax/YDAjax.php	2006-05-08 09:39:39 UTC (rev 1912)
+@@ -68,7 +68,7 @@
+ 
+             // Setup the module
+             $this-&gt;_author = 'Francisco Azevedo';
+-            $this-&gt;_version = '2.81b';
++            $this-&gt;_version = '2.82b';
+             $this-&gt;_copyright = '(c) Copyright 2002-2006 Francisco Azevedo';
+             $this-&gt;_description = 'This class makes ajax easy for YDF developers';
+ 
+@@ -211,14 +211,16 @@
+ 
+ 			// check custom options
+ 			if ( !isset( $options['style.backgroundColor'] ) ) $options['style.backgroundColor'] = '#cccccc';
+-			if ( !isset( $options['style.top'] ) )             $options['style.top']             = '40%';
+-			if ( !isset( $options['style.left'] ) )            $options['style.left']            = '42%';
+ 			if ( !isset( $options['style.border'] ) )          $options['style.border']          = '1px solid #110000';
++			if ( !isset( $options['style.width'] ) )           $options['style.width']           = '200px';
+ 
+ 			// static values
+-			$options['innerHTML']      = $html;
+-			$options['style.position'] = &quot;absolute&quot;;
+-			$options['style.zindex']   = 9999;
++			$options['style.position']   = &quot;absolute&quot;;
++			$options['style.top']        = '40%';
++			$options['style.left']       = '50%';
++			$options['style.marginLeft'] = '-' . round( intval( $options['style.width'] ) / 2) . 'px';
++			$options['style.zindex']     = 9999;
++			$options['innerHTML']        = '&lt;center&gt;' . $html . '&lt;/center&gt;';
+ 
+ 			// create js for html element creation
+ 			$this-&gt;waitingMessageCode  = &quot;var &quot; . $this-&gt;wtID . &quot; = document.createElement('div');&quot;;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000375.html">[ydf-devel] r1911 - in YDFramework2.0/trunk/YDFramework2: YDClasses/YDCMComponent addons/YDCMLanguages/languages
+</A></li>
+	<LI>Next message: <A HREF="000377.html">[ydf-devel] r1913 - YDFramework2.0/trunk/examples/ajax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#376">[ date ]</a>
+              <a href="thread.html#376">[ thread ]</a>
+              <a href="subject.html#376">[ subject ]</a>
+              <a href="author.html#376">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

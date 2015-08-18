@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1813 - YDFramework2.0/trunk/examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1813%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200603231325.k2NDPJSx018982%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000240.html">
+   <LINK REL="Next"  HREF="000243.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1813 - YDFramework2.0/trunk/examples</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1813%20-%20YDFramework2.0/trunk/examples&In-Reply-To=%3C200603231325.k2NDPJSx018982%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1813 - YDFramework2.0/trunk/examples">pclaerhout at berlios.de
+       </A><BR>
+    <I>Thu Mar 23 14:25:19 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000240.html">[ydf-devel] r1812 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000243.html">[ydf-devel] r1814 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#242">[ date ]</a>
+              <a href="thread.html#242">[ thread ]</a>
+              <a href="subject.html#242">[ subject ]</a>
+              <a href="author.html#242">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-03-23 14:25:06 +0100 (Thu, 23 Mar 2006)
+New Revision: 1813
+
+Added:
+   YDFramework2.0/trunk/examples/form_checkboxgroup.php
+   YDFramework2.0/trunk/examples/form_checkboxgroup.tpl
+Modified:
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+Added an example on how to use the checkboxgroup form element.
+
+Added: YDFramework2.0/trunk/examples/form_checkboxgroup.php
+===================================================================
+--- YDFramework2.0/trunk/examples/form_checkboxgroup.php	2006-03-23 09:57:31 UTC (rev 1812)
++++ YDFramework2.0/trunk/examples/form_checkboxgroup.php	2006-03-23 13:25:06 UTC (rev 1813)
+@@ -0,0 +1,54 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDForm.php' );
++    YDInclude( 'YDTemplate.php' );
++
++    // Class definition
++    class form_checkboxgroup extends YDRequest {
++
++        // Class constructor
++        function form_checkboxgroup() {
++            $this-&gt;YDRequest();
++        }
++
++        // Default action
++        function actionDefault() {
++
++            // Create the form
++            $form = new YDForm( 'form1' );
++
++            // Add the radiobutton
++            $form-&gt;addElement( 'checkboxgroup', 'choose_multiple', 'Choose multiple', array(), array( 0 =&gt; 'choice 1', 1 =&gt; 'choice 2' ) );
++
++            // Add the submit button
++            $form-&gt;addElement( 'submit', 'btnSubmit', 'submit' );
++
++            // Set the defaults
++            $form-&gt;setDefaults( array( 'choose_multiple' =&gt; array( 0=&gt;0, 1=&gt;1 ) ) );
++
++            // Process the form
++            if ( $form-&gt;validate() === true ) {
++                YDDebugUtil::dump( $form-&gt;getValues() );
++            }
++
++            // Add the template
++            $tpl = new YDTemplate();
++
++            // Add the form to the template
++            $tpl-&gt;assignForm ( 'form',$form );
++
++            // Display the template
++            $tpl-&gt;display();
++
++        }
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/form_checkboxgroup.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/form_checkboxgroup.tpl	2006-03-23 09:57:31 UTC (rev 1812)
++++ YDFramework2.0/trunk/examples/form_checkboxgroup.tpl	2006-03-23 13:25:06 UTC (rev 1813)
+@@ -0,0 +1,5 @@
++{$form.tag}
++    {$form.choose_multiple.html|@replace:'##ITEMSEP##':'&lt;br/&gt;'}
++    &lt;br/&gt;
++    {$form.btnSubmit.html}
++{$form.endtag}
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-03-23 09:57:31 UTC (rev 1812)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-03-23 13:25:06 UTC (rev 1813)
+@@ -191,7 +191,7 @@
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-            &lt;td rowspan=&quot;10&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
++            &lt;td rowspan=&quot;11&quot; valign=&quot;top&quot;&gt;&nbsp;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form.php&quot;&gt;Form handling and validation&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+                 &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form.php&quot;&gt;form.php&lt;/a&gt;
+@@ -258,6 +258,14 @@
+             &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++            &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;form_checkboxgroup.php&quot;&gt;Using the checkboxgroup elementL&lt;/a&gt;&lt;/td&gt;
++            &lt;td valign=&quot;top&quot;&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_checkboxgroup.php&quot;&gt;form_checkboxgroup.php&lt;/a&gt;
++                &lt;br/&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=form_checkboxgroup.tpl&quot;&gt;form_checkboxgroup.tpl&lt;/a&gt;
++            &lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using logfiles&lt;/b&gt;&lt;/td&gt;
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000240.html">[ydf-devel] r1812 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000243.html">[ydf-devel] r1814 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#242">[ date ]</a>
+              <a href="thread.html#242">[ thread ]</a>
+              <a href="subject.html#242">[ subject ]</a>
+              <a href="author.html#242">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

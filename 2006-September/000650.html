@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2131 - YDFramework2.0/trunk/examples/cm/backend
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2131%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200609140910.k8E9Ag9Y001721%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000649.html">
+   <LINK REL="Next"  HREF="000651.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2131 - YDFramework2.0/trunk/examples/cm/backend</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2131%20-%20YDFramework2.0/trunk/examples/cm/backend&In-Reply-To=%3C200609140910.k8E9Ag9Y001721%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2131 - YDFramework2.0/trunk/examples/cm/backend">ximian at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep 14 11:10:42 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000649.html">[ydf-devel] r2130 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage
+</A></li>
+        <LI>Next message: <A HREF="000651.html">[ydf-devel] r2132 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#650">[ date ]</a>
+              <a href="thread.html#650">[ thread ]</a>
+              <a href="subject.html#650">[ subject ]</a>
+              <a href="author.html#650">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-09-14 11:10:22 +0200 (Thu, 14 Sep 2006)
+New Revision: 2131
+
+Modified:
+   YDFramework2.0/trunk/examples/cm/backend/permissions.php
+Log:
+updated permissions example to demonstrate 'alias' permissions
+
+Modified: YDFramework2.0/trunk/examples/cm/backend/permissions.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cm/backend/permissions.php	2006-09-14 08:46:36 UTC (rev 2130)
++++ YDFramework2.0/trunk/examples/cm/backend/permissions.php	2006-09-14 09:10:22 UTC (rev 2131)
+@@ -25,49 +25,88 @@
+ 			$this-&gt;perms-&gt;registerAction( 'YDCMPage',  'delete' );
+ 			$this-&gt;perms-&gt;registerAction( 'YDCMGroup', 'add' );
+ 			$this-&gt;perms-&gt;registerAction( 'YDCMGroup', 'edit' );
+-        }
+ 
++            print(&quot; We have registered the next permissions :                        &lt;br&gt;
++                    'YDCMPage',  'create'                                            &lt;br&gt;
++                    'YDCMPage',  'delete'                                            &lt;br&gt;
++                    'YDCMGroup', 'add'                                               &lt;br&gt;
++                    'YDCMGroup', 'edit'                                              &lt;br&gt;&lt;br&gt;&quot;);
+ 
+-        // Default action
+-        function actionDefault() {
+ 
+             print(&quot; In our database we have the next permission system:              &lt;br&gt;
+                     INSERT INTO `ydcmpermission` VALUES (2,'YDCMRootmenu','delete'); &lt;br&gt;
+                     INSERT INTO `ydcmpermission` VALUES (2,'YDCMPage','delete');     &lt;br&gt;
+                     INSERT INTO `ydcmpermission` VALUES (2,'YDCMPage','create');     &lt;br&gt;
+                     INSERT INTO `ydcmpermission` VALUES (5,'YDCMPage','delete');     &lt;br&gt;
+-                    INSERT INTO `ydcmpermission` VALUES (5,'YDCMPage','create');     &quot;);
++                    INSERT INTO `ydcmpermission` VALUES (5,'YDCMPage','create');     &lt;br&gt;&lt;br&gt;&quot;);
++        }
+ 
++
++        // Default action
++        function actionDefault() {
++
+ 			// check if userobject 2 can 'YDCMPage'+'delete'
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMPage', 'delete' ), &quot;$this-&gt;perms-&gt;can( 2, 'YDCMPage', 'delete' );  // check if userobject 2 can 'YDCMPage'+'delete'&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMPage', 'delete' ), '$this-&gt;perms-&gt;can( 2, &quot;YDCMPage&quot;, &quot;delete&quot; );  // check if userobject 2 can &quot;YDCMPage&quot;+&quot;delete&quot;' );
+ 
+ 			// check if userobject 5 can 'YDCMPage'+'add'
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 5, 'YDCMPage', 'add' ), &quot;$this-&gt;perms-&gt;can( 5, 'YDCMPage', 'add' );  // check if userobject 5 can 'YDCMPage'+'add'&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 5, 'YDCMPage', 'add' ), '$this-&gt;perms-&gt;can( 5, &quot;YDCMPage&quot;, &quot;add&quot; );  // check if userobject 5 can &quot;YDCMPage&quot;+&quot;add&quot;' );
+ 
+ 			// check if userobject 2 can 'YDCMRootmenu'+'delete'
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMRootmenu', 'delete' ), &quot;$this-&gt;perms-&gt;can( 2, 'YDCMRootmenu', 'delete' );  // action is in DB but its NOT registered&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMRootmenu', 'delete' ), '$this-&gt;perms-&gt;can( 2, &quot;YDCMRootmenu&quot;, &quot;delete&quot; );  // action is in DB but its NOT registered' );
+ 
+ 			// get permissions of userobject 2
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;getPermissions( 2 ), &quot;$this-&gt;perms-&gt;getPermissions( 2 );&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;getPermissions( 2 ), '$this-&gt;perms-&gt;getPermissions( 2 );' );
+ 
+ 			// get translated permissions of userobject 5
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;getPermissions( 5, true ), &quot;$this-&gt;perms-&gt;getPermissions( 5, true );  // translated permissions&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;getPermissions( 5, true ), '$this-&gt;perms-&gt;getPermissions( 5, true );  // translated permissions' );
+ 
+ 			// get registered system actions
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;getRegisteredActions(), &quot;$this-&gt;perms-&gt;getRegisteredActions();  // get registered system actions&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;getRegisteredActions(), '$this-&gt;perms-&gt;getRegisteredActions();  // get registered system actions' );
+ 
+ 			// delete all actions of userobject 10
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;deletePermissions( 10 ), &quot;$this-&gt;perms-&gt;deletePermissions( 10 );  // try to delete all permissions of userobject 10. userobject do NOT exist&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;deletePermissions( 10 ), '$this-&gt;perms-&gt;deletePermissions( 10 );  // try to delete all permissions of userobject 10. userobject do NOT exist' );
+ 
+ 			// add permission 'YDCMPage'+'create' to userobject 8
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;addPermission( 8, 'YDCMPage', 'create' ), &quot;$this-&gt;perms-&gt;addPermission( 8, 'YDCMPage', 'create' );  // add permission 'YDCMPage'+'create' to userobject 8&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;addPermission( 8, 'YDCMPage', 'create' ), '$this-&gt;perms-&gt;addPermission( 8, &quot;YDCMPage&quot;, &quot;create&quot; );  // add permission &quot;YDCMPage&quot;+&quot;create&quot; to userobject 8' );
+ 
+ 			// add permission 'YDCMPage'+'publish' to userobject 8
+-			YDDebugUtil::dump( $this-&gt;perms-&gt;addPermission( 8, 'YDCMPage', 'publish' ), &quot;$this-&gt;perms-&gt;addPermission( 8, 'YDCMPage', 'publish' );  // 'YDCMPage'+'publish' is not registered&quot; );
++			YDDebugUtil::dump( $this-&gt;perms-&gt;addPermission( 8, 'YDCMPage', 'publish' ), '$this-&gt;perms-&gt;addPermission( 8, &quot;YDCMPage&quot;, &quot;publish&quot; );  // &quot;YDCMPage&quot;+&quot;publish&quot; is not registered' );
+ 		}
+ 
+ 
++		function actionAlias(){
++		
++            print(&quot; Alias registered :                       &lt;br&gt;
++                    'createcontent' =&gt; 'YDCMPage', 'create'  &lt;br&gt;
++                    'justdelete'    =&gt; 'YDCMPage', 'delete'  &lt;br&gt;&lt;br&gt;&quot;);
+ 
++			// register some alias
++			$this-&gt;perms-&gt;registerAlias( 'createcontent', 'YDCMPage', 'create' );
++			$this-&gt;perms-&gt;registerAlias( 'justdelete',    'YDCMPage', 'delete' );
++
++
++			// check if userobject 2 can 'YDCMPage'+'delete'
++			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMPage', 'delete' ), '$this-&gt;perms-&gt;can( 2, &quot;YDCMPage&quot;, &quot;delete&quot; );  // check if userobject 2 can &quot;YDCMPage&quot;+&quot;delete&quot;' );
++
++			// check if userobject 2 can 'YDCMPage'+'justdelete'
++			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMPage', 'justdelete' ), '$this-&gt;perms-&gt;can( 2, &quot;YDCMPage&quot;, &quot;justdelete&quot; );  // check if userobject 2 can &quot;YDCMPage&quot;+&quot;justdelete&quot;' );
++
++
++			// add a new alias that point to an alias :)
++            print(&quot; Added new alias (points to a valid alias) :      &lt;br&gt;
++                    'mycustomdelete'    =&gt; 'YDCMPage', 'justdelete'  &lt;br&gt;&lt;br&gt;&quot;);
++
++			$this-&gt;perms-&gt;registerAlias( 'mycustomdelete', 'YDCMPage', 'justdelete' );
++
++			// check if userobject 2 can 'YDCMPage'+'mycustomdelete'
++			YDDebugUtil::dump( $this-&gt;perms-&gt;can( 2, 'YDCMPage', 'mycustomdelete' ), '$this-&gt;perms-&gt;can( 2, &quot;YDCMPage&quot;, &quot;mycustomdelete&quot; );  // check if userobject 2 can &quot;YDCMPage&quot;+&quot;mycustomdelete&quot;' );
++
++
++			// get all registered alias
++			YDDebugUtil::dump( $this-&gt;perms-&gt;getRegisteredAlias(), '$this-&gt;perms-&gt;getRegisteredAlias();  // get all registered alias' );
++		}
++
++
+     }
+ 
+     // Process the request
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000649.html">[ydf-devel] r2130 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/languages/YDCMPage
+</A></li>
+	<LI>Next message: <A HREF="000651.html">[ydf-devel] r2132 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#650">[ date ]</a>
+              <a href="thread.html#650">[ thread ]</a>
+              <a href="subject.html#650">[ subject ]</a>
+              <a href="author.html#650">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

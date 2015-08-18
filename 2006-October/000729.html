@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2191 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2191%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200610302200.k9UM0GP9017638%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000728.html">
+   <LINK REL="Next"  HREF="000730.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2191 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2191%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200610302200.k9UM0GP9017638%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2191 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Oct 30 23:00:16 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000728.html">[ydf-devel] YDAjax and mootools
+</A></li>
+        <LI>Next message: <A HREF="000730.html">[ydf-devel] r2192 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#729">[ date ]</a>
+              <a href="thread.html#729">[ thread ]</a>
+              <a href="subject.html#729">[ subject ]</a>
+              <a href="author.html#729">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-10-30 23:00:15 +0100 (Mon, 30 Oct 2006)
+New Revision: 2191
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+Log:
+on checkboxgroup:
+ * FIXED: separator is really a separator (only shown between the elements)
+ * FIXED: custom attributes no more shown as html attributes
+ * NEW FEATURE: now it's possible to export the checkboxgroup in columns (long waited feature!!)
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-10-26 23:05:05 UTC (rev 2190)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_CheckboxGroup.php	2006-10-30 22:00:15 UTC (rev 2191)
+@@ -52,6 +52,25 @@
+             // Set the type
+             $this-&gt;_type = 'checkboxgroup';
+ 
++            // set default separator and default position
++            $this-&gt;_separator = '&lt;br /&gt;';
++            $this-&gt;_position  = 'right';
++
++            // parse separator and position from array
++            if ( isset ( $attributes['sep'] ) ) {
++
++                // find horizontal and left tags
++                if ( is_int( strpos( $attributes[ 'sep' ], 'h' ) ) ) $this-&gt;_separator = '&nbsp;&nbsp;&nbsp;';
++                if ( is_int( strpos( $attributes[ 'sep' ], 'l' ) ) ) $this-&gt;_position  = 'left';
++				unset( $attributes[ 'sep' ] );
++            }
++
++			// we can even have a custom separator
++            if ( isset ( $attributes[ 'separator' ] ) ){
++				$this-&gt;_separator = $attributes[ 'separator' ];
++				unset( $attributes[ 'separator' ] );
++			}
++
+             // Add the subitems
+             $this-&gt;_items = array();
+             foreach ( $options as $key=&gt;$val ) {
+@@ -68,25 +87,11 @@
+             // Indicate that the label should be appended
+             $this-&gt;_placeLabel = 'before';
+ 
+-            // set default separator and default position
+-            $this-&gt;_separator = '&lt;br /&gt;';
+-            $this-&gt;_position  = 'right';
+-
+-            // parse separator and position from array
+-            if ( isset ( $attributes['sep'] ) ) {
+-
+-                // find horizontal and left tags
+-                if ( is_int( strpos( $attributes['sep'], 'h' ) ) ) $this-&gt;_separator = '&nbsp;&nbsp;&nbsp;';
+-                if ( is_int( strpos( $attributes['sep'], 'l' ) ) ) $this-&gt;_position  = 'left';
+-            }
+-
+-			// we can even have a custom separator
+-            if ( isset ( $attributes['separator'] ) )
+-				$this-&gt;_separator = $attributes['separator'];
+-
+ 			$this-&gt;_addSelectAll = false;
+ 			$this-&gt;_addSelectAll_chk_attributes = array();
+ 			$this-&gt;_addSelectAll_label_attributes = array();
++			
++			$this-&gt;_columns = 1;
+         }
+ 
+ 
+@@ -118,6 +123,16 @@
+ 
+ 
+         /**
++         *	This function defines the columns to export
++         *
++         *	@param	$total	Total of columns
++         */
++        function setColumns( $total ) {
++			$this-&gt;_columns = $total;
++        }
++
++
++        /**
+          *	This function sets the attribute for the element.
+          *
+          *	@param	$attribute	Attribute to change
+@@ -198,13 +213,17 @@
+          */
+         function toHtml() {
+ 
+-            // Output the HTML
+-            $output = '';
++            // Output the HTML checkboxes
++            $output = array();
+ 
++			// cycle all items to get their html
+             foreach ( $this-&gt;_items as $item )
+-                if ( $this-&gt;_position == 'right' ) $output .= $item-&gt;toHtml() . '&nbsp;&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;' . $this-&gt;_separator;
+-                else                               $output .= '&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;&nbsp;' . $item-&gt;toHtml() . $this-&gt;_separator;
++                if ( $this-&gt;_position == 'right' ) $output[] = $item-&gt;toHtml() . '&nbsp;&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;';
++                else                               $output[] = '&lt;label for=&quot;' . $item-&gt;_attributes['id'] . '&quot;&gt;' . $item-&gt;_label . '&lt;/label&gt;&nbsp;' . $item-&gt;toHtml();
+ 
++			// init the 'select all' html
++			$selall_html = '';
++
+ 			// check if we have more than one element and a 'select all' button is defined
+ 			if ( count( $this-&gt;_items ) &gt; 1 &amp;&amp; $this-&gt;_addSelectAll ){ 
+ 
+@@ -223,13 +242,78 @@
+ 				// compute button label
+ 				if ( $this-&gt;_position == 'right' ) $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;' . $selall-&gt;toHTML() . '&nbsp;&lt;label for=&quot;' . $selall-&gt;getAttribute( 'id' ) . '&quot;&gt;' . t( 'select all' ) . '&lt;/label&gt;&lt;/span&gt;';
+ 				else                               $selall_html = '&lt;span ' . YDForm::_convertToHtmlAttrib( $this-&gt;_addSelectAll_chk_attributes ) . '&gt;&lt;label for=&quot;' . $selall-&gt;getAttribute( 'id' ) . '&quot;&gt;' . t( 'select all' ) . '&lt;/label&gt;&nbsp;' . $selall-&gt;toHTML() . '&lt;/span&gt;';
++			}
+ 
+-				// add button code to html output
+-				if ( $this-&gt;_addSelectAll_onBottom ) $output = $output . $selall_html;
+-				else                                 $output = $selall_html . $this-&gt;_separator . $output;
++			// check if we don't want columns format
++			if ( $this-&gt;_columns == 1 ){
++			
++				// if we don't have a 'select all' just return checkboxes html
++				if ( $selall_html == '' ){
++					return implode( $this-&gt;_separator, $output );
++
++				// if 'select all' is at the end
++				}else if ( $this-&gt;_addSelectAll_onBottom ){
++					return implode( $this-&gt;_separator, $output ) . $this-&gt;_separator . $selall_html;
++
++				// if 'select all' is at the beggining
++				}else{
++					return $selall_html . $this-&gt;_separator . implode( $this-&gt;_separator, $output );
++				}
++			
++			// create a html table
++			}else{
++			
++				// init table header
++				$table = '&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;';
++			
++				// if 'select all' is defined to be on top, add a row with 'select all' column and other cols empty
++				if ( $selall_html != '' &amp;&amp; ! $this-&gt;_addSelectAll_onBottom ){
++				
++					$table .= '&lt;tr&gt;';
++					$table .= '&lt;td&gt;' . $selall_html . '&lt;/td&gt;';
++					
++					for( $k = 1; $k &lt; $this-&gt;_columns; $k++ )
++						$table .= '&lt;td&gt;&nbsp;&lt;/td&gt;';
++					
++					$table .= '&lt;/tr&gt;';
++				}
++	
++				// create option checkboxes content			
++				for ( $i = 0; isset( $output[ $i ] ); ){
++				
++					$table .= '&lt;tr&gt;';
++				
++					for( $k = 0; $k &lt; $this-&gt;_columns; $k++ ){
++						
++						// if we have a checkbox just add it. otherwise add an empty char
++						if ( isset( $output[ $i ] ) ) $table .= '&lt;td&gt;' . $output[ $i ] . '&lt;/td&gt;';
++						else                          $table .= '&lt;td&gt;&nbsp;&lt;/td&gt;';
++					
++						$i++;
++					}
++
++					$table .= '&lt;/tr&gt;';
++					
++				}
++
++				// if 'select all' is defined to be on bottom, add empty cols and a last column with 'select all' code
++				if ( $selall_html != '' &amp;&amp; $this-&gt;_addSelectAll_onBottom ){
++				
++					$table .= '&lt;tr&gt;';
++					
++					for( $k = 1; $k &lt; $this-&gt;_columns; $k++ )
++						$table .= '&lt;td&gt;&nbsp;&lt;/td&gt;';
++
++					$table .= '&lt;td&gt;' . $selall_html . '&lt;/td&gt;';
++					$table .= '&lt;/tr&gt;';
++				}
++					
++				// end table
++				$table .= '&lt;/table&gt;';
++					
++				return $table;			
+ 			}
+ 
+-            return $output;
+         }
+ 
+     }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000728.html">[ydf-devel] YDAjax and mootools
+</A></li>
+	<LI>Next message: <A HREF="000730.html">[ydf-devel] r2192 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#729">[ date ]</a>
+              <a href="thread.html#729">[ thread ]</a>
+              <a href="subject.html#729">[ subject ]</a>
+              <a href="author.html#729">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

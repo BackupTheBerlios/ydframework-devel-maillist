@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C455F8BC7.1000708%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000774.html">
+   <LINK REL="Next"  HREF="000775.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Bug%20in%20YDDatabaseTree2%3A%3AgetNode%20for%20string%20fields&In-Reply-To=%3C455F8BC7.1000708%40fusemail.com%3E"
+       TITLE="[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields">francisco at fusemail.com
+       </A><BR>
+    <I>Sat Nov 18 23:40:07 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000774.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+        <LI>Next message: <A HREF="000775.html">[ydf-devel] YDAjax and mootools
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#779">[ date ]</a>
+              <a href="thread.html#779">[ thread ]</a>
+              <a href="subject.html#779">[ subject ]</a>
+              <a href="author.html#779">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Graeme
+
+ &gt; I am switching my code to YDDatabaseTree3 (build 2214). I have had a
+ &gt; look at the code and suggest some improvements and have identified some
+ &gt; bugs.
+ &gt;
+ &gt;     * suggestion: move the methods escapeSql and escapeSqlArray to
+ &gt;       YDDatabaseObject since they would be useful there too.
+
+Sounds good. YDDatabaseObject will have those and YDDatabaseTree3 too 
+(because is an YDDO extension).
+
+ &gt;     * suggestion: there needs to be a method like the old YDDatabaseTree
+ &gt;       that gets the tree as a traversed tree (I have had an attempt to
+ &gt;       implement this in the attached code, however it is not very
+ &gt;       efficient). The method is YDDatabaseTree3::getTraversedTree()
+
+
+Please create an example on what should getTraversedTree() return.
+
+
+ &gt;     * bug in build 2214: line 668 of YDDatabaseTree3.php - need to add
+ &gt;       statement????:
+ &gt;       $new_lineage         = $new_parent_node[ $this-&gt;__lineage ] .
+ &gt;       $new_parent_id . '/';
+
+Please update to latest build (on latest release that is done in the 
+update (search lines below that)).
+
+ &gt;     * bug in build 2214: line 698 of YDDatabaseTree3.php -
+ &gt;       $this-&gt;_linage should be $this-&gt;lineage
+
+Please update to latest build
+
+
+ &gt;     * bug in build 2214: moveNode doesn't work for moving position of a
+ &gt;       node in the same parent or moving a node to a new parent.
+ &gt;
+ &gt; I have copied the original test harness for database trees and created a
+ &gt; new one called database_tree3.php. This uses YDDatabaseTree3 and has
+ &gt; some methods for testing moveNode. This is attached.
+
+I have created a simple test based on your test file. (it's not possible 
+to move nodes yet.. only see, delete and add.. i will add that feature).
+
+======================
+
+WARNING !!! :D   YOUR initial db scheme in NOT correct.
+You have:
+
++----+-----------+---------+-------+----------+----------------------+
+|<i> id | parent_id | lineage | level | position | title                |
+</I>+----+-----------+---------+-------+----------+----------------------+
+|<i>  1 |      NULL |         |     0 |        1 |                      |
+</I>|<i>  2 |         1 | //      |     1 |        1 | General Resources    |
+</I>|<i>  3 |         2 | //2/    |     2 |        1 | Code Paste           |
+</I>|<i>  4 |         2 | //2/    |     2 |        2 | Documentation        |
+</I>|<i>  5 |         2 | //2/    |     2 |        3 | Books &amp; Publications |
+</I>|<i>  6 |         5 | //2/5/  |     3 |        1 | Apache               |
+</I>|<i>  7 |         5 | //2/5/  |     3 |        2 | PostgreSQL           |
+</I>|<i>  8 |         5 | //2/4/  |     3 |        3 | MySQL                |
+</I>|<i>  9 |         2 | //2/    |     2 |        1 | Links                |
+</I>|<i> 10 |         9 | //2/9/  |     3 |        1 | Databases            |
+</I>|<i> 11 |         9 | //2/10/ |     3 |        1 | Generators           |
+</I>|<i> 12 |         9 | //2/10/ |     3 |        2 | Portals              |
+</I>+----+-----------+---------+-------+----------+----------------------+
+
+
+But it should be
+
+
++----+-----------+---------+-------+----------+----------------------+
+|<i> id | parent_id | lineage | level | position | title                |
+</I>+----+-----------+---------+-------+----------+----------------------+
+|<i>  1 |      NULL |         |     0 |        1 |                      |
+</I>|<i>  2 |         1 | //      |     1 |        1 | General Resources    |
+</I>|<i>  3 |         2 | //2/    |     2 |        1 | Code Paste           |
+</I>|<i>  4 |         2 | //2/    |     2 |        2 | Documentation        |
+</I>|<i>  5 |         2 | //2/    |     2 |        3 | Books &amp; Publications |
+</I>|<i>  6 |         5 | //2/5/  |     3 |        1 | Apache               |
+</I>|<i>  7 |         5 | //2/5/  |     3 |        2 | PostgreSQL           |
+</I>|<i>  8 |         5 | //2/5/  |     3 |        3 | MySQL                |
+</I>|<i>  9 |         2 | //2/    |     2 |        4 | Links                |
+</I>|<i> 10 |         9 | //2/9/  |     3 |        1 | Databases            |
+</I>|<i> 11 |         9 | //2/9/  |     3 |        2 | Generators           |
+</I>|<i> 12 |         9 | //2/9/  |     3 |        3 | Portals              |
+</I>+----+-----------+---------+-------+----------+----------------------+
+
+INSERT INTO nested_tree VALUES ( 1, null, '',         0, 1, '');
+INSERT INTO nested_tree VALUES ( 2,    1, '//',       1, 1, 'General 
+Resources');
+INSERT INTO nested_tree VALUES ( 3,    2, '//2/',     2, 1, 'Code Paste');
+INSERT INTO nested_tree VALUES ( 4,    2, '//2/',     2, 2, 
+'Documentation');
+INSERT INTO nested_tree VALUES ( 5,    2, '//2/',     2, 3, 'Books &amp; 
+Publications');
+INSERT INTO nested_tree VALUES ( 6,    5, '//2/5/',   3, 1, 'Apache');
+INSERT INTO nested_tree VALUES ( 7,    5, '//2/5/',   3, 2, 'PostgreSQL');
+INSERT INTO nested_tree VALUES ( 8,    5, '//2/5/',   3, 3, 'MySQL');
+INSERT INTO nested_tree VALUES ( 9,    2, '//2/',     2, 4, 'Links');
+INSERT INTO nested_tree VALUES (10,    9, '//2/9/',   3, 1, 'Databases');
+INSERT INTO nested_tree VALUES (11,    9, '//2/9/',   3, 2, 'Generators');
+INSERT INTO nested_tree VALUES (12,    9, '//2/9/',   3, 3, 'Portals');
+
+
+
+======================
+
+You should never use getDescendants( 0 ) or getDescendants( 1 ) !
+To get all tree elements use getTreeElements().
+
+NOTE: On latest build i had added a internal check in getDescendants()
+
+
+Please use build 2217.
+
+regards
+Francisco A
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000774.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+	<LI>Next message: <A HREF="000775.html">[ydf-devel] YDAjax and mootools
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#779">[ date ]</a>
+              <a href="thread.html#779">[ thread ]</a>
+              <a href="subject.html#779">[ subject ]</a>
+              <a href="author.html#779">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2471 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2471%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708141627.l7EGRklm009272%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001064.html">
+   <LINK REL="Next"  HREF="001066.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2471 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2471%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708141627.l7EGRklm009272%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2471 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug 14 18:27:46 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001064.html">[ydf-devel] r2470 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001066.html">[ydf-devel] r2472 -	YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1065">[ date ]</a>
+              <a href="thread.html#1065">[ thread ]</a>
+              <a href="subject.html#1065">[ subject ]</a>
+              <a href="author.html#1065">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-08-14 18:27:23 +0200 (Tue, 14 Aug 2007)
+New Revision: 2471
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php
+Log:
+on YDEmail:
+ - NEW: setTxtBody now accepts a boolean that defines if email is text only. By default: false
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php	2007-08-14 08:55:50 UTC (rev 2470)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDEmail.php	2007-08-14 16:27:23 UTC (rev 2471)
+@@ -161,10 +161,18 @@
+         /**
+          *	Sets the plain text part of a message. All HTML tags are automatically removed from the text.
+          *
+-         *	@param $text	The text to set.
++         *	@param $text		The text to set.
++         *	@param $textOnly	(Optional) Boolean that defines if email is text only. By default: false
+          */
+-        function setTxtBody( $text ) {
+-            $this-&gt;_msg-&gt;AltBody = strip_tags( $text );
++        function setTxtBody( $text, $textOnly = false ) {
++
++            if( $textOnly == false){
++                $this-&gt;_msg-&gt;AltBody = strip_tags( $text );
++            }else{
++                $this-&gt;_msg-&gt;AltBody = '';
++                $this-&gt;_msg-&gt;Body    = strip_tags( $text );
++                $this-&gt;_msg-&gt;IsHTML( false );			
++            }
+         }
+ 
+         /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001064.html">[ydf-devel] r2470 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001066.html">[ydf-devel] r2472 -	YDFramework2.0/trunk/YDFramework2/3rdparty/phpmailer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1065">[ date ]</a>
+              <a href="thread.html#1065">[ thread ]</a>
+              <a href="subject.html#1065">[ subject ]</a>
+              <a href="author.html#1065">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

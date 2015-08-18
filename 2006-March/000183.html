@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1762 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormRenderers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1762%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDFormRenderers&In-Reply-To=%3C200603030609.k236998a001655%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000182.html">
+   <LINK REL="Next"  HREF="000184.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1762 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormRenderers</H1>
+    <B>david_db at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1762%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDFormRenderers&In-Reply-To=%3C200603030609.k236998a001655%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1762 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDFormRenderers">david_db at berlios.de
+       </A><BR>
+    <I>Fri Mar  3 07:09:09 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000182.html">[ydf-devel] r1761 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery YDDatabaseQuery/YDDatabaseQueryDrivers
+</A></li>
+        <LI>Next message: <A HREF="000184.html">[ydf-devel] r1763 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#183">[ date ]</a>
+              <a href="thread.html#183">[ thread ]</a>
+              <a href="subject.html#183">[ subject ]</a>
+              <a href="author.html#183">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: david_db
+Date: 2006-03-03 07:08:55 +0100 (Fri, 03 Mar 2006)
+New Revision: 1762
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+Log:
+Fixed YDFormElement::toArray to match the array returned by the array renderer. Users with custom renderers will have to check if they are using the &quot;labelname&quot; value from YDFormElement::toArray, and change it to &quot;label&quot;.
+
+Feature Request #1767
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-03-03 05:44:42 UTC (rev 1761)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-03-03 06:08:55 UTC (rev 1762)
+@@ -1501,12 +1501,13 @@
+             }
+             return array(
+                 'name'        =&gt; $this-&gt;_name,
++                'id'          =&gt; $this-&gt;_attributes['id'],
+                 'value'       =&gt; $this-&gt;_value,
+                 'default'     =&gt; $this-&gt;_default,
+                 'type'        =&gt; $this-&gt;_type,
+-                'labelname'   =&gt; $this-&gt;_label,
++                'label'       =&gt; $this-&gt;_label,
+                 'attributes'  =&gt; $this-&gt;_attributes,
+-                'label'       =&gt; '&lt;label for=&quot;' . $this-&gt;_attributes['id'] . '&quot;&gt;' . $this-&gt;_label . '&lt;/label&gt;',
++                'label_html'  =&gt; '&lt;label for=&quot;' . $this-&gt;_attributes['id'] . '&quot;&gt;' . $this-&gt;_label . '&lt;/label&gt;',
+                 'options'     =&gt; $this-&gt;_options,
+                 'placeLabel'  =&gt; $this-&gt;_placeLabel,
+                 'html'        =&gt; $this-&gt;toHtml(),
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2006-03-03 05:44:42 UTC (rev 1761)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2006-03-03 06:08:55 UTC (rev 1762)
+@@ -71,9 +71,9 @@
+             $form['tag'] = '&lt;form' . $form['attribs'] . '&gt;';
+             $form['requirednote'] = $this-&gt;_form-&gt;_requiredNote;
+             $form['endtag'] = '&lt;/form&gt;';
+-
+-            // Add the errors
+             $form['name']   = $this-&gt;_form-&gt;_name;
++            
++            // Add the errors
+             $form['errors'] = $this-&gt;_form-&gt;_errors;
+             $form['errors_unique_messages' ] = array_unique( array_values( $this-&gt;_form-&gt;_errors ) );
+ 
+@@ -105,39 +105,30 @@
+                 }
+                 $form[ $name ]['required'] = $required;
+ 
+-                // Add the HTML labels
+-                if ( $form[ $name ]['isButton'] === false ) {
+-                    $form[ $name ]['label_html'] = '';
+-                    if ( $form[ $name ]['placeLabel'] != 'none' ) {
+-                        if ( ! empty( $form[ $name ]['label'] ) ) {
+-                            $form[ $name ]['label_html'] .= $form[ $name ]['label'];
+-                        }
+-                        $obj = $this-&gt;_form-&gt;getElement( $name );
+-                        if ( $form[ $name ]['required'] ) {
+-                            $form[ $name ]['label_html'] = $this-&gt;_form-&gt;_htmlRequiredStart . $form[ $name ]['label_html'] . $this-&gt;_form-&gt;_htmlRequiredEnd;
+-                        }
+-                        if ( ! empty( $form[ $name ]['error'] ) ) {
+-                            $form[ $name ]['error_html'] = $this-&gt;_form-&gt;_htmlErrorStart . $form[ $name ]['error'] . $this-&gt;_form-&gt;_htmlErrorEnd;
+-                        }
++                // Add required and error HTML
++                if ( $form[ $name ]['isButton'] === false &amp;&amp; $form[ $name ]['placeLabel'] != 'none' ) {
++                    if ( $form[ $name ]['required'] ) {
++                        $form[ $name ]['label_html'] = $this-&gt;_form-&gt;_htmlRequiredStart . $form[ $name ]['label_html'] . $this-&gt;_form-&gt;_htmlRequiredEnd;
+                     }
++                    if ( ! empty( $form[ $name ]['error'] ) ) {
++                        $form[ $name ]['error_html'] = $this-&gt;_form-&gt;_htmlErrorStart . $form[ $name ]['error'] . $this-&gt;_form-&gt;_htmlErrorEnd;
++                    }
+                 }
+ 
+-                // Fix the labels
+-                $form[ $name ]['label'] = $form[ $name ]['labelname'];
+-                unset( $form[ $name ]['labelname'] );
+-
+             }
+ 
+             // Add the do parameter if it's a get form
+             if ( $this-&gt;_form-&gt;_method == 'get' ) {
+                 $form['do'] = array();
+                 $form['do']['name'] = 'do';
++                $form['do']['id'] = 'do';
+                 $form['do']['value'] = YDRequest::getActionName();
+                 $form['do']['type'] = 'hidden';
+                 $form['do']['label'] = '';
++                $form['do']['label_html'] = '';
+                 $form['do']['options'] = array();
+                 $form['do']['placeLabel'] = 'none';
+-                $form['do']['html'] = '&lt;input type=&quot;hidden&quot; name=&quot;do&quot; value=&quot;' . YDRequest::getActionName() . '&quot; /&gt;';
++                $form['do']['html'] = '&lt;input type=&quot;hidden&quot; name=&quot;do&quot; id=&quot;do&quot; value=&quot;' . YDRequest::getActionName() . '&quot; /&gt;';
+                 $form['do']['isButton'] = false;
+                 $form['do']['error'] = '';
+                 $form['do']['required'] = false;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2006-03-03 05:44:42 UTC (rev 1761)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_html.php	2006-03-03 06:08:55 UTC (rev 1762)
+@@ -71,7 +71,10 @@
+             unset( $form['errors'] );
+             unset( $form['errors_unique_messages'] );
+             unset( $form['requirednote'] );
+-            unset( $form['name'] );
++            
++            if ( ! is_array( $form['name'] ) ) {
++                unset( $form['name'] );
++            }
+ 
+             // Add the required note if there are required items
+             if ( ! empty( $this-&gt;_form-&gt;_requiredNote ) ) {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000182.html">[ydf-devel] r1761 - in YDFramework2.0/trunk/YDFramework2/addons: YDDatabaseObject YDDatabaseQuery YDDatabaseQuery/YDDatabaseQueryDrivers
+</A></li>
+	<LI>Next message: <A HREF="000184.html">[ydf-devel] r1763 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#183">[ date ]</a>
+              <a href="thread.html#183">[ thread ]</a>
+              <a href="subject.html#183">[ subject ]</a>
+              <a href="author.html#183">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

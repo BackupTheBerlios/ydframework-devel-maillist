@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2382 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2382%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200702021251.l12CpFV9003800%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000974.html">
+   <LINK REL="Next"  HREF="000976.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2382 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2382%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200702021251.l12CpFV9003800%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2382 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Fri Feb  2 13:51:15 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000974.html">[ydf-devel] r2381 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000976.html">[ydf-devel] r2383 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#975">[ date ]</a>
+              <a href="thread.html#975">[ thread ]</a>
+              <a href="subject.html#975">[ subject ]</a>
+              <a href="author.html#975">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-02-02 13:51:10 +0100 (Fri, 02 Feb 2007)
+New Revision: 2382
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+Log:
+Made getQueryStringParameter a static function.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-02-02 09:44:46 UTC (rev 2381)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-02-02 12:51:10 UTC (rev 2382)
+@@ -97,6 +97,8 @@
+          *  @param  $use_keys   (optional) Use the keys from the values array instead of the values. Defaults to false.
+          *
+          *  @returns    The value of the query string variable as a string.
++         * 
++         *  @static
+          */
+         function getQueryStringParameter( $name, $default='', $values=null, $use_keys=false ) {
+             if ( isset( $_GET[$name] ) ) {
+@@ -124,9 +126,11 @@
+          *  @param  $use_keys   (optional) Use the keys from the values array instead of the values. Defaults to false.
+          *
+          *  @returns    The value of the query string variable as an integer.
++         * 
++         *  @static
+          */
+         function getQueryStringParameterAsInt( $name, $default=null, $values=null, $use_keys=false ) {
+-            $value = $this-&gt;getQueryStringParameter( $name, $default, $values, $use_keys );
++            $value = YDRequest::getQueryStringParameter( $name, $default, $values, $use_keys );
+             return is_numeric( $value ) ? intval( $value ) : $default;
+         }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000974.html">[ydf-devel] r2381 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000976.html">[ydf-devel] r2383 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#975">[ date ]</a>
+              <a href="thread.html#975">[ thread ]</a>
+              <a href="subject.html#975">[ subject ]</a>
+              <a href="author.html#975">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

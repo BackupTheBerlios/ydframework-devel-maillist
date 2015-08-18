@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2331 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms	examples/simplecms/includes/modules
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2331%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms%0A%09examples/simplecms/includes/modules&In-Reply-To=%3C200701221128.l0MBSs8Q007523%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000923.html">
+   <LINK REL="Next"  HREF="000925.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2331 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms	examples/simplecms/includes/modules</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2331%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms%0A%09examples/simplecms/includes/modules&In-Reply-To=%3C200701221128.l0MBSs8Q007523%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2331 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms	examples/simplecms/includes/modules">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Jan 22 12:28:54 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000923.html">[ydf-devel] r2330 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDSimpleCMS
+</A></li>
+        <LI>Next message: <A HREF="000925.html">[ydf-devel] r2332 - in YDFramework2.0/trunk: YDFramework2	YDFramework2/YDClasses YDFramework2/addons/YDAjax	YDFramework2/addons/YDBBCode YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDDatabaseObject doc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#924">[ date ]</a>
+              <a href="thread.html#924">[ thread ]</a>
+              <a href="subject.html#924">[ subject ]</a>
+              <a href="author.html#924">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-22 12:28:52 +0100 (Mon, 22 Jan 2007)
+New Revision: 2331
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/examples/simplecms/admin.php
+   YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php
+   YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php
+   YDFramework2.0/trunk/examples/simplecms/index.php
+Log:
+Did some refactoring and cleaning up of the YDSimpleCMS package.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-22 11:21:34 UTC (rev 2330)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-22 11:28:52 UTC (rev 2331)
+@@ -60,6 +60,59 @@
+     // The database connection
+     $GLOBALS['db'] = YDDatabase::getNamedInstance();
+ 
++    // Global YDSimpleCMS class
++    class YDSimpleCMS extends YDBase {
++
++        // Run the request in the indicated scope
++        // @static
++        function run( $scope ) {
++            $baseClass = ( strtolower( $scope ) == 'public' ) ? 'YDSimpleCMSPublicRequest' : 'YDSimpleCMSAdminRequest';
++            $clsInst = new YDExecutor( $baseClass . '.php' );
++            @session_start();
++            $clsInst-&gt;execute();
++        }
++
++        // Function to show an error
++        function showError() {
++            $args = func_get_args();
++            if ( sizeof( $args &gt; 0 ) ) {
++                $args[0] = '&lt;font color=&quot;red&quot;&gt;&lt;b&gt;ERROR:&lt;/b&gt; ' . $args[0] . '&lt;/font&gt;';
++            }
++            call_user_func_array( 'printf', $args );
++            die();
++        }
++
++        // Function to add an admin menu item
++        function addAdminMenu( $title, $subtitle, $module, $action ) {
++
++            // Link to the menu items
++            $menu = &amp; $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'];
++
++            // Construct the URL
++            $url = YD_SELF_SCRIPT . '?module=' . $module . '&amp;action=' . $action;
++
++            // Add the first level if needed
++            if ( ! isset( $menu[$title] ) ) {
++                $menu[$title] = array();
++                $menu[$title]['title']    = $title;
++                $menu[$title]['children'] = array();
++            }
++
++            // Check if we have a subname or not
++            if ( $subtitle == null ) {
++                $menu[$title]['url'] = $url;
++            } else {
++                if ( ! isset( $menu[$title][ $action ] ) ) {
++                    $menu[$title]['children'][$subtitle] = array();
++                    $menu[$title]['children'][$subtitle]['title'] = $subtitle;
++                    $menu[$title]['children'][$subtitle]['url']   = $url;
++                }
++            }
++
++        }
++
++    }
++
+     // Override the template class
+     class YDSimpleCMSTemplate extends YDTemplate {
+ 
+@@ -116,23 +169,11 @@
+ 
+         // Default action
+         function actionDefault() {
+-
+-            // Instantiate the module manager
+-            YDGlobalTimerMarker( 'Instantiate module manager' );
+             $moduleManager = new YDSimpleCMSModuleManager();
+-
+-            // Load the modules
+-            YDGlobalTimerMarker( 'Loading all modules' );
+             $moduleManager-&gt;loadAllModules();
+-
+-            // Get the parameters from the query string
+             $module = $this-&gt;getQueryStringParameter( 'module', $this-&gt;defaultModule );
+             $action = $this-&gt;getQueryStringParameter( 'action', 'show' );
+-
+-            // Run the module
+-            YDGlobalTimerMarker( 'Running module' );
+             $moduleManager-&gt;runModule( $this-&gt;requestScope, $module, $action );
+-
+         }
+ 
+     }
+@@ -292,43 +333,27 @@
+ 
+         // Display the module
+         function display( $name='' ) {
+-
+-            // Assign the standard variables
+             $this-&gt;tpl-&gt;assign( 'currentAction', $this-&gt;currentAction );
+             $this-&gt;tpl-&gt;assign( 'currentScope',  $this-&gt;currentScope );
+             $this-&gt;tpl-&gt;assign( 'adminMenu',     $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'] );
+             if ( isset( $GLOBALS['user'] ) ) {
+                 $this-&gt;tpl-&gt;assign( 'currentUser', $GLOBALS['user'] );
+             }
+-
+-            // Get the template name
+             if ( $name == '' ) {
+                 $name = $this-&gt;getModuleName();
+             }
+-
+-            // Display the template
+             $this-&gt;tpl-&gt;displayWithMaster( $name );
+-
+         }
+ 
+         // Run an action in the module
+         function runAction( $scope, $action ) {
+-
+-            // Get the function name
+             $moduleFunctionName = YD_SIMPLECMS_ACTION_PREFIX . $scope . '_' . $action;
+-
+-            // Check if the function exists
+             if ( ! $this-&gt;hasMethod( $moduleFunctionName ) ) {
+-                YDSimpleCMSShowError( 'Module %s function not found: %s', $this-&gt;getModuleName(), $moduleFunctionName );
++                YDSimpleCMS::showError( 'Module %s function not found: %s', $this-&gt;getModuleName(), $moduleFunctionName );
+             }
+-
+-            // Set the variables
+             $this-&gt;currentScope  = $scope;
+             $this-&gt;currentAction = $action;
+-
+-            // Execute the function
+             call_user_func( array( $this, $moduleFunctionName ) );
+-
+         }
+ 
+     }
+@@ -338,20 +363,12 @@
+ 
+         // Load the plugins
+         function loadAllModules() {
+-
+-            // Include the modules if any
+             if ( is_dir( YD_SIMPLECMS_MODULE_DIR ) ) {
+-
+-                // Convert it to a directory object
+                 $modulesDir = new YDFSDirectory( YD_SIMPLECMS_MODULE_DIR );
+-
+-                // Load the modules
+                 foreach ( $modulesDir-&gt;getContents( YD_SIMPLECMS_MODULE_PATTERN ) as $module ) {
+                     include_once( $module-&gt;getAbsolutePath() );
+                 }
+-
+             }
+-
+         }
+ 
+         // Run a module
+@@ -367,7 +384,7 @@
+ 
+             // Check if the class exists
+             if ( ! class_exists( $moduleClassName ) ) {
+-                YDSimpleCMSShowError( 'Module class not found: %s', $moduleClassName );
++                YDSimpleCMS::showError( 'Module class not found: %s', $moduleClassName );
+             }
+ 
+             // Create the class instance
+@@ -408,58 +425,11 @@
+ 
+     }
+ 
+-    // Function to show an error
+-    function YDSimpleCMSShowError() {
+-        $args = func_get_args();
+-        if ( sizeof( $args &gt; 0 ) ) {
+-            $args[0] = '&lt;font color=&quot;red&quot;&gt;&lt;b&gt;ERROR:&lt;/b&gt; ' . $args[0] . '&lt;/font&gt;';
+-        }
+-        call_user_func_array( 'printf', $args );
+-        die();
+-    }
+-
+-    // Function to run a CMS app
+-    function YDSimpleCMSRunRequest( $baseClass ) {
+-        $baseClass = ( strtolower( $baseClass ) == 'public' ) ? 'YDSimpleCMSPublicRequest' : 'YDSimpleCMSAdminRequest';
+-        $clsInst = new YDExecutor( $baseClass . '.php' );
+-        @session_start();
+-        $clsInst-&gt;execute();
+-    }
+-
+-    // Function to add an admin menu item
+-    function YDSimpleCMSAddAdminMenu( $title, $subtitle, $module, $action ) {
+-
+-        // Link to the menu items
+-        $menu = &amp; $GLOBALS['YD_SIMPLECMS_ADMIN_MENU'];
+-
+-        // Construct the URL
+-        $url = YD_SELF_SCRIPT . '?module=' . $module . '&amp;action=' . $action;
+-
+-        // Add the first level if needed
+-        if ( ! isset( $menu[$title] ) ) {
+-            $menu[$title] = array();
+-            $menu[$title]['title']    = $title;
+-            $menu[$title]['children'] = array();
+-        }
+-
+-        // Check if we have a subname or not
+-        if ( $subtitle == null ) {
+-            $menu[$title]['url'] = $url;
+-        } else {
+-            if ( ! isset( $menu[$title][ $action ] ) ) {
+-                $menu[$title]['children'][$subtitle] = array();
+-                $menu[$title]['children'][$subtitle]['title'] = $subtitle;
+-                $menu[$title]['children'][$subtitle]['url']   = $url;
+-            }
+-        }
+-
+-    }
+-
+     // Add menu items
+-    YDSimpleCMSAddAdminMenu( 'Admin',   null,       'admin', 'show' );
+-    YDSimpleCMSAddAdminMenu( 'Admin',   'Logout',   'admin', 'logout' );
+-    YDSimpleCMSAddAdminMenu( 'Content', 'Pages',    'page',  'show' );
+-    YDSimpleCMSAddAdminMenu( 'Options', 'Modules',  'admin', 'modules' );
+-    YDSimpleCMSAddAdminMenu( 'Options', 'Settings', 'admin', 'settings' );
++    YDSimpleCMS::addAdminMenu( 'Admin',   null,       'admin', 'show' );
++    YDSimpleCMS::addAdminMenu( 'Admin',   'Logout',   'admin', 'logout' );
++    YDSimpleCMS::addAdminMenu( 'Content', 'Pages',    'page',  'show' );
++    YDSimpleCMS::addAdminMenu( 'Options', 'Modules',  'admin', 'modules' );
++    YDSimpleCMS::addAdminMenu( 'Options', 'Settings', 'admin', 'settings' );
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/simplecms/admin.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/admin.php	2007-01-22 11:21:34 UTC (rev 2330)
++++ YDFramework2.0/trunk/examples/simplecms/admin.php	2007-01-22 11:28:52 UTC (rev 2331)
+@@ -4,6 +4,6 @@
+     include_once( dirname( __FILE__ ) . '/includes/YDSimpleCMSApp.php' );
+ 
+     // Run the CMS request
+-    YDSimpleCMSRunRequest( 'admin' );
++    YDSimpleCMS::run( 'admin' );
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php	2007-01-22 11:21:34 UTC (rev 2330)
++++ YDFramework2.0/trunk/examples/simplecms/includes/modules/module_contactus.php	2007-01-22 11:28:52 UTC (rev 2331)
+@@ -18,6 +18,6 @@
+     }
+ 
+     // Add menu items
+-    YDSimpleCMSAddAdminMenu( 'Content',    'Contact Us', 'contactus', 'show' );
++    YDSimpleCMS::addAdminMenu( 'Content',    'Contact Us', 'contactus', 'show' );
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php	2007-01-22 11:21:34 UTC (rev 2330)
++++ YDFramework2.0/trunk/examples/simplecms/includes/modules/module_newsletter.php	2007-01-22 11:28:52 UTC (rev 2331)
+@@ -18,7 +18,7 @@
+     }
+ 
+     // Add menu items
+-    YDSimpleCMSAddAdminMenu( 'Newsletters', 'Create Newsletter',    'newsletter', 'create' );
+-    YDSimpleCMSAddAdminMenu( 'Newsletters', 'Archived Newsletters', 'newsletter', 'show' );
++    YDSimpleCMS::addAdminMenu( 'Newsletters', 'Create Newsletter',    'newsletter', 'create' );
++    YDSimpleCMS::addAdminMenu( 'Newsletters', 'Archived Newsletters', 'newsletter', 'show' );
+ 
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/simplecms/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/index.php	2007-01-22 11:21:34 UTC (rev 2330)
++++ YDFramework2.0/trunk/examples/simplecms/index.php	2007-01-22 11:28:52 UTC (rev 2331)
+@@ -4,6 +4,6 @@
+     include_once( dirname( __FILE__ ) . '/includes/YDSimpleCMSApp.php' );
+ 
+     // Run the CMS request
+-    YDSimpleCMSRunRequest( 'public' );
++    YDSimpleCMS::run( 'public' );
+ 
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000923.html">[ydf-devel] r2330 - in YDFramework2.0/trunk/YDFramework2/addons: .	YDSimpleCMS
+</A></li>
+	<LI>Next message: <A HREF="000925.html">[ydf-devel] r2332 - in YDFramework2.0/trunk: YDFramework2	YDFramework2/YDClasses YDFramework2/addons/YDAjax	YDFramework2/addons/YDBBCode YDFramework2/addons/YDCMComponent	YDFramework2/addons/YDDatabaseObject doc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#924">[ date ]</a>
+              <a href="thread.html#924">[ thread ]</a>
+              <a href="subject.html#924">[ subject ]</a>
+              <a href="author.html#924">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

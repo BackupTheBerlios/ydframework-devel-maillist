@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDDatabaseTree2 :)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree2%20%3A%29&In-Reply-To=%3C454FA493.3020103%40fusemail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000744.html">
+   <LINK REL="Next"  HREF="000742.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDDatabaseTree2 :)</H1>
+    <B>Francisco Azevedo</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDDatabaseTree2%20%3A%29&In-Reply-To=%3C454FA493.3020103%40fusemail.com%3E"
+       TITLE="[ydf-devel] YDDatabaseTree2 :)">francisco at fusemail.com
+       </A><BR>
+    <I>Mon Nov  6 22:09:39 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000744.html">[ydf-devel] YDDatabaseTree2 :)
+</A></li>
+        <LI>Next message: <A HREF="000742.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#745">[ date ]</a>
+              <a href="thread.html#745">[ thread ]</a>
+              <a href="subject.html#745">[ subject ]</a>
+              <a href="author.html#745">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David
+
+&gt;<i> There's no method to unregister a key/field, but you could just unset 
+</I>&gt;<i> the field name from the $_fields array. All keys and fields are on the 
+</I>&gt;<i> same array.
+</I>&gt;<i> 
+</I>&gt;<i> unset( $this-&gt;_fields['field_name'] );
+</I>
+Ok... simple :)
+
+
+&gt;<i> If you think is good to have an unregister method, just add it to YDDOBJ.
+</I>
+Ok.. :)
+
+
+&gt;<i> You can't do UPDATE *table* SET REPLACE(...) WHERE ...
+</I>&gt;<i> 
+</I>&gt;<i> You can only update values of registered fields, and fields can't be 
+</I>&gt;<i> expressions. This REPLACE thing is a sub-query, right? Just note that 
+</I>&gt;<i> only from MySQL 4.1 up you can use them. I still use MySQL 4.0 in some 
+</I>&gt;<i> projects. But if you think it's a good requirement because of the 
+</I>&gt;<i> performance boost, then people can always use YDDT if needed.
+</I>&gt;<i> 
+</I>&gt;<i> Well, you could try to add support for expressions in values like the 
+</I>&gt;<i> way we do in SELECTs. Just add it to YDDatabaseQuery. YDDatabaseObject 
+</I>&gt;<i> uses it to build all the queries. If you make it work in YDDQ, then I 
+</I>&gt;<i> see no problem in adding to YDDOBJ. Even if we don't build a hole new 
+</I>&gt;<i> interface for expression values in YDDOBJ, you can always use the 
+</I>&gt;<i> $_query object directly and use YDDQ methods.
+</I>
+
+Db, i don't have any idea on how to do that.
+
+Btw, akaik, a sub-query is something like a SELECT ... IN SELECT ... 
+but this is a simple function (like COUNT(), SUM().. REPLACE() ) and can 
+be only used on SELECTs or UPDATEs.
+
+The REPLACE is the &quot;rebuild&quot; magic here when moving nodes.. so it's very 
+important.
+
+
+What to you think to create a new simple method to add UPDATE functions?
+
+
+regards
+Francisco A
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000744.html">[ydf-devel] YDDatabaseTree2 :)
+</A></li>
+	<LI>Next message: <A HREF="000742.html">[ydf-devel] xajax 0.5 beta
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#745">[ date ]</a>
+              <a href="thread.html#745">[ thread ]</a>
+              <a href="subject.html#745">[ subject ]</a>
+              <a href="author.html#745">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

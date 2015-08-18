@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Encoding issues
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Encoding%20issues&In-Reply-To=%3C4586BED9.3020206%40reneschmidt.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000861.html">
+   <LINK REL="Next"  HREF="000863.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Encoding issues</H1>
+    <B>Rene Schmidt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Encoding%20issues&In-Reply-To=%3C4586BED9.3020206%40reneschmidt.de%3E"
+       TITLE="[ydf-devel] Encoding issues">rene at reneschmidt.de
+       </A><BR>
+    <I>Mon Dec 18 17:16:25 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000861.html">[ydf-devel] r2270 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000863.html">[ydf-devel] r2271 - in YDFramework2.0/trunk:	YDFramework2/addons/YDAkismet examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#862">[ date ]</a>
+              <a href="thread.html#862">[ thread ]</a>
+              <a href="subject.html#862">[ subject ]</a>
+              <a href="author.html#862">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Hello,
+
+I often stumble across situations where two encodings bite each other
+while developing. For example:
+
+User enters some text in a form field, for example &quot;german umlauts &#246;&#228;&#252;&quot;.
+User's desktop encoding is ISO-8859-1.
+
+Data is to be verified by YDForm and its friends,
+YDValidateRule::regex() for example.
+
+My source is written in UTF-8 (no I don't want to check and switch
+everytime) and the validation regex is &quot;/^[a-z &#246;&#228;&#252;]+$/&quot;.
+
+The pattern WILL NOT match because the data is ISO-8859-1 and the regex
+is UTF-8 while they seem to be the same.
+
+This is making life hard, sometimes at least.
+
+My questions: is this behaviour intended? If not, where should
+conversion be done? And if it is intended, should not there be at least
+a warning that data and pattern encoding do not match?
+
+TIA for your opinion :)
+- --
+Rene Schmidt
+Berater f&#252;r Web-Entwicklung und eCommerce
+Lange Str. 15, 21614 Buxtehude
+Tel. 04161.558363 - <A HREF="http://www.reneschmidt.de/">http://www.reneschmidt.de/</A>
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org">http://enigmail.mozdev.org</A>
+
+iD8DBQFFhr7Za8BQAFpXn2cRAoBvAKDaZEj/+C57H82CN2eaovObzV5kDgCfeOGV
+3jObDZmDLs5g0jyd5zZsnVE=
+=aQZo
+-----END PGP SIGNATURE-----
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000861.html">[ydf-devel] r2270 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000863.html">[ydf-devel] r2271 - in YDFramework2.0/trunk:	YDFramework2/addons/YDAkismet examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#862">[ date ]</a>
+              <a href="thread.html#862">[ thread ]</a>
+              <a href="subject.html#862">[ subject ]</a>
+              <a href="author.html#862">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

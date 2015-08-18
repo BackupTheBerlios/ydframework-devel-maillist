@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1700 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1700%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples/weblog/manage&In-Reply-To=%3C200602201236.k1KCaXLF030108%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000108.html">
+   <LINK REL="Next"  HREF="000110.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1700 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1700%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples/weblog/manage&In-Reply-To=%3C200602201236.k1KCaXLF030108%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1700 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog/manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 20 13:36:33 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000108.html">[ydf-devel] r1699 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+        <LI>Next message: <A HREF="000110.html">[ydf-devel] r1701 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-20 13:36:30 +0100 (Mon, 20 Feb 2006)
+New Revision: 1700
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+   YDFramework2.0/trunk/examples/weblog/manage/autoupdate.php
+Log:
+If the auto updater fails to connect to the update server, an error message is now shown instead of just failing the script.
+
+Bug #6498
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2006-02-20 12:29:56 UTC (rev 1699)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDUrl.php	2006-02-20 12:36:30 UTC (rev 1700)
+@@ -423,10 +423,11 @@
+          *
+          *	@param $cache	(optional) Indicate if the web content should be cached or not. By default, caching is
+          *					turned on.
++         *  @param $fail    (optional) Whether to fail or not if the contents cannot be downloaded. Defaults to true.
+          *
+          *	@returns	Returns the contents of the URL.
+          */
+-        function getContents( $cache=true ) {
++        function getContents( $cache=true, $fail=true ) {
+ 
+             // Check if caching is enabled
+             $cacheFName = null;
+@@ -485,10 +486,14 @@
+ 
+             // Check if there was a result
+             if ( $result == false ) {
+-                trigger_error(
+-                    'Failed to retrieve the data from the url &quot;' . $this-&gt;getUrl() . '&quot;. ' . $client-&gt;getError(),
+-                    YD_ERROR
+-                );
++                if ( $fail ) {
++                    trigger_error(
++                        'Failed to retrieve the data from the url &quot;' . $this-&gt;getUrl() . '&quot;. ' . $client-&gt;getError(),
++                        YD_ERROR
++                    );
++                } else {
++                    return false;
++                }
+             } else {
+                 $data = @ $client-&gt;getContent();
+             }
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/autoupdate.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/autoupdate.php	2006-02-20 12:29:56 UTC (rev 1699)
++++ YDFramework2.0/trunk/examples/weblog/manage/autoupdate.php	2006-02-20 12:36:30 UTC (rev 1700)
+@@ -56,7 +56,10 @@
+         // Class constructor
+         function YDUpdateDB() {
+             $url = new YDUrl( YDConfig::get( 'updateDbUrl' ) . '?revision=' . YD_FW_REVISION );
+-            $this-&gt;changes = $url-&gt;getContents( false );
++            $this-&gt;changes = @ $url-&gt;getContents( false, false );
++            if ( ! $this-&gt;changes ) {
++                YDUpdateLog::error( 'Failed to connect to the update server.' );
++            }
+             if ( @ unserialize( base64_decode( $this-&gt;changes ) ) === false ) {
+                 YDUpdateLog::error( $this-&gt;changes );
+             }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000108.html">[ydf-devel] r1699 - YDFramework2.0/trunk/examples/weblog/skins/default
+</A></li>
+	<LI>Next message: <A HREF="000110.html">[ydf-devel] r1701 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

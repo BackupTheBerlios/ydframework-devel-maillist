@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2225 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2225%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611201910.kAKJAei8015400%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000787.html">
+   <LINK REL="Next"  HREF="000789.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2225 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2225%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent&In-Reply-To=%3C200611201910.kAKJAei8015400%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2225 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 20 20:10:40 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000787.html">[ydf-devel] r2224 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="000789.html">[ydf-devel] r2226 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#788">[ date ]</a>
+              <a href="thread.html#788">[ thread ]</a>
+              <a href="subject.html#788">[ subject ]</a>
+              <a href="author.html#788">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-20 20:10:14 +0100 (Mon, 20 Nov 2006)
+New Revision: 2225
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+Log:
+- initial port of YDCMTree to be a YDDatabaseTree3 extension
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2006-11-20 19:06:53 UTC (rev 2224)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent/YDCMTree.php	2006-11-20 19:10:14 UTC (rev 2225)
+@@ -27,24 +27,18 @@
+     }
+ 
+ 
+-    class YDCMTree extends YDDatabaseObject {
++	// add YD libs
++	YDInclude( 'YDDatabaseTree3.php' );
++
++	// userobject class
++    class YDCMTree extends YDDatabaseTree3 {
+     
+         function YDCMTree() {
+-        
+-			// init component as non default
+-            $this-&gt;YDDatabaseObject();
+-			
+-			// register database as default
+-            $this-&gt;registerDatabase();
+ 
+-			// register table for this component
+-            $this-&gt;registerTable( 'YDCMTree' );
++			// init parent object
++			$this-&gt;YDDatabaseTree3( 'YDCMTree', 'default', 'content_id', 'parent_id', 'lineage', 'level', 'position' );
+ 
+-            // register custom key
+-            $this-&gt;registerKey( 'content_id', true );
+-
+-			// register fields	
+-			$this-&gt;registerField( 'parent_id' );
++			// add custom tree fields
+ 			$this-&gt;registerField( 'type' );
+ 			$this-&gt;registerField( 'state' );
+ 			$this-&gt;registerField( 'reference' );
+@@ -54,9 +48,9 @@
+ 			$this-&gt;registerField( 'published_date_end' );			
+ 			$this-&gt;registerField( 'candrag' );
+ 			$this-&gt;registerField( 'candrop' );
+-			$this-&gt;registerField( 'nleft' );
+-			$this-&gt;registerField( 'nright' );
+ 
++			// define tree order
++			$this-&gt;order( 'parent_id ASC, position ASC' );
+ 		}
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000787.html">[ydf-devel] r2224 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="000789.html">[ydf-devel] r2226 -	YDFramework2.0/trunk/YDFramework2/addons/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#788">[ date ]</a>
+              <a href="thread.html#788">[ thread ]</a>
+              <a href="subject.html#788">[ subject ]</a>
+              <a href="author.html#788">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

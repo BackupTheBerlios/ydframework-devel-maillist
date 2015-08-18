@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2004 - YDFramework2.0/trunk/examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2004%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200608131134.k7DBYA1T027419%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000510.html">
+   <LINK REL="Next"  HREF="000512.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2004 - YDFramework2.0/trunk/examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2004%20-%20YDFramework2.0/trunk/examples/weblog/manage&In-Reply-To=%3C200608131134.k7DBYA1T027419%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2004 - YDFramework2.0/trunk/examples/weblog/manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Aug 13 13:34:10 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000510.html">[ydf-devel] r2003 - in YDFramework2.0/trunk:	YDFramework2/addons/YDFeedCreator examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000512.html">[ydf-devel] r2005 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#511">[ date ]</a>
+              <a href="thread.html#511">[ thread ]</a>
+              <a href="subject.html#511">[ subject ]</a>
+              <a href="author.html#511">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-13 13:33:58 +0200 (Sun, 13 Aug 2006)
+New Revision: 2004
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+Log:
+Fixed the links in the admin index screen.
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-08-13 10:52:46 UTC (rev 2003)
++++ YDFramework2.0/trunk/examples/weblog/manage/index.tpl	2006-08-13 11:33:58 UTC (rev 2004)
+@@ -31,7 +31,7 @@
+             &lt;/td&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;
+                 {if $item.is_draft eq '1'}&lt;i&gt;{/if}
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$item.id}&quot;&gt;{$item.title}&lt;/a&gt;
++                &lt;a href=&quot;items.php?do=edit&amp;id={$item.id}&quot;&gt;{$item.title}&lt;/a&gt;
+                 &lt;br/&gt;
+                 {if $item.allow_comments eq '0'}
+                     {t w=&quot;closed&quot;}{if $item.is_draft eq '1'}, {/if}
+@@ -42,9 +42,9 @@
+             &lt;td class=&quot;adminRowR&quot;&gt;
+                 &lt;a href=&quot;../item.php?id={$item.id}&quot; target=&quot;_blank&quot;&gt;{t w=&quot;view&quot;}&lt;/a&gt;
+                 |
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=edit&amp;id={$item.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
++                &lt;a href=&quot;items.php?do=edit&amp;id={$item.id}&quot;&gt;{t w=&quot;edit&quot;}&lt;/a&gt;
+                 |
+-                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=delete&amp;id={$item.id}&quot;
++                &lt;a href=&quot;items.php?do=delete&amp;id={$item.id}&quot;
+                  onClick=&quot;return YDConfirmDelete( '{$item.title|addslashes}' );&quot;&gt;{t w=&quot;delete&quot;}&lt;/a&gt;
+                 &lt;br/&gt;
+                 &lt;a href=&quot;comments.php?id={$item.id}&quot;&gt;{if $item.num_comments &gt; 0}{$item|@text_num_comments:false}{else}&lt;span class=&quot;disabled&quot;&gt;0 {t w=&quot;comments&quot; lower=true}&lt;/span&gt;{/if}&lt;/a&gt; |
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000510.html">[ydf-devel] r2003 - in YDFramework2.0/trunk:	YDFramework2/addons/YDFeedCreator examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000512.html">[ydf-devel] r2005 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#511">[ date ]</a>
+              <a href="thread.html#511">[ thread ]</a>
+              <a href="subject.html#511">[ subject ]</a>
+              <a href="author.html#511">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

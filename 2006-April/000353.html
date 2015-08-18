@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1895 - YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1895%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages&In-Reply-To=%3C200604261430.k3QEU00K009195%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000352.html">
+   <LINK REL="Next"  HREF="000354.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1895 - YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1895%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages&In-Reply-To=%3C200604261430.k3QEU00K009195%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1895 - YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages">ximian at berlios.de
+       </A><BR>
+    <I>Wed Apr 26 16:30:00 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000352.html">[ydf-devel] r1894 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000354.html">[ydf-devel] r1896 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMPage: . languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#353">[ date ]</a>
+              <a href="thread.html#353">[ thread ]</a>
+              <a href="subject.html#353">[ subject ]</a>
+              <a href="author.html#353">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-26 16:29:50 +0200 (Wed, 26 Apr 2006)
+New Revision: 1895
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/YDCMLanguages.php
+Log:
+added new method YDCMLanguages::adminDefault to get default language for content creation
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/YDCMLanguages.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/YDCMLanguages.php	2006-04-26 14:27:02 UTC (rev 1894)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDCMLanguages/YDCMLanguages.php	2006-04-26 14:29:50 UTC (rev 1895)
+@@ -51,6 +51,7 @@
+ 			$this-&gt;registerField( 'name' );
+ 			$this-&gt;registerField( 'active' );
+ 			$this-&gt;registerField( 'visitors_default' );
++			$this-&gt;registerField( 'admin_default' );
+ 
+ 			// we don't have relations from here (just TO here, and we don't need to define that)
+ 		}
+@@ -76,5 +77,27 @@
+ 			return $this-&gt;getResultsAsAssocArray( 'language_id', 'name' );
+ 		}
+ 
++
++        /**
++         *  This function returns the default language for content creation
++         *
++         *  @returns    Language code, eg: 'en'. or false
++         */
++		function adminDefault(){
++		
++			// reset values
++			$this-&gt;resetValues();
++
++			// we want the result where admin default is 1
++			$this-&gt;admin_default = 1;
++			$this-&gt;limit( 1 );
++			
++			// find language
++			if ( $this-&gt;find() == 1 ) return $this-&gt;language_id;
++			
++			return false;
++		}
++
++
+     }
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000352.html">[ydf-devel] r1894 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000354.html">[ydf-devel] r1896 - in YDFramework2.0/trunk/YDFramework2/addons/YDCMPage: . languages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#353">[ date ]</a>
+              <a href="thread.html#353">[ thread ]</a>
+              <a href="subject.html#353">[ subject ]</a>
+              <a href="author.html#353">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

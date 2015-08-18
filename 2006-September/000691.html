@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Proposal on YDDatabaseObject::find()
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Proposal%20on%20YDDatabaseObject%3A%3Afind%28%29&In-Reply-To=%3C1159367957.5140.43.camel%40callisto%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000694.html">
+   <LINK REL="Next"  HREF="000693.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Proposal on YDDatabaseObject::find()</H1>
+    <B>Rene Schmidt</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Proposal%20on%20YDDatabaseObject%3A%3Afind%28%29&In-Reply-To=%3C1159367957.5140.43.camel%40callisto%3E"
+       TITLE="[ydf-devel] Proposal on YDDatabaseObject::find()">rene at reneschmidt.de
+       </A><BR>
+    <I>Wed Sep 27 16:39:17 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000694.html">[ydf-devel] question on YDDatabaseObject::fetch()
+</A></li>
+        <LI>Next message: <A HREF="000693.html">[ydf-devel] Proposal on YDDatabaseObject::find()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#691">[ date ]</a>
+              <a href="thread.html#691">[ thread ]</a>
+              <a href="subject.html#691">[ subject ]</a>
+              <a href="author.html#691">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello it's me again :)
+
+I have a proposal to make for method YDDatabaseObject::find()
+
+The current version of this method is very cumbersome to subclass.
+Fetching the arguments with get_func_args() is what's causing troubles.
+You cannot subclass properly:
+
+class my_class extends YDDatabaseObject {
+
+  // won't work
+  function myfind() {
+    // do things
+    // blabla
+    $args = get_func_args();
+    return parent::find($args);
+  }
+
+  // won't work
+  function myfind() {
+    // do things
+    // blabla
+    return parent::find(get_func_args());
+  }
+
+  // won't work properly, e.g. when there are more than two arguments
+  function myfind($arg1,$arg2) {
+    // do things
+    // blabla
+    return parent::find($arg1,$arg2);
+  }
+
+}
+
+class YDDatabaseobject {
+
+  function find() {
+    $args = get_func_args();
+    // and so on
+  }
+}
+
+Furthermore, method definition (and API doc) does not mention there are
+optional arguments for this method which wasted some of my life time
+because I mostly only look at the API doc.
+
+My proposal is to define an associative array argument for find() where
+one can put as many arguments as he wishes. The method would be
+subclassable also.
+
+Your opinion?
+-- 
+Rene Schmidt
+Berater f&#252;r Web-Entwicklung und eCommerce 
+Lange Str. 15, 21614 Buxtehude
+Tel. 04161.558363 - <A HREF="http://www.reneschmidt.de/">http://www.reneschmidt.de/</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000694.html">[ydf-devel] question on YDDatabaseObject::fetch()
+</A></li>
+	<LI>Next message: <A HREF="000693.html">[ydf-devel] Proposal on YDDatabaseObject::find()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#691">[ date ]</a>
+              <a href="thread.html#691">[ thread ]</a>
+              <a href="subject.html#691">[ subject ]</a>
+              <a href="author.html#691">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

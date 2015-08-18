@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1814 - in YDFramework2.0/trunk/YDFramework2: . YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1814%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%20YDClasses&In-Reply-To=%3C200603231339.k2NDdMt7026776%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000242.html">
+   <LINK REL="Next"  HREF="000244.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1814 - in YDFramework2.0/trunk/YDFramework2: . YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1814%20-%20in%20YDFramework2.0/trunk/YDFramework2%3A%20.%20YDClasses&In-Reply-To=%3C200603231339.k2NDdMt7026776%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1814 - in YDFramework2.0/trunk/YDFramework2: . YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Thu Mar 23 14:39:22 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000242.html">[ydf-devel] r1813 - YDFramework2.0/trunk/examples
+</A></li>
+        <LI>Next message: <A HREF="000244.html">[ydf-devel] r1815 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#243">[ date ]</a>
+              <a href="thread.html#243">[ thread ]</a>
+              <a href="subject.html#243">[ subject ]</a>
+              <a href="author.html#243">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-03-23 14:39:08 +0100 (Thu, 23 Mar 2006)
+New Revision: 1814
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+Log:
+Fixed the logSQL function so that it now works in PHP 4 and 5.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-03-23 13:25:06 UTC (rev 1813)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-03-23 13:39:08 UTC (rev 1814)
+@@ -1180,12 +1180,20 @@
+         function _logSql( $sql ) {
+ 
+             // Split the SQL in different lines
+-            $sql = str_replace( 'FROM', YD_CRLF . 'FROM', $sql );
+-            $sql = str_replace( 'LEFT JOIN', YD_CRLF . 'LEFT JOIN', $sql );
+-            $sql = str_replace( 'RIGHT JOIN', YD_CRLF . 'RIGHT JOIN', $sql );
+-            $sql = str_replace( 'INNER JOIN', YD_CRLF . 'INNER JOIN', $sql );
+-            $sql = str_replace( 'WHERE', YD_CRLF . 'WHERE', $sql );
+-            $sql = str_replace( 'ORDER BY', YD_CRLF . 'ORDER BY', $sql );
++            $sql = str_ireplace( 'SELECT', 'SELECT', $sql );
++            $sql = str_ireplace( 'UPDATE', 'UPDATE', $sql );
++            $sql = str_ireplace( 'DELETE', 'DELETE', $sql );
++            $sql = str_ireplace( 'INSERT', 'INSERT', $sql );
++            $sql = str_ireplace( 'FROM', YD_CRLF . 'FROM', $sql );
++            $sql = str_ireplace( 'INTO', YD_CRLF . 'INTO', $sql );
++            $sql = str_ireplace( 'VALUES', YD_CRLF . 'VALUES', $sql );
++            $sql = str_ireplace( 'LEFT JOIN', YD_CRLF . 'LEFT JOIN', $sql );
++            $sql = str_ireplace( 'RIGHT JOIN', YD_CRLF . 'RIGHT JOIN', $sql );
++            $sql = str_ireplace( 'INNER JOIN', YD_CRLF . 'INNER JOIN', $sql );
++            $sql = str_ireplace( 'WHERE', YD_CRLF . 'WHERE', $sql );
++            $sql = str_ireplace( 'ORDER BY', YD_CRLF . 'ORDER BY', $sql );
++            $sql = str_ireplace( 'GROUP BY', YD_CRLF . 'GROUP BY', $sql );
++            $sql = str_ireplace( 'LIMIT', YD_CRLF . 'LIMIT', $sql );
+ 
+             // Get the backtrace
+             $trace = debug_backtrace();
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDF2_core.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-03-23 13:25:06 UTC (rev 1813)
++++ YDFramework2.0/trunk/YDFramework2/YDF2_core.php	2006-03-23 13:39:08 UTC (rev 1814)
+@@ -413,4 +413,68 @@
+ 
+     }
+ 
++    // Add if not exists yet
++    if (!function_exists('str_ireplace')) {
++
++        /**
++         *  Function to do a case insensitve str_replace
++         *
++         *  @param  $search     The string to search for.
++         *  @param  $replace    The replacement string.
++         *  @param  $subject    The string to replace in
++         *  @param  $count      (optional) The maximum number of replacements. Default us all.
++         *
++         *  @returns    The updated string.
++         */
++        function str_ireplace( $search, $replace, $subject, $count = null ) {
++            if ( is_string( $search ) &amp;&amp; is_array( $replace ) ) {
++                user_error( 'Array to string conversion', E_USER_NOTICE );
++                $replace = ( string ) $replace;
++            }
++            if ( ! is_array( $search ) ) {
++                $search = array( $search );
++            }
++            $search = array_values( $search );
++            if ( ! is_array( $replace ) ) {
++                $replace_string = $replace;
++                $replace = array();
++                for ( $i = 0, $c = count( $search ); $i &lt; $c; $i++ ) {
++                    $replace[$i] = $replace_string;
++                }
++            }
++            $replace = array_values( $replace );
++            $length_replace = count( $replace );
++            $length_search = count( $search );
++            if ( $length_replace &lt; $length_search ) {
++                for ( $i = $length_replace; $i &lt; $length_search; $i++ ) {
++                    $replace[$i] = '';
++                }
++            }
++            $was_array = false;
++            if ( ! is_array( $subject ) ) {
++                $was_array = true;
++                $subject = array( $subject );
++            }
++            $count = 0;
++            foreach ( $subject as $subject_key =&gt; $subject_value ) {
++                foreach ( $search as $search_key =&gt; $search_value ) {
++                    $segments = explode( strtolower( $search_value ), strtolower( $subject_value ) );
++                    $count += count( $segments ) - 1;
++                    $pos = 0;
++                    foreach ( $segments as $segment_key =&gt; $segment_value ) {
++                        $segments[$segment_key] = substr( $subject_value, $pos, strlen( $segment_value ) );
++                        $pos += strlen( $segment_value ) + strlen( $search_value );
++                    }
++                    $subject_value = implode( $replace[$search_key], $segments );
++                }
++                $result[$subject_key] = $subject_value;
++            }
++            if ( $was_array === true ) {
++                return $result[0];
++            }
++            return $result;
++        }
++
++    }
++
+ ?&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000242.html">[ydf-devel] r1813 - YDFramework2.0/trunk/examples
+</A></li>
+	<LI>Next message: <A HREF="000244.html">[ydf-devel] r1815 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#243">[ date ]</a>
+              <a href="thread.html#243">[ thread ]</a>
+              <a href="subject.html#243">[ subject ]</a>
+              <a href="author.html#243">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

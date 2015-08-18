@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2463 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2463%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708012154.l71Lsw20005311%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001056.html">
+   <LINK REL="Next"  HREF="001058.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2463 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2463%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200708012154.l71Lsw20005311%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2463 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug  1 23:54:58 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001056.html">[ydf-devel] r2462 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="001058.html">[ydf-devel] r2464 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1057">[ date ]</a>
+              <a href="thread.html#1057">[ thread ]</a>
+              <a href="subject.html#1057">[ subject ]</a>
+              <a href="author.html#1057">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-08-01 23:54:47 +0200 (Wed, 01 Aug 2007)
+New Revision: 2463
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+on required rule
+ - FIX: required rule is now working for checkboxgroup form elements
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-08-01 21:49:45 UTC (rev 2462)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-08-01 21:54:47 UTC (rev 2463)
+@@ -44,15 +44,35 @@
+          *	@param $opts	(not required)
+          */
+         function required( $val, $opts='' ) {
++
+             if ( is_null( $val ) ) {
+                 return false;
+-            } elseif ( is_array( $val ) &amp;&amp; sizeof( $val ) == 0 ) {
++            }
++
++            // check if element is an array
++            if ( is_array( $val ) ){
++
++                // check its size
++                if ( sizeof( $val ) == 0 ) {
++                    return false;
++                }
++
++                // check if there is any 'on' (selected) value (useful on a checkboxgroup)
++                foreach( $val as $k =&gt; $v ){
++                    if( $v === 'on' ){
++                        return true;
++                    }
++                }
+                 return false;
+-            } elseif ( is_string( $val ) &amp;&amp; strlen( $val ) == 0 ) {
++            }
++
++            // check if is an empty string
++            if ( is_string( $val ) &amp;&amp; strlen( $val ) == 0 ) {
+                 return false;
+-            } else {
+-                return true;
+             }
++
++            // value is ok
++            return true;
+         }
+ 
+         /**
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001056.html">[ydf-devel] r2462 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="001058.html">[ydf-devel] r2464 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1057">[ date ]</a>
+              <a href="thread.html#1057">[ thread ]</a>
+              <a href="subject.html#1057">[ subject ]</a>
+              <a href="author.html#1057">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

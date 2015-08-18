@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2371 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2371%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDDatabaseDrivers&In-Reply-To=%3C200701281846.l0SIkd2p005133%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000963.html">
+   <LINK REL="Next"  HREF="000965.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2371 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2371%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDDatabaseDrivers&In-Reply-To=%3C200701281846.l0SIkd2p005133%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2371 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan 28 19:46:39 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000963.html">[ydf-devel] r2370 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+        <LI>Next message: <A HREF="000965.html">[ydf-devel] r2372 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#964">[ date ]</a>
+              <a href="thread.html#964">[ thread ]</a>
+              <a href="subject.html#964">[ subject ]</a>
+              <a href="author.html#964">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-28 19:46:33 +0100 (Sun, 28 Jan 2007)
+New Revision: 2371
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+Log:
+Fixed the database drivers as they were not using the language prefix.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-27 18:34:34 UTC (rev 2370)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-28 18:46:33 UTC (rev 2371)
+@@ -1294,12 +1294,6 @@
+                 $sql = str_replace( ':' . ($key+1), $this-&gt;escapeSql( $arg ), $sql );
+             }
+ 
+-            // Update the language placeholders
+-            $languageIndex = YDConfig::get( 'YD_DB_LANGUAGE_INDEX', null );
+-            if ( ! is_null( $languageIndex ) ) {
+-                $sql = str_replace( '_@', '_' . $languageIndex, $sql );
+-            }
+-
+             // Return the SQL statement
+             return $sql;
+ 
+@@ -1776,6 +1770,12 @@
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+             $sql = str_replace( ' `#_', ' `' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
++            // Update the language placeholders
++            $languageIndex = YDConfig::get( 'YD_DB_LANGUAGE_INDEX', null );
++            if ( ! is_null( $languageIndex ) ) {
++                $sql = str_replace( '_@', '_' . $languageIndex, $sql );
++            }
++
+             // Connect
+             $result = $this-&gt;connect();
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-27 18:34:34 UTC (rev 2370)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_oracle.php	2007-01-28 18:46:33 UTC (rev 2371)
+@@ -270,6 +270,12 @@
+             // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
++            // Update the language placeholders
++            $languageIndex = YDConfig::get( 'YD_DB_LANGUAGE_INDEX', null );
++            if ( ! is_null( $languageIndex ) ) {
++                $sql = str_replace( '_@', '_' . $languageIndex, $sql );
++            }
++
+             // Connect
+             $result = $this-&gt;connect();
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-27 18:34:34 UTC (rev 2370)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_postgres.php	2007-01-28 18:46:33 UTC (rev 2371)
+@@ -202,6 +202,12 @@
+             // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
++            // Update the language placeholders
++            $languageIndex = YDConfig::get( 'YD_DB_LANGUAGE_INDEX', null );
++            if ( ! is_null( $languageIndex ) ) {
++                $sql = str_replace( '_@', '_' . $languageIndex, $sql );
++            }
++
+             // Connect
+             $result = $this-&gt;connect();
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-27 18:34:34 UTC (rev 2370)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseDrivers/YDDatabaseDriver_sqlite.php	2007-01-28 18:46:33 UTC (rev 2371)
+@@ -210,6 +210,12 @@
+             // Add the table prefix
+             $sql = str_replace( ' #_', ' ' . YDConfig::get( 'YD_DB_TABLEPREFIX', '' ), $sql );
+ 
++            // Update the language placeholders
++            $languageIndex = YDConfig::get( 'YD_DB_LANGUAGE_INDEX', null );
++            if ( ! is_null( $languageIndex ) ) {
++                $sql = str_replace( '_@', '_' . $languageIndex, $sql );
++            }
++
+             // Handle errors
+             if ( ! $result &amp;&amp; $this-&gt;_failOnError === true ) {
+                 trigger_error( $GLOBALS['YD_SQLITE_error'], YD_ERROR );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000963.html">[ydf-devel] r2370 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+	<LI>Next message: <A HREF="000965.html">[ydf-devel] r2372 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#964">[ date ]</a>
+              <a href="thread.html#964">[ thread ]</a>
+              <a href="subject.html#964">[ subject ]</a>
+              <a href="author.html#964">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

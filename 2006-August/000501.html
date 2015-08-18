@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1994 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1994%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200608110831.k7B8V7K4024159%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000500.html">
+   <LINK REL="Next"  HREF="000502.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1994 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1994%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200608110831.k7B8V7K4024159%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1994 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Aug 11 10:31:07 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000500.html">[ydf-devel] r1993 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000502.html">[ydf-devel] r1995 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#501">[ date ]</a>
+              <a href="thread.html#501">[ thread ]</a>
+              <a href="subject.html#501">[ subject ]</a>
+              <a href="author.html#501">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-11 10:30:47 +0200 (Fri, 11 Aug 2006)
+New Revision: 1994
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+Log:
+added:
+ - YDForm filter custom options
+ - new filter 'dateformat' specific for date, dateselect and datetimeselect elements
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-08-09 15:32:52 UTC (rev 1993)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2006-08-11 08:30:47 UTC (rev 1994)
+@@ -176,6 +176,7 @@
+             $this-&gt;registerFilter( 'utf8_decode', 'utf8_decode' );
+             $this-&gt;registerFilter( 'strip_html', 'strip_tags' );
+             $this-&gt;registerFilter( 'safe_html', 'YDFormFilter_safe_html' );
++            $this-&gt;registerFilter( 'dateformat', 'YDFormFilter_dateformat' );
+ 
+             // Add the renderers
+             $this-&gt;registerRenderer( 'array', 'YDFormRenderer_array', 'YDFormRenderer_array.php' );
+@@ -489,18 +490,19 @@
+         /**
+          *  Add a filter to the form for the specified field.
+          *
+-         *  @param  $element    The element to apply the filter on. If you specify an array, it will add the filter for
+-         *                      each element in the array.
+-         *  @param  $filter     The name of the filter to apply.
++         *  @param  $element       The element to apply the filter on. If you specify an array, it will add the filter for
++         *                         each element in the array.
++         *  @param  $filter        The name of the filter to apply.
++         *  @param  $options       (Optional) Custom filter options.
+          */
+-        function addFilter( $element, $filter ) {
++        function addFilter( $element, $filter, $options = null ) {
+ 
+             // Check if the element is an array or not
+             if ( is_array( $element ) ) {
+ 
+                 // Add the rule for each element
+                 foreach ( $element as $e ) {
+-                    $this-&gt;addFilter( $e, $filter );
++                    $this-&gt;addFilter( $e, $filter, $options );
+                 }
+ 
+                 // Return
+@@ -522,8 +524,7 @@
+             if ( ! @ is_array( $this-&gt;_filters[ $element ] ) ) { $this-&gt;_filters[ $element ] = array(); }
+ 
+             // Add the filter
+-            array_push( $this-&gt;_filters[ $element ], $filter );
+-
++            array_push( $this-&gt;_filters[ $element ], array( $filter, $options ) );
+         }
+ 
+         /**
+@@ -662,15 +663,6 @@
+                 }
+             }
+ 
+-            // Add the timestamp if needed
+-            if ( $element-&gt;hasMethod( 'getTimeStamp' ) ) {
+-                if ( ! is_array( $value ) ) {
+-                    $element-&gt;setValue( $value );
+-                    $value = $element-&gt;getValue();
+-                }
+-                @ $value['timestamp'] = $element-&gt;getTimeStamp();
+-            }
+-
+             // Unset the element
+             unset( $element );
+ 
+@@ -1206,17 +1198,31 @@
+             if ( array_key_exists( $name, $this-&gt;_filters ) ) {
+                 if ( is_array( $this-&gt;_filters[ $name ] ) ) {
+                     foreach ( $this-&gt;_filters[ $name ] as $filter ) {
+-                        if ( ! is_callable( $this-&gt;_regFilters[ $filter ]['callback'] ) ) {
++                        if ( ! is_callable( $this-&gt;_regFilters[ $filter[0] ]['callback'] ) ) {
+                             trigger_error(
+                                 'The callback specified for the filter &quot;' . $name . '&quot; is not valid', YD_ERROR
+                             );
+                         }
+                         if ( is_array( $value ) ) {
+-                            foreach ( $value as $key=&gt;$x ) {
+-                                $value[$key] = call_user_func( $this-&gt;_regFilters[ $filter ]['callback'], $value[$key] );
++
++                            // check if element is special: 'date', 'dateselect' or 'datetimeselect'
++                            $element = &amp; $this-&gt;getElement( $name );
++
++                            // if array is special we should pass all array to the function (instead of map the function to each element)
++                            if ( in_array( $element-&gt;getType(), array( 'date', 'dateselect', 'datetimeselect' ) ) ){
++                                if ( is_null( $filter[1] ) ) $value = call_user_func( $this-&gt;_regFilters[ $filter[0] ]['callback'], $value );
++                                else                         $value = call_user_func( $this-&gt;_regFilters[ $filter[0] ]['callback'], $value, $filter[1] );
++
++                            // otherwise we map the function to all array elements
++                            }else{
++                                foreach ( $value as $key=&gt;$x ) {
++                                    if ( is_null( $filter[1] ) ) $value[$key] = call_user_func( $this-&gt;_regFilters[ $filter[0] ]['callback'], $value[$key], $filter[1] );
++                                    else                         $value[$key] = call_user_func( $this-&gt;_regFilters[ $filter[0] ]['callback'], $value[$key] );
++                                }
+                             }
+                         } else {
+-                            $value = call_user_func( $this-&gt;_regFilters[ $filter ]['callback'], $value );
++                            if ( is_null( $filter[1] ) ) $value = call_user_func( $this-&gt;_regFilters[ $filter[0] ]['callback'], $value );
++                            else                         $value = call_user_func( $this-&gt;_regFilters[ $filter[0] ]['callback'], $value, $filter[1] );
+                         }
+                     }
+                 }
+@@ -1707,4 +1713,25 @@
+ 
+     }
+ 
++
++    /**
++     *  This filter reads a date form element result and returns a custom result
++     *
++     *  @param  $data     The data to filter.
++     *  @param  $option   (Optional) Filter option. By default, is returned the timestamp
++     *
++     *  @returns The filtered data as a string.
++     */
++    function YDFormFilter_dateformat( $data, $option = &quot;timestamp&quot; ) {
++
++        // check if option is a array member
++        if ( isset( $data[ $option ] ) ) return $data[ $option ];
++
++        // if not a member we want a custom date format eg: &quot;datetimesql&quot;, &quot;%b&quot;
++        YDInclude( 'YDUtil.php' );
++
++        return YDStringUtil::formatDate( $data, $option );
++    }
++
++
+ ?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2006-08-09 15:32:52 UTC (rev 1993)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Date.php	2006-08-11 08:30:47 UTC (rev 1994)
+@@ -122,6 +122,18 @@
+             }
+             return $default;
+         }
++
++        /**
++         *      This function returns the value of the element.
++         *
++         *      @returns        Value of this object.
++         */
++        function getValue() {
++
++            // add timestamp to values array
++            $this-&gt;_value['timestamp'] = $this-&gt;getTimeStamp();
++            return $this-&gt;_value;
++        }
+         
+         /**
+          *      This function returns an array of values from $start to $end and
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000500.html">[ydf-devel] r1993 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000502.html">[ydf-devel] r1995 - YDFramework2.0/trunk/examples
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#501">[ date ]</a>
+              <a href="thread.html#501">[ thread ]</a>
+              <a href="subject.html#501">[ subject ]</a>
+              <a href="author.html#501">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

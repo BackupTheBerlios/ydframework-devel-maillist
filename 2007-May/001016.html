@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2422 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2422%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200705071118.l47BId3f011969%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001015.html">
+   <LINK REL="Next"  HREF="001017.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2422 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2422%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200705071118.l47BId3f011969%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2422 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Mon May  7 13:18:39 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001015.html">[ydf-devel] r2421 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+        <LI>Next message: <A HREF="001017.html">[ydf-devel] r2423 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1016">[ date ]</a>
+              <a href="thread.html#1016">[ thread ]</a>
+              <a href="subject.html#1016">[ subject ]</a>
+              <a href="author.html#1016">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-05-07 13:18:13 +0200 (Mon, 07 May 2007)
+New Revision: 2422
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+Log:
+added YDTemplate::assignArray to assign multiple values
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-05-01 18:02:28 UTC (rev 2421)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDTemplate.php	2007-05-07 11:18:13 UTC (rev 2422)
+@@ -209,7 +209,18 @@
+                 $this-&gt;assign( $name, $fetched );
+             }
+ 
++
+             /**
++             *	This function will assign multiple values from an array
++             */
++            function assignArray( $values ) {
++                foreach( $values as $k =&gt; $v ){
++                    $this-&gt;assign( $k, $v );
++                }
++            }
++
++
++            /**
+              *	This function will parse the template and will assign custom code to head.
+              *
+              *	@param $tpl_source		Template source
+@@ -469,7 +480,18 @@
+                 $this-&gt;assign( $name, $fetched );
+             }
+ 
++
+             /**
++             *	This function will assign multiple values from an array
++             */
++            function assignArray( $values ) {
++                foreach( $values as $k =&gt; $v ){
++                    $this-&gt;assign( $k, $v );
++                }
++            }
++
++
++            /**
+              *	This function will add a YDForm object to the template. It will automatically convert the form to an array
+              *	using the template object so that you don't have to do it manually.
+              *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001015.html">[ydf-devel] r2421 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+	<LI>Next message: <A HREF="001017.html">[ydf-devel] r2423 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1016">[ date ]</a>
+              <a href="thread.html#1016">[ thread ]</a>
+              <a href="subject.html#1016">[ subject ]</a>
+              <a href="author.html#1016">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

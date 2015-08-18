@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2400 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2400%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200702082338.l18Nc8nv028872%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000993.html">
+   <LINK REL="Next"  HREF="000995.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2400 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2400%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject&In-Reply-To=%3C200702082338.l18Nc8nv028872%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2400 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Feb  9 00:38:08 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000993.html">[ydf-devel] r2399 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+        <LI>Next message: <A HREF="000995.html">[ydf-devel] r2401 -	YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#994">[ date ]</a>
+              <a href="thread.html#994">[ thread ]</a>
+              <a href="subject.html#994">[ subject ]</a>
+              <a href="author.html#994">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-02-09 00:38:00 +0100 (Fri, 09 Feb 2007)
+New Revision: 2400
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+Log:
+- deleted my previous YDDatabaseObject::insertForm(). it's too much specific.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-02-08 23:36:30 UTC (rev 2399)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject/YDDatabaseObject.php	2007-02-08 23:38:00 UTC (rev 2400)
+@@ -1045,60 +1045,6 @@
+ 
+ 
+         /**
+-         *  This function inserts a form in database
+-         *
+-         *  @param $form       YDForm object
+-         *
+-         *  @param $messages   (optional) Array with predefined messages:
+-         *                                'ok' for ok message, 'error' for fatal messages, 'form_err' for no validation
+-         *
+-         *  @param $formvalues (optional) Custom form validation values
+-         *
+-         *  @param $onDate     (optional) When element is a date (read: array ), we should convert to this format. Default: 'datetimesql'
+-         *
+-         *  @returns  YDResult object with a message and a result
+-         *            On 'ok', result is the new id
+-         *            On 'form_err', result is array of form error messages
+-         */
+-        function insertForm( &amp; $form, $messages = array(), $formvalues = null, $onDate = 'datetimesql' ){
+-
+-            YDInclude( 'YDResult.php' );
+-
+-            // check messages
+-            $msg_ok       = isset( $messages[ 'ok' ] )       ? $messages[ 'ok' ]       : t( 'Element added' );
+-            $msg_error    = isset( $messages[ 'error' ] )    ? $messages[ 'error' ]    : t( 'Impossible to add element' );
+-            $msg_form_err = isset( $messages[ 'form_err' ] ) ? $messages[ 'form_err' ] : t( 'Form errors' );
+-
+-            // check form validation
+-            if ( ! $form-&gt;validate( $formvalues ) ){
+-                return YDResult::warning( $msg_form_err, $form-&gt;getErrors() );
+-            }
+-
+-            // reset all previous information
+-            $this-&gt;reset();
+-
+-			// get form values
+-			$values = $form-&gt;getValues();
+-
+-			// convert dates
+-			foreach( $values as $element =&gt; $value )
+-				if ( is_array( $value ) ) $values[ $element ] = YDStringUtil::formatDate( $value, $onDate );
+-
+-			// apply values
+-            $this-&gt;setValues( $values );
+-
+-            // insert values and check result
+-            $result = $this-&gt;insert();
+-
+-            if ( $result ){
+-                return YDResult::ok( $msg_ok, $result );
+-            }else{
+-                return YDResult::fatal( $msg_error, $result );
+-            }
+-        }
+-
+-
+-        /**
+          *  This function executes an UPDATE query based on the values of the object
+          *  and any value set by where.
+          *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000993.html">[ydf-devel] r2399 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObjectTree
+</A></li>
+	<LI>Next message: <A HREF="000995.html">[ydf-devel] r2401 -	YDFramework2.0/trunk/YDFramework2/addons/YDFeedCreator
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#994">[ date ]</a>
+              <a href="thread.html#994">[ thread ]</a>
+              <a href="subject.html#994">[ subject ]</a>
+              <a href="author.html#994">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

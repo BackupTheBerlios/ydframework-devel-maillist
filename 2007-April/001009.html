@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2415 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2415%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200704031317.l33DHCwq031092%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001010.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2415 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2415%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200704031317.l33DHCwq031092%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2415 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Apr  3 15:17:12 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001010.html">[ydf-devel] r2416 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1009">[ date ]</a>
+              <a href="thread.html#1009">[ thread ]</a>
+              <a href="subject.html#1009">[ subject ]</a>
+              <a href="author.html#1009">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-04-03 15:16:48 +0200 (Tue, 03 Apr 2007)
+New Revision: 2415
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php
+Log:
+on radio element
+ * FEATURE: enableLabels() that defines if we want to use LABEL elements in each option label
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php	2007-03-22 00:57:46 UTC (rev 2414)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Radio.php	2007-04-03 13:16:48 UTC (rev 2415)
+@@ -1,162 +1,175 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /**
+-     *  @addtogroup YDForm Core - Form
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    // Includes
+-    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
+-
+-    /**
+-     *	This is the class that define a radio button form element.
+-     *
+-     *  @ingroup YDForm
+-     */
+-    class YDFormElement_Radio extends YDFormElement {
+-
+-        /**
+-         *	This is the class constructor for the YDFormElement_Radio class.
+-         *
+-         *	@param $form		The name of the form to which this element is connected.
+-         *	@param $name		The name of the form element.
+-         *	@param $label		(optional) The label for the form element.
+-         *	@param $attributes	(optional) The attributes for the form element.
+-         *	@param $options		(optional) An associative array with the values and labels for the different radio
+-         *						buttons.
+-         */
+-        function YDFormElement_Radio( $form, $name, $label='', $attributes=array(), $options=array() ) {
+-
+-            // set default separator
+-            $this-&gt;_separator = '';
+-
+-            // parse separator
+-            if ( isset ( $attributes['sep'] ) &amp;&amp; $attributes['sep'] == 'v' ) {
+-                $this-&gt;_separator = '&lt;br /&gt;';
+-                unset( $attributes[ 'sep' ] );
+-            }
+-
+-            // Initialize the parent
+-            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
+-
+-            // Set the type
+-            $this-&gt;_type = 'radio';
+-
+-            // Indicate if filters need to be applied
+-            $this-&gt;_applyFilters = false;
+-
+-        }
+-
+-        /**
+-         *	This function will return the element as HTML.
+-         *
+-         *	@returns	The form element as HTML text.
+-         */
+-        function toHtml() {
+-
+-            // Create the list of attributes
+-            $attribs = array(
+-                'type' =&gt; $this-&gt;_type, 'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name, 'value' =&gt; $this-&gt;_value
+-            );
+-            $attribs = array_merge( $this-&gt;_attributes, $attribs );
+-
+-            // Create the HTML
+-            $out = array();
+-            if ( sizeof( $this-&gt;_options ) &gt; 0 ) {
+-                foreach ( $this-&gt;_options as $key=&gt;$val ) {
+-                    $attribsElement = $attribs;
+-                    $attribsElement['value'] = $key;
+-                    $attribsElement['id'] .= $key;
+-                    if ( $this-&gt;_value == strval( $key ) ) {
+-                        $attribsElement['checked'] = 'checked';
+-                    }
+-                    $out[] = '&lt;input' . YDForm::_convertToHtmlAttrib( $attribsElement ) . ' /&gt; &lt;label for=&quot;' . $attribsElement['id'] . '&quot;&gt;' . $val . '&lt;/label&gt;';
+-
+-                }
+-            } else {
+-                $out[] = '&lt;input' . YDForm::_convertToHtmlAttrib( $attribs ) . ' /&gt; &lt;label for=&quot;' . $attribs['id'] . '&quot;&gt;' . $this-&gt;_value . '&lt;/label&gt;';
+-            }
+-
+-            // Return the HTML
+-            return implode( $this-&gt;_separator, $out );
+-
+-        }
+-
+-
+-        /**
+-         *	This function returns the default javascript event of this element
+-         */
+-        function getJSEvent(){ 
+-
+-            return 'onchange';
+-        }
+-
+-
+-        /**
+-         *	This function gets an element value using javascript
+-         *
+-         *	@param $options		(optional) The options for the elment.
+-         */
+-        function getJS( $options = null ){ 
+-
+-            // add custom js function
+-            $js  = &quot;\n\t&quot; . 'var __ydftmp = document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;);';
+-            $js .= &quot;\n\t&quot; . 'for (counter = 0; counter &lt; __ydftmp.length; counter++)';
+-            $js .= &quot;\n\t&quot; . '   if (__ydftmp[counter].checked) return __ydftmp[counter].value;';
+-            $js .= &quot;\n\t&quot; . 'return false;' . &quot;\n&quot;;
+-
+-            // return function code
+-            return $jscode;
+-        }
+-
+-
+-        /**
+-         *	This function sets an element value using javascript
+-         *
+-         *	@param $result		The result value
+-         *	@param $attribute	(optional) Element attribute
+-         *	@param $options		(optional) The options for the elment.
+-         */
+-        function setJS( $result, $attribute = null, $options = null ){ 
+-
+-            // if atribute is not defined we must create the default one
+-            if ( is_null( $attribute ) ) $attribute = 'value';
+-
+-            // check and convert $result
+-            $result = htmlspecialchars( $result );
+-
+-            // we must cycle all radio instances of this radio element
+-            return '__ydftmp = document.getElementById(&quot;' . $this-&gt;getAttribute( 'id' ) . '&quot;);
+-                    for (counter = 0; counter &lt; __ydftmp.length; counter++)
+-                        if (__ydftmp[counter].value == &quot;' . $result . '&quot;) __ydftmp[counter].checked = true;
+-                        else __ydftmp[counter].checked = false;';
+-        }
+-
+-    }
+-
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
++
++    /**
++     *	This is the class that define a radio button form element.
++     *
++     *  @ingroup YDForm
++     */
++    class YDFormElement_Radio extends YDFormElement {
++
++        /**
++         *	This is the class constructor for the YDFormElement_Radio class.
++         *
++         *	@param $form		The name of the form to which this element is connected.
++         *	@param $name		The name of the form element.
++         *	@param $label		(optional) The label for the form element.
++         *	@param $attributes	(optional) The attributes for the form element.
++         *	@param $options		(optional) An associative array with the values and labels for the different radio
++         *						buttons.
++         */
++        function YDFormElement_Radio( $form, $name, $label='', $attributes=array(), $options=array() ) {
++
++            // set default separator
++            $this-&gt;_separator = '';
++
++            // parse separator
++            if ( isset ( $attributes['sep'] ) &amp;&amp; $attributes['sep'] == 'v' ) {
++                $this-&gt;_separator = '&lt;br /&gt;';
++                unset( $attributes[ 'sep' ] );
++            }
++
++            // Initialize the parent
++            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
++
++            // Set the type
++            $this-&gt;_type = 'radio';
++
++            // Indicate if filters need to be applied
++            $this-&gt;_applyFilters = false;
++
++            // set if we want to use LABEL for each option label or just a just a simple string
++            $this-&gt;_enableLabels = true;
++        }
++
++
++        /**
++         *	This function sets if we want default LABEL element for each option.
++         */
++        function enableLabels( $flag ){
++
++            $this-&gt;_enableLabels = $flag;
++        }
++
++
++        /**
++         *	This function will return the element as HTML.
++         *
++         *	@returns	The form element as HTML text.
++         */
++        function toHtml() {
++
++            // Create the list of attributes
++            $attribs = array(
++                'type' =&gt; $this-&gt;_type, 'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name, 'value' =&gt; $this-&gt;_value
++            );
++            $attribs = array_merge( $this-&gt;_attributes, $attribs );
++
++            // Create the HTML
++            $out = array();
++            if ( sizeof( $this-&gt;_options ) &gt; 0 ) {
++                foreach ( $this-&gt;_options as $key=&gt;$val ) {
++                    $attribsElement = $attribs;
++                    $attribsElement['value'] = $key;
++                    $attribsElement['id'] .= $key;
++                    if ( $this-&gt;_value == strval( $key ) ) {
++                        $attribsElement['checked'] = 'checked';
++                    }
++                    $label = $this-&gt;_enableLabels ? '&lt;label for=&quot;' . $attribsElement['id'] . '&quot;&gt;' . $val . '&lt;/label&gt;' : $val;
++                    $out[] = '&lt;input' . YDForm::_convertToHtmlAttrib( $attribsElement ) . ' /&gt; ' . $label . ' ';
++                }
++            } else {
++                $label = $this-&gt;_enableLabels ? '&lt;label for=&quot;' . $attribs['id'] . '&quot;&gt;' . $this-&gt;_value . '&lt;/label&gt;' : $this-&gt;_value;
++                $out[] = '&lt;input' . YDForm::_convertToHtmlAttrib( $attribs ) . ' /&gt; ' . $label . ' ';
++            }
++
++            // Return the HTML
++            return implode( $this-&gt;_separator, $out );
++
++        }
++
++
++        /**
++         *	This function returns the default javascript event of this element
++         */
++        function getJSEvent(){ 
++
++            return 'onchange';
++        }
++
++
++        /**
++         *	This function gets an element value using javascript
++         *
++         *	@param $options		(optional) The options for the elment.
++         */
++        function getJS( $options = null ){ 
++
++            // add custom js function
++            $js  = &quot;\n\t&quot; . 'var __ydftmp = document.getElementById(&quot;' . $this-&gt;getAttribute('id') . '&quot;);';
++            $js .= &quot;\n\t&quot; . 'for (counter = 0; counter &lt; __ydftmp.length; counter++)';
++            $js .= &quot;\n\t&quot; . '   if (__ydftmp[counter].checked) return __ydftmp[counter].value;';
++            $js .= &quot;\n\t&quot; . 'return false;' . &quot;\n&quot;;
++
++            // return function code
++            return $jscode;
++        }
++
++
++        /**
++         *	This function sets an element value using javascript
++         *
++         *	@param $result		The result value
++         *	@param $attribute	(optional) Element attribute
++         *	@param $options		(optional) The options for the elment.
++         */
++        function setJS( $result, $attribute = null, $options = null ){ 
++
++            // if atribute is not defined we must create the default one
++            if ( is_null( $attribute ) ) $attribute = 'value';
++
++            // check and convert $result
++            $result = htmlspecialchars( $result );
++
++            // we must cycle all radio instances of this radio element
++            return '__ydftmp = document.getElementById(&quot;' . $this-&gt;getAttribute( 'id' ) . '&quot;);
++                    for (counter = 0; counter &lt; __ydftmp.length; counter++)
++                        if (__ydftmp[counter].value == &quot;' . $result . '&quot;) __ydftmp[counter].checked = true;
++                        else __ydftmp[counter].checked = false;';
++        }
++
++    }
++
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001010.html">[ydf-devel] r2416 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1009">[ date ]</a>
+              <a href="thread.html#1009">[ thread ]</a>
+              <a href="subject.html#1009">[ subject ]</a>
+              <a href="author.html#1009">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

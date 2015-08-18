@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1842 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1842%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump&In-Reply-To=%3C200604061120.k36BKX3L003395%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000273.html">
+   <LINK REL="Next"  HREF="000275.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1842 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1842%20-%20YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump&In-Reply-To=%3C200604061120.k36BKX3L003395%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1842 - YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump">ximian at berlios.de
+       </A><BR>
+    <I>Thu Apr  6 13:20:33 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000273.html">[ydf-devel] r1841 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+        <LI>Next message: <A HREF="000275.html">[ydf-devel] r1843 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#274">[ date ]</a>
+              <a href="thread.html#274">[ thread ]</a>
+              <a href="subject.html#274">[ subject ]</a>
+              <a href="author.html#274">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-04-06 13:20:08 +0200 (Thu, 06 Apr 2006)
+New Revision: 1842
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+Log:
+new method YDMysqlDump::saveValid that checks if file can be written
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-04-06 08:24:45 UTC (rev 1841)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDMysqlDump/YDMysqlDump.php	2006-04-06 11:20:08 UTC (rev 1842)
+@@ -26,6 +26,10 @@
+         die( 'Yellow Duck Framework is not loaded.' );
+     }
+ 
++	// include filesystem functions
++	include_once( 'YDFileSystem.php' );
++
++
+     /**
+      *  This class defines a mySql backup/restore system object.
+      */
+@@ -277,6 +281,23 @@
+         function getFilePath() {
+             return $this-&gt;filepath;
+         }
++
++        /**
++         *  This function checks if the backup file can be written on filesystem
++         *
++         *  @returns            1 if file saving can be ok. -1 if not writable, -2 if not free space
++         */
++        function saveValid() {
++
++			// ckeck if directory is writable on OSs different that windows
++			if ( strtoupper( substr( PHP_OS, 0, 3 ) ) != 'WIN' &amp;&amp; !is_writable( $this-&gt;filepath ) ) return -1;
++
++			// check if has at least 2MB :)
++			if ( floatval( disk_free_space( dirname( $this-&gt;filepath ) ) ) - (2.0 * 1048576) &lt; 0 ) return -2;
++
++			// filepath can have the db backup file
++			return 1;
++        }
+       
+         /**
+          *  This function returns the string or the file with the database dump
+@@ -325,9 +346,6 @@
+                 return $content;
+             }
+             
+-            // include filesystem functions
+-            include_once( dirname( __FILE__ ) . '/../../YDClasses/YDFileSystem.php' );
+-
+             // create file object
+             $file = new YDFSFile( $this-&gt;filepath, true );
+             
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000273.html">[ydf-devel] r1841 - YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+	<LI>Next message: <A HREF="000275.html">[ydf-devel] r1843 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#274">[ date ]</a>
+              <a href="thread.html#274">[ thread ]</a>
+              <a href="subject.html#274">[ subject ]</a>
+              <a href="author.html#274">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2024 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2024%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608161535.k7GFZ0lD005492%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000530.html">
+   <LINK REL="Next"  HREF="000532.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2024 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2024%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent&In-Reply-To=%3C200608161535.k7GFZ0lD005492%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2024 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent">ximian at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 16 17:35:00 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000530.html">[ydf-devel] r2023 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+        <LI>Next message: <A HREF="000532.html">[ydf-devel] r2025 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#531">[ date ]</a>
+              <a href="thread.html#531">[ thread ]</a>
+              <a href="subject.html#531">[ subject ]</a>
+              <a href="author.html#531">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-08-16 17:34:48 +0200 (Wed, 16 Aug 2006)
+New Revision: 2024
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+Log:
+removed permissions method in YDCMUsers as we should use YDCMPermissions module for that
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-16 15:17:45 UTC (rev 2023)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-08-16 15:34:48 UTC (rev 2024)
+@@ -83,7 +83,7 @@
+ 			$rel-&gt;setLocalKey( 'language_id' );
+             $rel-&gt;setForeignKey( 'language_id' );
+ 
+-			// TODO: tree position is required
++			// create tree object
+ 			$this-&gt;tree = new YDDatabaseTree( 'default', 'YDCMUsers', 'user_id', 'parent_id', 'parent_id' );
+ 
+ 			// add tree fields
+@@ -101,19 +101,6 @@
+ 
+ 
+         /**
+-         *  This function returns all user permissions
+-         *
+-         *  @param  $user_id   User id to get permissions
+-         *
+-         *  @retuns  Associative array of permissions
+-         */
+-		function getPermissions( $user_id ){
+-		
+-			return $this-&gt;perm-&gt;getPermissions( $user_id );
+-		}
+-
+-
+-        /**
+          *  This function returns the id of the current user
+          */
+ 		function currentID(){
+@@ -207,7 +194,7 @@
+          *
+          *  @returns    true if updated, array with form errors otherwise
+          */
+-		function addUserForm( $parent_id, $formvalues = array() ){
++		function addUserForm( $parent_id, $formvalues = null ){
+ 
+ 			// check form validation
+ 			if ( !$this-&gt;form-&gt;validate( $formvalues ) )
+@@ -364,7 +351,7 @@
+ 			// add login details
+ 			if ( $logindetails ){
+ 				$this-&gt;form-&gt;addElement( 'select',         'state',       t('login_state'), array(), array(1 =&gt; t('yes'), 0 =&gt; t('no'), 2 =&gt; t('schedule')) );
+-				$this-&gt;form-&gt;addElement( 'dateselect', 'login_start', t('login_start') );
++				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_start', t('login_start') );
+ 				$this-&gt;form-&gt;addElement( 'datetimeselect', 'login_end',   t('login_end'));
+ 			}else{
+ 				$this-&gt;form-&gt;addElement( 'span',           'state',       t('login_state') );
+@@ -429,11 +416,11 @@
+ 			$node = $this-&gt;getUser( $user_id );
+ 
+ 			// get user permissions
+-			$permissions = $this-&gt;getPermissions( $user_id );
++			$permissions = $this-&gt;perm-&gt;getPermissions( $user_id );
+ 
+ 			// check if we are editing or creating
+-			if ( $useParentPermissions ) $permissions_avaiable = $this-&gt;getPermissions( $node['parent_id'] );
+-			else                         $permissions_avaiable = $this-&gt;getPermissions( $user_id );
++			if ( $useParentPermissions ) $permissions_avaiable = $this-&gt;perm-&gt;getPermissions( $node['parent_id'] );
++			else                         $permissions_avaiable = $this-&gt;perm-&gt;getPermissions( $user_id );
+ 
+ 			// cycle parent permissions to create form checkboxgroup of this user
+ 			foreach( $permissions_avaiable as $obj =&gt; $perm ){
+@@ -638,7 +625,7 @@
+ 
+ 			// add permissions
+ 			$values = $this-&gt;getValues();
+-			$values[ 'permissions' ] = $this-&gt;getPermissions( intval( $user_id ) );
++			$values[ 'permissions' ] = $this-&gt;perm-&gt;getPermissions( intval( $user_id ) );
+ 			
+ 			return $values;
+ 		}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000530.html">[ydf-devel] r2023 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+	<LI>Next message: <A HREF="000532.html">[ydf-devel] r2025 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#531">[ date ]</a>
+              <a href="thread.html#531">[ thread ]</a>
+              <a href="subject.html#531">[ subject ]</a>
+              <a href="author.html#531">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

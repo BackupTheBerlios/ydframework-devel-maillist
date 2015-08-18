@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2271 - in YDFramework2.0/trunk:	YDFramework2/addons/YDAkismet examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2271%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDAkismet%20examples/weblog/manage&In-Reply-To=%3C200612191443.kBJEheAi006208%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000862.html">
+   <LINK REL="Next"  HREF="000864.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2271 - in YDFramework2.0/trunk:	YDFramework2/addons/YDAkismet examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2271%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDAkismet%20examples/weblog/manage&In-Reply-To=%3C200612191443.kBJEheAi006208%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2271 - in YDFramework2.0/trunk:	YDFramework2/addons/YDAkismet examples/weblog/manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Dec 19 15:43:40 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000862.html">[ydf-devel] Encoding issues
+</A></li>
+        <LI>Next message: <A HREF="000864.html">[ydf-devel] r2272 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#863">[ date ]</a>
+              <a href="thread.html#863">[ thread ]</a>
+              <a href="subject.html#863">[ subject ]</a>
+              <a href="author.html#863">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-12-19 15:43:40 +0100 (Tue, 19 Dec 2006)
+New Revision: 2271
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.php
+   YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+Log:
+Added test option to verify if the connection with the Akismet service is working or not.
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2006-12-18 13:53:23 UTC (rev 2270)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDAkismet/YDAkismet.php	2006-12-19 14:43:40 UTC (rev 2271)
+@@ -37,7 +37,7 @@
+         /**
+          *	This is the class constructor for the YDAkismet module.
+          */
+-        function YDAkismet( $blog_url, $api_key ) {
++        function YDAkismet( $blog_url, $api_key, $debug=false ) {
+ 
+             // Initialize the parent class
+             $this-&gt;YDAddOnModule();
+@@ -51,6 +51,8 @@
+             // Set the variables
+             $this-&gt;blog_url = $blog_url;
+             $this-&gt;api_key  = $api_key;
++            $this-&gt;debug    = $debug;
++            $this-&gt;error    = null;
+ 
+         }
+ 
+@@ -187,10 +189,20 @@
+             $client = new YDHttpClient( $host, 80 );
+             $client-&gt;setDebug( false );
+             $client-&gt;user_agent = YD_FW_NAME . '/' . YD_FW_VERSION . ' | ' . $this-&gt;getClassName() . '/' . $this-&gt;_version;
++            if ( $this-&gt;debug ) {
++                echo( 'HTTP request: ' . $host . $url . '&lt;br/&gt;' );
++            }
+             $result = @ $client-&gt;post( $url, $data );
+             if ( $result == false ) {
++                $this-&gt;error = $client-&gt;getError();
++                if ( $this-&gt;debug ) {
++                    echo( 'HTTP request failed.&lt;br/&gt;' );
++                }
+                 return null;
+             } else {
++                if ( $this-&gt;debug ) {
++                    echo( 'HTTP request OK.&lt;br/&gt;' );
++                }
+                 return @ $client-&gt;getContent();
+             }
+         }
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-12-18 13:53:23 UTC (rev 2270)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.php	2006-12-19 14:43:40 UTC (rev 2271)
+@@ -151,6 +151,46 @@
+ 
+         }
+ 
++        // Action to test Akismet
++        function actionTestAkismet() {
++            echo( '&lt;html&gt;' );
++            echo( '&lt;head&gt;' );
++            echo( '    &lt;title&gt;Testing Akismet&lt;/title&gt;' );
++            echo( '    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;manage.css&quot; /&gt;' );
++            echo( '&lt;/head&gt;' );
++            echo( '&lt;body&gt;' );
++            echo( '    &lt;p class=&quot;title&quot;&gt;Testing Akismet service...&lt;/p&gt;' );
++            if ( is_null( $this-&gt;weblog-&gt;akismet ) ) {
++                echo( '&nbsp;&lt;br/&gt;&lt;span style=&quot;font-weight:bold;color:red;&quot;&gt;ERROR: No akismet key is specified.&lt;/span&gt;' );
++            } else {
++                echo( 'Akismet key used for this request: ' . YDConfig::get( 'akismet_key', '' ) . '&lt;br/&gt;' );
++                echo( 'Sending test request to Akismet...&lt;br/&gt;' );
++                $this-&gt;weblog-&gt;akismet-&gt;debug = true;
++                $result = $this-&gt;weblog-&gt;akismet-&gt;checkComment(
++                    'Fuck%XXKEVDJX!!<A HREF="http://porn.z0rder.com/anal-porn.htm">http://porn.z0rder.com/anal-porn.htm</A> [url= <A HREF="http://porn.z0rder.com/anal-porn.htm">http://porn.z0rder.com/anal-porn.htm</A> ]<A HREF="http://porn.z0rder.com/anal-porn.htm[/url">http://porn.z0rder.com/anal-porn.htm[/url</A>]',
++                    'PCNFZUII',
++                    '',
++                    '',
++                    '80.77.80.187',
++                    ''
++                );
++                if ( is_null( $this-&gt;weblog-&gt;akismet-&gt;error ) ) {
++                    if ( $result == NULL || $result === false ) {
++                        echo( 'Test request was marked as not spam.&lt;br/&gt;' );
++                    } else {
++                        echo( 'Test request was marked as spam.&lt;br/&gt;' );
++                    }
++                    echo( '&nbsp;&lt;br/&gt;&lt;span style=&quot;font-weight:bold;color:green;&quot;&gt;Akismet connectivity is working properly&lt;/span&gt;' );
++                } else {
++                    echo( '&nbsp;&lt;br/&gt;&lt;span style=&quot;font-weight:bold;color:red;&quot;&gt;ERROR: ' . $this-&gt;weblog-&gt;akismet-&gt;error . '&lt;/span&gt;' );
++                }
++            }
++            echo( '&nbsp;&lt;br/&gt;&nbsp;&lt;br/&gt;' );
++            echo( '[ &lt;a href=&quot;&quot; onClick=&quot;window.close();&quot;&gt;close&lt;/a&gt; ]' );
++            echo( '&lt;/body&gt;' );
++            echo( '&lt;/html&gt;' );
++        }
++
+         // Function to get the configuration
+         function getConfig() {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/config.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-12-18 13:53:23 UTC (rev 2270)
++++ YDFramework2.0/trunk/examples/weblog/manage/config.tpl	2006-12-19 14:43:40 UTC (rev 2271)
+@@ -142,7 +142,12 @@
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_akismet_key&quot;}&lt;/td&gt;
+-            &lt;td class=&quot;adminRowL&quot;&gt;{$config.akismet_key|default:'-'}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot;&gt;
++                {$config.akismet_key|default:'-'}
++                {if $config.akismet_key}
++                    [ &lt;a href=&quot;&quot; onClick=&quot;window.open('{$YD_SELF_SCRIPT}?do=TestAkismet','TestAkismet','width=640,height=360,scrollbars=yes,toolbar=no,location=no');return false;&quot;&gt;test&lt;/a&gt; ]
++                {/if}
++            &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr onMouseOver=&quot;YDRowMouseOver(this);&quot; onMouseOut=&quot;YDRowMouseOut(this);&quot;&gt;
+             &lt;td class=&quot;adminRowL&quot;&gt;{t w=&quot;cfg_comment_interval&quot;}&lt;/td&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000862.html">[ydf-devel] Encoding issues
+</A></li>
+	<LI>Next message: <A HREF="000864.html">[ydf-devel] r2272 -	YDFramework2.0/trunk/YDFramework2/addons/YDCaptcha
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#863">[ date ]</a>
+              <a href="thread.html#863">[ thread ]</a>
+              <a href="subject.html#863">[ subject ]</a>
+              <a href="author.html#863">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

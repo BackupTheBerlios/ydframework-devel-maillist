@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2348 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2348%20-%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext&In-Reply-To=%3C200701231641.l0NGfnbT023918%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000940.html">
+   <LINK REL="Next"  HREF="000942.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2348 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2348%20-%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext&In-Reply-To=%3C200701231641.l0NGfnbT023918%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2348 -	YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext">ximian at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 17:41:49 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000940.html">[ydf-devel] r2347 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000942.html">[ydf-devel] r2349 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#941">[ date ]</a>
+              <a href="thread.html#941">[ thread ]</a>
+              <a href="subject.html#941">[ subject ]</a>
+              <a href="author.html#941">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-01-23 17:41:38 +0100 (Tue, 23 Jan 2007)
+New Revision: 2348
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php
+Log:
+- FIXED: gettext compatibility shouldn't warn when translation don't exist.. just return the value as it's.
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php	2007-01-23 16:38:20 UTC (rev 2347)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/upgrade/ext/gettext.php	2007-01-23 16:41:38 UTC (rev 2348)
+@@ -43,7 +43,7 @@
+       }
+ 
+       #-- look up string
+-      if (($trans = $_GETTEXT[$domain][$msg])
++      if (($trans = @$_GETTEXT[$domain][$msg])
+       or ($pli) and ($trans = $_GETTEXT[$domain][$msg2]))
+       {
+          // handle plural entries
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000940.html">[ydf-devel] r2347 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000942.html">[ydf-devel] r2349 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#941">[ date ]</a>
+              <a href="thread.html#941">[ thread ]</a>
+              <a href="subject.html#941">[ subject ]</a>
+              <a href="author.html#941">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

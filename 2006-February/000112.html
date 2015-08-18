@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1703 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1703%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602201256.k1KCuG6h004706%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000111.html">
+   <LINK REL="Next"  HREF="000113.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1703 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1703%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602201256.k1KCuG6h004706%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1703 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 20 13:56:16 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000111.html">[ydf-devel] r1702 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000113.html">[ydf-devel] r1704 - in YDFramework2.0/trunk/examples/weblog: include manage skins/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#112">[ date ]</a>
+              <a href="thread.html#112">[ thread ]</a>
+              <a href="subject.html#112">[ subject ]</a>
+              <a href="author.html#112">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-20 13:56:00 +0100 (Mon, 20 Feb 2006)
+New Revision: 1703
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+Log:
+The admin cookies are now set for the proper path instead of for the complete domain.
+
+This allows hosting of different instances of YDWeblog on the same domain.
+
+Bug #6499
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-02-20 12:50:10 UTC (rev 1702)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-02-20 12:56:00 UTC (rev 1703)
+@@ -368,9 +368,16 @@
+                 // Get the form values
+                 $values = $form-&gt;getValues();
+ 
++                // Get the path for the cookies
++                if ( YDStringUtil::endsWith( dirname( YD_SELF_SCRIPT ), '/manage' ) ) {
++                    $cookiePath = dirname( dirname( YD_SELF_SCRIPT ) ) . '/';
++                } else {
++                    $cookiePath = dirname( YD_SELF_SCRIPT ) . '/';
++                }
++
+                 // Set the cookies
+-                setcookie( 'YD_USER_NAME', $values['loginName'], time() + 31536000, '/' );
+-                setcookie( 'YD_USER_PASS', md5( $values['loginPass'] ), time() + 31536000, '/' );
++                setcookie( 'YD_USER_NAME', $values['loginName'], time() + 31536000, $cookiePath );
++                setcookie( 'YD_USER_PASS', md5( $values['loginPass'] ), time() + 31536000, $cookiePath );
+ 
+                 // Set the username
+                 $this-&gt;username = $values['loginName'];
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000111.html">[ydf-devel] r1702 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000113.html">[ydf-devel] r1704 - in YDFramework2.0/trunk/examples/weblog: include manage skins/default
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#112">[ date ]</a>
+              <a href="thread.html#112">[ thread ]</a>
+              <a href="subject.html#112">[ subject ]</a>
+              <a href="author.html#112">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

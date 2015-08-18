@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2446 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2446%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200706241739.l5OHdmqE028666%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001039.html">
+   <LINK REL="Next"  HREF="001041.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2446 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2446%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormElements&In-Reply-To=%3C200706241739.l5OHdmqE028666%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2446 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sun Jun 24 19:39:48 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001039.html">[ydf-devel] r2445 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="001041.html">[ydf-devel] r2447 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1040">[ date ]</a>
+              <a href="thread.html#1040">[ thread ]</a>
+              <a href="subject.html#1040">[ subject ]</a>
+              <a href="author.html#1040">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-06-24 19:39:34 +0200 (Sun, 24 Jun 2007)
+New Revision: 2446
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Stateselect.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+Log:
+- added new form element: stateselect (a select box with predefined state values)
+- added new rule: state ( that checks if value is a valid state code )
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-06-24 17:35:25 UTC (rev 2445)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-06-24 17:39:34 UTC (rev 2446)
+@@ -145,6 +145,7 @@
+             $this-&gt;registerElement( 'hr', 'YDFormElement_HR', 'YDFormElement_HR.php' );
+             $this-&gt;registerElement( 'selectnumeric', 'YDFormElement_SelectNumeric', 'YDFormElement_SelectNumeric.php' );
+             $this-&gt;registerElement( 'countryselect', 'YDFormElement_Countryselect', 'YDFormElement_Countryselect.php' );
++            $this-&gt;registerElement( 'stateselect', 'YDFormElement_Stateselect', 'YDFormElement_Stateselect.php' );
+ 
+             // Add the rules
+             $this-&gt;registerRule( 'value', array( 'YDValidateRules', 'value' ), 'YDValidateRules.php' );
+@@ -187,6 +188,7 @@
+             $this-&gt;registerRule( 'captcha', array( 'YDValidateRules', 'captcha' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'timezone', array( 'YDValidateRules', 'timezone' ), 'YDValidateRules.php' );
+             $this-&gt;registerRule( 'country', array( 'YDValidateRules', 'country' ), 'YDValidateRules.php' );
++            $this-&gt;registerRule( 'state', array( 'YDValidateRules', 'state' ), 'YDValidateRules.php' );
+ 
+             // Add the filters
+             $this-&gt;registerFilter( 'trim', 'trim' );
+@@ -1518,6 +1520,24 @@
+         function getType() {
+             return $this-&gt;_type;
+         }
++
++
++        /**
++         *      Checks the type of the form element.
++         *
++         *      @param  $type	Element type or array of types to check
++         *      @returns        Boolean true or false.
++         */
++        function isType( $type ) {
++			
++			// if element is a list of types check array
++			if ( is_array( $type ) ){
++				return in_array( $this-&gt;_type, $type );
++			}
++			
++            return ( $type == $this-&gt;_type );
++        }
++
+         
+         /**
+          *      Gets a specific attribute
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Stateselect.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Stateselect.php	2007-06-24 17:35:25 UTC (rev 2445)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Stateselect.php	2007-06-24 17:39:34 UTC (rev 2446)
+@@ -0,0 +1,64 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.1
++        (c) Copyright 2002-2007 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    /**
++     *  @addtogroup YDForm Core - Form
++     */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDFormElements/YDFormElement_Select.php');
++    include_once( YD_DIR_HOME_CLS . '/YDList.php');
++
++    /**
++     *	This is the class that define a state select box.
++     *
++     *  @ingroup YDForm
++     */
++    class YDFormElement_Stateselect extends YDFormElement_Select {
++
++        /**
++         *	This is the class constructor for the YDFormElement_Stateselect class.
++         *
++         *	@param $form		The name of the form to which this element is connected.
++         *	@param $name		The name of the form element.
++         *	@param $label		The label for the form element.
++         *	@param $attributes	The attributes for the form element.
++         *	@param $options		Country code. See YDList::states for available codes
++         */
++        function YDFormElement_Stateselect( $form, $name, $label, $attributes, $options ) {
++
++            // initialize parent
++            $this-&gt;YDFormElement_Select( $form, $name, $label, $attributes, YDList::states( $options ) );
++
++            // set type
++            $this-&gt;_type = 'stateselect';
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-06-24 17:35:25 UTC (rev 2445)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDValidateRules.php	2007-06-24 17:39:34 UTC (rev 2446)
+@@ -781,6 +781,20 @@
+         }
+ 
+ 
++        /**
++         *	This function returns true if the variable matches a valid countrye state.
++         *
++         *	@param $val		The value to test.
++         *	@param $opts	Country code to search.
++         */
++        function state( $val, $opts ) {
++
++            YDInclude( 'YDList.php' );
++
++            return in_array( $val, YDList::states( $opts, 'keys' ) );
++        }
++
++
+     }
+ 
+ ?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001039.html">[ydf-devel] r2445 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="001041.html">[ydf-devel] r2447 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1040">[ date ]</a>
+              <a href="thread.html#1040">[ thread ]</a>
+              <a href="subject.html#1040">[ subject ]</a>
+              <a href="author.html#1040">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1714 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1714%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602221230.k1MCUR8P001216%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000126.html">
+   <LINK REL="Next"  HREF="000128.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1714 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1714%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200602221230.k1MCUR8P001216%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1714 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Feb 22 13:30:27 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000126.html">[ydf-devel] r1713 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000128.html">[ydf-devel] r1715 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#127">[ date ]</a>
+              <a href="thread.html#127">[ thread ]</a>
+              <a href="subject.html#127">[ subject ]</a>
+              <a href="author.html#127">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-22 13:30:21 +0100 (Wed, 22 Feb 2006)
+New Revision: 1714
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+Log:
+The YDWeblogAPI class now uses the YDDatabaseMetaData class for checking fields and indexes.
+
+Feature Request #1840
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-22 12:29:19 UTC (rev 1713)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-02-22 12:30:21 UTC (rev 1714)
+@@ -82,53 +82,34 @@
+                 YDConfig::get( 'db_pass', '' ), YDConfig::get( 'db_host', 'localhost' )
+             );
+ 
++            // Get a link to the database metadata
++            $dbmeta = new YDDatabaseMetaData( $this-&gt;db );
++
+             // Add any missing items field
+-            $fields = $this-&gt;db-&gt;getValuesByName( 'show fields from #_items', 'field' );
+-            if ( ! in_array( 'body_more', $fields ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD body_more LONGTEXT AFTER body' );
+-            }
+-            if ( ! in_array( 'allow_comments', $fields ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD allow_comments TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER num_comments' );
+-            }
+-            if ( ! in_array( 'auto_close', $fields ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD auto_close TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER allow_comments' );
+-            }
+-            if ( ! in_array( 'is_draft', $fields ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER auto_close' );
+-            }
++            $fields = $dbmeta-&gt;getFields( '#_items' );
++            $this-&gt;executeIfMissing( 'body_more', $fields, 'ALTER TABLE #_items ADD body_more LONGTEXT AFTER body' );
++            $this-&gt;executeIfMissing( 'allow_comments', $fields, 'ALTER TABLE #_items ADD allow_comments TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER num_comments' );
++            $this-&gt;executeIfMissing( 'auto_close', $fields, 'ALTER TABLE #_items ADD auto_close TINYINT(1) DEFAULT &quot;1&quot; NOT NULL AFTER allow_comments' );
++            $this-&gt;executeIfMissing( 'is_draft', $fields, 'ALTER TABLE #_items ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER auto_close' );
+ 
+             // Add any missing pages field
+-            $fields = $this-&gt;db-&gt;getValuesByName( 'show fields from #_pages', 'field' );
+-            if ( ! in_array( 'is_draft', $fields ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_pages ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER body' );
+-            }
++            $fields = $dbmeta-&gt;getFields( '#_pages' );
++            $this-&gt;executeIfMissing( 'is_draft', $fields, 'ALTER TABLE #_pages ADD is_draft TINYINT(1) DEFAULT &quot;0&quot; NOT NULL AFTER body' );
+ 
+             // Get the list of indexes for the items table
+-            $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_items', 'key_name' );
+-            if ( ! in_array( 'allow_comments', $indexes ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX allow_comments (allow_comments)' );
+-            }
+-            if ( ! in_array( 'auto_close', $indexes ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX auto_close (auto_close)' );
+-            }
+-            if ( ! in_array( 'is_draft', $indexes ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_items ADD INDEX is_draft (is_draft)' );
+-            }
++            $indexes = $dbmeta-&gt;getIndexes( '#_items' );
++            $this-&gt;executeIfMissing( 'allow_comments', $indexes, 'ALTER TABLE #_items ADD INDEX allow_comments (allow_comments)' );
++            $this-&gt;executeIfMissing( 'auto_close', $indexes, 'ALTER TABLE #_items ADD INDEX auto_close (auto_close)' );
++            $this-&gt;executeIfMissing( 'is_draft', $indexes, 'ALTER TABLE #_items ADD INDEX is_draft (is_draft)' );
+ 
+-            // Get the list of indexes for the items table
+-            $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_pages', 'key_name' );
+-            if ( ! in_array( 'is_draft', $indexes ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_pages ADD INDEX is_draft (is_draft)' );
+-            }
++            // Get the list of indexes for the pages table
++            $indexes = $dbmeta-&gt;getIndexes( '#_pages' );
++            $this-&gt;executeIfMissing( 'is_draft', $indexes, 'ALTER TABLE #_pages ADD INDEX is_draft (is_draft)' );
+ 
+-            // Get the list of indexes
+-            $indexes = $this-&gt;db-&gt;getValuesByName( 'show keys from #_users', 'key_name' );
+-            if ( in_array( 'email', $indexes ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_users DROP INDEX email' );
+-            }
+-            if ( ! in_array( 'name', $indexes ) ) {
+-                $this-&gt;db-&gt;executeSql( 'ALTER TABLE #_users ADD UNIQUE name (name)' );
+-            }
++            // Get the list of indexes for the users table
++            $indexes = $dbmeta-&gt;getIndexes( '#_users' );
++            $this-&gt;executeIfPresent( 'email', $indexes, 'ALTER TABLE #_users DROP INDEX email' );
++            $this-&gt;executeIfMissing( 'name',  $indexes, 'ALTER TABLE #_users ADD UNIQUE name (name)' );
+ 
+             // Auto close the old items if needed
+             $auto_close_items = YDConfig::get( 'auto_close_items', '' );
+@@ -145,6 +126,20 @@
+ 
+         }
+ 
++        // Function to execute SQL if the item is missing
++        function executeIfMissing( $needle, $haystack, $sql ) {
++            if ( ! in_array( $needle, $haystack ) ) {
++                $this-&gt;db-&gt;executeSql( $sql );
++            }
++        }
++
++        // Function to execute SQL if the item is not missing
++        function executeIfPresent( $needle, $haystack, $sql ) {
++            if ( in_array( $needle, $haystack ) ) {
++                $this-&gt;db-&gt;executeSql( $sql );
++            }
++        }
++
+         // Function to log a request to the statistics
+         function logRequestToStats( $values ) {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-02-22 12:29:19 UTC (rev 1713)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-02-22 12:30:21 UTC (rev 1714)
+@@ -74,6 +74,7 @@
+     YDInclude( 'YDBBCode.php' );
+     YDInclude( 'YDTemplate.php' );
+     YDInclude( 'YDDatabase.php' );
++    YDInclude( 'YDDatabaseMetaData.php' );
+     YDInclude( 'YDFileSystem.php' );
+     YDInclude( 'YDFormElements/YDFormElement_BBTextArea.php' );
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000126.html">[ydf-devel] r1713 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000128.html">[ydf-devel] r1715 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#127">[ date ]</a>
+              <a href="thread.html#127">[ thread ]</a>
+              <a href="subject.html#127">[ subject ]</a>
+              <a href="author.html#127">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1671 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1671%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602141407.k1EE7BXd009422%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000065.html">
+   <LINK REL="Next"  HREF="000068.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1671 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1671%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200602141407.k1EE7BXd009422%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1671 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 15:07:11 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000065.html">[ydf-devel] r1670 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000068.html">[ydf-devel] r1672 - in YDFramework2.0/trunk/YDFramework2/addons: YDAjax YDBBCode
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#67">[ date ]</a>
+              <a href="thread.html#67">[ thread ]</a>
+              <a href="subject.html#67">[ subject ]</a>
+              <a href="author.html#67">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-14 15:06:58 +0100 (Tue, 14 Feb 2006)
+New Revision: 1671
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+Log:
+When a YDRecordSet object now contains only one page, the pages array will be populated properly.
+
+Bug #6422
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-14 13:21:03 UTC (rev 1670)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-14 14:06:58 UTC (rev 1671)
+@@ -220,7 +220,7 @@
+             $this-&gt;isLastPage = ( $this-&gt;pageNext == false ) ? true : false;
+ 
+             // Add the list of pages as an array
+-            $this-&gt;pages = ( $this-&gt;totalPages &lt;= 1 ) ? array() : range( 1, $this-&gt;totalPages );
++            $this-&gt;pages = ( $this-&gt;totalPages &lt;= 1 ) ? array( 1 ) : range( 1, $this-&gt;totalPages );
+             
+             // Get the subset of the records we need
+             $this-&gt;set = array_slice( $this-&gt;records, $this-&gt;offset, $this-&gt;pagesize );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000065.html">[ydf-devel] r1670 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000068.html">[ydf-devel] r1672 - in YDFramework2.0/trunk/YDFramework2/addons: YDAjax YDBBCode
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#67">[ date ]</a>
+              <a href="thread.html#67">[ thread ]</a>
+              <a href="subject.html#67">[ subject ]</a>
+              <a href="author.html#67">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

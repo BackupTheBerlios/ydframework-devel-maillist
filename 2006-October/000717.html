@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDAjax and drag-drop
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20drag-drop&In-Reply-To=%3C20061017153449.79678.qmail%40web54007.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000716.html">
+   <LINK REL="Next"  HREF="000718.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDAjax and drag-drop</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20drag-drop&In-Reply-To=%3C20061017153449.79678.qmail%40web54007.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] YDAjax and drag-drop">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Tue Oct 17 17:34:48 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000716.html">[ydf-devel] r2182 - in YDFramework2.0/trunk/examples/weblog: .	include
+</A></li>
+        <LI>Next message: <A HREF="000718.html">[ydf-devel] YDAjax and mootools
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#717">[ date ]</a>
+              <a href="thread.html#717">[ thread ]</a>
+              <a href="subject.html#717">[ subject ]</a>
+              <a href="author.html#717">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>    Hi,
+
+I am still working on drag-drop for use with YDAjax. I have startedcleaning it up and have created a new YDLayer class to minimise changesto YDAjax.
+
+I have an example working (not online) that can be used to createdynamic layers in the request or response. This can also be used tocreate dynamic layers containing forms. There is an option to makeindividual layers draggable or modal (i.e. for modal forms). I plan topost a tarball containing an example soon.
+
+For modal forms, the approach is to initiate closing of the form oncethe form has validated in a response. The example will shed some lighton this.
+
+Unfortunately draggable forms don't work in firefox very well (can'tenter text in any of the form fields). I am using the drag-drop effectI mentioned in my original e-mail.
+
+An interesting thing that I just found is a new javascript effectslibrary called mootools by the same author as moo.fx. It has lessdependencies, seems to be more powerful but may not be backwardlycompatible with moo.fx used in YDAjax effects. Here are some links forthe new library: <A HREF="http://mad4milk.net/entry/mootools-releasedand">http://mad4milk.net/entry/mootools-releasedand</A> <A HREF="http://mootools.net/">http://mootools.net/</A> .
+
+There is a good drag drop example here <A HREF="http://snook.ca/archives/javascript/mootools_drag_a/.">http://snook.ca/archives/javascript/mootools_drag_a/.</A> This site has very favourable comments for mootools since it seems tobe a relatively lightweight but powerful approach compared to othereffects libraries.
+
+Regards,
+
+Graeme
+
+maximus meridius wrote:    Hi,
+  
+I found a modified version of moo.fx that includes a drag-drop effecthere:
+  
+  <A HREF="http://clement.lavoillotte.info/devs/moofx/new/#">http://clement.lavoillotte.info/devs/moofx/new/#</A>
+  
+(I can't actually read that site since and couldn't find anyexplanation of the drag-drop that they had created)
+  
+This has an MIT-style license. I have used this to add drag-drop toYDAjax.
+  
+I have attached a tarball containing the following files:
+  
+./examples/ajax/drag.php
+./examples/ajax/drag.tpl
+./YDFramework2/addons/YDAjax/YDAjax.php
+./YDFramework2/addons/YDAjax/js/prototype.lite.js_moo.fx.js_moo.fx.pack.js
+  
+The Javascript file is a revised version of the existing one providedwith YDAjax. I have added moo.fx.drag.js to the end of the file. I havealso used the original uncompressed moo.fx javascript files for thepurpose of aiding debugging (the javascript worked out of the box).
+  
+I have added a method &quot;addDraggables&quot; to the YDAjax class.
+  
+        /**
+         *    This method adds a draggabble element
+         *
+         *    @param $id        The id to assign the draggable
+         *  @param $html    The initial html for the draggable
+         */        
+        function &amp; addDraggable( $id, $html = &quot;&quot;, $class =&quot;draggable&quot;, $parent = &quot;&quot; ) {
+  
+This creates a div element that is draggable with the specified CSS&quot;$id&quot;. &quot;$html&quot; is for the div content. &quot;$parent&quot; is an optional CSS idthat can be used to add a draggable to an existing div container.Draggables created in this form are restricted to the container. Thecontainer can have a pixel-width or percentage-width.
+  
+Draggables can overlap. I am not sure how to modify the CSS orjavascript to prevent overlap. It would be nice if overlap could beoptionally turned off.
+  
+I have setup addDraggable so that it can add a draggable in a requestor in an ajax response.
+  
+I have created an example. A screenshot of the example is attached. The&quot;Add a Popup&quot; button will create a draggable via an ajax response. Theexample works in Firefox, IE, Opera and Safari (although it does notrefresh correctly in safari).
+  
+I would like to add a method to create a draggable form that behaves asa modal dialog (i.e. the form must be closed, cancelled or submitted inorder to continue).
+  
+Enjoy!
+  
+Regards,
+  
+Graeme
+  
+  
+    
+ 
+  
+---------------------------------
+Do you Yahoo!?
+Get on board. You'reinvited to try the new Yahoo! Mail.  
+
+---------------------------------
+_______________________________________________YDFramework-devel mailing <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">listYDFramework-devel at lists.berlios.dehttps</A>://lists.berlios.de/mailman/listinfo/ydframework-devel  
+
+
+ 		
+---------------------------------
+ All-new Yahoo! Mail - Fire up a more powerful email and get things done faster.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061017/511d98ee/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061017/511d98ee/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000716.html">[ydf-devel] r2182 - in YDFramework2.0/trunk/examples/weblog: .	include
+</A></li>
+	<LI>Next message: <A HREF="000718.html">[ydf-devel] YDAjax and mootools
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#717">[ date ]</a>
+              <a href="thread.html#717">[ thread ]</a>
+              <a href="subject.html#717">[ subject ]</a>
+              <a href="author.html#717">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

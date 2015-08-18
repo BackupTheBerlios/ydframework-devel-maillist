@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Callbacks%20in%20YDRequest%20based%20on%20YDDatabaseObject&In-Reply-To=%3C20060823140020.7061.qmail%40web54002.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000547.html">
+   <LINK REL="Next"  HREF="000558.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20Callbacks%20in%20YDRequest%20based%20on%20YDDatabaseObject&In-Reply-To=%3C20060823140020.7061.qmail%40web54002.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Wed Aug 23 16:00:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000547.html">[ydf-devel] r2038 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+        <LI>Next message: <A HREF="000558.html">[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#548">[ date ]</a>
+              <a href="thread.html#548">[ thread ]</a>
+              <a href="subject.html#548">[ subject ]</a>
+              <a href="author.html#548">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>    Hi,
+
+I decided it would be nice to have 'before' and 'after' actioncallbacks in the YDRequest class after seeing the functionality inYDDatabaseObject. The original intention was to provide a way to havecommon processing before and after actions are processed (e.g.automatically set a smarty variable or call $this-&gt;tpl-&gt;display()before or after every action). I then decided to extend it so thatcallbacks could be specified for specific actions. There is potentialfor duplicate processing when the forward method is used and so Idisabled callbacks for this type of processing. See also the commentsbelow.
+
+I have added methods to YDRequest.php and provided example usage inexamples/callbacks.php. The code is attached as a tarball.
+
+The methods have been adapted for YDRequest and there is a modificationto process(). There is a new internal method _processAction.
+
+This is the comment for registerCallback:
+
+       /**
+         *  This function registers an action callback method.
+         *
+         *  'before' and 'after' callbacks can be registered for
+         *  'action' (all actions) or for a specific YDRequest action.
+         *
+         *  By default no YDRequest action callbacks are defined.
+         *
+         *  Callbacks are disabled when an action forwards to another
+         *  action. This is to prevent duplicated processing ofcallbacks.
+         *  &quot;redirectToAction&quot; is a more compatible with callbacks.
+         *
+         *  Processing of callbacks and actions in the context of arequest
+         *  is executed in this order:
+         * 
+         *    1. (optional) before 'action' callbacks - apply to allactions
+         *    2. (optional) before callback for the current action
+         *      3. Current action
+         *    4. (optional) after callback for the current action
+         *    5. (optional) after 'action' callbacks - apply to allactions
+         *
+         *    example 1: will execute my_before_callback() before eachaction
+         *        $this-&gt;registerCallback( 'my_before_callback','action', true );
+         *
+         *    example 2: will execute my_after_callback() after eachaction
+         *        $this-&gt;registerCallback( 'my_after_callback','action', false );
+         *
+         *    example 3: will execute my_deafult_after_callback() afteractionDefault
+         *        $this-&gt;registerCallback('my_deafult_after_callback', 'actionDefault', false );         
+         *
+         *  @param $method  The method name.
+         *  @param $action  The action or array of actions that triggerthe call.
+         *  @param $before  (optional) Execute callback before theaction. Default: false.
+         */
+
+I have changed YDRequest-&gt;process() so that it returns results fromprocessing of actions and any associated callbacks. There is potentialfor adding error/results processing to YDProcess::execute()
+
+Let me know what you think about the changes I made.
+
+Regards,
+
+Graeme
+
+
+
+ 		
+---------------------------------
+Stay in the know. Pulse on the new Yahoo.com.  Check it out. 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060823/0e253b2e/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060823/0e253b2e/attachment.html</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: callbacks.tar.gz
+Type: application/gzip
+Size: 10683 bytes
+Desc: 3767147240-callbacks.tar.gz
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060823/0e253b2e/attachment.bin">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060823/0e253b2e/attachment.bin</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000547.html">[ydf-devel] r2038 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+	<LI>Next message: <A HREF="000558.html">[ydf-devel] Callbacks in YDRequest based on YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#548">[ date ]</a>
+              <a href="thread.html#548">[ thread ]</a>
+              <a href="subject.html#548">[ subject ]</a>
+              <a href="author.html#548">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2007 - in YDFramework2.0/trunk/examples/weblog: .	include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2007%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include&In-Reply-To=%3C200608140627.k7E6RLx6023074%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000513.html">
+   <LINK REL="Next"  HREF="000515.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2007 - in YDFramework2.0/trunk/examples/weblog: .	include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2007%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include&In-Reply-To=%3C200608140627.k7E6RLx6023074%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2007 - in YDFramework2.0/trunk/examples/weblog: .	include">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 14 08:27:21 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000513.html">[ydf-devel] r2006 - YDFramework2.0/trunk/examples
+</A></li>
+        <LI>Next message: <A HREF="000515.html">[ydf-devel] r2008 - in YDFramework2.0/trunk/examples/weblog: .	include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#514">[ date ]</a>
+              <a href="thread.html#514">[ thread ]</a>
+              <a href="subject.html#514">[ subject ]</a>
+              <a href="author.html#514">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-14 08:27:17 +0200 (Mon, 14 Aug 2006)
+New Revision: 2007
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/item_gallery.php
+Log:
+Made some performance improvements by moving the exif parsing part out of the weblog API. On yellowduck.be, this was taking 10 seconds to show admin/items. Now, it only takes 1/2 second.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-14 06:06:47 UTC (rev 2006)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-14 06:27:17 UTC (rev 2007)
+@@ -267,24 +267,6 @@
+                     $image-&gt;relative_path_s_obj = new YDFSImage( $dir_uploads-&gt;getAbsolutePath() . '/' . $image-&gt;relative_path_s );
+                     $image-&gt;relative_path_m_obj = new YDFSImage( $dir_uploads-&gt;getAbsolutePath() . '/' . $image-&gt;relative_path_m );
+ 
+-                    // Get the EXIF info for the image
+-                    $result = read_exif_data_raw( $image-&gt;getAbsolutePath(), false );
+-                    $image-&gt;exif = array();
+-                    if ( isset( $result['IFD0'] ) ) {
+-                        $image-&gt;exif = array_merge( $image-&gt;exif, $result['IFD0'] );
+-                    }
+-                    if ( isset( $result['SubIFD'] ) ) {
+-                        $image-&gt;exif = array_merge( $image-&gt;exif, $result['SubIFD'] );
+-                    }
+-                    if ( $image-&gt;exif ) {
+-                        @ $image-&gt;exif['full'] = $image-&gt;exif['Model'] . ' ' . str_replace( ' sec', 's', $image-&gt;exif['ExposureTime'] )
+-                                             . ' ' . str_replace( ' ', '/', $image-&gt;exif['ApertureValue'] ) . ' ' .  t('at')
+-                                             . ' ' . str_replace( ' ', '', $image-&gt;exif['FocalLength'] ) . ' ISO'
+-                                             . $image-&gt;exif['ISOSpeedRatings'];
+-                    } else {
+-                        $image-&gt;exif = null;
+-                    }
+-
+                     // Update the original image
+                     $images[$key] = $image;
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/item_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-08-14 06:06:47 UTC (rev 2006)
++++ YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-08-14 06:27:17 UTC (rev 2007)
+@@ -46,6 +46,24 @@
+                 }
+             }
+ 
++            // Get the EXIF info for the image
++            $result = read_exif_data_raw( $image-&gt;getAbsolutePath(), false );
++            $image-&gt;exif = array();
++            if ( isset( $result['IFD0'] ) ) {
++                $image-&gt;exif = array_merge( $image-&gt;exif, $result['IFD0'] );
++            }
++            if ( isset( $result['SubIFD'] ) ) {
++                $image-&gt;exif = array_merge( $image-&gt;exif, $result['SubIFD'] );
++            }
++            if ( $image-&gt;exif ) {
++                @ $image-&gt;exif['full'] = $image-&gt;exif['Model'] . ' ' . str_replace( ' sec', 's', $image-&gt;exif['ExposureTime'] )
++                                     . ' ' . str_replace( ' ', '/', $image-&gt;exif['ApertureValue'] ) . ' ' .  t('at')
++                                     . ' ' . str_replace( ' ', '', $image-&gt;exif['FocalLength'] ) . ' ISO'
++                                     . $image-&gt;exif['ISOSpeedRatings'];
++            } else {
++                $image-&gt;exif = null;
++            }
++
+             // Add them to the template
+             $this-&gt;tpl-&gt;assign( 'item',  $item );
+             $this-&gt;tpl-&gt;assign( 'image', $image );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000513.html">[ydf-devel] r2006 - YDFramework2.0/trunk/examples
+</A></li>
+	<LI>Next message: <A HREF="000515.html">[ydf-devel] r2008 - in YDFramework2.0/trunk/examples/weblog: .	include/languages manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#514">[ date ]</a>
+              <a href="thread.html#514">[ thread ]</a>
+              <a href="subject.html#514">[ subject ]</a>
+              <a href="author.html#514">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

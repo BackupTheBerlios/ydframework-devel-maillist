@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2363 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2363%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701241846.l0OIkHFd021223%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000955.html">
+   <LINK REL="Next"  HREF="000957.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2363 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2363%20-%0A%09YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS&In-Reply-To=%3C200701241846.l0OIkHFd021223%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2363 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Jan 24 19:46:17 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000955.html">[ydf-devel] r2362 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000957.html">[ydf-devel] r2364 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#956">[ date ]</a>
+              <a href="thread.html#956">[ thread ]</a>
+              <a href="subject.html#956">[ subject ]</a>
+              <a href="author.html#956">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-24 19:46:12 +0100 (Wed, 24 Jan 2007)
+New Revision: 2363
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+Log:
+Decoupled the action handler in the YDSimpleCMSRequest class. Currently, the default action handler hands over to a different function depending on the current scope.
+
+Currently, this does not make any difference, but it will once we implement the content tree and proper handling of the public requests.
+
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-24 18:38:57 UTC (rev 2362)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-24 18:46:12 UTC (rev 2363)
+@@ -453,6 +453,26 @@
+          *      string of the request.
+          */
+         function actionDefault() {
++            if ( YDSimpleCMS::getScope() == YD_SIMPLECMS_SCOPE_PUBLIC ) {
++                $this-&gt;actionDefaultPublic();
++            } else {
++                $this-&gt;actionDefaultAdmin();
++            }
++        }
++
++        /**
++         *  This is the action handler for a public request. Currently, it does the same thing as the action handler
++         *  for an admin request.
++         */
++        function actionDefaultPublic() {
++            $this-&gt;actionDefaultAdmin();
++        }
++
++        /**
++         *  This is the action handler for an admin request. Currently, it does the same thing as the action handler
++         *  for a public request.
++         */
++        function actionDefaultAdmin() {
+             $module = $this-&gt;getQueryStringParameter( 'module', $this-&gt;defaultModule );
+             $action = $this-&gt;getQueryStringParameter( 'action', 'show' );
+             $moduleManager = &amp; YDSimpleCMS::getModuleManager();
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000955.html">[ydf-devel] r2362 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000957.html">[ydf-devel] r2364 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#956">[ date ]</a>
+              <a href="thread.html#956">[ thread ]</a>
+              <a href="subject.html#956">[ subject ]</a>
+              <a href="author.html#956">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

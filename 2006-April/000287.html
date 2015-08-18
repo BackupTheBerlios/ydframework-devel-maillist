@@ -1,0 +1,1109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1855 - in YDFramework2.0/trunk/examples: . cms cms/includes cms/includes/config cms/modules cms/modules/ydcmfhome cms/skins
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1855%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20cms%20cms/includes%20cms/includes/config%20cms/modules%20cms/modules/ydcmfhome%20cms/skins&In-Reply-To=%3C200604181252.k3ICqijA000354%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000286.html">
+   <LINK REL="Next"  HREF="000288.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1855 - in YDFramework2.0/trunk/examples: . cms cms/includes cms/includes/config cms/modules cms/modules/ydcmfhome cms/skins</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1855%20-%20in%20YDFramework2.0/trunk/examples%3A%20.%20cms%20cms/includes%20cms/includes/config%20cms/modules%20cms/modules/ydcmfhome%20cms/skins&In-Reply-To=%3C200604181252.k3ICqijA000354%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1855 - in YDFramework2.0/trunk/examples: . cms cms/includes cms/includes/config cms/modules cms/modules/ydcmfhome cms/skins">pclaerhout at berlios.de
+       </A><BR>
+    <I>Tue Apr 18 14:52:44 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000286.html">[ydf-devel] r1854 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000288.html">[ydf-devel] r1856 - in YDFramework2.0/trunk/examples: . forum forum/images forum/images/avatars forum/includes forum/languages forum/sql forum/templates
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#287">[ date ]</a>
+              <a href="thread.html#287">[ thread ]</a>
+              <a href="subject.html#287">[ subject ]</a>
+              <a href="author.html#287">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-04-18 14:52:41 +0200 (Tue, 18 Apr 2006)
+New Revision: 1855
+
+Added:
+   YDFramework2.0/trunk/examples/cms/
+   YDFramework2.0/trunk/examples/cms/.htaccess
+   YDFramework2.0/trunk/examples/cms/admin.php
+   YDFramework2.0/trunk/examples/cms/includes/
+   YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStore.php
+   YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php
+   YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php
+   YDFramework2.0/trunk/examples/cms/includes/config/
+   YDFramework2.0/trunk/examples/cms/includes/config/config.php
+   YDFramework2.0/trunk/examples/cms/includes/ydcmfcontentnode.tpl
+   YDFramework2.0/trunk/examples/cms/index.php
+   YDFramework2.0/trunk/examples/cms/modules/
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.php
+   YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl
+   YDFramework2.0/trunk/examples/cms/skins/
+   YDFramework2.0/trunk/examples/cms/skins/default/
+Log:
+Added very first alpha of something that should grow into a CMS system.
+
+Added: YDFramework2.0/trunk/examples/cms/.htaccess
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/.htaccess	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/.htaccess	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,12 @@
++# Disallow directory browsing
++Options -Indexes
++
++# Remap all requests to index.php, except for:
++# - index.php
++# - admin.php
++# - images
++# - robots.txt
++# - uploads
++RewriteEngine on
++RewriteCond $1 !^(admin\.php|index\.php|images|robots\.txt|uploads)
++RewriteRule ^(.*).html index.php\?q=$1 [L,QSA]
+
+Added: YDFramework2.0/trunk/examples/cms/admin.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/admin.php	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/admin.php	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1 @@
++admin.php
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStore.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStore.php	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStore.php	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,111 @@
++&lt;?php
++
++    // Class definition
++    class YDCmfContentStore extends YDDatabaseTree {
++
++        // Class constructor
++        function YDCmfContentStore( $db, $table ) {
++
++            // Publish the variables
++            $this-&gt;db      = &amp; $db;
++            $this-&gt;table   =   $table;
++
++            // The field definitions
++            $this-&gt;field_id         = 'id';
++            $this-&gt;field_parent_id  = 'parent_id';
++            $this-&gt;field_sort       = 'name';
++            $this-&gt;default_obj_type = 'YDCmfContentNode';
++
++            // Get the list of supported language codes
++            $this-&gt;languages = YDCmfLanguage::getSupportedLanguages();
++
++            // Get the tree
++            $this-&gt;YDDatabaseTree(
++                $this-&gt;db, $this-&gt;table, $this-&gt;field_id, $this-&gt;field_parent_id, $this-&gt;field_sort
++            );
++
++            // Add the title fields
++            foreach ( array_values( $this-&gt;languages ) as $language ) {
++                $this-&gt;addField( 'title_' . $language );
++            }
++
++            // Add the property fields
++            foreach ( range( 0, 10 ) as $i ) {
++                foreach ( array_values( $this-&gt;languages ) as $language ) {
++                    $this-&gt;addField( 'property_' . $i . '_' . $language );
++                }
++            }
++
++            // Add the generic fields
++            $this-&gt;addFields(
++                array( 'created', 'created_by', 'modified', 'modified_by', 'content_type', 'can_delete' )
++            );
++
++            // Initialize the store
++            if ( ! defined( 'YD_CMS_STORE_INITIALIZED' ) ) {
++                $this-&gt;init();
++            }
++
++        }
++
++        // Init the database store
++        function init() {
++
++            // Only install if we are running in debug mode
++            if ( YDConfig::get( 'YD_DEBUG', 0 ) &gt; 0 ) {
++                include_once( dirname( __FILE__ ) . '/YDCmfContentStoreInstaller.php' );
++            }
++
++            // Indicate that we are initialized
++            @ define( 'YD_CMS_STORE_INITIALIZED', 1 );
++
++        }
++
++        // Convert a node to an object
++        function _fromNodeArray( $node ) {
++
++            // Return false if no node is found
++            if ( ! $node ) {
++                return $node;
++            }
++
++            // Fix some fields
++            $content_type = strtolower( $node['content_type'] );
++
++            // Include the right file
++            if ( $content_type != 'ydcmfcontentnode' ) {
++
++                // Get the module file to include
++                $file = YDCMS_DIR_MOD . '/' . $content_type . '/' . $content_type . '.php';
++
++                // Check if the file exists
++                if ( ! file_exists( $file ) ) {
++                    trigger_error( 'Module not found: ' . $content_type, YD_ERROR );
++                }
++
++                // Include the module file
++                include_once( $file );
++
++            }
++
++            // Create the object
++            $obj = new $content_type();
++
++            // Initialize the object
++            $obj-&gt;fromArray( $node );
++
++            // Return the object
++            return $obj;
++
++        }
++
++        // Convert an object to an array
++        function _toNodeArray( $node ) {
++            $node-&gt;touch();
++            return $node-&gt;toArray();
++        }
++
++
++    }
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/includes/YDCmfContentStoreInstaller.php	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,159 @@
++&lt;?php
++
++    // Include the YDDatabaseMetaData class
++    include_once( YD_DIR_HOME_CLS . '/YDDatabaseMetaData.php' );
++
++    // Get the metadata object
++    $meta = new YDDatabaseMetaData( $this-&gt;db );
++
++    // Get the list of tables in the database
++    $tables = $meta-&gt;getTables();
++
++    // Install the categories table
++    if ( ! in_array( 'categories', $tables ) ) {
++
++        // The SQL to create the categories table
++        $sql  = 'CREATE TABLE categories ( ' . YD_CRLF;
++        $sql .= '  id int(11) NOT NULL auto_increment, ' . YD_CRLF;
++        foreach ( array_values( $this-&gt;languages ) as $language ) {
++            $sql .= sprintf( '  category_%s longtext NOT NULL, ', $language ) . YD_CRLF;
++        }
++        $sql .= '  PRIMARY KEY (id)' . YD_CRLF;
++        $sql .= ');';
++
++        // Create the table
++        $this-&gt;db-&gt;executeSql( $sql );
++
++    }
++
++    // If we don't have the table, create it
++    if ( ! in_array( $this-&gt;table, $tables ) ) {
++
++        // SQL to create the table
++        $sql  = sprintf( 'CREATE TABLE %s ( ', $this-&gt;table ) . YD_CRLF;
++        $sql .= sprintf( '  %s int(11) NOT NULL auto_increment, ', $this-&gt;field_id ) . YD_CRLF;
++        $sql .= sprintf( '  %s int(11) NOT NULL default \'0\', ', $this-&gt;field_parent_id ) . YD_CRLF;
++        $sql .= sprintf( '  %s varchar(255) NOT NULL default \'\', ', $this-&gt;field_sort ) . YD_CRLF;
++        $sql .= sprintf( '  nleft int(11) NOT NULL default \'0\', ' ) . YD_CRLF;
++        $sql .= sprintf( '  nright int(11) NOT NULL default \'0\', ' ) . YD_CRLF;
++        $sql .= sprintf( '  nlevel int(11) NOT NULL default \'0\', ' ) . YD_CRLF;
++        $sql .= sprintf( '  created int(11) NOT NULL default \'0\', ' ) . YD_CRLF;
++        $sql .= sprintf( '  created_by varchar( 255 ) NOT NULL default \'\', ' ) . YD_CRLF;
++        $sql .= sprintf( '  modified int(11) NOT NULL default \'0\', ' ) . YD_CRLF;
++        $sql .= sprintf( '  modified_by varchar( 255 ) NOT NULL default \'\', ' ) . YD_CRLF;
++        $sql .= sprintf( '  content_type varchar( 255 ) NOT NULL default \'%s\', ', $this-&gt;default_obj_type ) . YD_CRLF;
++        $sql .= sprintf( '  can_delete tinyint( 1 ) NOT NULL default \'1\', ' ) . YD_CRLF;
++
++        // Add the title fields
++        foreach ( array_values( $this-&gt;languages ) as $language ) {
++            $sql .= sprintf( '  title_%s longtext NOT NULL, ', $language ) . YD_CRLF;
++        }
++
++        // Add the property fields
++        foreach ( $this-&gt;fields as $field ) {
++            if ( YDStringUtil::startsWith( $field, 'property_' ) ) {
++                $sql .= sprintf( '  %s longtext NULL, ', $field ) . YD_CRLF;
++            }
++        }
++
++        // Add the indexes
++        $sql .= sprintf( '  PRIMARY KEY (%s), ', $this-&gt;field_id ) . YD_CRLF;
++        $sql .= sprintf( '  KEY %s_%s (%s), ', $this-&gt;table, $this-&gt;field_parent_id, $this-&gt;field_parent_id ) . YD_CRLF;
++        $sql .= sprintf( '  KEY %s_nleft (nleft), ', $this-&gt;table ) . YD_CRLF;
++        $sql .= sprintf( '  KEY %s_nright (nright), ', $this-&gt;table ) . YD_CRLF;
++        $sql .= sprintf( '  KEY %s_nlevel (nlevel), ', $this-&gt;table ) . YD_CRLF;
++        $sql .= sprintf( '  KEY %s_content_type (content_type), ', $this-&gt;table ) . YD_CRLF;
++        $sql .= sprintf( '  KEY %s_can_delete (can_delete), ', $this-&gt;table ) . YD_CRLF;
++        $sql .= sprintf( '  UNIQUE KEY %s_%s (%s) ', $this-&gt;table, $this-&gt;field_sort, $this-&gt;field_sort ) . YD_CRLF;
++        $sql .= ');';
++
++        // Create the table
++        $this-&gt;db-&gt;executeSql( $sql );
++
++    }
++
++    // Empty the table
++    $this-&gt;db-&gt;executeSql( 'DELETE FROM ' . $this-&gt;table );
++
++    // Create a new node
++    $node = new YDCmfContentNode();
++    $node-&gt;setValue( 'id',              1 );
++    $node-&gt;setValue( 'parent_id',       0 );
++    $node-&gt;setValue( 'name',            'home' );
++    $node-&gt;setValue( 'title',           'Titel Nederlands', 'nl' );
++    $node-&gt;setValue( 'title',           'Title English', 'en' );
++    $node-&gt;setValue( 'title',           'Titre Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++    $node-&gt;setValue( 'property',        'Property English', 'en' );
++    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property_other',  'Property1' );
++
++    // Add it to the store
++    $this-&gt;addNode( $node );
++
++    // Create a new node
++    include( YDCMS_DIR_MOD . '/ydcmfhome/ydcmfhome.php' );
++    $node = new YDCmfHome();
++    $node-&gt;setValue( 'id',              2 );
++    $node-&gt;setValue( 'parent_id',       1 );
++    $node-&gt;setValue( 'name',            'home2' );
++    $node-&gt;setValue( 'title',           'Titel2 Nederlands', 'nl' );
++    $node-&gt;setValue( 'title',           'Title2 English', 'en' );
++    $node-&gt;setValue( 'title',           'Titre2 Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property',        'Property2 Nederlands', 'nl' );
++    $node-&gt;setValue( 'property',        'Property2 English', 'en' );
++    $node-&gt;setValue( 'property',        'Property2 Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property_other',  'Property21' );
++
++    // Add it to the store
++    $this-&gt;addNode( $node );
++
++    // Create a new node
++    $node = new YDCmfHome();
++    $node-&gt;setValue( 'id',              3 );
++    $node-&gt;setValue( 'parent_id',       1 );
++    $node-&gt;setValue( 'name',            'news' );
++    $node-&gt;setValue( 'title',           'News Nederlands', 'nl' );
++    $node-&gt;setValue( 'title',           'News English', 'en' );
++    $node-&gt;setValue( 'title',           'News Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++    $node-&gt;setValue( 'property',        'Property English', 'en' );
++    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property_other',  'Property1' );
++
++    // Add it to the store
++    $this-&gt;addNode( $node );
++
++    // Create a new node
++    $node = new YDCmfHome();
++    $node-&gt;setValue( 'id',              4 );
++    $node-&gt;setValue( 'parent_id',       3 );
++    $node-&gt;setValue( 'name',            'news/20060417_krabrally_2006' );
++    $node-&gt;setValue( 'title',           'News Krabrally 2006 Nederlands', 'nl' );
++    $node-&gt;setValue( 'title',           'News Krabrally 2006 English', 'en' );
++    $node-&gt;setValue( 'title',           'News Krabrally 2006 Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++    $node-&gt;setValue( 'property',        'Property English', 'en' );
++    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property_other',  'Property1' );
++
++    // Add it to the store
++    $this-&gt;addNode( $node );
++
++    // Create a new node
++    $node = new YDCmfHome();
++    $node-&gt;setValue( 'id',              5 );
++    $node-&gt;setValue( 'parent_id',       3 );
++    $node-&gt;setValue( 'name',            'news/20060418_krabrally_2007' );
++    $node-&gt;setValue( 'title',           'News Krabrally 2007 Nederlands', 'nl' );
++    $node-&gt;setValue( 'title',           'News Krabrally 2007 English', 'en' );
++    $node-&gt;setValue( 'title',           'News Krabrally 2007 Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property',        'Property Nederlands', 'nl' );
++    $node-&gt;setValue( 'property',        'Property English', 'en' );
++    $node-&gt;setValue( 'property',        'Property Fran&ccedil;ais', 'fr' );
++    $node-&gt;setValue( 'property_other',  'Property1' );
++
++    // Add it to the store
++    $this-&gt;addNode( $node );
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/includes/YDCmfInit.php	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,472 @@
++&lt;?php
++
++    // Initialize the Yellow Duck Framework
++    require_once( dirname( __FILE__ ) . '/../../../YDFramework2/YDF2_init.php' );
++
++    // Configure the template class
++    YDConfig::set( 'YD_TEMPLATE_ENGINE', 'php' );
++
++    // General constants
++    @define( 'YDCMS_CONFIG_FILENAME', 'config' );
++    @define( 'YDCMS_DIR_MOD',         rtrim( realpath( dirname( __FILE__ ) . '/../modules' ), '/' ) );
++    @define( 'YDCMS_DIR_SKIN',        rtrim( realpath( dirname( __FILE__ ) . '/../skins/default' ), '/' ) );
++    @define( 'YDCMS_REQ_EXT',         '.html' );
++
++    // Includes
++    include_once( YD_DIR_HOME_CLS . '/YDUrl.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDForm.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDRequest.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDDatabase.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDDatabaseTree.php' );
++    include_once( YD_DIR_HOME_CLS . '/YDTemplate.php' );
++
++    // CMF Includes
++    include_once( dirname( __FILE__ ) . '/YDCmfContentStore.php' );
++
++    // Get the list of possible config files
++    $config_files = array(
++        dirname( __FILE__ ) . '/' . YDCMS_CONFIG_FILENAME . '/' . YDCMS_CONFIG_FILENAME . '_' . $_SERVER['SERVER_NAME'] . '.php',
++        dirname( __FILE__ ) . '/' . YDCMS_CONFIG_FILENAME . '/' . YDCMS_CONFIG_FILENAME . '.php'
++    );
++
++    // Include the right configuration file
++    foreach ( $config_files as $config_file ) {
++        if ( file_exists( $config_file ) ) {
++            include_once( $config_file );
++            break;
++        }
++    }
++
++    // Global variables
++    $GLOBALS['CMS_DB'] = YDDatabase::getInstance(
++        YDConfig::get( 'DB_TYPE' ), YDConfig::get( 'DB_NAME' ), YDConfig::get( 'DB_USER' ),
++        YDConfig::get( 'DB_PASS' ), YDConfig::get( 'DB_HOST' )
++    );
++
++    // The language class
++    class YDCmfLanguage {
++
++        // Get the current language
++        function getLanguage() {
++
++            // Get the browser object
++            $browser = new YDBrowserInfo();
++
++            // Negotiate with the browser
++            $language = $browser-&gt;getLanguage( YDCmfLanguage::getServerLanguages() );
++
++            // Check if the language was specified by means of a cookie
++
++            // Allow it to override from the query string
++            $language_qs = strtolower( YDRequest::getQueryStringParameter( 'lang', null ) );
++            if ( ! is_null( $language_qs ) &amp;&amp; in_array( $language_qs, YDCmfLanguage::getServerLanguages() ) ) {
++                $language = $language_qs;
++            }
++
++            // Return the language
++            return $language;
++
++        }
++
++        // Get the proper languages
++        function getPossibleLanguages() {
++            $browser = new YDBrowserInfo();
++            $languages = $browser-&gt;getBrowserLanguages();
++            foreach ( $languages as $key =&gt; $language ) {
++                if ( ! in_array( $language, YDCmfLanguage::getServerLanguages() ) ) {
++                    unset( $languages[ $key ] );
++                }
++            }
++            return $languages;
++        }
++
++        // Get the list of backup languages
++        function getBackupLanguages() {
++            $language  = YDCmfLanguage::getLanguage();
++            $languages = YDCmfLanguage::getPossibleLanguages();
++            foreach ( $languages as $key =&gt; $val ) {
++                if ( strcasecmp( $val, $language ) === 0 ) {
++                    unset( $languages[$key] );
++                }
++            }
++            array_unshift( $languages, $language );
++            return $languages;
++        }
++
++        // Get the list of supported languages
++        function getSupportedLanguages() {
++            return YDConfig::get( 'supported_languages', array( 'English' =&gt; 'en' ) );
++        }
++
++        // Get the list of server languages
++        function getServerLanguages() {
++            return array_values( YDCmfLanguage::getSupportedLanguages() );
++        }
++
++    }
++
++    // CMF Request
++    class YDCmfRequest extends YDRequest {
++
++        // Class constructor
++        function YDCmfRequest() {
++
++            // Initialize the parent
++            $this-&gt;YDRequest();
++
++            // Get the database connection
++            $this-&gt;db = &amp; $GLOBALS['CMS_DB'];
++
++            // Get the content store
++            $this-&gt;store = new YDCmfContentStore( $GLOBALS['CMS_DB'], 'content' );
++
++        }
++
++        // Default action
++        function actionDefault() {
++
++            // Get the ID of the item we need to retrieve
++            $query = trim( $this-&gt;getQueryStringParameter( 'q' ), '/' );
++
++            // Check if we need to show the default or not
++            if ( empty( $query ) ) {
++                $query = '1';
++            }
++
++            // Split it up
++            $query = explode( '/', $query );
++
++            // Get the language from the query string
++            if ( isset( $_GET['lang'] ) &amp;&amp; ! in_array( $_GET['lang'], YDCmfLanguage::getServerLanguages() ) ) {
++                unset( $_GET['lang'] );
++            }
++
++            // Set the default action if needed
++            if ( ! isset( $_GET['action'] ) || empty( $_GET['action'] ) ) {
++                $_GET['action'] = 'default';
++            }
++
++            // Recompose the query string
++            $query = implode( '/', $query );
++
++            // Get the node from the store
++            if ( is_numeric( $query ) ) {
++                $node = $this-&gt;store-&gt;getNode( $query );
++            } else {
++                $node = $this-&gt;store-&gt;getNode( $query, 'name' );
++            }
++
++            // Check if the node is found
++            if ( ! $node ) {
++                trigger_error( 'Node not found: ' . $query, YD_ERROR );
++            }
++
++            // Get the name of the action to perform
++            $action = $this-&gt;getQueryStringParameter( 'action', 'default' );
++
++            // Check if the action exists
++            if ( ! $node-&gt;hasMethod( 'action' . $action ) ) {
++                trigger_error( $action . ' is missing for this node' );
++            }
++
++            // Run the action
++            call_user_func( array( $node, 'action' . $action ) );
++
++        }
++
++    }
++
++    // The default node definition
++    class YDCmfContentNode extends YDBase {
++
++        // Class constructor
++        function YDCmfContentNode() {
++
++            // The data for the node
++            $this-&gt;_nodeData = array();
++
++            // The metadata for the node
++            $this-&gt;_nodeMeta = array();
++
++            // Create a new template
++            $this-&gt;tpl = new YDTemplate();
++
++            // Get the database connection
++            $this-&gt;db = &amp; $GLOBALS['CMS_DB'];
++
++            // Get the content store
++            $this-&gt;store = new YDCmfContentStore( $GLOBALS['CMS_DB'], 'content' );
++
++            // Add the core properties
++            $this-&gt;addMeta( 'id', null, 'int', false, null );
++            $this-&gt;addMeta( 'parent_id', null, 'int', false, null );
++            $this-&gt;addMeta( 'name', null, 'string', false, null );
++            $this-&gt;addMeta( 'nleft', null, 'int', false, null, false );
++            $this-&gt;addMeta( 'nright', null, 'int', false, null, false );
++            $this-&gt;addMeta( 'nlevel', null, 'int', false, null, false );
++            $this-&gt;addMeta( 'title', null, 'string', true, null );
++            $this-&gt;addMeta( 'property', 'property_0', 'string', true, null );
++            $this-&gt;addMeta( 'property_other', 'property_1', 'string', false, null );
++            $this-&gt;addMeta( 'created', null, 'datetime', false, time() );
++            $this-&gt;addMeta( 'created_by', null, 'string', false, YDBrowserInfo::getComputerName() );
++            $this-&gt;addMeta( 'modified', null, 'datetime', false, time() );
++            $this-&gt;addMeta( 'modified_by', null, 'string', false, YDBrowserInfo::getComputerName() );
++            $this-&gt;addMeta( 'content_type', null, 'string', false, $this-&gt;getClassName() );
++            $this-&gt;addMeta( 'can_delete', null, 'bool', false, 1, false );
++
++        }
++
++        // Add a field definition
++        function addMeta(
++            $name, $field, $type, $translated, $default, $required=true, $null=false, $maxlength=false, $minlength=false
++        ) {
++
++            // Use the name of the property if the field name is not specified
++            if ( is_null( $field ) ) {
++                $field = $name;
++            }
++
++            // Add the metadata
++            $this-&gt;_nodeMeta[ $name ] = array(
++                'type' =&gt; $type, 'field' =&gt; strtolower( $field ), 'translated' =&gt; $translated, 'default' =&gt; $default,
++                'required' =&gt; $required,'null' =&gt; $null, 'maxlength' =&gt; $maxlength, 'minlength' =&gt; $minlength
++            );
++
++        }
++
++        // From an array
++        function fromArray( $array ) {
++
++            // Add the data
++            $this-&gt;_nodeData = array_merge( $this-&gt;_nodeData, $array );
++
++            // Get the used properties
++            $used_languages  = YDCmfLanguage::getSupportedLanguages();
++            $used_properties = array();
++            foreach ( array_keys( $this-&gt;_nodeMeta ) as $key ) {
++                if ( YDStringUtil::startsWith( $this-&gt;_nodeMeta[ $key ]['field'], 'property_' ) ) {
++                    foreach ( $used_languages as $language ) {
++                        array_push( $used_properties, $this-&gt;_nodeMeta[ $key ]['field'] . '_' . $language );
++                    }
++                }
++            }
++
++            // Remove the unused properties
++            foreach ( array_keys( $this-&gt;_nodeData ) as $key ) {
++                if ( YDStringUtil::startsWith( $key, 'property_' ) &amp;&amp; ! in_array( $key, $used_properties ) ) {
++                    unset( $this-&gt;_nodeData[ $key ] );
++                }
++            }
++
++        }
++
++        // Return the array
++        function toArray() {
++            $data = $this-&gt;_nodeData;
++            $data['content_type'] = $this-&gt;getClassName();
++            return $data;
++        }
++
++        // Touch the date/time on the node
++        function touch() {
++            if ( is_null( $this-&gt;getValue( 'created' ) ) ) {
++                $this-&gt;setValue( 'created', time() );
++            }
++            $this-&gt;setValue( 'modified', time() );
++            if ( is_null( $this-&gt;getValue( 'created_by' ) ) ) {
++                $this-&gt;setValue( 'created_by', YDBrowserInfo::getComputerName() );
++            }
++            $this-&gt;setValue( 'modified_by', YDBrowserInfo::getComputerName() );
++        }
++
++        // Check if this is a valid value
++        function isValidValue( $name ) {
++            return in_array( strtolower( $name ), array_keys( $this-&gt;_nodeMeta ) );
++        }
++
++        // Check for a valid field
++        function checkValueIsValid( $name ) {
++            if ( ! $this-&gt;isValidValue( $name ) ) {
++                trigger_error( 'Unknown field: ' . $name, YD_ERROR );
++            }
++        }
++
++        // Get a value of a node
++        function getValue( $name, $default=null ) {
++
++            // Fail if the field doesn't exist
++            $this-&gt;checkValueIsValid( $name );
++
++            // Get the languages
++            $language = YDCmfLanguage::getLanguage();
++
++            // Get the proper value
++            if ( isset( $this-&gt;_nodeData[ $this-&gt;_nodeMeta[ $name ]['field'] . '_' . $language ] ) ) {
++                return $this-&gt;_nodeData[ $this-&gt;_nodeMeta[ $name ]['field'] . '_' . $language ];
++            }
++
++            // Get the value if set, otherwise, use the default value
++            return isset( $this-&gt;_nodeData[ $name ] ) ? $this-&gt;_nodeData[ $name ] : $default;
++
++        }
++
++        // Get a translated value
++        function getTranslatedValue( $name, $default=null, $language=null ) {
++
++            // Fail if the field doesn't exist
++            $this-&gt;checkValueIsValid( $name );
++
++            // Get the default language if not specified
++            if ( empty( $language ) ) {
++                $language = YDCmfLanguage::getLanguage();
++            }
++
++            // Get the field name
++            $field_name = $this-&gt;_nodeMeta[ $name ]['field'] . '_' . $language;
++
++            // Get the value if set, otherwise, use the default value
++            return isset( $this-&gt;_nodeData[ $field_name ] ) ? $this-&gt;_nodeData[ $field_name ] : $default;
++
++        }
++
++        // Get a link to the item
++        function getHref( $action=null, $language=null ) {
++
++            // Get the language
++            $language = is_null( $language ) ? YDCmfLanguage::getLanguage() : $language;
++
++            // Get the action name
++            $action   = is_null( $action ) ? $_GET['action'] : $action;
++
++            // Get the URL
++            $url = dirname( YD_SELF_SCRIPT ) . '/' . $this-&gt;getValue( 'name' ) . YDCMS_REQ_EXT . '?';
++
++            // Add the query string
++            if ( ! empty( $action ) &amp;&amp; strtolower( $action ) != 'default' ) {
++                $url .= 'action=' . rawurlencode( $action ) . '&amp;';
++            }
++            $url .= 'lang=' . rawurlencode( $language );
++
++            // Return the URL
++            return YDUrl::makeLinkAbsolute( $url );
++
++        }
++
++        // Get a link with the title
++        function getTitleLink( $action=null, $language=null, $title=null ) {
++            if ( is_null( $title ) ) {
++                $title = $this-&gt;getTranslatedValue( 'title' );
++            }
++            return sprintf( '&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;', $this-&gt;getHref( $action, $language ), $title );
++        }
++
++        // Get the actions defined in this class
++        function getPossibleActions() {
++            $actions = get_class_methods( $this );
++            foreach ( $actions as $key=&gt;$action ) {
++                if ( YDStringUtil::startsWith( $action, 'action' ) ) {
++                    $actions[$key] = strtolower( substr( $action, strlen( 'action' ) ) );
++                } else {
++                    unset( $actions[$key] );
++                }
++            }
++            return $actions;
++        }
++
++        // Get the children of the node
++        function getChildren( $order=null ) {
++            return $this-&gt;store-&gt;getChildren( $this-&gt;getValue( 'id' ), false, $order );
++        }
++
++        // Get the path to the node
++        function getPath() {
++            return $this-&gt;store-&gt;getPath( $this-&gt;getValue( 'id' ), true );
++        }
++
++        // Set a value of a node
++        function setValue( $name, $val, $language=null ) {
++
++            // Get the name of the field
++            $field = $this-&gt;_nodeMeta[ $name ]['field'];
++
++            // Check if it's a valid language
++            if ( ! is_null( $language ) &amp;&amp; ! in_array( $language, YDCmfLanguage::getServerLanguages() ) ) {
++                trigger_error( 'Language ' . $language . ' is not supported' );
++            }
++
++            // Check if the item needs translation
++            if ( $this-&gt;_nodeMeta[ $name ]['translated'] == true &amp;&amp; ! empty( $language ) ) {
++                $this-&gt;_nodeData[ $field . '_' . $language ] = $val;
++            } else {
++                if ( YDStringUtil::startsWith( $field, 'title' ) || YDStringUtil::startsWith( $field, 'property' ) ) {
++                    foreach ( YDCmfLanguage::getServerLanguages() as $language ) {
++                        $this-&gt;_nodeData[ $field . '_' . $language ] = $val;
++                    }
++                } else {
++                    $this-&gt;_nodeData[ $field ] = $val;
++                }
++            }
++
++        }
++
++        // The default node action
++        function actionDefault() {
++
++            // Display the template
++            $this-&gt;display();
++
++        }
++
++        // Display a named template
++        function display( $name=null ) {
++
++            // Assign the values
++            $this-&gt;tpl-&gt;assign( 'node', $this );
++            $this-&gt;tpl-&gt;assign( 'store', $this-&gt;store );
++
++            // Add the action name
++            $this-&gt;tpl-&gt;assign( 'YD_MODULE_ACTION', strtolower( $_GET['action'] ) );
++
++            // Add the generic stuff
++            $this-&gt;tpl-&gt;assign( 'languages', YDCmfLanguage::getSupportedLanguages() );
++            $this-&gt;tpl-&gt;assign( 'language',  YDCmfLanguage::getLanguage() );
++
++            // Get the name of the class
++            $clazz = $this-&gt;getClassName();
++
++            // If no name specified, use the class name
++            $name = ( is_null( $name ) ? $clazz : $name ) . '.tpl';
++
++            // Check if we need to use the standard or custom one
++            if (
++                ! file_exists( YDCMS_DIR_SKIN . '/' . $name )
++                &amp;&amp;
++                ! file_exists( YDCMS_DIR_MOD . '/' . $clazz . '/' . $name )
++                &amp;&amp;
++                ! file_exists( dirname( __FILE__ ) . '/' . $name )
++            ) {
++                trigger_error( 'Template not found: ' . $name, YD_ERROR );
++            }
++
++            // Get the path to the template
++            if ( file_exists( YDCMS_DIR_SKIN . '/' . $name ) ) {
++                $tplFile = YDCMS_DIR_SKIN . '/' . $name;
++            } else {
++                if ( $clazz == 'ydcmfcontentnode' ) {
++                    $tplFile = dirname( __FILE__ ) . '/' . $name;
++                } else {
++                    $tplFile = YDCMS_DIR_MOD . '/' . $clazz . '/' . $name;
++                }
++            }
++
++            // Assign the name of the template
++            $this-&gt;tpl-&gt;assign( 'tplFile', realpath( $tplFile ) );
++
++            // Display the template
++            $this-&gt;tpl-&gt;display( $tplFile );
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/cms/includes/config/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/config/config.php	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/includes/config/config.php	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,16 @@
++&lt;?php
++
++    // Set the database connection parameters
++    YDConfig::set( 'DB_TYPE', 'mysql' );
++    YDConfig::set( 'DB_NAME', 'ydcms' );
++    YDConfig::set( 'DB_USER', 'root' );
++    YDConfig::set( 'DB_PASS', '' );
++    YDConfig::set( 'DB_HOST', 'localhost' );
++
++    // Set the default debug level
++    YDConfig::set( 'YD_DEBUG', 1 );
++
++    // The supported languages
++    YDConfig::set( 'supported_languages', array( 'nederlands' =&gt; 'nl', 'english' =&gt; 'en', 'fran&ccedil;ais' =&gt; 'fr' ) );
++
++?&gt;
+
+Added: YDFramework2.0/trunk/examples/cms/includes/ydcmfcontentnode.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/includes/ydcmfcontentnode.tpl	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/includes/ydcmfcontentnode.tpl	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,37 @@
++&lt;h2&gt;&lt;?php echo( $node-&gt;getTranslatedValue( 'title' ) ); ?&gt;&lt;/h2&gt;
++
++&lt;p&gt;Hello world from template.&lt;/p&gt;
++
++&lt;?php if ( sizeof( $languages ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    Languages:
++    &lt;?php foreach ( $languages as $l ) { ?&gt;
++        &lt;?php if ( $l == $language ) { ?&gt;
++            &lt;b&gt;&lt;?php echo( $l ); ?&gt;&lt;/b&gt;
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( null, $l, $l ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++
++&lt;p&gt;&lt;b&gt;Template:&lt;/b&gt; &lt;?php echo( $tplName ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Content-Type:&lt;/b&gt; &lt;?php echo( $node-&gt;getValue( 'content_type' ) ); ?&gt;&lt;/p&gt;
++
++&lt;?php if ( $node-&gt;getChildren() ) { ?&gt;
++    &lt;p&gt;&lt;b&gt;Children&lt;/b&gt;&lt;/p&gt;
++    &lt;ul&gt;
++        &lt;?php foreach ( $node-&gt;getChildren() as $child ) { ?&gt;
++            &lt;li&gt;&lt;?php echo( $child-&gt;getTitleLink( '' ) ); ?&gt;&lt;/li&gt;
++        &lt;?php } ?&gt;
++    &lt;/ul&gt;
++&lt;?php } ?&gt;
++
++&lt;p&gt;&lt;b&gt;Path&lt;/b&gt;
++&lt;?php foreach ( $node-&gt;getPath() as $path ) { ?&gt;
++    &raquo; &lt;?php echo( $path-&gt;getTitleLink( '' ) ); ?&gt;
++&lt;?php } ?&gt;
++&lt;/p&gt;
+
+Added: YDFramework2.0/trunk/examples/cms/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/index.php	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/index.php	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,22 @@
++&lt;?php
++
++    // Include the framework
++    include_once( dirname( __FILE__ ) . '/includes/YDCmfInit.php' );
++
++    // Class definition
++    class index extends YDCmfRequest {
++
++        // Class constructor
++        function index() {
++
++            // Initialize the parent
++            $this-&gt;YDCmfRequest();
++
++        }
++
++    }
++
++    // Process request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.php
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.php	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.php	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,64 @@
++&lt;?php
++
++    // Class
++    class YDCmfHome extends YDCmfContentNode {
++
++        // Constructor
++        function YDCmfHome() {
++            $this-&gt;YDCmfContentNode();
++        }
++
++        // Custom action
++        function actionCustom() {
++
++            // Get the results from a database
++            $version = $this-&gt;db-&gt;getValue( 'select version()' );
++            $this-&gt;tpl-&gt;assign( 'mysql_version', $version );
++
++            // Display the template
++            $this-&gt;display();
++
++        }
++
++        // Form action
++        function actionForm() {
++
++            // Create the form
++            $form = new YDForm( 'firstForm' );
++
++            // Set the defaults
++            $form-&gt;setDefaults( array( 'name' =&gt; 'Joe User' ) );
++
++            // Add the elements
++            $form-&gt;addElement( 'text', 'name', 'Enter your name:', array( 'size' =&gt; 50 ) );
++            $form-&gt;addElement( 'textarea', 'desc1', 'Enter the description:' );
++            $form-&gt;addElement( 'textarea', 'desc2', 'Enter the description (no toolbar):' );
++            $form-&gt;addElement( 'submit', 'cmdSubmit', 'Send' );
++
++            // Add a rule
++            $form-&gt;addRule( 'name',  'required', 'Please enter your name' );
++            $form-&gt;addRule( 'desc1', 'required', 'Please enter the description' );
++
++            // Add filters
++            $form-&gt;addFilter( '__ALL__', 'trim' );
++            $form-&gt;addFilter( 'desc1', 'safe_html' );
++
++            // Process the form
++            if ( $form-&gt;validate() ) {
++
++                // Show the form values
++                YDDebugUtil::dump( $form-&gt;getValues() );
++
++            }
++
++            // Add the form to the template
++            $this-&gt;tpl-&gt;assign( 'form', $form-&gt;toHtml() );
++
++            // Display the template
++            $this-&gt;display();
++
++        }
++
++    }
++
++?&gt;
+\ No newline at end of file
+
+Added: YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl	2006-04-18 12:48:49 UTC (rev 1854)
++++ YDFramework2.0/trunk/examples/cms/modules/ydcmfhome/ydcmfhome.tpl	2006-04-18 12:52:41 UTC (rev 1855)
+@@ -0,0 +1,65 @@
++&lt;h2&gt;&lt;?php echo( $node-&gt;getTranslatedValue( 'title' ) ); ?&gt;&lt;/h2&gt;
++
++&lt;p&gt;Hello world from template.&lt;/p&gt;
++
++&lt;?php if ( sizeof( $languages ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Languages:&lt;/b&gt;
++    &lt;?php foreach ( $languages as $l =&gt; $fl ) { ?&gt;
++        &lt;?php if ( $l == $language ) { ?&gt;
++            [&lt;?php echo( $l ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( null, $fl, $l ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( sizeof( $node-&gt;getPossibleActions() ) &gt; 1 ) { ?&gt;
++&lt;p&gt;
++    &lt;b&gt;Actions:&lt;/b&gt;
++    &lt;?php foreach ( $node-&gt;getPossibleActions() as $a ) { ?&gt;
++        &lt;?php if ( $a == $YD_MODULE_ACTION ) { ?&gt;
++            [&lt;?php echo( $a ); ?&gt;]
++        &lt;? } else { ?&gt;
++            &lt;?php echo( $node-&gt;getTitleLink( $a, $language, $a ) ); ?&gt;
++        &lt;? } ?&gt;
++    &lt;?php } ?&gt;
++&lt;/p&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'custom' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;MySQL version:&lt;/b&gt; &lt;?php echo( $mysql_version ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;?php if ( $YD_MODULE_ACTION == 'form' ) { ?&gt;
++    &lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++    &lt;b&gt;Using forms&lt;/b&gt;
++    &lt;?php echo( $form ); ?&gt;
++&lt;?php } ?&gt;
++
++&lt;hr size=&quot;1&quot; noshade=&quot;&quot; /&gt;
++
++&lt;p&gt;&lt;b&gt;Template:&lt;/b&gt; &lt;?php echo( $tplName ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Content-Type:&lt;/b&gt; &lt;?php echo( $node-&gt;getValue( 'content_type' ) ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Action:&lt;/b&gt; &lt;?php echo( $YD_MODULE_ACTION ); ?&gt;&lt;/p&gt;
++
++&lt;p&gt;&lt;b&gt;Parameters:&lt;/b&gt; &lt;?php YDDebugUtil::dump( $_GET ); ?&gt;&lt;/p&gt;
++
++&lt;?php if ( $node-&gt;getChildren() ) { ?&gt;
++    &lt;p&gt;&lt;b&gt;Children&lt;/b&gt;&lt;/p&gt;
++    &lt;ul&gt;
++        &lt;?php foreach ( $node-&gt;getChildren( 'created DESC, title_' . $language . ' DESC' ) as $child ) { ?&gt;
++            &lt;li&gt;&lt;?php echo( $child-&gt;getTitleLink( '' ) ); ?&gt;&lt;/li&gt;
++        &lt;?php } ?&gt;
++    &lt;/ul&gt;
++&lt;?php } ?&gt;
++
++&lt;p&gt;&lt;b&gt;Path&lt;/b&gt;
++&lt;?php foreach ( $node-&gt;getPath() as $path ) { ?&gt;
++    &raquo; &lt;?php echo( $path-&gt;getTitleLink( '' ) ); ?&gt;
++&lt;?php } ?&gt;
++&lt;/p&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000286.html">[ydf-devel] r1854 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000288.html">[ydf-devel] r1856 - in YDFramework2.0/trunk/examples: . forum forum/images forum/images/avatars forum/includes forum/languages forum/sql forum/templates
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#287">[ date ]</a>
+              <a href="thread.html#287">[ thread ]</a>
+              <a href="subject.html#287">[ subject ]</a>
+              <a href="author.html#287">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

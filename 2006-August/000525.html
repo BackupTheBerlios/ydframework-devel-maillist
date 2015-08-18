@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2018 - in YDFramework2.0/trunk/examples/weblog: .	manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2018%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09manage&In-Reply-To=%3C200608160607.k7G67kDD028527%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000524.html">
+   <LINK REL="Next"  HREF="000526.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2018 - in YDFramework2.0/trunk/examples/weblog: .	manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2018%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09manage&In-Reply-To=%3C200608160607.k7G67kDD028527%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2018 - in YDFramework2.0/trunk/examples/weblog: .	manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 16 08:07:46 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000524.html">[ydf-devel] r2017 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+        <LI>Next message: <A HREF="000526.html">[ydf-devel] r2019 - in YDFramework2.0/trunk/examples/weblog: .	skins/default_with_lightbox/js
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#525">[ date ]</a>
+              <a href="thread.html#525">[ thread ]</a>
+              <a href="subject.html#525">[ subject ]</a>
+              <a href="author.html#525">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-16 08:07:43 +0200 (Wed, 16 Aug 2006)
+New Revision: 2018
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.php
+Log:
+Fixed the comments adding in item.php and manage/comments.php.
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-08-15 21:34:38 UTC (rev 2017)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-08-16 06:07:43 UTC (rev 2018)
+@@ -74,7 +74,7 @@
+                 // Set the rules
+                 $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
+                 $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
+-                $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), array( 35 ) );
++                $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), 35 );
+                 $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
+                 $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
+                 $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-08-15 21:34:38 UTC (rev 2017)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-08-16 06:07:43 UTC (rev 2018)
+@@ -67,7 +67,7 @@
+             // Add the form rules
+             $form-&gt;addRule( 'username',    'required',  t( 'err_name' ) );
+             $form-&gt;addRule( 'username',    'not_email', t( 'err_name_email' ) );
+-            $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), array( 35 ) );
++            $form-&gt;addRule( 'username',    'maxlength', t( 'err_name_length' ), 35 );
+             $form-&gt;addRule( 'useremail',   'email',     t( 'err_email' ) );
+             $form-&gt;addRule( 'useremail',   'required',  t( 'err_email' ) );
+             $form-&gt;addRule( 'userwebsite', 'httpurl',   t( 'err_website' ) );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000524.html">[ydf-devel] r2017 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent
+</A></li>
+	<LI>Next message: <A HREF="000526.html">[ydf-devel] r2019 - in YDFramework2.0/trunk/examples/weblog: .	skins/default_with_lightbox/js
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#525">[ date ]</a>
+              <a href="thread.html#525">[ thread ]</a>
+              <a href="subject.html#525">[ subject ]</a>
+              <a href="author.html#525">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,363 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2341 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2341%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701230836.l0N8aLLd006596%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000933.html">
+   <LINK REL="Next"  HREF="000935.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2341 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2341%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200701230836.l0N8aLLd006596%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2341 - YDFramework2.0/trunk/YDFramework2/YDClasses">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Tue Jan 23 09:36:21 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000933.html">[ydf-devel] r2340 - YDFramework2.0/trunk/examples
+</A></li>
+        <LI>Next message: <A HREF="000935.html">[ydf-devel] r2342 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#934">[ date ]</a>
+              <a href="thread.html#934">[ thread ]</a>
+              <a href="subject.html#934">[ subject ]</a>
+              <a href="author.html#934">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-23 09:36:20 +0100 (Tue, 23 Jan 2007)
+New Revision: 2341
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+Log:
+Updated some of the docstrings.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-22 22:32:27 UTC (rev 2340)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2007-01-23 08:36:20 UTC (rev 2341)
+@@ -72,6 +72,23 @@
+      *
+      *  All these options are available as class variables.
+      *
++     *  @todo
++     *      Refactor this class so that it's easier to be subclasses to provide custom functionality. This way, we can
++     *      abstract the actual paging regardless of how the data is gathered. We only need to have the part of the data
++     *      we really need and the total size of the list of items to do the paging.
++     *
++     *  @todo
++     *      We should try to see if there is a way to make this work together directly with a database instance instead 
++     *      of using arrays. This would be the only way to improve the performance of this class with large arrays.
++     *
++     *  @todo
++     *      Evaluate if we need to change the persistent sorting from a persistent variable to a session variable. This
++     *      way, if the session expires, the default sorting is applied again.
++     *
++     *  @todo
++     *      Should we give or generate a name for the recordset so that different recordsets with the same fields still
++     *      can have different sortfields applied (which is currently not possible)?
++     *
+      *  @ingroup YDDatabase
+      */
+     class YDRecordSet extends YDBase {
+@@ -93,7 +110,10 @@
+          *  @param  $sortdir    (optional) The name of the query string variable indicating the direction. Defaults to
+          *                      &quot;sortdir&quot;
+          */
+-        function YDRecordSet( $records, $page=-1, $pagesize=null, $pagevar='page', $sizevar='size', $sortvar='sortfld', $sortdir='sortdir' ) {
++        function YDRecordSet(
++            $records, $page=-1, $pagesize=null, $pagevar='page', $sizevar='size',
++            $sortvar='sortfld', $sortdir='sortdir'
++        ) {
+ 
+             // Include the YDPersistent library
+             include_once( YD_DIR_HOME_CLS . '/YDPersistent.php');
+@@ -617,7 +637,6 @@
+ 
+     }
+ 
+-
+     /**
+      *  This class defines a database object.
+      *
+@@ -642,16 +661,16 @@
+             // Check if the global array exists
+             YDDatabase::_initNamedInstances();
+ 
+-			// Check if we are using a DSN string, e.g. &quot;<A HREF="mysql://user:password@host/database">mysql://user:password@host/database</A>&quot;
+-			if ( $db == '' ){
++            // Check if we are using a DSN string, e.g. &quot;<A HREF="mysql://user:password@host/database">mysql://user:password@host/database</A>&quot;
++            if ( $db == '' ){
+ 
+-				$dsn    = new YDUrl( $driver );
+-				$driver = $dsn-&gt;getScheme();
+-				$db     = substr( $dsn-&gt;getPath(), 1 );
+-				$user   = $dsn-&gt;getUser();
+-				$pass   = $dsn-&gt;getPassword();
+-				$host   = $dsn-&gt;getHost();
+-			}
++                $dsn    = new YDUrl( $driver );
++                $driver = $dsn-&gt;getScheme();
++                $db     = substr( $dsn-&gt;getPath(), 1 );
++                $user   = $dsn-&gt;getUser();
++                $pass   = $dsn-&gt;getPassword();
++                $host   = $dsn-&gt;getHost();
++            }
+ 
+             // Register the instance
+             $GLOBALS['YD_DB_INSTANCES'][ strtolower( $name ) ] = array( $driver, $db, $user, $pass, $host );
+@@ -713,6 +732,11 @@
+          *
+          *  @returns    An instance of YDDatabaseDriver
+          *
++         *  @todo
++         *      Doublecheck this piece of code as there seems to be a possible problem that you cannot have more than
++         *      one connection to a database. If you use two different database instances, it seems that they still
++         *      point to the same table, which should not be the case.
++         *
+          *  @static
+          */
+         function getInstance( $driver, $db, $user='', $pass='', $host='' ) {
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-22 22:32:27 UTC (rev 2340)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree.php	2007-01-23 08:36:20 UTC (rev 2341)
+@@ -37,6 +37,20 @@
+      *  This class implements a database tree as described on:
+      *  <A HREF="http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/">http://www.phpriot.com/d/articles/php/application-design/nested-trees-2/</A>
+      *
++     *  @todo
++     *      Add support for joins so that you can link in other tables in the tree. Without this functionality, this
++     *      class is rather limited. We might need to give the table with the tree itself a common prefix so that we
++     *      can differentiate between the fields that should be stored in the table and the fields that should not be
++     *      stored in the database (which are the ones from the join tables).
++     *
++     *  @todo
++     *      Check if using YDDatabaseQuery can make the queries easier to understand and change.
++     *
++     *  @todo
++     *      Add support for moving items up and down. The algorithm can be something like:
++     *          - Move up: currentItem+1, nextItem-1
++     *          - Move down: currentItem-1, previousItem+1
++     *
+      *  @ingroup YDDatabase
+      */
+     class YDDatabaseTree extends YDBase {
+@@ -51,9 +65,7 @@
+          *  @param $sortField      (optional) Name of the field to sort data. Default is position, title.
+          */
+         function YDDatabaseTree( $db='default', $table, $idField='id', $parentField='parent_id', $sortField='position, title' ) {
+-
+             $this-&gt;db = YDDatabase::getNamedInstance( $db );
+-
+             $this-&gt;table = $table;
+             $this-&gt;fields = array(
+                 'id' =&gt; $idField, 'parent' =&gt; $parentField, 'sort' =&gt; $sortField,
+@@ -629,6 +641,11 @@
+ 
+         /**
+          *  Rebuilds the tree data and saves it to the database
++         *
++         *  @todo
++         *      Check if there is any way of optimizing this part so that we don't have to issue and update statement
++         *      for each item in the table. If I understand the algorithm correctly, only part of the tree data should
++         *      be updated when we change an item.
+          */
+         function rebuild() {
+ 
+@@ -642,8 +659,8 @@
+             $data_ori = array_merge( $data );
+ 
+             // Keep track of the number and level
+-            $n     = 0; // Need a variable to hold the running n tally
+-            $level = 0; // Need a variable to hold the running level tally
++            $n     = 0;
++            $level = 0;
+ 
+             // Invoke the recursive function. Start it processing on the fake &quot;root node&quot; generated in 
+             // getTreeWithChildren(). because this node doesn't really exist in the database, we give it an initial 
+@@ -721,14 +738,6 @@
+                 $values[ $parentField ] = 0;
+             }
+ 
+-            /*// Check if the parent node exists
+-            if ( isset( $values[ $parentField ] ) &amp;&amp; intval( $values[ $parentField ] ) != 0 ) {
+-                $node = $this-&gt;getNode( $values[ $parentField ] );
+-                if ( ! $node ) {
+-                    trigger_error( 'Parent node (' . $values[ $parentField ] . ') does not exist in the tree!', YD_ERROR );
+-                }
+-            }*/
+-
+             // Perform the insert
+             $this-&gt;db-&gt;executeInsert( $this-&gt;table, $values );
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php	2007-01-22 22:32:27 UTC (rev 2340)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDPersistent.php	2007-01-23 08:36:20 UTC (rev 2341)
+@@ -44,6 +44,11 @@
+      *  This class is able to save and load persistent data. This data stay active between different requests and allows
+      *  you to share data between different requests and different sessions.
+      *
++     *  @todo
++     *      The default scope of the persistent variable should be the current script in stead of the root of the site.
++     *      The problem is that if you use the variable for e.g. storing sorting data, and use different ones over
++     *      different pages, they clash with each other.
++     *
+      *  @ingroup YDFramework
+      */
+     class YDPersistent extends YDBase {
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-22 22:32:27 UTC (rev 2340)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDRequest.php	2007-01-23 08:36:20 UTC (rev 2341)
+@@ -267,6 +267,13 @@
+          *					the default action.
+          *	@param $params	(optional) The $_GET parameters as an associative array that need to be added to the URL
+          *					before redirecting. They will automatically get URL encoded.
++         *
++         *  @todo
++         *      Use the YDUrl class to construct the URL as it's easier to work with and will help with the todo item
++         *      that should strip the default action from the URL.
++         *
++         *  @todo
++         *      If the only query string parameter is the do parameter with the value default, we should omit it.
+          */
+         function redirectToAction( $action='default', $params=array() ) {
+             if ( is_null( $action ) ) {
+@@ -303,11 +310,7 @@
+          *	@returns	Returns a boolean indicating if the request was initialized properly or not.
+          */
+         function isInitialized() {
+-            if ( $this-&gt;__isInitialized == true ) {
+-                return true;
+-            } else {
+-                return false;
+-            };
++            return ( $this-&gt;__isInitialized == true );
+         }
+ 
+         /**
+@@ -391,11 +394,7 @@
+          *	@param $bool	Boolean indicating if this request requires authentication or not.
+          */
+         function setRequiresAuthentication( $bool ) {
+-            if ( $bool == true ) {
+-                $this-&gt;__requiresAuthentication = true;
+-            } else {
+-                $this-&gt;__requiresAuthentication = false;
+-            }
++            $this-&gt;__requiresAuthentication = ( $bool == true ) ? true : false;
+         }
+ 
+         /**
+@@ -404,11 +403,7 @@
+          *	@returns	This function returns true or false to indicate if this requires authentication or not.
+          */
+         function getRequiresAuthentication() {
+-            if ( $this-&gt;__requiresAuthentication == false ) {
+-                return false;
+-            } else {
+-                return true;
+-            }
++            return ( $this-&gt;__requiresAuthentication == false ) ? false : true;
+         }
+ 
+         /**
+@@ -466,28 +461,37 @@
+          *
+          *  By default no YDRequest action callbacks are defined.
+          *
+-         *  Callbacks are disabled when an action forwards to another
+-         *  action. This is to prevent duplicated processing of callbacks.
+-         *  &quot;redirectToAction&quot; is a more compatible with callbacks.
++         *  Callbacks are disabled when an action forwards to another action. This is to prevent duplicated processing 
++         *  of callbacks. &quot;redirectToAction&quot; is a more compatible with callbacks.
+          *
+-         *  Processing of callbacks and actions in the context of a request
+-         *  is executed in this order:
++         *  Processing of callbacks and actions in the context of a request is executed in this order:
+          *
+-         *    1. (optional) before 'action' callbacks - apply to all actions
+-         *    2. (optional) before callback for the current action
+-         *	  3. Current action
+-         *    4. (optional) after callback for the current action
+-         *    5. (optional) after 'action' callbacks - apply to all actions
++         *      -# (optional) before 'action' callbacks - apply to all actions
++         *      -# (optional) before callback for the current action
++         *      -# Current action
++         *      -# (optional) after callback for the current action
++         *      -# (optional) after 'action' callbacks - apply to all actions
+          *
+-         *	example 1: will execute my_before_callback() before each action
+-         *		$this-&gt;registerCallback( 'my_before_callback', 'action', true );
++         *  Some usage examples:
+          *
+-         *	example 2: will execute my_after_callback() after each action
+-         *		$this-&gt;registerCallback( 'my_after_callback', 'action', false );
++         *      - example 1:\n
++         *          will execute my_before_callback() before each action
++         *          @code
++         *  $this-&gt;registerCallback( 'my_before_callback', 'action', true );
++         *          @endcode
+          *
+-         *	example 3: will execute my_deafult_after_callback() after actionDefault
+-         *		$this-&gt;registerCallback( 'my_deafult_after_callback', 'actionDefault', false );
++         *      - example 2:\n
++         *          will execute my_after_callback() after each action
++         *          @code
++         *  $this-&gt;registerCallback( 'my_after_callback', 'action', false );
++         *          @endcode
+          *
++         *      - example 3:\n
++         *          will execute my_deafult_after_callback() after actionDefault
++         *          @code
++         *  $this-&gt;registerCallback( 'my_deafult_after_callback', 'actionDefault', false );
++         *          @endcode
++         *
+          *  @param $method  The method name.
+          *  @param $action  The action or array of actions that trigger the call.
+          *  @param $before  (optional) Execute callback before the action. Default: false.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000933.html">[ydf-devel] r2340 - YDFramework2.0/trunk/examples
+</A></li>
+	<LI>Next message: <A HREF="000935.html">[ydf-devel] r2342 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#934">[ date ]</a>
+              <a href="thread.html#934">[ thread ]</a>
+              <a href="subject.html#934">[ subject ]</a>
+              <a href="author.html#934">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

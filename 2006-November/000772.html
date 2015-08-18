@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2213 - YDFramework2.0/trunk/YDFramework2/YDClasses
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2213%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611171944.kAHJivel025284%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000771.html">
+   <LINK REL="Next"  HREF="000773.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2213 - YDFramework2.0/trunk/YDFramework2/YDClasses</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2213%20-%20YDFramework2.0/trunk/YDFramework2/YDClasses&In-Reply-To=%3C200611171944.kAHJivel025284%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2213 - YDFramework2.0/trunk/YDFramework2/YDClasses">ximian at mail.berlios.de
+       </A><BR>
+    <I>Fri Nov 17 20:44:57 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000771.html">[ydf-devel] r2212 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000773.html">[ydf-devel] r2214 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#772">[ date ]</a>
+              <a href="thread.html#772">[ thread ]</a>
+              <a href="subject.html#772">[ subject ]</a>
+              <a href="author.html#772">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-11-17 20:44:39 +0100 (Fri, 17 Nov 2006)
+New Revision: 2213
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+Log:
+on YDDatabaseTree3:
+  * simple cleanups
+  * added default order by
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-17 19:02:14 UTC (rev 2212)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabaseTree3.php	2006-11-17 19:44:39 UTC (rev 2213)
+@@ -27,7 +27,7 @@
+     }
+ 
+ 	// add YDF libs needed by this class
+-	YDInclude( 'YDDatabaseObject.php' );
++	require_once( YD_DIR_HOME_ADD . '/YDDatabaseObject/YDDatabaseObject.php' );
+ 
+ 
+     /** Database scheme example
+@@ -91,6 +91,9 @@
+ 			$this-&gt;__lineage  = $lineageField;
+ 			$this-&gt;__level    = $levelField;
+ 			$this-&gt;__position = $positionField;
++
++			// define a generic tree order
++			$this-&gt;order( $this-&gt;__parent . ' ASC,' . $this-&gt;__position .' ASC' );
+ 		}
+ 
+ 
+@@ -111,7 +114,7 @@
+         /**
+          *  This function will escape all array elements with the quotes appropriate for the database backend.
+          *
+-         *  @param $array  The array to escape. Eg: array( 1, null, 'hi' ) will result in &quot;1, null, 'hi'&quot;
++         *  @param $arr  The array to escape. Eg: array( 1, null, 'hi' ) will result in &quot;1, null, 'hi'&quot;
+          *
+          *  @returns    The escaped string surrounded by quotes.
+          */
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000771.html">[ydf-devel] r2212 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000773.html">[ydf-devel] r2214 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#772">[ date ]</a>
+              <a href="thread.html#772">[ thread ]</a>
+              <a href="subject.html#772">[ subject ]</a>
+              <a href="author.html#772">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1746 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1746%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples&In-Reply-To=%3C200602271614.k1RGEWHq001159%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000161.html">
+   <LINK REL="Next"  HREF="000163.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1746 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1746%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/YDClasses%20examples&In-Reply-To=%3C200602271614.k1RGEWHq001159%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1746 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples">pclaerhout at berlios.de
+       </A><BR>
+    <I>Mon Feb 27 17:14:32 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000161.html">[ydf-devel] r1745 - in YDFramework2.0/trunk: YDFramework2 YDFramework2/YDClasses examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000163.html">[ydf-devel] r1747 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#162">[ date ]</a>
+              <a href="thread.html#162">[ thread ]</a>
+              <a href="subject.html#162">[ subject ]</a>
+              <a href="author.html#162">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-27 17:14:25 +0100 (Mon, 27 Feb 2006)
+New Revision: 1746
+
+Added:
+   YDFramework2.0/trunk/examples/database_named_instances.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+   YDFramework2.0/trunk/examples/index.tpl
+Log:
+Added support for named database instances.
+
+Feature Request #1756
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-27 15:42:43 UTC (rev 1745)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDDatabase.php	2006-02-27 16:14:25 UTC (rev 1746)
+@@ -445,6 +445,69 @@
+     class YDDatabase extends YDBase {
+ 
+         /**
++         *  This function registers a named database instance.
++         *
++         *  @param $name    The name of the database instance.
++         *  @param $driver  Name of the database driver or array containing drivername, file name and class name.
++         *  @param $db      Database name to use for the connection.
++         *  @param $user    (optional) User name to use for the connection.
++         *  @param $pass    (optional) Password to use for the connection.
++         *  @param $host    (optional) Host name to use for the connection.
++         *
++         *  @static
++         */
++        function registerInstance( $name, $driver, $db, $user='', $pass='', $host='' ) {
++
++            // Check if the global array exists
++            YDDatabase::_initNamedInstances();
++
++            // Register the instance
++            $GLOBALS['YD_DB_INSTANCES'][ strtolower( $name ) ] = array( $driver, $db, $user, $pass, $host );
++
++        }
++
++        /**
++         *  This function will return a YDDatabaseDriver instance for the named database instance. If no instance is
++         *  given, the one with the name &quot;default&quot; will be used.
++         *
++         *  @param $name    (optional) The name of the database instance. Defaults to &quot;default&quot;.
++         *
++         *  @returns    An instance of YDDatabaseDriver
++         *
++         *  @static
++         */
++        function getNamedInstance( $name='default' ) {
++
++            // Check if the global array exists
++            YDDatabase::_initNamedInstances();
++
++            // Trigger an error if the named instance doesn't exist.
++            if ( ! array_key_exists( strtolower( $name ), $GLOBALS['YD_DB_INSTANCES'] ) ) {
++                trigger_error( 'The named database instance &quot;' . $name . '&quot; is not defined.', YD_ERROR );
++            }
++
++            // Get the parameters
++            $params = $GLOBALS['YD_DB_INSTANCES'][ strtolower( $name ) ];
++
++            // Return the right named instance
++            return YDDatabase::getInstance( $params[0], $params[1], $params[2], $params[3], $params[4] );
++
++        }
++
++        /**
++         *  Function to setup the array for the named instances.
++         *
++         *  @internal
++         *
++         *  @static
++         */
++        function _initNamedInstances() {
++            if ( ! isset( $GLOBALS['YD_DB_INSTANCES'] ) ) {
++                $GLOBALS['YD_DB_INSTANCES'] = array();
++            }
++        }
++
++        /**
+          *  Using this static function, you can get an instance of a YDDatabaseDriver class.
+          *
+          *  @param $driver  Name of the database driver or array containing drivername, file name and class name.
+@@ -452,6 +515,10 @@
+          *  @param $user    (optional) User name to use for the connection.
+          *  @param $pass    (optional) Password to use for the connection.
+          *  @param $host    (optional) Host name to use for the connection.
++         *
++         *  @returns    An instance of YDDatabaseDriver
++         *
++         *  @static
+          */
+         function getInstance( $driver, $db, $user='', $pass='', $host='' ) {
+ 
+
+Added: YDFramework2.0/trunk/examples/database_named_instances.php
+===================================================================
+--- YDFramework2.0/trunk/examples/database_named_instances.php	2006-02-27 15:42:43 UTC (rev 1745)
++++ YDFramework2.0/trunk/examples/database_named_instances.php	2006-02-27 16:14:25 UTC (rev 1746)
+@@ -0,0 +1,49 @@
++&lt;?php
++
++    // Standard include
++    include_once( dirname( __FILE__ ) . '/../YDFramework2/YDF2_init.php' );
++
++    // Includes
++    YDInclude( 'YDRequest.php' );
++    YDInclude( 'YDDatabase.php' );
++
++    // Class definition
++    class database_named_instances extends YDRequest {
++
++        // Class constructor
++        function database_named_instances() {
++            $this-&gt;YDRequest();
++        }
++
++        // Default action
++        function actionDefault() {
++
++            // Register the named instances
++            YDDatabase::registerInstance( 'default',  'mysql', 'ydweblog', 'root', '', 'localhost' );
++            YDDatabase::registerInstance( 'db_mysql', 'mysql', 'mysql',    'root', '', 'localhost' );
++            YDDatabase::registerInstance( 'db_test',  'mysql', 'test',     'root', '', 'localhost' );
++
++            // Get the default instance
++            $db1 = YDDatabase::getNamedInstance();
++            YDDebugUtil::dump( $db1, 'default instance, no name given' );
++
++            // Get the default instance using it's name
++            $db1 = YDDatabase::getNamedInstance( 'DEFAULT' );
++            YDDebugUtil::dump( $db1, 'default instance, using name' );
++
++            // Get the db_mysql instance using it's name
++            $db1 = YDDatabase::getNamedInstance( 'db_mysql' );
++            YDDebugUtil::dump( $db1, 'db_mysql instance' );
++
++            // Get the db_bba_v2 instance using it's name
++            $db1 = YDDatabase::getNamedInstance( 'db_test' );
++            YDDebugUtil::dump( $db1, 'db_test instance' );
++
++        }
++
++    }
++
++    // Process the request
++    YDInclude( 'YDF2_process.php' );
++
++?&gt;
+
+Modified: YDFramework2.0/trunk/examples/index.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/index.tpl	2006-02-27 15:42:43 UTC (rev 1745)
++++ YDFramework2.0/trunk/examples/index.tpl	2006-02-27 16:14:25 UTC (rev 1746)
+@@ -316,7 +316,7 @@
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
+-            &lt;td rowspan=&quot;11&quot; valign=&quot;top&quot;&gt;
++            &lt;td rowspan=&quot;12&quot; valign=&quot;top&quot;&gt;
+             &lt;p&gt;&nbsp;&lt;/p&gt;&lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;&lt;a href=&quot;database.php&quot;&gt;Database connectivity - Native functions&lt;/a&gt; &lt;/td&gt;
+             &lt;td valign=&quot;top&quot;&gt;
+@@ -401,6 +401,14 @@
+             &lt;/td&gt;
+         &lt;/tr&gt;
+         &lt;tr&gt;
++            &lt;td valign=&quot;top&quot;&gt;
++                &lt;a href=&quot;database_named_instances.php&quot;&gt;Using named database instances/a&gt;&lt;br/&gt;
++            &lt;/td&gt;
++            &lt;td valign=&quot;top&quot;&gt;
++                &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=source&amp;id=database_named_instances.php&quot;&gt;database_named_instances.php&lt;/a&gt;
++            &lt;/td&gt;
++        &lt;/tr&gt;
++        &lt;tr&gt;
+             &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;&nbsp;&lt;br/&gt;Using files, images and directories&lt;/b&gt;&lt;/td&gt;
+             &lt;td width=&quot;43%&quot;&gt;&lt;b&gt;&nbsp;&lt;/b&gt;&lt;/td&gt;
+         &lt;/tr&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000161.html">[ydf-devel] r1745 - in YDFramework2.0/trunk: YDFramework2 YDFramework2/YDClasses examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000163.html">[ydf-devel] r1747 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#162">[ date ]</a>
+              <a href="thread.html#162">[ thread ]</a>
+              <a href="subject.html#162">[ subject ]</a>
+              <a href="author.html#162">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

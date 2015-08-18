@@ -1,0 +1,723 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2086 - in YDFramework2.0/trunk/examples/weblog: .	include manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2086%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20manage&In-Reply-To=%3C200609071043.k87AhSdW011763%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000602.html">
+   <LINK REL="Next"  HREF="000604.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2086 - in YDFramework2.0/trunk/examples/weblog: .	include manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2086%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%20.%0A%09include%20manage&In-Reply-To=%3C200609071043.k87AhSdW011763%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2086 - in YDFramework2.0/trunk/examples/weblog: .	include manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Thu Sep  7 12:43:28 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000602.html">[ydf-devel] r2085 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        <LI>Next message: <A HREF="000604.html">[ydf-devel] r2087 - in YDFramework2.0/trunk/examples/weblog: .	include skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#603">[ date ]</a>
+              <a href="thread.html#603">[ thread ]</a>
+              <a href="subject.html#603">[ subject ]</a>
+              <a href="author.html#603">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-09-07 12:43:23 +0200 (Thu, 07 Sep 2006)
+New Revision: 2086
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/archive.php
+   YDFramework2.0/trunk/examples/weblog/archive_gallery.php
+   YDFramework2.0/trunk/examples/weblog/category.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+   YDFramework2.0/trunk/examples/weblog/index.php
+   YDFramework2.0/trunk/examples/weblog/item.php
+   YDFramework2.0/trunk/examples/weblog/item_gallery.php
+   YDFramework2.0/trunk/examples/weblog/manage/cache.php
+   YDFramework2.0/trunk/examples/weblog/manage/categories.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.php
+   YDFramework2.0/trunk/examples/weblog/manage/items.php
+   YDFramework2.0/trunk/examples/weblog/manage/pages.php
+   YDFramework2.0/trunk/examples/weblog/page.php
+   YDFramework2.0/trunk/examples/weblog/xml.php
+Log:
+Some major code cleanup.
+
+Modified: YDFramework2.0/trunk/examples/weblog/archive.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/archive.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/archive.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -23,10 +23,8 @@
+             // Convert to a nested array
+             $items = YDArrayUtil::convertToNested( $items, 'yearmonth' );
+ 
+-            // Add them to the template
++            // Assign the variables to the template
+             $this-&gt;tpl-&gt;assign( 'items', $items );
+-
+-            // Set the title
+             $this-&gt;tpl-&gt;assign( 'title', t('archives') );
+ 
+             // Display the template
+
+Modified: YDFramework2.0/trunk/examples/weblog/archive_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/archive_gallery.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/archive_gallery.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -29,10 +29,8 @@
+                 }
+             }
+ 
+-            // Add them to the template
++            // Assign the variables to the template
+             $this-&gt;tpl-&gt;assign( 'items', $items );
+-
+-            // Set the title
+             $this-&gt;tpl-&gt;assign( 'title', t('archives_gallery') );
+ 
+             // Display the template
+
+Modified: YDFramework2.0/trunk/examples/weblog/category.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/category.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/category.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -24,11 +24,9 @@
+             // Get the category items
+             $items = $this-&gt;weblog-&gt;getItemsByCategoryId( $id );
+ 
+-            // Add them to the template
++            // Assign the variables to the template
+             $this-&gt;tpl-&gt;assign( 'category', $category );
+             $this-&gt;tpl-&gt;assign( 'items',    $items );
+-
+-            // Set the title
+             $this-&gt;tpl-&gt;assign(
+                 'title', t('archive_for_the') . '\'' . $category['title'] . '\' ' .  strtolower( t('category') )
+             );
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogRequest.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -86,34 +86,20 @@
+ 
+         // Function to show a thumbnail
+         function actionThumbnail() {
+-
+-            // Get the image name
+             if ( ! isset( $_GET['id'] ) ) {
+                 die( 'No image selected.' );
+             }
+-
+-            // Create a new image object
+             $img = new YDFSImage( dirname( __FILE__ ) . '/../' . YDConfig::get( 'dir_uploads', 'uploads' ) . '/' . $_GET['id'] );
+-
+-            // Output the thumbnail
+             $img-&gt;outputThumbnail( 100, 100 );
+-
+         }
+ 
+         // Function to show a thumbnail
+         function actionThumbnailSmall() {
+-
+-            // Get the image name
+             if ( ! isset( $_GET['id'] ) ) {
+                 die( 'No image selected.' );
+             }
+-
+-            // Create a new image object
+             $img = new YDFSImage( YDConfig::get( 'dir_uploads', 'uploads' ) . '/' . $_GET['id'] );
+-
+-            // Output the thumbnail
+             $img-&gt;outputThumbnail( 48, 48 );
+-
+         }
+ 
+         // Function to get the ID from the query string
+@@ -193,53 +179,28 @@
+ 
+         // Fetch a template
+         function fetch( $customTpl=null ) {
+-
+-            // Initialize the template
+             $this-&gt;initTemplate();
+-
+-            // Log a request to the stats
+             $this-&gt;_logRequest();
+-
+-            // Parse the template
+             $data = $this-&gt;tpl-&gt;fetch( $customTpl );
+-
+-            // Check if caching is enabled
+             if ( YDConfig::get( 'use_cache', false ) ) {
+-
+-                // Save the cache if needed
+                 if ( $this-&gt;caching === true ) {
+-
+-                    // Save the cache
+                     $f = fopen( YD_WEBLOG_CACHE_FNAME, 'wb' );
+                     fwrite( $f, $data );
+                     fclose( $f );
+-
+                 }
+-
+             }
+-
+-            // Return the parsed templaet
+             return $data;
+-
+         }
+ 
+         // Display the named template
+         function display( $customTpl=null ) {
+-
+-            // Display a fetched template
+             echo( $this-&gt;fetch( $customTpl ) );
+-
+         }
+ 
+         // Get the name of the template
+         function getTemplateName( $customTpl=null ) {
+-
+-            // Get the correct template name
+             $name = is_null( $customTpl ) ? strtolower( get_class( $this ) ) : $customTpl;
+-
+-            // Return the file path
+             return  $this-&gt;tpl-&gt;template_dir . $name . YD_TPL_EXT;
+-
+         }
+ 
+         // Function to disbable request logging
+@@ -379,36 +340,22 @@
+ 
+         // Function to show a thumbnail
+         function actionThumbnailSmall() {
+-
+-            // Get the image name
+             if ( ! isset( $_GET['id'] ) ) {
+                 die( 'No image selected.' );
+             }
+-
+-            // Create a new image object
+             $img = new YDFSImage( YDConfig::get( 'dir_uploads', '../uploads' ) . '/' . $_GET['id'] );
+-
+-            // Output the thumbnail
+             $img-&gt;outputThumbnail( 48, 48 );
+-
+         }
+ 
+         // Function to get the cookie path
+         function _getCookiePath() {
+-
+-            // Get the path
+             if ( YDStringUtil::endsWith( dirname( YD_SELF_SCRIPT ), '/manage' ) ) {
+                 $cookiePath = dirname( dirname( YD_SELF_SCRIPT ) );
+             } else {
+                 $cookiePath =  dirname( YD_SELF_SCRIPT );
+             }
+-
+-            // Trim the unneeded characters
+             $cookiePath = rtrim( str_replace( '\\', '/', $cookiePath ), '/' );
+-
+-            // Return the cookie path
+             return $cookiePath . '/';
+-
+         }
+ 
+         // The login action
+@@ -471,16 +418,9 @@
+ 
+         // Logout action
+         function actionLogout() {
+-
+-            // Get the path for the cookies
+             $cookiePath = $this-&gt;_getCookiePath();
+-
+-            // Set the cookie
+             setcookie( 'YD_USER_PASS', null, time() - 31536000, $cookiePath );
+-
+-            // Redirect to the login
+             $this-&gt;redirectToAction( 'login' );
+-
+         }
+ 
+         // Check for authentication
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblog_init.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -66,35 +66,18 @@
+         }
+     }
+ 
+-    // Check if the user wanted to use caching
++    // Cache output if needed
+     if ( YDConfig::get( 'use_cache', false ) ) {
+-
+-        // Check if we allow caching
+         if ( sizeof( $_POST ) == 0 ) {
+-
+-            // Check if there is a cache item for this request
+             if ( is_file( YD_WEBLOG_CACHE_FNAME ) ) {
+-
+-                // Output the cached item
+                 $data = file_get_contents( YD_WEBLOG_CACHE_FNAME );
+-
+-                // Include a cache filter if any
+                 @include( dirname( __FILE__ ) . '/cache_filter.php' );
+-
+-                // Add the elapsed time
+                 $elapsed = $GLOBALS['timer']-&gt;getElapsed();
+-
+-                // Log the request to the statistics
+                 $req = new YDWeblogRequest();
+                 $req-&gt;_logRequest();
+-
+-                // Add the statistics
+                 die( $data . YD_CRLF . '&lt;!-- #cached: ' . $elapsed . ' ms --&gt;' );
+-
+             }
+-
+         }
+-
+     }
+ 
+     // Include the standard modules
+@@ -102,7 +85,6 @@
+     YDInclude( 'YDUtil.php' );
+     YDInclude( 'YDForm.php' );
+     YDInclude( 'YDFileSystem.php' );
+-    YDInclude( 'YDFormElements/YDFormElement_TextArea.php' );
+ 
+     // Check if the weblog application is locked or not
+     $db = YDDatabase::getInstance(
+@@ -110,13 +92,6 @@
+         YDConfig::get( 'db_name', 'YDWeblog' ), YDConfig::get( 'db_user', 'root' ),
+         YDConfig::get( 'db_pass', '' ), YDConfig::get( 'db_host', 'localhost' )
+     );
+-    $tables = $db-&gt;getRecords( 'show tables' );
+-    $table_field_name = 'tables_in_' . strtolower( YDConfig::get( 'db_name', 'YDWeblog' ) );
+-    foreach ( $tables as $table ) {
+-        if ( strtolower( $table[$table_field_name] ) == YDConfig::get( 'db_prefix', '' ) . 'locked' ) {
+-            die( 'Weblog application is being updated. Please come again later.' );
+-        }
+-    }
+ 
+     // Set the right locale
+     $language = YDConfig::get( 'weblog_language', 'en' );
+@@ -239,39 +214,10 @@
+ 
+         // Class constructor
+         function YDWeblogForm( $name, $method='post', $action='', $target='_self', $attributes=array() ) {
+-
+-            // Initialize the parent
+             $this-&gt;YDForm( $name, $method, $action, $target, $attributes );
+-
+-            // Set the required
+             $this-&gt;setHtmlRequired( '', ' &lt;span class=&quot;required&quot;&gt;(' . t( 'required' ) . ')&lt;/span&gt;' );
+-
+-            // Register the form element
+-            $this-&gt;registerElement( 'wlbbtextarea', 'YDWeblogFormElement_BBTextArea' );
+-            $this-&gt;registerElement( 'wladmintextarea', 'YDFormElement_AdminTextArea' );
+-
+         }
+ 
+     }
+ 
+-    // A BB Text Area form element
+-    class YDWeblogFormElement_BBTextArea extends YDFormElement_TextArea {
+-
+-        // Class constructor
+-        function YDWeblogFormElement_BBTextArea( $form, $name, $label='', $attributes=array(), $options=array() ) {
+-            $this-&gt;YDFormElement_TextArea( $form, $name, $label, $attributes, $options );
+-        }
+-
+-    }
+-
+-    // Custom bbtext area
+-    class YDFormElement_AdminTextArea extends YDWeblogFormElement_BBTextArea {
+-
+-        // Class constructor
+-        function YDFormElement_AdminTextArea( $form, $name, $label='', $attributes=array(), $options=array() ) {
+-            $this-&gt;YDWeblogFormElement_BBTextArea( $form, $name, $label, $attributes, $options );
+-        }
+-
+-    }
+-
+-?&gt;
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/examples/weblog/index.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/index.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/index.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -15,13 +15,13 @@
+         function actionDefault() {
+ 
+             // Get the ID from the query string
+-            $id = $this-&gt;getIdFromQS();
++            $id = $this-&gt;getQueryStringParameterAsInt( 'id', -1 );
+             if ( $id != -1 ) {
+                 $this-&gt;redirect( 'item.php?id=' . $id );
+             }
+ 
+             // Add support for itemid query strings
+-            $id = @is_numeric( $_GET['itemid'] ) ? intval( $_GET['itemid'] ) : -1;
++            $id = $this-&gt;getQueryStringParameterAsInt( 'itemid', -1 );
+             if ( $id != -1 ) {
+                 $this-&gt;redirect( 'item.php?id=' . $id );
+             }
+@@ -30,7 +30,7 @@
+             $items     = $this-&gt;weblog-&gt;getPublicItems( YDConfig::get( 'weblog_entries_fp', 5 ) );
+             $old_items = $this-&gt;weblog-&gt;getPublicItems( YDConfig::get( 'weblog_entries_fp', 5 ), sizeof( $items ) );
+ 
+-            // Assign them to the template
++            // Assign the variables to the template
+             $this-&gt;tpl-&gt;assign( 'items',     $items );
+             $this-&gt;tpl-&gt;assign( 'old_items', $old_items );
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/item.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/item.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -30,9 +30,6 @@
+             $item  = @ $this-&gt;weblog-&gt;getPublicItemById( $id );
+             $this-&gt;redirectIfMissing( $item );
+ 
+-            // Set the title
+-            $this-&gt;tpl-&gt;assign( 'title', $item['title'] );
+-
+             // Get the related items
+             $related_items = $this-&gt;weblog-&gt;getRelatedItemsByItem( YDConfig::get( 'weblog_entries_fp', 5 ), $item );
+ 
+@@ -42,7 +39,8 @@
+             // Get the comments
+             $comments = $this-&gt;weblog-&gt;getComments( $id );
+ 
+-            // Add them to the template
++            // Assign the variables to the template
++            $this-&gt;tpl-&gt;assign( 'title', $item['title'] );
+             $this-&gt;tpl-&gt;assign( 'item', $item );
+             $this-&gt;tpl-&gt;assign( 'related_items', $related_items );
+             $this-&gt;tpl-&gt;assign( 'comments', $comments );
+
+Modified: YDFramework2.0/trunk/examples/weblog/item_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/item_gallery.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -64,11 +64,9 @@
+                 $image-&gt;exif = null;
+             }
+ 
+-            // Add them to the template
++            // Assign the variables to the template
+             $this-&gt;tpl-&gt;assign( 'item',  $item );
+             $this-&gt;tpl-&gt;assign( 'image', $image );
+-
+-            // Set the title
+             $this-&gt;tpl-&gt;assign( 'title', $item['title'] . ' &raquo; ' . $image-&gt;getBasenameNoExt() );
+ 
+             // Display the template
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/cache.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/cache.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/manage/cache.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -8,10 +8,7 @@
+ 
+         // Class constructor
+         function cache() {
+-
+-            // Initialize the parent
+             $this-&gt;YDWeblogAdminRequest();
+-
+         }
+ 
+         // Default action
+@@ -32,7 +29,6 @@
+             $form-&gt;addElement( 'submit', '_cmdSubmit', t( 'cleanup' ), array( 'class' =&gt; 'button' ) );
+             $form-&gt;setDefaults( array( 'cache_pub' =&gt; 1, 'cache_web' =&gt; 1, 'cache_tmb' =&gt; 1, 'cache_tpl' =&gt; 1 ) );
+ 
+-
+             // Validate the form
+             if ( $form-&gt;validate() == true ) {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/categories.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/categories.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/manage/categories.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -77,34 +77,18 @@
+ 
+             // Add a form rule for new links
+             if ( $this-&gt;form-&gt;getValue( 'id' ) == '' ) {
+-
+-                // Add a rule to make sure the category is unique
+                 $this-&gt;form-&gt;addFormRule( array( &amp; $this, 'checkUniqueCategory' ) );
+-
+             }
+ 
+             // Process the form
+             if ( $this-&gt;form-&gt;validate() === true ) {
+-
+-                // Get the form values
+                 $values = $this-&gt;form-&gt;getValues();
+-
+-                // If there is an ID, we do an edit
+                 if ( $values['id'] ) {
+-
+-                    // Update the database
+                     $this-&gt;weblog-&gt;updateCategory( $values );
+-
+                 } else {
+-
+-                    // Add it to the database
+                     $this-&gt;weblog-&gt;addCategory( $values );
+-
+                 }
+-
+-                // Redirect to the default acton
+                 $this-&gt;redirectToAction();
+-
+             }
+ 
+             // Add the form to the template
+@@ -117,36 +101,21 @@
+ 
+         // Delete a category
+         function actionDelete() {
+-
+-            // Get the ID from the query string
+             $id = $this-&gt;getIdFromQS();
+-
+-            // If there is something, set the defaults
+             if ( $id ) {
+-
+-                // Delete the category
+                 $this-&gt;weblog-&gt;deleteCategory( $id );
+-
+             }
+-
+-            // Redirect to the default acton
+             $this-&gt;redirectToAction();
+-
+         }
+ 
+         // Check for a unique category
+         function checkUniqueCategory( $values ) {
+-
+-            // Get the category by name
+             $category = $this-&gt;weblog-&gt;getCategoryByName( $values['title'] );
+-
+-            // Return an error if it exists
+             if ( $category ) {
+                 return array( '__ALL__' =&gt; t( 'err_unique_category' ) );
+             } else {
+                 return true;
+             }
+-
+         }
+ 
+     }
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -8,10 +8,7 @@
+ 
+         // Class constructor
+         function comments() {
+-
+-            // Initialize the parent
+             $this-&gt;YDWeblogAdminRequest();
+-
+         }
+ 
+         // Default action
+@@ -70,7 +67,7 @@
+             $form-&gt;addElement( 'text',            'username',    t('name'),    array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'text',            'useremail',   t('mail'),    array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'text',            'userwebsite', t('website'), array( 'class' =&gt; 'tfM' ) );
+-            $form-&gt;addElement( 'wladmintextarea', 'comment',     t('comment'), array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'textarea',        'comment',     t('comment'), array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'datetimeselect',  'created',     t('created_on'), array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'checkbox',        'is_spam',     t('is_spam'), array( 'style' =&gt; 'border: none;' ) );
+             $form-&gt;addElement( 'hidden',          'id' );
+@@ -123,10 +120,7 @@
+ 
+             // Check if the comment exists
+             if ( $form-&gt;getValue( 'id' ) == '' ) {
+-
+-                // Return to the default action
+                 $this-&gt;redirectToAction();
+-
+             }
+ 
+             // Process the form
+@@ -156,59 +150,29 @@
+ 
+         // Delete a category
+         function actionDelete() {
+-
+-            // Get the ID from the query string
+             $id = $this-&gt;getIdFromQS();
+-
+-            // If there is something, set the defaults
+             if ( $id ) {
+-
+-                // Delete the comment
+                 $this-&gt;weblog-&gt;deleteComment( $id );
+-
+             }
+-
+-            // Redirect to the default acton
+             $this-&gt;redirectToAction();
+-
+         }
+ 
+         // Action to mark a comment as spam
+         function actionMark_as_spam() {
+-
+-            // Get the ID from the query string
+             $id = $this-&gt;getIdFromQS();
+-
+-            // If there is something, set the defaults
+             if ( $id ) {
+-
+-                // Delete the comment
+                 $this-&gt;weblog-&gt;updateCommentAsSpam( $id );
+-
+             }
+-
+-            // Redirect to the default acton
+             $this-&gt;redirect( YD_SELF_SCRIPT . '?filter=spam' );
+-
+         }
+ 
+         // Action to unmark a comment as spam
+         function actionMark_as_not_spam() {
+-
+-            // Get the ID from the query string
+             $id = $this-&gt;getIdFromQS();
+-
+-            // If there is something, set the defaults
+             if ( $id ) {
+-
+-                // Delete the comment
+                 $this-&gt;weblog-&gt;updateCommentAsNotSpam( $id );
+-
+             }
+-
+-            // Redirect to the default acton
+             $this-&gt;redirectToAction();
+-
+         }
+ 
+     }
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/manage/items.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -54,8 +54,8 @@
+             // Create the edit form
+             $form = new YDWeblogForm( 'itemForm', 'POST', YD_SELF_SCRIPT . '?do=edit' );
+             $form-&gt;addElement( 'text',            'title',          t('item_title'),       array( 'class' =&gt; 'tfM' ) );
+-            $form-&gt;addElement( 'wladmintextarea', 'body',           t('item_body'),        array( 'class' =&gt; 'tfM' ) );
+-            $form-&gt;addElement( 'wladmintextarea', 'body_more',      t('item_body_more'),   array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'textarea',        'body',           t('item_body'),        array( 'class' =&gt; 'tfM' ) );
++            $form-&gt;addElement( 'textarea',        'body_more',      t('item_body_more'),   array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'select',          'category_id',    t('category'),         array( 'class' =&gt; 'tfM', 'style' =&gt; 'width: 100%' ), $categories );
+             $form-&gt;addElement( 'datetimeselect',  'created',        t('created_on'),       array( 'class' =&gt; 'tfM' ) );
+             $form-&gt;addElement( 'datetimeselect',  'modified',       t('last_modified_on'), array( 'class' =&gt; 'tfM' ) );
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/pages.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/pages.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/manage/pages.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -15,7 +15,7 @@
+             // Create the image upload form
+             $this-&gt;form = new YDWeblogForm( 'pageForm', 'POST', YD_SELF_SCRIPT . '?do=edit' );
+             $this-&gt;form-&gt;addElement( 'text', 'title', t('page_title'), array( 'class' =&gt; 'tfM' ) );
+-            $this-&gt;form-&gt;addElement( 'wladmintextarea', 'body', t('page_body'), array( 'class' =&gt; 'taM' ) );
++            $this-&gt;form-&gt;addElement( 'textarea', 'body', t('page_body'), array( 'class' =&gt; 'taM' ) );
+             $this-&gt;form-&gt;addElement( 'datetimeselect', 'created',     t('created_on'), array( 'class' =&gt; 'tfM' ) );
+             $this-&gt;form-&gt;addElement( 'checkbox',       'is_draft',    t('is_draft'), array( 'style' =&gt; 'border: none;' ) );
+             $this-&gt;form-&gt;addElement( 'hidden', 'id' );
+
+Modified: YDFramework2.0/trunk/examples/weblog/page.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/page.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/page.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -21,10 +21,8 @@
+             $page  = $this-&gt;weblog-&gt;getPublicPageById( $id );
+             $this-&gt;redirectIfMissing( $page );
+ 
+-            // Set the title
++            // Assign the variables to the template
+             $this-&gt;tpl-&gt;assign( 'title', $page['title'] );
+-
+-            // Add them to the template
+             $this-&gt;tpl-&gt;assign( 'page', $page );
+ 
+             // Display the template
+
+Modified: YDFramework2.0/trunk/examples/weblog/xml.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/xml.php	2006-09-07 10:22:16 UTC (rev 2085)
++++ YDFramework2.0/trunk/examples/weblog/xml.php	2006-09-07 10:43:23 UTC (rev 2086)
+@@ -11,10 +11,7 @@
+ 
+         // Class constructor
+         function xml() {
+-
+-            // Initialize the parent
+             $this-&gt;YDWeblogRequest();
+-
+         }
+ 
+         // Function to output the feed
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000602.html">[ydf-devel] r2085 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	<LI>Next message: <A HREF="000604.html">[ydf-devel] r2087 - in YDFramework2.0/trunk/examples/weblog: .	include skins/default skins/default_with_lightbox
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#603">[ date ]</a>
+              <a href="thread.html#603">[ thread ]</a>
+              <a href="subject.html#603">[ subject ]</a>
+              <a href="author.html#603">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

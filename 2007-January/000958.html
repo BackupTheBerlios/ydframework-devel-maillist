@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2365 - YDFramework2.0/trunk/doc_src
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2365%20-%20YDFramework2.0/trunk/doc_src&In-Reply-To=%3C200701241934.l0OJYLnV025190%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000957.html">
+   <LINK REL="Next"  HREF="000959.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2365 - YDFramework2.0/trunk/doc_src</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2365%20-%20YDFramework2.0/trunk/doc_src&In-Reply-To=%3C200701241934.l0OJYLnV025190%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2365 - YDFramework2.0/trunk/doc_src">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Jan 24 20:34:21 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000957.html">[ydf-devel] r2364 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes
+</A></li>
+        <LI>Next message: <A HREF="000959.html">[ydf-devel] r2366 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#958">[ date ]</a>
+              <a href="thread.html#958">[ thread ]</a>
+              <a href="subject.html#958">[ subject ]</a>
+              <a href="author.html#958">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-24 20:34:12 +0100 (Wed, 24 Jan 2007)
+New Revision: 2365
+
+Added:
+   YDFramework2.0/trunk/doc_src/ydsimplecms.xml
+Modified:
+   YDFramework2.0/trunk/doc_src/_ydframework.xml
+Log:
+Started writing some initial documentation on YDSimpleCMS.
+
+
+Modified: YDFramework2.0/trunk/doc_src/_ydframework.xml
+===================================================================
+--- YDFramework2.0/trunk/doc_src/_ydframework.xml	2007-01-24 18:58:01 UTC (rev 2364)
++++ YDFramework2.0/trunk/doc_src/_ydframework.xml	2007-01-24 19:34:12 UTC (rev 2365)
+@@ -36,6 +36,7 @@
+     &lt;!ENTITY addon_ydmysqldump SYSTEM &quot;ydmysqldump.xml&quot;&gt;
+     &lt;!ENTITY addon_ydsqlquery SYSTEM &quot;yddatabasequery.xml&quot;&gt;
+     &lt;!ENTITY addon_ydpdfreport SYSTEM &quot;ydpdfreport.xml&quot;&gt;
++    &lt;!ENTITY addon_ydsimplecms SYSTEM &quot;ydsimplecms.xml&quot;&gt;
+     &lt;!ENTITY bestpractices SYSTEM &quot;bestpractices.xml&quot;&gt;
+     &lt;!ENTITY faq SYSTEM &quot;faq.xml&quot;&gt;
+     &lt;!ENTITY config_vars SYSTEM &quot;config_vars.xml&quot;&gt;
+@@ -103,6 +104,7 @@
+     &amp;addon_ydmysqldump;
+     &amp;addon_ydsqlquery;
+     &amp;addon_ydpdfreport;
++    &amp;addon_ydsimplecms;
+     &amp;config_vars;
+     &faq;
+     &changelog;
+
+Added: YDFramework2.0/trunk/doc_src/ydsimplecms.xml
+===================================================================
+--- YDFramework2.0/trunk/doc_src/ydsimplecms.xml	2007-01-24 18:58:01 UTC (rev 2364)
++++ YDFramework2.0/trunk/doc_src/ydsimplecms.xml	2007-01-24 19:34:12 UTC (rev 2365)
+@@ -0,0 +1,100 @@
++&lt;?xml version='1.0' encoding=&quot;ISO-8859-1&quot;?&gt;
++&lt;chapter id=&quot;ydsimplecms&quot;&gt;
++
++    &lt;title&gt;Addon: YDSimpleCMS, a content management framework&lt;/title&gt;
++
++    &lt;para&gt;YDSimpleCMS is a content management framework inside the Yellow Duck Framework that makes it easy to build extensible and module content management systems.&lt;/para&gt;
++
++    &lt;sect1 id=&quot;ydsimplecms_introduction&quot;&gt;
++
++        &lt;title&gt;Introduction&lt;/title&gt;
++
++        &lt;para&gt;Currently, it's in the early stages of development, but the plan is to support the following features:&lt;/para&gt;
++
++        &lt;itemizedlist spacing=&quot;compact&quot;&gt;
++            &lt;listitem&gt;All contents is stored in a hierarchy in the database.&lt;/listitem&gt;
++            &lt;listitem&gt;Multilingual content and user interface.&lt;/listitem&gt;
++            &lt;listitem&gt;Modular approach to make extending the CMS easy and straightforward.&lt;/listitem&gt;
++            &lt;listitem&gt;Themeable user interface.&lt;/listitem&gt;
++        &lt;/itemizedlist&gt;
++
++    &lt;/sect1&gt;
++
++    &lt;sect1 id=&quot;ydsimplecms_overview&quot;&gt;
++
++        &lt;title&gt;Overview&lt;/title&gt;
++
++        &lt;para&gt;The YDSimpleCMS package uses different classes and items to do it's work. This chapter will try to give you a general overview of all the different classes that are used in the CMS framework.&lt;/para&gt;
++
++        &lt;sect2 id=&quot;ydsimplecms_overview_scope&quot;&gt;
++
++            &lt;title&gt;YDSimpleCMS scopes&lt;/title&gt;
++
++            &lt;para&gt;The YDSimpleCMS package uses the concept of &quot;scopes&quot; to define requests. We basically support two different request scope which are identified by the following constants:&lt;/para&gt;
++
++            &lt;itemizedlist spacing=&quot;compact&quot;&gt;
++                &lt;listitem&gt;YD_SIMPLECMS_SCOPE_PUBLIC&lt;/listitem&gt;
++                &lt;listitem&gt;YD_SIMPLECMS_SCOPE_ADMIN&lt;/listitem&gt;
++            &lt;/itemizedlist&gt;
++
++            &lt;para&gt;Whenever a SimpleCMS request is executed, it defines the scope for that request. Depending on the scope, different things happen with the request. In both scopes, a standard number of tasks are executed:&lt;/para&gt;
++
++            &lt;itemizedlist spacing=&quot;compact&quot;&gt;
++                &lt;listitem&gt;A connection with the database will be established&lt;/listitem&gt;
++                &lt;listitem&gt;An array which contains the menus and menu items for the administration menu is created and populated&lt;/listitem&gt;
++                &lt;listitem&gt;An instance of a module manager is created&lt;/listitem&gt;
++                &lt;listitem&gt;The ID of the site gets determined from the configuration&lt;/listitem&gt;
++                &lt;listitem&gt;The details of the browser are captured in a YDBrowserInfo object&lt;/listitem&gt;
++                &lt;listitem&gt;The language is negotiated with the browser&lt;/listitem&gt;
++            &lt;/itemizedlist&gt;
++
++            &lt;para&gt;However, after the initial setup, it depends on the scope to know how the request is going to be processed.&lt;/para&gt;
++
++            &lt;sect3 id=&quot;ydsimplecms_overview_scope_public&quot;&gt;
++
++                &lt;title&gt;YD_SIMPLECMS_SCOPE_PUBLIC&lt;/title&gt;
++
++                &lt;para&gt;The most important feature about the public scope is that authentication is not enforced. The user authentication does happen and the user details are populated, but if the authentication fails, the page will still be rendered.&lt;/para&gt;
++
++            &lt;/sect3&gt;
++
++            &lt;sect3 id=&quot;ydsimplecms_overview_scope_admin&quot;&gt;
++
++                &lt;title&gt;YD_SIMPLECMS_SCOPE_ADMIN&lt;/title&gt;
++
++                &lt;para&gt;The admin scope enforces authentication and will present the user with a login screen if the authentication fails. The user credentials are checked against the the #_users database table.&lt;/para&gt;
++
++            &lt;/sect3&gt;
++
++        &lt;/sect2&gt;
++
++        &lt;sect2 id=&quot;ydsimplecms_overview_ydsimplecms&quot;&gt;
++
++            &lt;title&gt;YDSimpleCMS class&lt;/title&gt;
++
++            &lt;para&gt;This YDSimpleCMS class is the heart of the SimpleCMS package and is the one that kicks in everything. Using it's run functions, you can process a new request. Depending on the scope of the request, you will either use YDSimpleCMS::runPublicRequest() or YDSimpleCMS::runAdminRequest(). Calling this function starts the request processing.&lt;/para&gt;
++
++            &lt;para&gt;The request processing happens in different steps and is always performed in the same manner.&lt;/para&gt;
++
++            &lt;para&gt;The first step is that the YDSimpleCMS package is initialized. This will run the common initialization functions to get the YDSimpleCMS package into a ready state. The initialization performs the following steps:&lt;/para&gt;
++
++            &lt;itemizedlist spacing=&quot;compact&quot;&gt;
++                &lt;listitem&gt;A connection with the database will be established&lt;/listitem&gt;
++                &lt;listitem&gt;An array which contains the menus and menu items for the administration menu is created and populated&lt;/listitem&gt;
++                &lt;listitem&gt;An instance of a module manager is created&lt;/listitem&gt;
++                &lt;listitem&gt;The ID of the site gets determined from the configuration&lt;/listitem&gt;
++                &lt;listitem&gt;The details of the browser are captured in a YDBrowserInfo object&lt;/listitem&gt;
++                &lt;listitem&gt;The language is negotiated with the browser&lt;/listitem&gt;
++            &lt;/itemizedlist&gt;
++
++            &lt;para&gt;Once the initialization is done, an new instance of the YDSimpleCMSRequest class is created. This class will then take over the request processing and perform the login procedure.&lt;/para&gt;
++
++            &lt;para&gt;After the login procedure, the query string variables called &quot;module&quot; and &quot;action&quot; are examined to find out which module and module action that needs to be run.&lt;/para&gt;
++
++            &lt;para&gt;The YDSimpleCMSRequest class now hands over the request processing to the module which does it's thing and renders output.&lt;/para&gt;
++
++        &lt;/sect2&gt;
++
++    &lt;/sect1&gt;
++
++&lt;/chapter&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000957.html">[ydf-devel] r2364 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes
+</A></li>
+	<LI>Next message: <A HREF="000959.html">[ydf-devel] r2366 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#958">[ date ]</a>
+              <a href="thread.html#958">[ thread ]</a>
+              <a href="subject.html#958">[ subject ]</a>
+              <a href="author.html#958">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

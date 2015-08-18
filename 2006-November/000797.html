@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2232 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2232%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200611202008.kAKK8jAW022499%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000798.html">
+   <LINK REL="Next"  HREF="000799.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2232 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2232%20-%20in%20YDFramework2.0/trunk/examples/weblog%3A%0A%09include%20include/languages%20manage&In-Reply-To=%3C200611202008.kAKK8jAW022499%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2232 - in YDFramework2.0/trunk/examples/weblog:	include include/languages manage">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 20 21:08:45 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000798.html">[ydf-devel] Akismet feedback
+</A></li>
+        <LI>Next message: <A HREF="000799.html">[ydf-devel] r2233 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#797">[ date ]</a>
+              <a href="thread.html#797">[ thread ]</a>
+              <a href="subject.html#797">[ subject ]</a>
+              <a href="author.html#797">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-11-20 21:08:45 +0100 (Mon, 20 Nov 2006)
+New Revision: 2232
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+   YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.php
+   YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+Log:
+Added an option to delete all spam messages.
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-20 19:52:06 UTC (rev 2231)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-11-20 20:08:45 UTC (rev 2232)
+@@ -941,6 +941,12 @@
+             }
+         }
+ 
++        // Delete the spam comments
++        function emptySpam() {
++            $sql = 'DELETE FROM #_comments WHERE is_spam = 1';
++            $this-&gt;db-&gt;executeSql( $sql );
++        }
++
+         // Function to resize an uploaded image. Takes a YDFSImage object as it's argument
+         function resizeUploadedImage( $image ) {
+ 
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-20 19:52:06 UTC (rev 2231)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_en.php	2006-11-20 20:08:45 UTC (rev 2232)
+@@ -251,6 +251,7 @@
+ $GLOBALS['t']['change_comment_desc'] = 'Change comment';
+ $GLOBALS['t']['mail'] = 'Email';
+ $GLOBALS['t']['no_comments_found'] = 'No comments were found';
++$GLOBALS['t']['no_spam_comments_found'] = 'No spam comments were found';
+ $GLOBALS['t']['posted_from'] = 'Posted from IP address';
+ $GLOBALS['t']['a_comments_spam'] = 'Spam comments';
+ $GLOBALS['t']['mark_as_spam'] = 'mark as spam';
+@@ -258,6 +259,8 @@
+ $GLOBALS['t']['is_spam'] = 'Spam comment';
+ $GLOBALS['t']['ip_number'] = 'IP number';
+ $GLOBALS['t']['spam_delete_desc'] = 'Spam comments are automatically deleted after 7 days.';
++$GLOBALS['t']['confirm_empty_spam'] = 'Are you sure you want to delete all spam comments?';
++$GLOBALS['t']['empty_spam_now'] = 'Delete all spam comments now.';
+ 
+ // manage/config.tpl
+ $GLOBALS['t']['cfg_db_settings'] = 'Database Settings';
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-20 19:52:06 UTC (rev 2231)
++++ YDFramework2.0/trunk/examples/weblog/include/languages/language_nl.php	2006-11-20 20:08:45 UTC (rev 2232)
+@@ -251,6 +251,7 @@
+ $GLOBALS['t']['change_comment_desc'] = 'Wijzig commentaar';
+ $GLOBALS['t']['mail'] = 'Email';
+ $GLOBALS['t']['no_comments_found'] = 'Er werden geen commentaren gevonden';
++$GLOBALS['t']['no_spam_comments_found'] = 'Er werden geen spam commentaren gevonden';
+ $GLOBALS['t']['posted_from'] = 'Gepost van het IP adres';
+ $GLOBALS['t']['a_comments_spam'] = 'Spam commentaren';
+ $GLOBALS['t']['mark_as_spam'] = 'markeer als spam';
+@@ -258,6 +259,8 @@
+ $GLOBALS['t']['is_spam'] = 'Spam commentaar';
+ $GLOBALS['t']['ip_number'] = 'IP nummer';
+ $GLOBALS['t']['spam_delete_desc'] = 'Spam commentaren worden automatisch verwijderd na 7 dagen.';
++$GLOBALS['t']['confirm_empty_spam'] = 'Bent u zeker dat u alle spam commentaren wil verwijderen?';
++$GLOBALS['t']['empty_spam_now'] = 'Verwijder nu alle spam commentaren.';
+ 
+ // manage/config.tpl
+ $GLOBALS['t']['cfg_db_settings'] = 'Database Instellingen';
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-11-20 19:52:06 UTC (rev 2231)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.php	2006-11-20 20:08:45 UTC (rev 2232)
+@@ -175,6 +175,12 @@
+             $this-&gt;redirectToAction();
+         }
+ 
++        // Empty the spam
++        function actionEmptySpam() {
++            $this-&gt;weblog-&gt;emptySpam();
++            $this-&gt;redirect( YD_SELF_SCRIPT . '?filter=spam' );
++        }
++
+     }
+ 
+     // Process the request
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/comments.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-20 19:52:06 UTC (rev 2231)
++++ YDFramework2.0/trunk/examples/weblog/manage/comments.tpl	2006-11-20 20:08:45 UTC (rev 2232)
+@@ -104,7 +104,10 @@
+                 &lt;/td&gt;
+             &lt;/tr&gt;
+         {else}
+-            &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;4&quot;&gt;&lt;i&gt;{t w=&quot;spam_delete_desc&quot;}&lt;/i&gt;&lt;/td&gt;&lt;/tr&gt;
++            &lt;tr&gt;&lt;td class=&quot;adminRowL&quot; colspan=&quot;4&quot;&gt;
++                &lt;i&gt;{t w=&quot;spam_delete_desc&quot;}. &lt;a href=&quot;{$YD_SELF_SCRIPT}?do=emptySpam&quot;
++                 onClick=&quot;return confirm( '{t w=&quot;confirm_empty_spam&quot;}' );&quot;&gt;{t w=&quot;empty_spam_now&quot;}&lt;/a&gt;&lt;/i&gt;
++            &lt;/td&gt;&lt;/tr&gt;
+             &lt;tr&gt;
+                 &lt;th class=&quot;adminRowL&quot; width=&quot;17%&quot;&gt;{t w=&quot;date&quot;}&lt;/th&gt;
+                 &lt;th class=&quot;adminRowL&quot; width=&quot;15%&quot;&gt;{t w=&quot;author&quot;}&lt;/th&gt;
+@@ -146,7 +149,13 @@
+         {/if}
+     {else}
+         &lt;tr&gt;
+-            &lt;td class=&quot;adminRowL&quot; colspan=&quot;7&quot;&gt;{t w=&quot;no_comments_found&quot;}&lt;/td&gt;
++            &lt;td class=&quot;adminRowL&quot; colspan=&quot;7&quot;&gt;
++                {if $filter == 'no_spam'}
++                    {t w=&quot;no_comments_found&quot;}
++                {else}
++                    {t w=&quot;no_spam_comments_found&quot;}
++                {/if}
++            &lt;/td&gt;
+         &lt;/tr&gt;
+     {/if}
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000798.html">[ydf-devel] Akismet feedback
+</A></li>
+	<LI>Next message: <A HREF="000799.html">[ydf-devel] r2233 - YDFramework2.0/trunk/examples/weblog/manage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#797">[ date ]</a>
+              <a href="thread.html#797">[ thread ]</a>
+              <a href="subject.html#797">[ subject ]</a>
+              <a href="author.html#797">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] YDAjax and mootools
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20mootools&In-Reply-To=%3C20061118144014.2031.qmail%40web54008.mail.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000779.html">
+   <LINK REL="Next"  HREF="000776.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] YDAjax and mootools</H1>
+    <B>maximus meridius</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20YDAjax%20and%20mootools&In-Reply-To=%3C20061118144014.2031.qmail%40web54008.mail.yahoo.com%3E"
+       TITLE="[ydf-devel] YDAjax and mootools">maximus_meridius79 at yahoo.com
+       </A><BR>
+    <I>Sat Nov 18 15:40:14 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000779.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+        <LI>Next message: <A HREF="000776.html">[ydf-devel] r2215 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#775">[ date ]</a>
+              <a href="thread.html#775">[ thread ]</a>
+              <a href="subject.html#775">[ subject ]</a>
+              <a href="author.html#775">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>  Hi,
+
+Does anyone have any suggestions or comments on YDLayers that I created? It is working quite well for creating modal lightbox style forms andpopups within the page.
+
+My e-mail to this list on 30 October has a screenshot.
+
+Note that these both require:
+<A HREF="http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2791&amp;group_id=3988(add">http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2791&amp;group_id=3988(add</A> YDAjax::isOnResponse )
+<A HREF="http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2824&amp;group_id=3988(add">http://developer.berlios.de/feature/?func=detailfeature&amp;feature_id=2824&amp;group_id=3988(add</A> YDTemplate::addJavascriptUrl )
+
+Thanks,
+
+Graeme
+
+maximus meridius wrote:    Hi,
+  
+I have created a new class called YDLayer to work alongside YDAjax forcreating dynamic layers. This is to keep the complexity outside ofYDAjax rather than my earlier attempt to add draggables. The mootoolsjavascript library is used for this instead of moofx. 
+  
+There is an attached screenshot for the example.
+  
+Layers have the following characteristics:
+      
+   layers can be optionally modal (this relies on special css&quot;#overlay&quot; - see the example)
+        
+   layers can be optionally dragged    
+   layers can have a title    
+   mutliple layers can be instantiated    
+   layers have a html id automatically assigned and a close linkgenerated
+        
+   layers can be dynamically opened or closed
+        
+   layers can be dynamically closed in response
+        
+   layers can be centered    
+   layers can be used to contain a form    
+   layers can be inserted and hence contained in parent elements (this is currently buggy in browsers such as explorer ). The dragging isbuggy since the positioning is wrong.
+      
+The layer code works in IE6, IE7, Firefox, Safari and Opera. Safari hasissues with the wrong mouse cursors being displayed.
+  
+A tarball with the following code is attached:
+  
+./js/mootools.svn.compressed.83.js
+./js/mootools.svn.83.js
+./js/ydtools.js
+./examples/index.php
+./examples/ajax/layer.php
+./examples/ajax/layer.tpl
+./YDFramework2/YDClasses/YDTemplate.php
+./YDFramework2/addons/YDAjax/YDAjax.php
+./YDFramework2/addons/YDAjax/YDLayer.php
+./examples/ajax/close-icon.png
+  
+This is some of the rationale in the way I constructed it:
+      
+   I added a new method to the smarty version of YDTemplate toprovide for linked javascript in addition to javascript embedded in thetemplate head. The reason for this is that the compressed mootoolslibrary is approximately 24kilobytes. Linking the javascript in thismanner allows it to be cached. There was a corresponding change toYDTemplate::__assignHeadCode. I have submitted a feature request forthe change to YDTemplate since this is a generally useful change.
+        
+   I designed YDLayer so that layers could be dynamically added inthe request or the response. The new example demonstrates this. Thisrequired the addition of the YDAjax::isOnResponse method. I havesubmitted a feature request for the addition of YDAjax::isOnResponsewhich is also generally useful in putting together functionality basedon YDAjax.    
+   The example layer.php contains a methodsetup_thetestform_layer()which shows how to associate server-side processing via manual setup ofan onclick event that uses xajax.getFormValues.
+        
+   Rather than attaching javascript to form elements such asbuttonsfor closing the form, I decided that it is more appropriate to close alayer programmatically via the php response processing function. Thisis achieved by passing the received form values (which include theautomatically assigned hidden layer id) to a close method. The closemethod searches for this id in the form values and generates javascriptto close the layer. The example layer.php shows how to do this in the&quot;defaultOne&quot; method.    
+   .layer-title and .layer-close are css classes that can be usedtocontrol the appearance of the layer title and close link.    
+   YDLayer::setHtmlClass and YDLayer::setHtmlId can be used tooverride the html class and html id of the layer. These should becalled before YDLayer::render(). YDLayer::render() is generally thelast call which will add the layer into the results or request.    
+   Initially I thought that the class should be called YDWindowbutI think YDLayer is more generic for the purposes it could be used for.
+      
+Any feedback is appreciated ...
+  
+Enjoy!
+  
+Regards,
+  
+Graeme
+  
+  
+maximus meridius wrote:      
+Hi,I have modified YDAjax and YDAjaxEffects classes touse the new mootools javascript framework from <A HREF="http://mootools.net/">http://mootools.net/</A> .The effects are more complex to setup internally butthere is much greater power and flexibility in mootools. Mootools is20kb compressed whilst moo.fx is 8kb compressed.A tarball is attached.-rwxrw-r--  39011 2006-10-19 01:22./YDFramework2/addons/YDAjax/YDAjax.php-rwxr--r--   43422 2006-10-18 21:35 ./YDFramework2/addons/YDAjax/js/mootools.svn.76.js-rwxr--r--  24000 2006-10-19 01:05 ./YDFramework2/addons/YDAjax/js/mootools.svn.compressed.76.jsThis uses a configuration variable &quot;YD_AJAX_MOOTOOLS&quot;to enable mootools instead of moo.fx. The change to YDAjax.php is quiteminor. I changed YDAjax.php so that the effects interface is compatibleand hence the existing effects example &quot;examples/ajax/image2.php&quot;works without change. For an improved implementation and due to thesize of the mootools javascript file it would be better to link toits javascript rather than
+ embedding it directly. YDTemplate wouldneed to be modified to do this.I have not implemented &quot;fadesize&quot;. I have also nottested &quot;hide&quot;, &quot;show&quot; and focus, however these don't rely on the effectslibrary.The mootools is build 76 from the svn repository atmootools. I have included compressed and uncompressed versions of thejavascript since the uncompressed file contains the license information(MIT style license).Regards,Graeme  
+    
+ 
+  
+---------------------------------
+Everyone is raving about the all-new Yahoo! Mail.  
+
+---------------------------------
+_______________________________________________YDFramework-devel mailing <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">listYDFramework-devel at lists.berlios.dehttps</A>://lists.berlios.de/mailman/listinfo/ydframework-devel  
+
+
+ 
+---------------------------------
+Sponsored Link
+
+Mortgage rates near 39yr lows. $310,000 Mortgage for $999/mo -  Calculate new house payment
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/ae461a94/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20061118/ae461a94/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000779.html">[ydf-devel] Bug in YDDatabaseTree2::getNode for string fields
+</A></li>
+	<LI>Next message: <A HREF="000776.html">[ydf-devel] r2215 -	YDFramework2.0/trunk/YDFramework2/addons/YDDatabaseObject
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#775">[ date ]</a>
+              <a href="thread.html#775">[ thread ]</a>
+              <a href="subject.html#775">[ subject ]</a>
+              <a href="author.html#775">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

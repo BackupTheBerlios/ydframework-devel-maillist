@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1926 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1926%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDCMComponent&In-Reply-To=%3C200605121510.k4CFAblh027681%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000390.html">
+   <LINK REL="Next"  HREF="000397.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1926 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent</H1>
+    <B>ximian at berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1926%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%20.%20YDCMComponent&In-Reply-To=%3C200605121510.k4CFAblh027681%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1926 - in YDFramework2.0/trunk/YDFramework2/YDClasses: . YDCMComponent">ximian at berlios.de
+       </A><BR>
+    <I>Fri May 12 17:10:37 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000390.html">[ydf-devel] r1925 - YDFramework2.0/trunk/YDFramework2/addons/YDCMPage
+</A></li>
+        <LI>Next message: <A HREF="000397.html">[ydf-devel] r1927 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#396">[ date ]</a>
+              <a href="thread.html#396">[ thread ]</a>
+              <a href="subject.html#396">[ subject ]</a>
+              <a href="author.html#396">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2006-05-12 17:07:51 +0200 (Fri, 12 May 2006)
+New Revision: 1926
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMStatistics_visits.php
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+Log:
+updated YDCMComponent for module structure
+added Statistics management form YDCM
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-05-09 09:49:19 UTC (rev 1925)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/DBDesigner4.xml	2006-05-12 15:07:51 UTC (rev 1926)
+@@ -1,7 +1,7 @@
+ &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot; ?&gt;
+ &lt;DBMODEL Version=&quot;4.0&quot;&gt;
+ &lt;SETTINGS&gt;
+-&lt;GLOBALSETTINGS ModelName=&quot;YDCM scheme&quot; IDModel=&quot;0&quot; IDVersion=&quot;0&quot; VersionStr=&quot;1.0.0.0&quot; Comments=&quot;&quot; UseVersionHistroy=&quot;1&quot; AutoIncVersion=&quot;1&quot; DatabaseType=&quot;MySQL&quot; ZoomFac=&quot;75.00&quot; XPos=&quot;73&quot; YPos=&quot;123&quot; DefaultDataType=&quot;5&quot; DefaultTablePrefix=&quot;0&quot; DefSaveDBConn=&quot;&quot; DefSyncDBConn=&quot;&quot; DefQueryDBConn=&quot;&quot; Printer=&quot;&quot; HPageCount=&quot;4.0&quot; PageAspectRatio=&quot;1.440892512336408&quot; PageOrientation=&quot;1&quot; PageFormat=&quot;A4 (210x297 mm, 8.26x11.7 inches)&quot; SelectedPages=&quot;&quot; UsePositionGrid=&quot;1&quot; PositionGridX=&quot;20&quot; PositionGridY=&quot;20&quot; TableNameInRefs=&quot;0&quot; DefaultTableType=&quot;0&quot; ActivateRefDefForNewRelations=&quot;1&quot; FKPrefix=&quot;&quot; FKPostfix=&quot;&quot; CreateFKRefDefIndex=&quot;0&quot; DBQuoteCharacter=&quot;`&quot; CreateSQLforLinkedObjects=&quot;0&quot; DefModelFont=&quot;Tahoma&quot; CanvasWidth=&quot;4096&quot; CanvasHeight=&quot;2842&quot; /&gt;
++&lt;GLOBALSETTINGS ModelName=&quot;YDCM scheme&quot; IDModel=&quot;0&quot; IDVersion=&quot;0&quot; VersionStr=&quot;1.0.0.0&quot; Comments=&quot;&quot; UseVersionHistroy=&quot;1&quot; AutoIncVersion=&quot;1&quot; DatabaseType=&quot;MySQL&quot; ZoomFac=&quot;75.00&quot; XPos=&quot;791&quot; YPos=&quot;875&quot; DefaultDataType=&quot;5&quot; DefaultTablePrefix=&quot;0&quot; DefSaveDBConn=&quot;&quot; DefSyncDBConn=&quot;&quot; DefQueryDBConn=&quot;&quot; Printer=&quot;&quot; HPageCount=&quot;4.0&quot; PageAspectRatio=&quot;1.440892512336408&quot; PageOrientation=&quot;1&quot; PageFormat=&quot;A4 (210x297 mm, 8.26x11.7 inches)&quot; SelectedPages=&quot;&quot; UsePositionGrid=&quot;1&quot; PositionGridX=&quot;20&quot; PositionGridY=&quot;20&quot; TableNameInRefs=&quot;0&quot; DefaultTableType=&quot;0&quot; ActivateRefDefForNewRelations=&quot;1&quot; FKPrefix=&quot;&quot; FKPostfix=&quot;&quot; CreateFKRefDefIndex=&quot;0&quot; DBQuoteCharacter=&quot;`&quot; CreateSQLforLinkedObjects=&quot;0&quot; DefModelFont=&quot;Tahoma&quot; CanvasWidth=&quot;4096&quot; CanvasHeight=&quot;2842&quot; /&gt;
+ &lt;DATATYPEGROUPS&gt;
+ &lt;DATATYPEGROUP Name=&quot;Numeric Types&quot; Icon=&quot;1&quot; /&gt;
+ &lt;DATATYPEGROUP Name=&quot;Date and Time Types&quot; Icon=&quot;2&quot; /&gt;
+@@ -1196,7 +1196,7 @@
+ &lt;/INDEX&gt;
+ &lt;/INDICES&gt;
+ &lt;/TABLE&gt;
+-&lt;TABLE ID=&quot;1590&quot; Tablename=&quot;YDCMHelpdesk_type&quot; PrevTableName=&quot;Table_20&quot; XPos=&quot;1500&quot; YPos=&quot;1650&quot; TableType=&quot;0&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;42&quot; &gt;
++&lt;TABLE ID=&quot;1590&quot; Tablename=&quot;YDCMHelpdesk_type&quot; PrevTableName=&quot;Table_20&quot; XPos=&quot;1480&quot; YPos=&quot;1640&quot; TableType=&quot;0&quot; TablePrefix=&quot;0&quot; nmTable=&quot;0&quot; Temporary=&quot;0&quot; UseStandardInserts=&quot;0&quot; StandardInserts=&quot;\n&quot; TableOptions=&quot;DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n&quot; Comments=&quot;&quot; Collapsed=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;42&quot; &gt;
+ &lt;COLUMNS&gt;
+ &lt;COLUMN ID=&quot;1592&quot; ColName=&quot;type_id&quot; PrevColName=&quot;&quot; Pos=&quot;0&quot; idDatatype=&quot;5&quot; DatatypeParams=&quot;&quot; Width=&quot;-1&quot; Prec=&quot;-1&quot; PrimaryKey=&quot;1&quot; NotNull=&quot;1&quot; AutoInc=&quot;1&quot; IsForeignKey=&quot;0&quot; DefaultValue=&quot;&quot; Comments=&quot;&quot;&gt;
+ &lt;OPTIONSELECTED&gt;
+@@ -1270,8 +1270,8 @@
+ &lt;RELATION ID=&quot;1572&quot; RelationName=&quot;content_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1162&quot; DestTable=&quot;1565&quot; FKFields=&quot;content_id=content_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;73&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;10&quot; EndIntervalOffsetY=&quot;4&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;1&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;40&quot; /&gt;
+ &lt;RELATION ID=&quot;1573&quot; RelationName=&quot;language_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1165&quot; DestTable=&quot;1565&quot; FKFields=&quot;language_id=language_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;3&quot; MidOffset=&quot;109&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;3&quot; EndIntervalOffsetY=&quot;3&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;1&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;41&quot; /&gt;
+ &lt;RELATION ID=&quot;1575&quot; RelationName=&quot;component_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1565&quot; DestTable=&quot;1367&quot; FKFields=&quot;component_id=component_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;-4&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;51&quot; CaptionOffsetY=&quot;-40&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;41&quot; /&gt;
+-&lt;RELATION ID=&quot;1608&quot; RelationName=&quot;reported_by_type&quot; Kind=&quot;2&quot; SrcTable=&quot;1590&quot; DestTable=&quot;1367&quot; FKFields=&quot;type_id=reported_by_type\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;1&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;-68&quot; CaptionOffsetY=&quot;-22&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;43&quot; /&gt;
+-&lt;RELATION ID=&quot;1610&quot; RelationName=&quot;assignedto_type&quot; Kind=&quot;2&quot; SrcTable=&quot;1590&quot; DestTable=&quot;1367&quot; FKFields=&quot;type_id=assignedto_type\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;1&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;63&quot; CaptionOffsetY=&quot;-22&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;44&quot; /&gt;
++&lt;RELATION ID=&quot;1608&quot; RelationName=&quot;reported_by_type&quot; Kind=&quot;2&quot; SrcTable=&quot;1590&quot; DestTable=&quot;1367&quot; FKFields=&quot;type_id=reported_by_type\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;1&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;-61&quot; CaptionOffsetY=&quot;-38&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;43&quot; /&gt;
++&lt;RELATION ID=&quot;1610&quot; RelationName=&quot;assignedto_type&quot; Kind=&quot;2&quot; SrcTable=&quot;1590&quot; DestTable=&quot;1367&quot; FKFields=&quot;type_id=assignedto_type\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;1&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;58&quot; CaptionOffsetY=&quot;-38&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;44&quot; /&gt;
+ &lt;RELATION ID=&quot;1526&quot; RelationName=&quot;content_id&quot; Kind=&quot;2&quot; SrcTable=&quot;1162&quot; DestTable=&quot;1519&quot; FKFields=&quot;content_id=content_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;0&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;20&quot; CaptionOffsetY=&quot;-20&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;1&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;32&quot; /&gt;
+ &lt;RELATION ID=&quot;1646&quot; RelationName=&quot;parent_id&quot; Kind=&quot;5&quot; SrcTable=&quot;1162&quot; DestTable=&quot;1162&quot; FKFields=&quot;content_id=parent_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;1&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;51&quot; /&gt;
+ &lt;RELATION ID=&quot;1648&quot; RelationName=&quot;parent_id&quot; Kind=&quot;5&quot; SrcTable=&quot;1168&quot; DestTable=&quot;1168&quot; FKFields=&quot;user_id=parent_id\n&quot; FKFieldsComments=&quot;\n&quot; relDirection=&quot;2&quot; MidOffset=&quot;4&quot; OptionalStart=&quot;0&quot; OptionalEnd=&quot;0&quot; CaptionOffsetX=&quot;0&quot; CaptionOffsetY=&quot;0&quot; StartIntervalOffsetX=&quot;0&quot; StartIntervalOffsetY=&quot;0&quot; EndIntervalOffsetX=&quot;0&quot; EndIntervalOffsetY=&quot;0&quot; CreateRefDef=&quot;1&quot; Invisible=&quot;0&quot; RefDef=&quot;Matching=0\nOnDelete=3\nOnUpdate=3\n&quot; Comments=&quot;&quot; FKRefDefIndex_Obj_id=&quot;-1&quot; Splitted=&quot;0&quot; IsLinkedObject=&quot;0&quot; IDLinkedModel=&quot;-1&quot; Obj_id_Linked=&quot;-1&quot; OrderPos=&quot;52&quot; /&gt;
+
+Added: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMStatistics_visits.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMStatistics_visits.php	2006-05-09 09:49:19 UTC (rev 1925)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMStatistics_visits.php	2006-05-12 15:07:51 UTC (rev 1926)
+@@ -0,0 +1,55 @@
++&lt;?php
++
++    /*
++
++        Yellow Duck Framework version 2.0
++        (c) Copyright 2002-2005 Pieter Claerhout
++
++        This library is free software; you can redistribute it and/or
++        modify it under the terms of the GNU Lesser General Public
++        License as published by the Free Software Foundation; either
++        version 2.1 of the License, or (at your option) any later version.
++
++        This library is distributed in the hope that it will be useful,
++        but WITHOUT ANY WARRANTY; without even the implied warranty of
++        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++        Lesser General Public License for more details.
++
++        You should have received a copy of the GNU Lesser General Public
++        License along with this library; if not, write to the Free Software
++        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++
++    */
++
++    // Check if the framework is loaded
++    if ( ! defined( 'YD_FW_NAME' ) ) {
++        die( 'Yellow Duck Framework is not loaded.' );
++    }
++
++    class YDCMStatistics_visits extends YDDatabaseObject {
++    
++        function YDCMStatistics_visits() {
++        
++			// init database object
++            $this-&gt;YDDatabaseObject();
++			
++			// register database as default
++            $this-&gt;registerDatabase();
++
++			// register table for this component
++            $this-&gt;registerTable( 'YDCMStatistics_visits' );
++
++            // register custom key
++            $this-&gt;registerKey( 'visit_id', true );
++
++            // register custom fields
++			$this-&gt;registerField( 'date' );
++			$this-&gt;registerField( 'browser' );
++			$this-&gt;registerField( 'platform' );
++			$this-&gt;registerField( 'url' );
++			$this-&gt;registerField( 'hits' );
++		}
++
++
++    }
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php	2006-05-09 09:49:19 UTC (rev 1925)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMTree.php	2006-05-12 15:07:51 UTC (rev 1926)
+@@ -66,7 +66,7 @@
+ 
+          *  @returns    false if elements are invalid, an associative array with node information
+          */
+-		function getDragDropElements( $x, $y ){
++		function getDragDropElements( $x = null, $y = null){
+ 		
+ 			// check if elements are numeric
+ 			if ( !is_numeric( $x ) || !is_numeric( $y ) ) return false;
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-05-09 09:49:19 UTC (rev 1925)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent/YDCMUsers.php	2006-05-12 15:07:51 UTC (rev 1926)
+@@ -210,13 +210,9 @@
+          */
+ 		function getFormUser(){
+ 
+-			// include languages and templates lib
+-			YDInclude( 'YDCMLanguages.php' );
+-			YDInclude( 'YDCMTemplates.php' );
+-
+ 			// create languages and templates object
+-			$languages = new YDCMLanguages();
+-			$templates = new YDCMTemplates();
++			$languages = YDCMComponent::module( 'YDCMLanguages' );
++			$templates = YDCMComponent::module( 'YDCMTemplates' );
+ 
+ 			// create form object
+             $form = new YDForm( YDConfig::get( 'YDCMUSERS_FORMUSER' ) );
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-05-09 09:49:19 UTC (rev 1925)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDCMComponent.php	2006-05-12 15:07:51 UTC (rev 1926)
+@@ -105,7 +105,7 @@
+ 		function module( $name ){
+ 
+ 			// include lib
+-			// TODO: check is name is a valid lib name
++			// TODO: check if name is a valid lib name
+ 			require_once( YDConfig::get( 'YD_DBOBJECT_PATH' ) . '/' . $name . '.php' );
+ 
+ 			// return class
+@@ -133,9 +133,12 @@
+ 
+          *  @returns    false if elements are invalid, an associative array with node types (eg: array( $x =&gt; 'PHCMPage', $y =&gt; 'PHCMRootmenu ))'
+          */
+-		function getDragDropElements( $x, $y ){
++		function getDragDropElements( $x = null, $y = null ){
+ 		
+-			$treeObj = new YDCMTree();
++			// get object tree
++			$treeObj = YDCMComponent::module( 'YDCMTree' );
++
++			// check drop validation
+ 			return $treeObj-&gt;getDragDropElements( $x, $y );
+ 		}
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000390.html">[ydf-devel] r1925 - YDFramework2.0/trunk/YDFramework2/addons/YDCMPage
+</A></li>
+	<LI>Next message: <A HREF="000397.html">[ydf-devel] r1927 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples/weblog examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#396">[ date ]</a>
+              <a href="thread.html#396">[ thread ]</a>
+              <a href="subject.html#396">[ subject ]</a>
+              <a href="author.html#396">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

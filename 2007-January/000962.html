@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2369 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2369%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms/includes%0A%09examples/simplecms/includes/skins_admin%0A%09examples/simplecms/includes/skins_public/default&In-Reply-To=%3C200701271832.l0RIWFWe016855%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000961.html">
+   <LINK REL="Next"  HREF="000963.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2369 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2369%20-%20in%20YDFramework2.0/trunk%3A%0A%09YDFramework2/addons/YDSimpleCMS%20examples/simplecms/includes%0A%09examples/simplecms/includes/skins_admin%0A%09examples/simplecms/includes/skins_public/default&In-Reply-To=%3C200701271832.l0RIWFWe016855%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2369 - in YDFramework2.0/trunk:	YDFramework2/addons/YDSimpleCMS examples/simplecms/includes	examples/simplecms/includes/skins_admin	examples/simplecms/includes/skins_public/default">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sat Jan 27 19:32:15 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000961.html">[ydf-devel] r2368 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+        <LI>Next message: <A HREF="000963.html">[ydf-devel] r2370 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#962">[ date ]</a>
+              <a href="thread.html#962">[ thread ]</a>
+              <a href="subject.html#962">[ subject ]</a>
+              <a href="author.html#962">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-27 19:32:07 +0100 (Sat, 27 Jan 2007)
+New Revision: 2369
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+   YDFramework2.0/trunk/examples/simplecms/includes/config.php
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl
+   YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl
+Log:
+Did some code cleanup for YDSimpleCMS.
+- The content of the masterpage is now inserted via a template variable.
+- Cleaned up the names of the constants
+- Disabled the language items for now
+- Cleaned up the initialization code
+
+Modified: YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-27 18:21:15 UTC (rev 2368)
++++ YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS/YDSimpleCMS.php	2007-01-27 18:32:07 UTC (rev 2369)
+@@ -42,18 +42,18 @@
+ 
+     // Constants
+     define( 'YD_SIMPLECMS_PACKAGE_NAME',   'YD_SIMPLECMS' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_ACTION_PREFIX',  'action_' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_MODULE_PREFIX',  'module_' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_MODULE_EXT',     '.php' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_MODULE_PATTERN', YD_SIMPLECMS_MODULE_PREFIX . '*' . YD_SIMPLECMS_MODULE_EXT );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_MODULE_DIR',     dirname( YD_SELF_FILE ) . '/includes/modules' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_SKINS_DIR',      dirname( YD_SELF_FILE ) . '/includes/skins_' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_SCOPE_PUBLIC',   'public' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_SCOPE_ADMIN',    'admin' );
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_SITE_LANGUAGE',  YD_SIMPLECMS_PACKAGE_NAME . '_SITE_LANGUAGE' );
++    define( 'YD_SIMPLECMS_ACTION_PREFIX',  'action_' );
++    define( 'YD_SIMPLECMS_MODULE_PREFIX',  'module_' );
++    define( 'YD_SIMPLECMS_MODULE_EXT',     '.php' );
++    define( 'YD_SIMPLECMS_MODULE_PATTERN', YD_SIMPLECMS_MODULE_PREFIX . '*' . YD_SIMPLECMS_MODULE_EXT );
++    define( 'YD_SIMPLECMS_MODULE_DIR',     dirname( YD_SELF_FILE ) . '/includes/modules' );
++    define( 'YD_SIMPLECMS_SKINS_DIR',      dirname( YD_SELF_FILE ) . '/includes/skins_' );
++    define( 'YD_SIMPLECMS_SCOPE_PUBLIC',   'public' );
++    define( 'YD_SIMPLECMS_SCOPE_ADMIN',    'admin' );
++    define( 'YD_SIMPLECMS_SITE_LANGUAGE',  YD_SIMPLECMS_PACKAGE_NAME . '_SITE_LANGUAGE' );
+ 
+     // Versions and numbers
+-    define( YD_SIMPLECMS_PACKAGE_NAME . '_NAME', 'Yellow Duck Content Manager' );
++    define( 'YD_SIMPLECMS_NAME', 'Yellow Duck Content Manager' );
+ 
+     // Configuration
+     YDConfig::set( 'YD_AUTO_EXECUTE', false );
+@@ -63,7 +63,6 @@
+     include_once( YD_DIR_HOME_CLS . '/YDRequest.php' );
+     include_once( YD_DIR_HOME_CLS . '/YDDatabase.php' );
+     include_once( YD_DIR_HOME_CLS . '/YDTemplate.php' );
+-    include_once( YD_DIR_HOME_CLS . '/YDFileSystem.php' );
+     include_once( YD_DIR_HOME . '/YDF2_process.php' );
+     include_once( dirname( __FILE__ ) . '/YDSimpleCMS_CoreModules.php' );
+ 
+@@ -106,70 +105,71 @@
+ 
+                 // Create the array
+                 $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME] = array();
++                $settings = &amp; $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME];
+ 
+                 // Setup the database connection
+                 YDConfig::set( 'YD_DB_TABLEPREFIX', YDConfig::get( 'db_prefix' ) );
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['db'] = YDDatabase::getInstance(
++                $settings['db'] = YDDatabase::getInstance(
+                     'mysql',
+                     YDConfig::get( 'db_name' ), YDConfig::get( 'db_user' ),
+                     YDConfig::get( 'db_pass' ), YDConfig::get( 'db_host' )
+                 );
+ 
+                 // The global list with admin menu
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['adminMenu'] = array();
++                $settings['adminMenu'] = array();
+ 
+                 // The current user
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['currentUser'] = null;
++                $settings['currentUser'] = null;
+ 
+                 // The module manager instance
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['moduleManager'] = new YDSimpleCMSModuleManager();
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['moduleManager']-&gt;loadAllModules();
++                $settings['moduleManager'] = new YDSimpleCMSModuleManager();
++                $settings['moduleManager']-&gt;loadAllModules();
+ 
+                 // Set the default scope
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['scope'] = YD_SIMPLECMS_SCOPE_PUBLIC;
++                $settings['scope'] = YD_SIMPLECMS_SCOPE_PUBLIC;
+ 
+                 // Get the site Id
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['siteId'] = YDConfig::get( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
++                $settings['siteId'] = YDConfig::get( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
+ 
+                 // Create a browser information object
+-                $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['browserInfo'] = new YDBrowserInfo();
+-                $browserInfo = &amp; $GLOBALS[YD_SIMPLECMS_PACKAGE_NAME]['browserInfo'];
++                $settings['browserInfo'] = new YDBrowserInfo();
++                $browserInfo = &amp; $settings['browserInfo'];
+ 
+-                // -- Negotiate the language --
+-                // Set the list of languages and the default language
+-                $language = YDConfig::get( 'site_default_lang', '' );
+-                $languages = array();
+-
+-                // Get the current URL
+-                $url = new YDUrl( YDRequest::getNormalizedCurrentUrl() );
+-
+-                // Get the list of languages
+-                foreach ( array_slice( YDConfig::get( 'site_languages', array() ), 0, 4 ) as $key=&gt;$lang ) {
+-                    if ( ! empty( $lang[0] ) ) {
+-                        $lang[0] = strtolower( $lang[0] );
+-                        $url-&gt;setQueryVar( 'lang', $lang[0] );
+-                        $languages[ $lang[0] ] = array(
+-                            'name' =&gt; $lang[1], 'idx' =&gt; $key + 1, 'code' =&gt; $lang[0], 'url' =&gt; $url-&gt;getUrl(),
+-                        );
+-                    }
+-                }
+-
+-                // Get the current language
+-                $languages = array_keys( $languages );
+-                $lang = $browserInfo-&gt;getLanguage( $languages );
+-                $languageCookieName = YD_SIMPLECMS_PACKAGE_NAME . '_' . YDSimpleCms::getSiteId() . '_LANG';
+-                if ( YDRequest::getCookie( $languageCookieName, '', $languages ) != '' ) {
+-                    $lang = YDRequest::getCookie( $languageCookieName, '', $languages );
+-                }
+-                //if ( $this-&gt;getQueryStringParameter( 'lang', '', $languages ) != '' ) {
+-                //    $lang = $this-&gt;getQueryStringParameter( 'lang', '', $languages );
+-                //}
+-                $lang = strtolower( $lang );
+-
+-                // Set the right locale
+-                YDLocale::set( $lang );
+-
+-                //YDDebugUtil::dump( $language, 'language' );
++//                // -- Negotiate the language --
++//                // Set the list of languages and the default language
++//                $language = YDConfig::get( 'site_default_lang', '' );
++//                $languages = array();
++//
++//                // Get the current URL
++//                $url = new YDUrl( YDRequest::getNormalizedCurrentUrl() );
++//
++//                // Get the list of languages
++//                foreach ( array_slice( YDConfig::get( 'site_languages', array() ), 0, 4 ) as $key=&gt;$lang ) {
++//                    if ( ! empty( $lang[0] ) ) {
++//                        $lang[0] = strtolower( $lang[0] );
++//                        $url-&gt;setQueryVar( 'lang', $lang[0] );
++//                        $languages[ $lang[0] ] = array(
++//                            'name' =&gt; $lang[1], 'idx' =&gt; $key + 1, 'code' =&gt; $lang[0], 'url' =&gt; $url-&gt;getUrl(),
++//                        );
++//                    }
++//                }
++//
++//                // Get the current language
++//                $languages = array_keys( $languages );
++//                $lang = $browserInfo-&gt;getLanguage( $languages );
++//                $languageCookieName = YD_SIMPLECMS_PACKAGE_NAME . '_' . YDSimpleCms::getSiteId() . '_LANG';
++//                if ( YDRequest::getCookie( $languageCookieName, '', $languages ) != '' ) {
++//                    $lang = YDRequest::getCookie( $languageCookieName, '', $languages );
++//                }
++//                //if ( $this-&gt;getQueryStringParameter( 'lang', '', $languages ) != '' ) {
++//                //    $lang = $this-&gt;getQueryStringParameter( 'lang', '', $languages );
++//                //}
++//                $lang = strtolower( $lang );
++//
++//                // Set the right locale
++//                YDLocale::set( $lang );
++//
++//                //YDDebugUtil::dump( $language, 'language' );
+                 //YDDebugUtil::dump( $languages, 'languages' );
+ 
+             }
+@@ -445,8 +445,9 @@
+ 
+             // Check if there is a __standard page
+             if ( is_file( $this-&gt;template_dir . '/' . $master . '.tpl' ) ) {
+-                $standard = $this-&gt;fetch( $master );
+-                $output = str_replace( '##content##', $output, $standard );
++                $this-&gt;assign( 'content', $output );
++                $output = $this-&gt;fetch( $master );
++                //$output = str_replace( '##content##', $output, $standard );
+             }
+ 
+             // Return the output
+@@ -839,9 +840,8 @@
+          */
+         function loadAllModules() {
+             if ( is_dir( YD_SIMPLECMS_MODULE_DIR ) ) {
+-                $modulesDir = new YDFSDirectory( YD_SIMPLECMS_MODULE_DIR );
+-                foreach ( $modulesDir-&gt;getContents( YD_SIMPLECMS_MODULE_PATTERN ) as $module ) {
+-                    include_once( $module-&gt;getAbsolutePath() );
++                foreach ( glob( YD_SIMPLECMS_MODULE_DIR . '/' . YD_SIMPLECMS_MODULE_PATTERN ) as $module ) {
++                    include_once( $module );
+                 }
+             }
+         }
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/config.php
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/config.php	2007-01-27 18:21:15 UTC (rev 2368)
++++ YDFramework2.0/trunk/examples/simplecms/includes/config.php	2007-01-27 18:32:07 UTC (rev 2369)
+@@ -2,7 +2,7 @@
+ 
+     // The generic settings
+     YDConfig::set( 'YD_SIMPLECMS_SITEID', 'SAMPLESITE' );
+-    YDConfig::set( 'YD_DEBUG', 2 );
++    YDConfig::set( 'YD_DEBUG', 1 );
+     YDConfig::set( 'YD_SIMPLECMS_PUBLIC_SKIN', 'default' );
+ 
+     // The database settings
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl	2007-01-27 18:21:15 UTC (rev 2368)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_admin/__master.tpl	2007-01-27 18:32:07 UTC (rev 2369)
+@@ -68,7 +68,7 @@
+             {/if}
+         &lt;/td&gt;
+         &lt;td align=&quot;left&quot; valign=&quot;top&quot;&gt;
+-            ##content##
++            {$content}
+             &lt;p class=&quot;subline&quot;&gt;
+                 &amp;nbsp&lt;br/&gt;
+                 {t w=&quot;powered_by&quot;} &lt;a href=&quot;{$YD_FW_HOMEPAGE}&quot; class=&quot;subline&quot; target=&quot;_blank&quot;&gt;{$YD_FW_NAME}&lt;/a&gt;
+
+Modified: YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl
+===================================================================
+--- YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl	2007-01-27 18:21:15 UTC (rev 2368)
++++ YDFramework2.0/trunk/examples/simplecms/includes/skins_public/default/__master.tpl	2007-01-27 18:32:07 UTC (rev 2369)
+@@ -16,7 +16,7 @@
+         &lt;/p&gt;
+     {/if}
+ 
+-    ##content##
++    {$content}
+ 
+     &lt;small&gt;{$YD_FW_POWERED_BY}&lt;/small&gt;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000961.html">[ydf-devel] r2368 - YDFramework2.0/trunk/YDFramework2
+</A></li>
+	<LI>Next message: <A HREF="000963.html">[ydf-devel] r2370 -	YDFramework2.0/trunk/YDFramework2/addons/YDSimpleCMS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#962">[ date ]</a>
+              <a href="thread.html#962">[ thread ]</a>
+              <a href="subject.html#962">[ subject ]</a>
+              <a href="author.html#962">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

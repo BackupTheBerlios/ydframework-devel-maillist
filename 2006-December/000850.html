@@ -1,0 +1,1761 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2259 - in	YDFramework2.0/trunk/YDFramework2/3rdparty/smarty: . libs	libs/internals libs/plugins
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2259%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/smarty%3A%20.%20libs%0A%09libs/internals%20libs/plugins&In-Reply-To=%3C200612171212.kBHCCbeS031655%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000849.html">
+   <LINK REL="Next"  HREF="000851.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2259 - in	YDFramework2.0/trunk/YDFramework2/3rdparty/smarty: . libs	libs/internals libs/plugins</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2259%20-%20in%0A%09YDFramework2.0/trunk/YDFramework2/3rdparty/smarty%3A%20.%20libs%0A%09libs/internals%20libs/plugins&In-Reply-To=%3C200612171212.kBHCCbeS031655%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2259 - in	YDFramework2.0/trunk/YDFramework2/3rdparty/smarty: . libs	libs/internals libs/plugins">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Dec 17 13:12:37 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000849.html">[ydf-devel] r2258 -	YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox
+</A></li>
+        <LI>Next message: <A HREF="000851.html">[ydf-devel] r2260 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#850">[ date ]</a>
+              <a href="thread.html#850">[ thread ]</a>
+              <a href="subject.html#850">[ subject ]</a>
+              <a href="author.html#850">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-12-17 13:12:31 +0100 (Sun, 17 Dec 2006)
+New Revision: 2259
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/debug.tpl
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/internals/core.write_file.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_table.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.mailto.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.capitalize.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.date_format.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.debug_print_var.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/outputfilter.trimwhitespace.php
+Log:
+Updated Smarty to version 2.6.16.
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/ChangeLog	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -1,3 +1,868 @@
++2006-11-30  Monte Ohrt  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">monte at ohrt.com</A>&gt;
++
++    * NEWS
++      docs/en/designers/language-modifiers/language-modifier-truncate.xml
++      libs/Config_File.class.php
++      libs/Smarty.class.php
++      libs/Smarty_Compiler.class.php:
++      update dev version numbers, fix manual typo
++
++2006-11-22  George Miroshnikov  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">support at infinity.com.ua</A>&gt;
++
++    * docs/ru/getting-started.xml
++      docs/ru/language-snippets.ent:
++      sync with EN
++
++    * docs/en/getting-started.xml:
++      replaced hardcoded path separator with PATH_SEPARATOR constant
++
++2006-11-20  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * libs/plugins/modifier.debug_print_var.php:
++      fix depth formatting of arrays and objects in modifier debug_print_var
++
++2006-11-10  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
++
++    * docs/en/designers/language-variables/language-variables-smarty.xml:
++      fixed typo. thanks jonez.
++
++2006-11-08  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/internals/core.write_file.php:
++      change file writing semantics in smarty_core_write_file()
++      
++      This avoids unlink() unless rename() fails or a Windows system is detected
++      
++      see: <A HREF="http://www.phpinsider.com/smarty-forum/viewtopic.php?t=6956">http://www.phpinsider.com/smarty-forum/viewtopic.php?t=6956</A>
++      
++      Thanks to c960657 from the forums.
++
++2006-11-07  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/debug.tpl:
++      update debug.tpl to xhtml 1.1 compliance, fix javascript escaping in debug
++      output and apply a Smarty based color scheme
++      
++      see: <A HREF="http://www.phpinsider.com/smarty-forum/viewtopic.php?t=7178">http://www.phpinsider.com/smarty-forum/viewtopic.php?t=7178</A>
++      
++      thanks to cybot from the forums!
++
++    * NEWS
++      libs/plugins/modifier.debug_print_var.php:
++      enhance reporting precision of debug_print_var modifier
++      
++      see: <A HREF="http://www.phpinsider.com/smarty-forum/viewtopic.php?t=9281">http://www.phpinsider.com/smarty-forum/viewtopic.php?t=9281</A>
++      
++      thanks to cybot from the forums
++
++2006-11-01  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/plugins/function.html_select_date.php:
++      make html_select_date work consistently with 0000-00-00 00:00:00 and
++      0000-00-00 inputs
++      
++      Thanks to cybot from forums
++
++2006-10-16  George Miroshnikov  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">support at infinity.com.ua</A>&gt;
++
++    * docs/en/language-snippets.ent:
++      minor typo fix - &amp;$class doesn't make sense.
++
++2006-10-14  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/designers/language-basic-syntax.xml
++      docs/fr/designers/language-builtin-functions.xml
++      docs/fr/designers/language-basic-syntax/language-syntax-attributes.xml
++      docs/fr/designers/language-basic-syntax/language-syntax-comments.xml
++      docs/fr/designers/language-basic-syntax/language-syntax-quotes.xml
++      docs/fr/designers/language-builtin-functions/language-function-capture.xml
++      docs/fr/designers/language-builtin-functions/language-function-php.xml
++      docs/fr/designers/language-builtin-functions/language-function-section.xml
++      docs/fr/designers/language-custom-functions/language-function-popup-init.xml
++      docs/fr/designers/language-modifiers/language-modifier-escape.xml
++      docs/fr/programmers/api-functions/api-display.xml
++      docs/fr/programmers/plugins/plugins-inserts.xml:
++      sync with EN
++
++2006-10-14  Fernando Correa da Concei&#231;&#227;o  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">fernando_conceicao at yahoo.com.br</A>&gt;
++
++    * docs/pt_BR/programmers/api-variables/variable-error-reporting.xml:
++      New Translation
++
++    * docs/pt_BR/designers/language-basic-syntax/language-escaping.xml
++      docs/pt_BR/designers/language-basic-syntax/language-syntax-variables.xml:
++      New Translations
++
++    * docs/pt_BR/translation.xml:
++      Used in revcheck
++
++    * docs/pt_BR/getting-started.xml
++      docs/pt_BR/language-snippets.ent
++      docs/pt_BR/make_chm_index.html
++      docs/pt_BR/preface.xml
++      docs/pt_BR/appendixes/resources.xml
++      docs/pt_BR/appendixes/troubleshooting.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-capitalize.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-cat.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-count-characters.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-count-paragraphs.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-count-sentences.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-count-words.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-date-format.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-default.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-escape.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-indent.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-lower.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-nl2br.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-regex-replace.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-replace.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-spacify.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-string-format.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-strip-tags.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-strip.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-truncate.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-upper.xml
++      docs/pt_BR/designers/language-modifiers/language-modifier-wordwrap.xml
++      docs/pt_BR/designers/language-variables/language-assigned-variables.xml
++      docs/pt_BR/designers/language-variables/language-config-variables.xml
++      docs/pt_BR/designers/language-variables/language-variables-smarty.xml
++      docs/pt_BR/programmers/advanced-features.xml
++      docs/pt_BR/programmers/api-functions.xml
++      docs/pt_BR/programmers/api-variables.xml
++      docs/pt_BR/programmers/caching.xml
++      docs/pt_BR/programmers/plugins.xml
++      docs/pt_BR/programmers/smarty-constants.xml
++      docs/pt_BR/programmers/advanced-features/advanced-features-objects.xml
++      docs/pt_BR/programmers/advanced-features/advanced-features-outputfilters.xml
++      docs/pt_BR/programmers/advanced-features/advanced-features-postfilters.xml
++      docs/pt_BR/programmers/advanced-features/advanced-features-prefilters.xml
++      docs/pt_BR/programmers/advanced-features/section-template-cache-handler-func.xml
++      docs/pt_BR/programmers/advanced-features/template-resources.xml
++      docs/pt_BR/programmers/api-functions/api-append-by-ref.xml
++      docs/pt_BR/programmers/api-functions/api-append.xml
++      docs/pt_BR/programmers/api-functions/api-assign-by-ref.xml
++      docs/pt_BR/programmers/api-functions/api-assign.xml
++      docs/pt_BR/programmers/api-functions/api-clear-all-assign.xml
++      docs/pt_BR/programmers/api-functions/api-clear-all-cache.xml
++      docs/pt_BR/programmers/api-functions/api-clear-assign.xml
++      docs/pt_BR/programmers/api-functions/api-clear-cache.xml
++      docs/pt_BR/programmers/api-functions/api-clear-compiled-tpl.xml
++      docs/pt_BR/programmers/api-functions/api-clear-config.xml
++      docs/pt_BR/programmers/api-functions/api-config-load.xml
++      docs/pt_BR/programmers/api-functions/api-display.xml
++      docs/pt_BR/programmers/api-functions/api-fetch.xml
++      docs/pt_BR/programmers/api-functions/api-get-config-vars.xml
++      docs/pt_BR/programmers/api-functions/api-get-registered-object.xml
++      docs/pt_BR/programmers/api-functions/api-get-template-vars.xml
++      docs/pt_BR/programmers/api-functions/api-is-cached.xml
++      docs/pt_BR/programmers/api-functions/api-load-filter.xml
++      docs/pt_BR/programmers/api-functions/api-register-block.xml
++      docs/pt_BR/programmers/api-functions/api-register-compiler-function.xml
++      docs/pt_BR/programmers/api-functions/api-register-function.xml
++      docs/pt_BR/programmers/api-functions/api-register-modifier.xml
++      docs/pt_BR/programmers/api-functions/api-register-object.xml
++      docs/pt_BR/programmers/api-functions/api-register-outputfilter.xml
++      docs/pt_BR/programmers/api-functions/api-register-postfilter.xml
++      docs/pt_BR/programmers/api-functions/api-register-prefilter.xml
++      docs/pt_BR/programmers/api-functions/api-register-resource.xml
++      docs/pt_BR/programmers/api-functions/api-template-exists.xml
++      docs/pt_BR/programmers/api-functions/api-trigger-error.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-block.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-compiler-function.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-function.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-modifier.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-object.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-outputfilter.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-postfilter.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-prefilter.xml
++      docs/pt_BR/programmers/api-functions/api-unregister-resource.xml
++      docs/pt_BR/programmers/api-variables/variable-autoload-filters.xml
++      docs/pt_BR/programmers/api-variables/variable-cache-dir.xml
++      docs/pt_BR/programmers/api-variables/variable-cache-handler-func.xml
++      docs/pt_BR/programmers/api-variables/variable-cache-lifetime.xml
++      docs/pt_BR/programmers/api-variables/variable-cache-modified-check.xml
++      docs/pt_BR/programmers/api-variables/variable-caching.xml
++      docs/pt_BR/programmers/api-variables/variable-compile-check.xml
++      docs/pt_BR/programmers/api-variables/variable-compile-dir.xml
++      docs/pt_BR/programmers/api-variables/variable-compile-id.xml
++      docs/pt_BR/programmers/api-variables/variable-compiler-class.xml
++      docs/pt_BR/programmers/api-variables/variable-config-booleanize.xml
++      docs/pt_BR/programmers/api-variables/variable-config-dir.xml
++      docs/pt_BR/programmers/api-variables/variable-config-fix-newlines.xml
++      docs/pt_BR/programmers/api-variables/variable-config-overwrite.xml
++      docs/pt_BR/programmers/api-variables/variable-config-read-hidden.xml
++      docs/pt_BR/programmers/api-variables/variable-debug-tpl.xml
++      docs/pt_BR/programmers/api-variables/variable-debugging-ctrl.xml
++      docs/pt_BR/programmers/api-variables/variable-debugging.xml
++      docs/pt_BR/programmers/api-variables/variable-default-modifiers.xml
++      docs/pt_BR/programmers/api-variables/variable-default-resource-type.xml
++      docs/pt_BR/programmers/api-variables/variable-default-template-handler-func.xml
++      docs/pt_BR/programmers/api-variables/variable-force-compile.xml
++      docs/pt_BR/programmers/api-variables/variable-global-assign.xml
++      docs/pt_BR/programmers/api-variables/variable-left-delimiter.xml
++      docs/pt_BR/programmers/api-variables/variable-php-handling.xml
++      docs/pt_BR/programmers/api-variables/variable-plugins-dir.xml
++      docs/pt_BR/programmers/api-variables/variable-request-use-auto-globals.xml
++      docs/pt_BR/programmers/api-variables/variable-request-vars-order.xml
++      docs/pt_BR/programmers/api-variables/variable-right-delimiter.xml
++      docs/pt_BR/programmers/api-variables/variable-secure-dir.xml
++      docs/pt_BR/programmers/api-variables/variable-security-settings.xml
++      docs/pt_BR/programmers/api-variables/variable-security.xml
++      docs/pt_BR/programmers/api-variables/variable-template-dir.xml
++      docs/pt_BR/programmers/api-variables/variable-trusted-dir.xml
++      docs/pt_BR/programmers/api-variables/variable-undefined.xml
++      docs/pt_BR/programmers/api-variables/variable-use-sub-dirs.xml
++      docs/pt_BR/programmers/caching/caching-cacheable.xml
++      docs/pt_BR/programmers/caching/caching-groups.xml
++      docs/pt_BR/programmers/caching/caching-multiple-caches.xml
++      docs/pt_BR/programmers/caching/caching-setting-up.xml
++      docs/pt_BR/programmers/plugins/plugins-block-functions.xml
++      docs/pt_BR/programmers/plugins/plugins-compiler-functions.xml
++      docs/pt_BR/programmers/plugins/plugins-functions.xml
++      docs/pt_BR/programmers/plugins/plugins-howto.xml
++      docs/pt_BR/programmers/plugins/plugins-inserts.xml
++      docs/pt_BR/programmers/plugins/plugins-modifiers.xml
++      docs/pt_BR/programmers/plugins/plugins-naming-conventions.xml
++      docs/pt_BR/programmers/plugins/plugins-outputfilters.xml
++      docs/pt_BR/programmers/plugins/plugins-prefilters-postfilters.xml
++      docs/pt_BR/programmers/plugins/plugins-resources.xml
++      docs/pt_BR/programmers/plugins/plugins-writing.xml:
++      Big update. Revision tag for all files. Some updates. Now I can update it
++
++2006-10-09  Peter 'Mash' Morgan  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pm at daffodil.uk.com</A>&gt;
++
++    * docs/en/getting-started.xml
++      docs/en/designers/language-basic-syntax.xml
++      docs/en/designers/language-custom-functions/language-function-popup-init.xml
++      docs/en/designers/language-modifiers/language-modifier-escape.xml
++      docs/en/programmers/api-functions/api-display.xml
++      docs/en/programmers/plugins/plugins-inserts.xml:
++      Minor changes and corrections
++
++    * docs/en/designers/language-basic-syntax.xml
++      docs/en/designers/language-builtin-functions.xml
++      docs/en/designers/language-basic-syntax/language-syntax-attributes.xml
++      docs/en/designers/language-basic-syntax/language-syntax-comments.xml
++      docs/en/designers/language-basic-syntax/language-syntax-quotes.xml
++      docs/en/designers/language-modifiers/language-modifier-escape.xml:
++      Minor formatting and error correction
++
++    * docs/en/designers/language-builtin-functions/language-function-capture.xml
++      docs/en/designers/language-builtin-functions/language-function-php.xml
++      docs/en/designers/language-builtin-functions/language-function-section.xml:
++      minor formatting and changes
++
++    * docs/en/getting-started.xml:
++      Tidied up formatting so more readable, tidied up the install to the paths
++      are more clear (ta jj)
++
++2006-10-09  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/designers/language-builtin-functions/language-function-section.xml:
++      sync with EN
++
++2006-10-08  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/designers/language-builtin-functions/language-function-php.xml
++      docs/fr/designers/language-modifiers/language-modifier-escape.xml
++      docs/fr/designers/language-variables/language-variables-smarty.xml
++      docs/fr/programmers/api-variables/variable-request-use-auto-globals.xml:
++      fix build
++
++    * docs/fr/designers/language-builtin-functions/language-function-strip.xml
++      docs/fr/programmers/caching.xml
++      docs/fr/programmers/smarty-constants.xml
++      docs/fr/programmers/api-variables/variable-autoload-filters.xml
++      docs/fr/programmers/api-variables/variable-cache-dir.xml
++      docs/fr/programmers/api-variables/variable-cache-handler-func.xml
++      docs/fr/programmers/api-variables/variable-cache-lifetime.xml
++      docs/fr/programmers/api-variables/variable-cache-modified-check.xml
++      docs/fr/programmers/api-variables/variable-caching.xml
++      docs/fr/programmers/api-variables/variable-compile-check.xml
++      docs/fr/programmers/api-variables/variable-compile-dir.xml
++      docs/fr/programmers/api-variables/variable-compile-id.xml
++      docs/fr/programmers/api-variables/variable-compiler-class.xml
++      docs/fr/programmers/api-variables/variable-config-booleanize.xml
++      docs/fr/programmers/api-variables/variable-config-dir.xml
++      docs/fr/programmers/api-variables/variable-config-fix-newlines.xml
++      docs/fr/programmers/api-variables/variable-config-overwrite.xml
++      docs/fr/programmers/api-variables/variable-config-read-hidden.xml
++      docs/fr/programmers/api-variables/variable-debug-tpl.xml
++      docs/fr/programmers/api-variables/variable-debugging-ctrl.xml
++      docs/fr/programmers/api-variables/variable-debugging.xml
++      docs/fr/programmers/api-variables/variable-default-modifiers.xml
++      docs/fr/programmers/api-variables/variable-default-resource-type.xml
++      docs/fr/programmers/api-variables/variable-default-template-handler-func.xml
++      docs/fr/programmers/api-variables/variable-error-reporting.xml
++      docs/fr/programmers/api-variables/variable-force-compile.xml
++      docs/fr/programmers/api-variables/variable-left-delimiter.xml
++      docs/fr/programmers/api-variables/variable-php-handling.xml
++      docs/fr/programmers/api-variables/variable-plugins-dir.xml
++      docs/fr/programmers/api-variables/variable-request-use-auto-globals.xml
++      docs/fr/programmers/api-variables/variable-request-vars-order.xml
++      docs/fr/programmers/api-variables/variable-right-delimiter.xml
++      docs/fr/programmers/api-variables/variable-secure-dir.xml
++      docs/fr/programmers/api-variables/variable-security-settings.xml
++      docs/fr/programmers/api-variables/variable-security.xml
++      docs/fr/programmers/api-variables/variable-template-dir.xml
++      docs/fr/programmers/api-variables/variable-trusted-dir.xml
++      docs/fr/programmers/api-variables/variable-use-sub-dirs.xml
++      docs/fr/programmers/caching/caching-cacheable.xml
++      docs/fr/programmers/caching/caching-groups.xml
++      docs/fr/programmers/caching/caching-multiple-caches.xml
++      docs/fr/programmers/caching/caching-setting-up.xml
++      docs/fr/programmers/plugins/plugins-block-functions.xml
++      docs/fr/programmers/plugins/plugins-compiler-functions.xml
++      docs/fr/programmers/plugins/plugins-functions.xml
++      docs/fr/programmers/plugins/plugins-inserts.xml
++      docs/fr/programmers/plugins/plugins-modifiers.xml
++      docs/fr/programmers/plugins/plugins-naming-conventions.xml
++      docs/fr/programmers/plugins/plugins-outputfilters.xml
++      docs/fr/programmers/plugins/plugins-prefilters-postfilters.xml
++      docs/fr/programmers/plugins/plugins-resources.xml
++      docs/fr/programmers/plugins/plugins-writing.xml:
++      sync with EN
++
++2006-10-07  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/programmers/advanced-features/advanced-features-objects.xml
++      docs/fr/programmers/advanced-features/advanced-features-outputfilters.xml
++      docs/fr/programmers/advanced-features/advanced-features-postfilters.xml
++      docs/fr/programmers/advanced-features/advanced-features-prefilters.xml
++      docs/fr/programmers/advanced-features/section-template-cache-handler-func.xml
++      docs/fr/programmers/advanced-features/template-resources.xml
++      docs/fr/programmers/api-functions/api-append-by-ref.xml
++      docs/fr/programmers/api-functions/api-append.xml
++      docs/fr/programmers/api-functions/api-assign-by-ref.xml
++      docs/fr/programmers/api-functions/api-assign.xml
++      docs/fr/programmers/api-functions/api-clear-all-assign.xml
++      docs/fr/programmers/api-functions/api-clear-all-cache.xml
++      docs/fr/programmers/api-functions/api-clear-assign.xml
++      docs/fr/programmers/api-functions/api-clear-cache.xml
++      docs/fr/programmers/api-functions/api-clear-compiled-tpl.xml
++      docs/fr/programmers/api-functions/api-clear-config.xml
++      docs/fr/programmers/api-functions/api-config-load.xml
++      docs/fr/programmers/api-functions/api-display.xml
++      docs/fr/programmers/api-functions/api-fetch.xml
++      docs/fr/programmers/api-functions/api-get-config-vars.xml
++      docs/fr/programmers/api-functions/api-get-registered-object.xml
++      docs/fr/programmers/api-functions/api-get-template-vars.xml
++      docs/fr/programmers/api-functions/api-is-cached.xml
++      docs/fr/programmers/api-functions/api-load-filter.xml
++      docs/fr/programmers/api-functions/api-register-block.xml
++      docs/fr/programmers/api-functions/api-register-compiler-function.xml
++      docs/fr/programmers/api-functions/api-register-function.xml
++      docs/fr/programmers/api-functions/api-register-modifier.xml
++      docs/fr/programmers/api-functions/api-register-object.xml
++      docs/fr/programmers/api-functions/api-register-outputfilter.xml
++      docs/fr/programmers/api-functions/api-register-postfilter.xml
++      docs/fr/programmers/api-functions/api-register-prefilter.xml
++      docs/fr/programmers/api-functions/api-register-resource.xml
++      docs/fr/programmers/api-functions/api-template-exists.xml
++      docs/fr/programmers/api-functions/api-trigger-error.xml
++      docs/fr/programmers/api-functions/api-unregister-block.xml
++      docs/fr/programmers/api-functions/api-unregister-compiler-function.xml
++      docs/fr/programmers/api-functions/api-unregister-function.xml
++      docs/fr/programmers/api-functions/api-unregister-modifier.xml
++      docs/fr/programmers/api-functions/api-unregister-object.xml
++      docs/fr/programmers/api-functions/api-unregister-outputfilter.xml
++      docs/fr/programmers/api-functions/api-unregister-postfilter.xml
++      docs/fr/programmers/api-functions/api-unregister-prefilter.xml
++      docs/fr/programmers/api-functions/api-unregister-resource.xml:
++      sync with EN
++
++2006-10-03  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/designers/language-custom-functions/language-function-html-select-time.xml
++      docs/fr/designers/language-custom-functions/language-function-html-table.xml
++      docs/fr/designers/language-custom-functions/language-function-mailto.xml
++      docs/fr/designers/language-custom-functions/language-function-math.xml
++      docs/fr/designers/language-custom-functions/language-function-popup-init.xml
++      docs/fr/designers/language-custom-functions/language-function-popup.xml
++      docs/fr/designers/language-custom-functions/language-function-textformat.xml
++      docs/fr/designers/language-modifiers/language-modifier-capitalize.xml
++      docs/fr/designers/language-modifiers/language-modifier-cat.xml
++      docs/fr/designers/language-modifiers/language-modifier-count-characters.xml
++      docs/fr/designers/language-modifiers/language-modifier-count-paragraphs.xml
++      docs/fr/designers/language-modifiers/language-modifier-count-sentences.xml
++      docs/fr/designers/language-modifiers/language-modifier-count-words.xml
++      docs/fr/designers/language-modifiers/language-modifier-date-format.xml
++      docs/fr/designers/language-modifiers/language-modifier-default.xml
++      docs/fr/designers/language-modifiers/language-modifier-escape.xml
++      docs/fr/designers/language-modifiers/language-modifier-indent.xml
++      docs/fr/designers/language-modifiers/language-modifier-lower.xml
++      docs/fr/designers/language-modifiers/language-modifier-nl2br.xml
++      docs/fr/designers/language-modifiers/language-modifier-regex-replace.xml
++      docs/fr/designers/language-modifiers/language-modifier-replace.xml
++      docs/fr/designers/language-modifiers/language-modifier-spacify.xml
++      docs/fr/designers/language-modifiers/language-modifier-string-format.xml
++      docs/fr/designers/language-modifiers/language-modifier-strip-tags.xml
++      docs/fr/designers/language-modifiers/language-modifier-strip.xml
++      docs/fr/designers/language-modifiers/language-modifier-truncate.xml
++      docs/fr/designers/language-modifiers/language-modifier-upper.xml
++      docs/fr/designers/language-modifiers/language-modifier-wordwrap.xml
++      docs/fr/designers/language-variables/language-assigned-variables.xml
++      docs/fr/designers/language-variables/language-config-variables.xml
++      docs/fr/designers/language-variables/language-variables-smarty.xml:
++      sync with EN
++
++2006-10-01  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/designers/language-builtin-functions/language-function-include-php.xml
++      docs/fr/designers/language-builtin-functions/language-function-include.xml
++      docs/fr/designers/language-builtin-functions/language-function-insert.xml
++      docs/fr/designers/language-builtin-functions/language-function-ldelim.xml
++      docs/fr/designers/language-builtin-functions/language-function-literal.xml
++      docs/fr/designers/language-builtin-functions/language-function-php.xml
++      docs/fr/designers/language-custom-functions/language-function-assign.xml
++      docs/fr/designers/language-custom-functions/language-function-counter.xml
++      docs/fr/designers/language-custom-functions/language-function-cycle.xml
++      docs/fr/designers/language-custom-functions/language-function-debug.xml
++      docs/fr/designers/language-custom-functions/language-function-eval.xml
++      docs/fr/designers/language-custom-functions/language-function-fetch.xml
++      docs/fr/designers/language-custom-functions/language-function-html-checkboxes.xml
++      docs/fr/designers/language-custom-functions/language-function-html-image.xml
++      docs/fr/designers/language-custom-functions/language-function-html-options.xml
++      docs/fr/designers/language-custom-functions/language-function-html-radios.xml
++      docs/fr/designers/language-custom-functions/language-function-html-select-date.xml:
++      sync with EN
++
++2006-09-30  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/getting-started.xml:
++      fix build
++
++    * docs/fr/designers/chapter-debugging-console.xml
++      docs/fr/designers/config-files.xml
++      docs/fr/designers/language-builtin-functions.xml
++      docs/fr/designers/language-modifiers.xml
++      docs/fr/designers/language-variables.xml
++      docs/fr/designers/language-basic-syntax/language-escaping.xml
++      docs/fr/designers/language-basic-syntax/language-math.xml
++      docs/fr/designers/language-basic-syntax/language-syntax-comments.xml
++      docs/fr/designers/language-basic-syntax/language-syntax-functions.xml
++      docs/fr/designers/language-basic-syntax/language-syntax-quotes.xml
++      docs/fr/designers/language-basic-syntax/language-syntax-variables.xml
++      docs/fr/designers/language-builtin-functions/language-function-capture.xml
++      docs/fr/designers/language-builtin-functions/language-function-config-load.xml
++      docs/fr/designers/language-builtin-functions/language-function-foreach.xml
++      docs/fr/designers/language-builtin-functions/language-function-if.xml:
++      sync with EN
++
++    * docs/fr/getting-started.xml
++      docs/fr/language-snippets.ent
++      docs/fr/appendixes/resources.xml
++      docs/fr/appendixes/tips.xml
++      docs/fr/appendixes/troubleshooting.xml:
++      sync with EN
++
++2006-09-27  Peter 'Mash' Morgan  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pm at daffodil.uk.com</A>&gt;
++
++    * docs/en/designers/language-builtin-functions/language-function-section.xml:
++      Minor tweaks and corrections
++
++    * docs/en/getting-started.xml
++      docs/en/designers/chapter-debugging-console.xml
++      docs/en/designers/language-basic-syntax/language-syntax-comments.xml
++      docs/en/designers/language-custom-functions/language-function-html-image.xml
++      docs/en/designers/language-custom-functions/language-function-html-options.xml
++      docs/en/designers/language-custom-functions/language-function-html-radios.xml
++      docs/en/designers/language-custom-functions/language-function-html-select-date.xml
++      docs/en/designers/language-custom-functions/language-function-html-select-time.xml
++      docs/en/designers/language-custom-functions/language-function-html-table.xml
++      docs/en/designers/language-custom-functions/language-function-mailto.xml
++      docs/en/designers/language-custom-functions/language-function-popup-init.xml
++      docs/en/designers/language-custom-functions/language-function-textformat.xml
++      docs/en/designers/language-variables/language-config-variables.xml
++      docs/en/designers/language-variables/language-variables-smarty.xml:
++      Add literal tags to html, general formatting
++
++    * docs/en/getting-started.xml
++      docs/en/appendixes/resources.xml
++      docs/en/appendixes/tips.xml
++      docs/en/appendixes/troubleshooting.xml
++      docs/en/designers/config-files.xml
++      docs/en/programmers/caching.xml
++      docs/en/programmers/smarty-constants.xml
++      docs/en/programmers/advanced-features/advanced-features-objects.xml
++      docs/en/programmers/advanced-features/advanced-features-outputfilters.xml
++      docs/en/programmers/advanced-features/advanced-features-postfilters.xml
++      docs/en/programmers/advanced-features/advanced-features-prefilters.xml
++      docs/en/programmers/advanced-features/section-template-cache-handler-func.xml
++      docs/en/programmers/advanced-features/template-resources.xml
++      docs/en/programmers/api-variables/variable-autoload-filters.xml
++      docs/en/programmers/api-variables/variable-cache-dir.xml
++      docs/en/programmers/api-variables/variable-cache-handler-func.xml
++      docs/en/programmers/api-variables/variable-cache-lifetime.xml
++      docs/en/programmers/api-variables/variable-cache-modified-check.xml
++      docs/en/programmers/api-variables/variable-caching.xml
++      docs/en/programmers/api-variables/variable-compile-check.xml
++      docs/en/programmers/api-variables/variable-compile-dir.xml
++      docs/en/programmers/api-variables/variable-compile-id.xml
++      docs/en/programmers/api-variables/variable-config-booleanize.xml
++      docs/en/programmers/api-variables/variable-config-dir.xml
++      docs/en/programmers/api-variables/variable-config-fix-newlines.xml
++      docs/en/programmers/api-variables/variable-config-overwrite.xml
++      docs/en/programmers/api-variables/variable-config-read-hidden.xml
++      docs/en/programmers/api-variables/variable-debug-tpl.xml
++      docs/en/programmers/api-variables/variable-debugging-ctrl.xml
++      docs/en/programmers/api-variables/variable-debugging.xml
++      docs/en/programmers/api-variables/variable-default-modifiers.xml
++      docs/en/programmers/api-variables/variable-default-resource-type.xml
++      docs/en/programmers/api-variables/variable-error-reporting.xml
++      docs/en/programmers/api-variables/variable-force-compile.xml
++      docs/en/programmers/api-variables/variable-left-delimiter.xml
++      docs/en/programmers/api-variables/variable-php-handling.xml
++      docs/en/programmers/api-variables/variable-plugins-dir.xml
++      docs/en/programmers/api-variables/variable-request-use-auto-globals.xml
++      docs/en/programmers/api-variables/variable-request-vars-order.xml
++      docs/en/programmers/api-variables/variable-right-delimiter.xml
++      docs/en/programmers/api-variables/variable-secure-dir.xml
++      docs/en/programmers/api-variables/variable-security-settings.xml
++      docs/en/programmers/api-variables/variable-security.xml
++      docs/en/programmers/api-variables/variable-template-dir.xml
++      docs/en/programmers/api-variables/variable-trusted-dir.xml
++      docs/en/programmers/api-variables/variable-use-sub-dirs.xml
++      docs/en/programmers/caching/caching-cacheable.xml
++      docs/en/programmers/caching/caching-groups.xml
++      docs/en/programmers/caching/caching-multiple-caches.xml
++      docs/en/programmers/caching/caching-setting-up.xml:
++      Tidy up of formatting
++
++    * docs/entities/global.ent:
++      Adding some more resources
++
++    * docs/en/programmers/plugins/plugins-block-functions.xml
++      docs/en/programmers/plugins/plugins-compiler-functions.xml
++      docs/en/programmers/plugins/plugins-functions.xml
++      docs/en/programmers/plugins/plugins-inserts.xml
++      docs/en/programmers/plugins/plugins-modifiers.xml
++      docs/en/programmers/plugins/plugins-naming-conventions.xml
++      docs/en/programmers/plugins/plugins-outputfilters.xml
++      docs/en/programmers/plugins/plugins-prefilters-postfilters.xml
++      docs/en/programmers/plugins/plugins-resources.xml
++      docs/en/programmers/plugins/plugins-writing.xml:
++      Tidy up some formatting
++
++2006-09-26  Peter 'Mash' Morgan  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pm at daffodil.uk.com</A>&gt;
++
++    * docs/en/programmers/api-functions/api-append-by-ref.xml
++      docs/en/programmers/api-functions/api-append.xml
++      docs/en/programmers/api-functions/api-assign-by-ref.xml
++      docs/en/programmers/api-functions/api-assign.xml
++      docs/en/programmers/api-functions/api-clear-all-assign.xml
++      docs/en/programmers/api-functions/api-clear-all-cache.xml
++      docs/en/programmers/api-functions/api-clear-assign.xml
++      docs/en/programmers/api-functions/api-clear-cache.xml
++      docs/en/programmers/api-functions/api-clear-compiled-tpl.xml
++      docs/en/programmers/api-functions/api-clear-config.xml
++      docs/en/programmers/api-functions/api-config-load.xml
++      docs/en/programmers/api-functions/api-display.xml
++      docs/en/programmers/api-functions/api-fetch.xml
++      docs/en/programmers/api-functions/api-get-config-vars.xml
++      docs/en/programmers/api-functions/api-get-registered-object.xml
++      docs/en/programmers/api-functions/api-get-template-vars.xml
++      docs/en/programmers/api-functions/api-is-cached.xml
++      docs/en/programmers/api-functions/api-load-filter.xml
++      docs/en/programmers/api-functions/api-register-block.xml
++      docs/en/programmers/api-functions/api-register-compiler-function.xml
++      docs/en/programmers/api-functions/api-register-function.xml
++      docs/en/programmers/api-functions/api-register-modifier.xml
++      docs/en/programmers/api-functions/api-register-object.xml
++      docs/en/programmers/api-functions/api-register-outputfilter.xml
++      docs/en/programmers/api-functions/api-register-postfilter.xml
++      docs/en/programmers/api-functions/api-register-prefilter.xml
++      docs/en/programmers/api-functions/api-register-resource.xml
++      docs/en/programmers/api-functions/api-template-exists.xml
++      docs/en/programmers/api-functions/api-trigger-error.xml
++      docs/en/programmers/api-functions/api-unregister-block.xml
++      docs/en/programmers/api-functions/api-unregister-compiler-function.xml
++      docs/en/programmers/api-functions/api-unregister-function.xml
++      docs/en/programmers/api-functions/api-unregister-modifier.xml
++      docs/en/programmers/api-functions/api-unregister-object.xml
++      docs/en/programmers/api-functions/api-unregister-outputfilter.xml
++      docs/en/programmers/api-functions/api-unregister-postfilter.xml
++      docs/en/programmers/api-functions/api-unregister-prefilter.xml
++      docs/en/programmers/api-functions/api-unregister-resource.xml:
++      Tidy up formatting and examples
++
++    * docs/en/language-snippets.ent:
++      Moved recurring para for register_*
++
++    * docs/en/designers/language-modifiers.xml:
++      Spelling on modifiers
++
++    * docs/en/designers/language-builtin-functions.xml
++      docs/en/designers/language-modifiers.xml
++      docs/en/designers/language-custom-functions/language-function-html-options.xml
++      docs/en/designers/language-modifiers/language-modifier-capitalize.xml
++      docs/en/designers/language-modifiers/language-modifier-cat.xml
++      docs/en/designers/language-modifiers/language-modifier-count-characters.xml
++      docs/en/designers/language-modifiers/language-modifier-count-paragraphs.xml
++      docs/en/designers/language-modifiers/language-modifier-count-sentences.xml
++      docs/en/designers/language-modifiers/language-modifier-count-words.xml
++      docs/en/designers/language-modifiers/language-modifier-date-format.xml
++      docs/en/designers/language-modifiers/language-modifier-default.xml
++      docs/en/designers/language-modifiers/language-modifier-escape.xml
++      docs/en/designers/language-modifiers/language-modifier-indent.xml
++      docs/en/designers/language-modifiers/language-modifier-lower.xml
++      docs/en/designers/language-modifiers/language-modifier-nl2br.xml
++      docs/en/designers/language-modifiers/language-modifier-regex-replace.xml
++      docs/en/designers/language-modifiers/language-modifier-replace.xml
++      docs/en/designers/language-modifiers/language-modifier-spacify.xml
++      docs/en/designers/language-modifiers/language-modifier-string-format.xml
++      docs/en/designers/language-modifiers/language-modifier-strip-tags.xml
++      docs/en/designers/language-modifiers/language-modifier-strip.xml
++      docs/en/designers/language-modifiers/language-modifier-truncate.xml
++      docs/en/designers/language-modifiers/language-modifier-upper.xml
++      docs/en/designers/language-modifiers/language-modifier-wordwrap.xml:
++      Tidying up some markup
++
++    * docs/en/designers/language-variables.xml:
++      typo
++
++    * docs/en/designers/language-variables.xml
++      docs/en/designers/language-variables/language-assigned-variables.xml
++      docs/en/designers/language-variables/language-config-variables.xml
++      docs/en/designers/language-variables/language-variables-smarty.xml:
++      Tidy up formatting on variables
++
++    * docs/en/designers/language-basic-syntax/language-escaping.xml
++      docs/en/designers/language-basic-syntax/language-math.xml
++      docs/en/designers/language-basic-syntax/language-syntax-comments.xml
++      docs/en/designers/language-basic-syntax/language-syntax-functions.xml
++      docs/en/designers/language-basic-syntax/language-syntax-quotes.xml
++      docs/en/designers/language-basic-syntax/language-syntax-variables.xml:
++      Formatting of the basic-syntax dir
++
++    * docs/en/designers/language-custom-functions/language-function-assign.xml
++      docs/en/designers/language-custom-functions/language-function-counter.xml
++      docs/en/designers/language-custom-functions/language-function-cycle.xml
++      docs/en/designers/language-custom-functions/language-function-debug.xml
++      docs/en/designers/language-custom-functions/language-function-eval.xml
++      docs/en/designers/language-custom-functions/language-function-fetch.xml
++      docs/en/designers/language-custom-functions/language-function-html-checkboxes.xml
++      docs/en/designers/language-custom-functions/language-function-html-image.xml
++      docs/en/designers/language-custom-functions/language-function-html-options.xml
++      docs/en/designers/language-custom-functions/language-function-html-radios.xml
++      docs/en/designers/language-custom-functions/language-function-html-select-date.xml
++      docs/en/designers/language-custom-functions/language-function-html-select-time.xml
++      docs/en/designers/language-custom-functions/language-function-html-table.xml
++      docs/en/designers/language-custom-functions/language-function-mailto.xml
++      docs/en/designers/language-custom-functions/language-function-math.xml
++      docs/en/designers/language-custom-functions/language-function-popup-init.xml
++      docs/en/designers/language-custom-functions/language-function-popup.xml
++      docs/en/designers/language-custom-functions/language-function-textformat.xml:
++      More formatting and cleaning up examples
++
++2006-09-25  Peter 'Mash' Morgan  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pm at daffodil.uk.com</A>&gt;
++
++    * docs/en/designers/language-builtin-functions/language-function-foreach.xml
++      docs/en/designers/language-builtin-functions/language-function-section.xml:
++      Doh! removing tabs
++
++    * docs/en/designers/language-builtin-functions/language-function-capture.xml
++      docs/en/designers/language-builtin-functions/language-function-config-load.xml
++      docs/en/designers/language-builtin-functions/language-function-foreach.xml
++      docs/en/designers/language-builtin-functions/language-function-if.xml
++      docs/en/designers/language-builtin-functions/language-function-include-php.xml
++      docs/en/designers/language-builtin-functions/language-function-include.xml
++      docs/en/designers/language-builtin-functions/language-function-insert.xml
++      docs/en/designers/language-builtin-functions/language-function-ldelim.xml
++      docs/en/designers/language-builtin-functions/language-function-literal.xml
++      docs/en/designers/language-builtin-functions/language-function-php.xml
++      docs/en/designers/language-builtin-functions/language-function-section.xml
++      docs/en/designers/language-builtin-functions/language-function-strip.xml:
++      A lot of formatting, tagging and tidy up. Some consistency at last
++
++    * docs/en/designers/language-builtin-functions/language-function-section.xml:
++      Major tidy up
++
++    * docs/en/designers/language-builtin-functions/language-function-foreach.xml:
++      Major tidy up, added index property and some examples
++
++2006-09-03  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/designers/language-custom-functions/language-function-popup-init.xml
++      docs/fr/programmers/advanced-features/advanced-features-outputfilters.xml
++      docs/fr/programmers/advanced-features/advanced-features-postfilters.xml
++      docs/fr/programmers/advanced-features/advanced-features-prefilters.xml:
++      sync with EN
++
++2006-09-01  George Miroshnikov  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">support at infinity.com.ua</A>&gt;
++
++    * docs/ru/programmers/api-functions/api-append-by-ref.xml
++      docs/ru/programmers/api-functions/api-append.xml
++      docs/ru/programmers/api-functions/api-assign-by-ref.xml
++      docs/ru/programmers/api-functions/api-assign.xml
++      docs/ru/programmers/api-functions/api-clear-all-assign.xml
++      docs/ru/programmers/api-functions/api-clear-all-cache.xml
++      docs/ru/programmers/api-functions/api-clear-assign.xml
++      docs/ru/programmers/api-functions/api-clear-cache.xml
++      docs/ru/programmers/api-functions/api-clear-compiled-tpl.xml
++      docs/ru/programmers/api-functions/api-clear-config.xml
++      docs/ru/programmers/api-functions/api-config-load.xml
++      docs/ru/programmers/api-functions/api-display.xml:
++      sync with EN
++
++2006-08-25  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
++
++    * NEWS
++      libs/Smarty_Compiler.class.php:
++      fixed wrong handling of name attribute in {insert}
++      thanks to Ivan Kravets for reporting this
++
++    * libs/Smarty_Compiler.class.php:
++      fixed typo
++
++2006-08-21  George Miroshnikov  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">support at infinity.com.ua</A>&gt;
++
++    * docs/ru/designers/language-custom-functions/language-function-popup-init.xml
++      docs/ru/programmers/advanced-features/advanced-features-objects.xml
++      docs/ru/programmers/advanced-features/advanced-features-outputfilters.xml
++      docs/ru/programmers/advanced-features/advanced-features-postfilters.xml
++      docs/ru/programmers/advanced-features/advanced-features-prefilters.xml
++      docs/ru/programmers/advanced-features/section-template-cache-handler-func.xml
++      docs/ru/programmers/advanced-features/template-resources.xml:
++      sync with EN
++
++    * docs/en/programmers/advanced-features/advanced-features-prefilters.xml:
++      another missing dot
++
++    * docs/en/programmers/advanced-features/advanced-features-postfilters.xml:
++      missing dot
++
++    * docs/en/programmers/advanced-features/advanced-features-outputfilters.xml:
++      missing comma
++
++2006-08-19  Peter 'Mash' Morgan  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pmm at daffodil.uk.com</A>&gt;
++
++    * docs/en/designers/language-custom-functions/language-function-popup-init.xml:
++      avoid dupes and added remote paths
++
++2006-08-06  Yannick Torres  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">yannick.torres at keliglia.com</A>&gt;
++
++    * docs/fr/designers/language-custom-functions/language-function-html-table.xml
++      docs/fr/designers/language-custom-functions/language-function-mailto.xml:
++      sync with EN
++
++2006-08-03  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
++
++    * NEWS
++      libs/Smarty_Compiler.class.php:
++      fix false replacement of &quot;$t&quot; inside double quotes
++      thanks to checat for reporting this
++
++2006-07-20  George Miroshnikov  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">support at infinity.com.ua</A>&gt;
++
++    * docs/ru/designers/language-custom-functions/language-function-html-table.xml
++      docs/ru/designers/language-custom-functions/language-function-mailto.xml:
++      incrementing EN-Revision
++
++    * docs/ru/designers/language-custom-functions/language-function-assign.xml
++      docs/ru/designers/language-custom-functions/language-function-eval.xml
++      docs/ru/designers/language-custom-functions/language-function-fetch.xml
++      docs/ru/designers/language-custom-functions/language-function-html-checkboxes.xml
++      docs/ru/designers/language-custom-functions/language-function-html-image.xml
++      docs/ru/designers/language-custom-functions/language-function-html-options.xml
++      docs/ru/designers/language-custom-functions/language-function-html-radios.xml
++      docs/ru/designers/language-custom-functions/language-function-html-table.xml
++      docs/ru/designers/language-custom-functions/language-function-mailto.xml
++      docs/ru/designers/language-custom-functions/language-function-popup-init.xml
++      docs/ru/designers/language-custom-functions/language-function-popup.xml
++      docs/ru/designers/language-modifiers/language-modifier-date-format.xml
++      docs/ru/designers/language-modifiers/language-modifier-default.xml
++      docs/ru/designers/language-modifiers/language-modifier-escape.xml
++      docs/ru/designers/language-modifiers/language-modifier-indent.xml
++      docs/ru/designers/language-modifiers/language-modifier-lower.xml
++      docs/ru/designers/language-modifiers/language-modifier-nl2br.xml
++      docs/ru/designers/language-modifiers/language-modifier-strip.xml
++      docs/ru/designers/language-modifiers/language-modifier-truncate.xml
++      docs/ru/designers/language-modifiers/language-modifier-upper.xml
++      docs/ru/designers/language-modifiers/language-modifier-wordwrap.xml
++      docs/ru/designers/language-variables/language-variables-smarty.xml:
++      sync with EN
++
++    * docs/en/designers/language-custom-functions/language-function-mailto.xml:
++      typo
++
++2006-07-10  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * libs/plugins/function.html_table.php:
++      fixed email address in comments
++
++    * NEWS
++      libs/plugins/function.html_table.php:
++      html_table: fixed th/tr output, added hdir support for column
++      headings,update docs to reflect new features
++
++2006-07-08  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
++
++    * libs/plugins/function.html_table.php:
++      fix occasional notices on undefined variables
++
++2006-07-08  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * libs/plugins/function.html_table.php:
++      Added ability to specify column headings in {html_table}
++      
++      Added th_attrs attribute which works similary to td_attr and tr_attr but
++      for TH elements. Changes the cols attribute to allow mixed values; a
++      numeric still specifies the number of columns to render but now an array
++      of values can be used to specify TH column values. The number of columns
++      is determine from the size of the array. Further, a comma-separated
++      string of column names can be used which is internally coverted to an
++      array and used as if it was specified as a normal array.
++      
++      Thanks for lynlyn for the feature request.
++
++2006-06-23  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * libs/plugins/outputfilter.trimwhitespace.php:
++      fix comments in outputfilter.trimwhitespace
++
++    * NEWS
++      libs/plugins/outputfilter.trimwhitespace.php:
++      fixed ordering of replacements in trimwhitespace output filter
++      
++      Thanks to Getty from IRC for reporting this.
++
++2006-06-20  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/plugins/function.mailto.php:
++      update mailto function plugin to work around a firefox/thunderbird escaping
++      bug
++      
++      Thanks to elijahlofgren from the forums for reporting this and providing
++      the necessary patch
++
++    * NEWS
++      libs/plugins/modifier.date_format.php:
++      emulate %l in the date_format modifier on windows
++      
++      thanks to Gibberish from the forums for reporting this
++
++2006-06-14  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
++
++    * NEWS
++      libs/plugins/modifier.capitalize.php:
++      Fix handling of apostrophes in the capitalize modifier.
++      
++      Thanks to asmecher from the forums for reporting this and providing a
++      partial solution.
++
++2006-05-28  Monte Ohrt  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">monte at ohrt.com</A>&gt;
++
++    * NEWS
++      libs/Config_File.class.php
++      libs/Smarty.class.php
++      libs/Smarty_Compiler.class.php:
++      update version numbers
++
+ 2006-05-25  boots  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">jayboots at yahoo.com</A>&gt;
+ 
+     * NEWS
+@@ -3720,7 +4585,7 @@
+ 
+     * libs/Smarty.class.php
+       libs/Smarty_Compiler.class.php:
+-      added CVS $Id: ChangeLog,v 1.417 2006/05/26 05:32:07 changelog Exp $
++      added CVS $Id: ChangeLog,v 1.448 2006/12/01 01:31:17 changelog Exp $
+ 
+ 2003-03-31  Messju Mohr  &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">messju at lammfellpuschen.de</A>&gt;
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/NEWS	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -1,3 +1,34 @@
++Version 2.6.16 (Dec 1st, 2006)
++------------------------------
++
++- fixed replacement bug in trimwhitespace output filter that was introduced
++  in the last release (Spuerhund, boots)
++
++Version 2.6.15 (Nov 30th, 2006)
++-------------------------------
++
++- change file writing semantics in smarty_core_write_file() to unlink() only
++  when rename() fails or a Windows system is detected (c960657, boots) 
++- update debug.tpl to xhtml 1.1 compliance, fix javascript escaping in debug
++  output and apply a Smarty based color scheme (cybot, boots)
++- enhance reporting precision of debug_print_var modifier (cybot, boots) 
++- make html_select_date work consistently with 0000-00-00 00:00:00 and
++  0000-00-00 inputs (cybot, boots)
++- fix wrong handling of insert's name attribute. (messju)
++- fix false replacement of &quot;$t&quot; inside double quotes (checat, messju)
++- added support for column headings and caption element to html_table and
++  updated the output to use thead/tbody elements (boots)
++- fixed ordering of replacements in trimwhitespace output filter (Getty, boots)
++- update mailto function plugin to work around a firefox/thunderbird
++  escaping bug (elijahlofgren, boots)
++- emulate %l in the date_format modifier on windows (boots) 
++- fix handling of apostrophes in capitalize modifier (Alec Smecher, boots)
++
++Version 2.6.14 (May 28th, 2006)
++-------------------------------
++
++- fix compiler bug allowing php tags in secure templates
++  (boots,monte)
+ - un-hide hidden xml open tags (boots)
+ - fix handling of block-methods of registered objects (El Hombre Gris,
+   messju)
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Config_File.class.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -18,14 +18,14 @@
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  *
+  * @link <A HREF="http://smarty.php.net/">http://smarty.php.net/</A>
+- * @version 2.6.14
++ * @version 2.6.16
+  * @copyright Copyright: 2001-2005 New Digital Group, Inc.
+  * @author Andrei Zmievski &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">andrei at php.net</A>&gt;
+  * @access public
+  * @package Smarty
+  */
+ 
+-/* $Id: Config_File.class.php,v 1.84 2006/01/18 19:02:52 mohrt Exp $ */
++/* $Id: Config_File.class.php,v 1.86 2006/11/30 17:01:28 mohrt Exp $ */
+ 
+ /**
+  * Config file reading class
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty.class.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -27,10 +27,10 @@
+  * @author Monte Ohrt &lt;monte at ohrt dot com&gt;
+  * @author Andrei Zmievski &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">andrei at php.net</A>&gt;
+  * @package Smarty
+- * @version 2.6.14
++ * @version 2.6.16
+  */
+ 
+-/* $Id: Smarty.class.php,v 1.524 2006/01/18 19:02:52 mohrt Exp $ */
++/* $Id: Smarty.class.php,v 1.526 2006/11/30 17:01:28 mohrt Exp $ */
+ 
+ /**
+  * DIR_SEP isn't used anymore, but third party apps might
+@@ -464,7 +464,7 @@
+      *
+      * @var string
+      */
+-    var $_version              = '2.6.14';
++    var $_version              = '2.6.16';
+ 
+     /**
+      * current template inclusion depth
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/Smarty_Compiler.class.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -21,12 +21,12 @@
+  * @link <A HREF="http://smarty.php.net/">http://smarty.php.net/</A>
+  * @author Monte Ohrt &lt;monte at ohrt dot com&gt;
+  * @author Andrei Zmievski &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">andrei at php.net</A>&gt;
+- * @version 2.6.14
++ * @version 2.6.16
+  * @copyright 2001-2005 New Digital Group, Inc.
+  * @package Smarty
+  */
+ 
+-/* $Id: Smarty_Compiler.class.php,v 1.381 2006/05/25 14:46:18 boots Exp $ */
++/* $Id: Smarty_Compiler.class.php,v 1.386 2006/11/30 17:01:28 mohrt Exp $ */
+ 
+ /**
+  * Template compiling class
+@@ -927,8 +927,12 @@
+         $name = $this-&gt;_dequote($attrs['name']);
+ 
+         if (empty($name)) {
+-            $this-&gt;_syntax_error(&quot;missing insert name&quot;, E_USER_ERROR, __FILE__, __LINE__);
++            return $this-&gt;_syntax_error(&quot;missing insert name&quot;, E_USER_ERROR, __FILE__, __LINE__);
+         }
++        
++        if (!preg_match('~^\w+$~', $name)) {
++            return $this-&gt;_syntax_error(&quot;'insert: 'name' must be an insert function name&quot;, E_USER_ERROR, __FILE__, __LINE__);
++        }
+ 
+         if (!empty($attrs['script'])) {
+             $delayed_loading = true;
+@@ -1160,7 +1164,7 @@
+         }
+         $item = $this-&gt;_dequote($attrs['item']);
+         if (!preg_match('~^\w+$~', $item)) {
+-            return $this-&gt;_syntax_error(&quot;'foreach: item' must be a variable name (literal string)&quot;, E_USER_ERROR, __FILE__, __LINE__);
++            return $this-&gt;_syntax_error(&quot;'foreach: 'item' must be a variable name (literal string)&quot;, E_USER_ERROR, __FILE__, __LINE__);
+         }
+ 
+         if (isset($attrs['key'])) {
+@@ -1671,11 +1675,11 @@
+         // if contains unescaped $, expand it
+         if(preg_match_all('~(?:\`(?&lt;!\\\\)\$' . $this-&gt;_dvar_guts_regexp . '(?:' . $this-&gt;_obj_ext_regexp . ')*\`)|(?:(?&lt;!\\\\)\$\w+(\[[a-zA-Z0-9]+\])*)~', $var_expr, $_match)) {
+             $_match = $_match[0];
+-            rsort($_match);
+-            reset($_match);
++            $_replace = array();
+             foreach($_match as $_var) {
+-                $var_expr = str_replace ($_var, '&quot;.(' . $this-&gt;_parse_var(str_replace('`','',$_var)) . ').&quot;', $var_expr);
++                $_replace[$_var] = '&quot;.(' . $this-&gt;_parse_var(str_replace('`','',$_var)) . ').&quot;';
+             }
++            $var_expr = strtr($var_expr, $_replace);
+             $_return = preg_replace('~\.&quot;&quot;|(?&lt;!\\\\)&quot;&quot;\.~', '', $var_expr);
+         } else {
+             $_return = $var_expr;
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/debug.tpl
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/debug.tpl	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/debug.tpl	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -1,64 +1,157 @@
+ {* Smarty *}
++{* debug.tpl, last updated version 2.1.0 *}
++{assign_debug_info}
++{capture assign=debug_output}
++&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;<A HREF="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd</A>&quot;&gt;
++&lt;html xmlns=&quot;<A HREF="http://www.w3.org/1999/xhtml">http://www.w3.org/1999/xhtml</A>&quot; xml:lang=&quot;en&quot;&gt;
++&lt;head&gt;
++    &lt;title&gt;Smarty Debug Console&lt;/title&gt;
++{literal}
++&lt;style type=&quot;text/css&quot;&gt;
++/* &lt;![CDATA[ */
++body, h1, h2, td, th, p {
++    font-family: sans-serif;
++    font-weight: normal;
++    font-size: 0.9em;
++    margin: 1px;
++    padding: 0;
++}
+ 
+-{* debug.tpl, last updated version 2.0.1 *}
++h1 {
++    margin: 0;
++    text-align: left;
++    padding: 2px;
++    background-color: #f0c040;
++    color:  black;
++    font-weight: bold;
++    font-size: 1.2em;
++ }
+ 
+-{assign_debug_info}
++h2 {
++    background-color: #9B410E;
++    color: white;
++    text-align: left;
++    font-weight: bold;
++    padding: 2px;
++    border-top: 1px solid black;
++}
+ 
++body {
++    background: black; 
++}
++
++p, table, div {
++    background: #f0ead8;
++} 
++
++p {
++    margin: 0;
++    font-style: italic;
++    text-align: center;
++}
++
++table {
++    width: 100%;
++}
++
++th, td {
++    font-family: monospace;
++    vertical-align: top;
++    text-align: left;
++    width: 50%;
++}
++
++td {
++    color: green;
++}
++
++.odd {
++    background-color: #eeeeee;
++}
++
++.even {
++    background-color: #fafafa;
++}
++
++.exectime {
++    font-size: 0.8em;
++    font-style: italic;
++}
++
++#table_assigned_vars th {
++    color: blue;
++}
++
++#table_config_vars th {
++    color: maroon;
++}
++/* ]]&gt; */
++&lt;/style&gt;
++{/literal}
++&lt;/head&gt;
++&lt;body&gt;
++
++&lt;h1&gt;Smarty Debug Console&lt;/h1&gt;
++
++&lt;h2&gt;included templates &amp; config files (load time in seconds)&lt;/h2&gt;
++
++&lt;div&gt;
++{section name=templates loop=$_debug_tpls}
++    {section name=indent loop=$_debug_tpls[templates].depth}&nbsp;&nbsp;&nbsp;{/section}
++    &lt;font color={if $_debug_tpls[templates].type eq &quot;template&quot;}brown{elseif $_debug_tpls[templates].type eq &quot;insert&quot;}black{else}green{/if}&gt;
++        {$_debug_tpls[templates].filename|escape:html}&lt;/font&gt;
++    {if isset($_debug_tpls[templates].exec_time)}
++        &lt;span class=&quot;exectime&quot;&gt;
++        ({$_debug_tpls[templates].exec_time|string_format:&quot;%.5f&quot;})
++        {if %templates.index% eq 0}(total){/if}
++        &lt;/span&gt;
++    {/if}
++    &lt;br /&gt;
++{sectionelse}
++    &lt;p&gt;no templates included&lt;/p&gt;
++{/section}
++&lt;/div&gt;
++
++&lt;h2&gt;assigned template variables&lt;/h2&gt;
++
++&lt;table id=&quot;table_assigned_vars&quot;&gt;
++    {section name=vars loop=$_debug_keys}
++        &lt;tr class=&quot;{cycle values=&quot;odd,even&quot;}&quot;&gt;
++            &lt;th&gt;{ldelim}${$_debug_keys[vars]|escape:'html'}{rdelim}&lt;/th&gt;
++            &lt;td&gt;{$_debug_vals[vars]|@debug_print_var}&lt;/td&gt;&lt;/tr&gt;
++    {sectionelse}
++        &lt;tr&gt;&lt;td&gt;&lt;p&gt;no template variables assigned&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
++    {/section}
++&lt;/table&gt;
++
++&lt;h2&gt;assigned config file variables (outer template scope)&lt;/h2&gt;
++
++&lt;table id=&quot;table_config_vars&quot;&gt;
++    {section name=config_vars loop=$_debug_config_keys}
++        &lt;tr class=&quot;{cycle values=&quot;odd,even&quot;}&quot;&gt;
++            &lt;th&gt;{ldelim}#{$_debug_config_keys[config_vars]|escape:'html'}#{rdelim}&lt;/th&gt;
++            &lt;td&gt;{$_debug_config_vals[config_vars]|@debug_print_var}&lt;/td&gt;&lt;/tr&gt;
++    {sectionelse}
++        &lt;tr&gt;&lt;td&gt;&lt;p&gt;no config vars assigned&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
++    {/section}
++&lt;/table&gt;
++&lt;/body&gt;
++&lt;/html&gt;
++{/capture}
+ {if isset($_smarty_debug_output) and $_smarty_debug_output eq &quot;html&quot;}
+-	&lt;table border=0 width=100%&gt;
+-	&lt;tr bgcolor=#cccccc&gt;&lt;th colspan=2&gt;Smarty Debug Console&lt;/th&gt;&lt;/tr&gt;
+-	&lt;tr bgcolor=#cccccc&gt;&lt;td colspan=2&gt;&lt;b&gt;included templates &amp; config files (load time in seconds):&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+-	{section name=templates loop=$_debug_tpls}
+-		&lt;tr bgcolor={if %templates.index% is even}#eeeeee{else}#fafafa{/if}&gt;&lt;td colspan=2&gt;&lt;tt&gt;{section name=indent loop=$_debug_tpls[templates].depth}&nbsp;&nbsp;&nbsp;{/section}&lt;font color={if $_debug_tpls[templates].type eq &quot;template&quot;}brown{elseif $_debug_tpls[templates].type eq &quot;insert&quot;}black{else}green{/if}&gt;{$_debug_tpls[templates].filename|escape:html}&lt;/font&gt;{if isset($_debug_tpls[templates].exec_time)} &lt;font size=-1&gt;&lt;i&gt;({$_debug_tpls[templates].exec_time|string_format:&quot;%.5f&quot;}){if %templates.index% eq 0} (total){/if}&lt;/i&gt;&lt;/font&gt;{/if}&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;
+-	{sectionelse}
+-		&lt;tr bgcolor=#eeeeee&gt;&lt;td colspan=2&gt;&lt;tt&gt;&lt;i&gt;no templates included&lt;/i&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;	
+-	{/section}
+-	&lt;tr bgcolor=#cccccc&gt;&lt;td colspan=2&gt;&lt;b&gt;assigned template variables:&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+-	{section name=vars loop=$_debug_keys}
+-		&lt;tr bgcolor={if %vars.index% is even}#eeeeee{else}#fafafa{/if}&gt;&lt;td valign=top&gt;&lt;tt&gt;&lt;font color=blue&gt;{ldelim}${$_debug_keys[vars]}{rdelim}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;td nowrap&gt;&lt;tt&gt;&lt;font color=green&gt;{$_debug_vals[vars]|@debug_print_var}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;
+-	{sectionelse}
+-		&lt;tr bgcolor=#eeeeee&gt;&lt;td colspan=2&gt;&lt;tt&gt;&lt;i&gt;no template variables assigned&lt;/i&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;	
+-	{/section}
+-	&lt;tr bgcolor=#cccccc&gt;&lt;td colspan=2&gt;&lt;b&gt;assigned config file variables (outer template scope):&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
+-	{section name=config_vars loop=$_debug_config_keys}
+-		&lt;tr bgcolor={if %config_vars.index% is even}#eeeeee{else}#fafafa{/if}&gt;&lt;td valign=top&gt;&lt;tt&gt;&lt;font color=maroon&gt;{ldelim}#{$_debug_config_keys[config_vars]}#{rdelim}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;td&gt;&lt;tt&gt;&lt;font color=green&gt;{$_debug_config_vals[config_vars]|@debug_print_var}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;
+-	{sectionelse}
+-		&lt;tr bgcolor=#eeeeee&gt;&lt;td colspan=2&gt;&lt;tt&gt;&lt;i&gt;no config vars assigned&lt;/i&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;	
+-	{/section}
+-	&lt;/table&gt;
+-&lt;/BODY&gt;&lt;/HTML&gt;
++    {$debug_output}
+ {else}
+-&lt;SCRIPT language=javascript&gt;
+-	if( self.name == '' ) {ldelim}
+-	   var title = 'Console';
+-	{rdelim}
+-	else {ldelim}
+-	   var title = 'Console_' + self.name;
+-	{rdelim}
+-	_smarty_console = window.open(&quot;&quot;,title.value,&quot;width=680,height=600,resizable,scrollbars=yes&quot;);
+-	_smarty_console.document.write(&quot;&lt;HTML&gt;&lt;HEAD&gt;&lt;TITLE&gt;Smarty Debug Console_&quot;+self.name+&quot;&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY bgcolor=#ffffff&gt;&quot;);
+-	_smarty_console.document.write(&quot;&lt;table border=0 width=100%&gt;&quot;);
+-	_smarty_console.document.write(&quot;&lt;tr bgcolor=#cccccc&gt;&lt;th colspan=2&gt;Smarty Debug Console&lt;/th&gt;&lt;/tr&gt;&quot;);
+-	_smarty_console.document.write(&quot;&lt;tr bgcolor=#cccccc&gt;&lt;td colspan=2&gt;&lt;b&gt;included templates &amp; config files (load time in seconds):&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+-	{section name=templates loop=$_debug_tpls}
+-		_smarty_console.document.write(&quot;&lt;tr bgcolor={if %templates.index% is even}#eeeeee{else}#fafafa{/if}&gt;&lt;td colspan=2&gt;&lt;tt&gt;{section name=indent loop=$_debug_tpls[templates].depth}&nbsp;&nbsp;&nbsp;{/section}&lt;font color={if $_debug_tpls[templates].type eq &quot;template&quot;}brown{elseif $_debug_tpls[templates].type eq &quot;insert&quot;}black{else}green{/if}&gt;{$_debug_tpls[templates].filename|escape:html|escape:javascript}&lt;/font&gt;{if isset($_debug_tpls[templates].exec_time)} &lt;font size=-1&gt;&lt;i&gt;({$_debug_tpls[templates].exec_time|string_format:&quot;%.5f&quot;}){if %templates.index% eq 0} (total){/if}&lt;/i&gt;&lt;/font&gt;{/if}&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+-	{sectionelse}
+-		_smarty_console.document.write(&quot;&lt;tr bgcolor=#eeeeee&gt;&lt;td colspan=2&gt;&lt;tt&gt;&lt;i&gt;no templates included&lt;/i&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);	
+-	{/section}
+-	_smarty_console.document.write(&quot;&lt;tr bgcolor=#cccccc&gt;&lt;td colspan=2&gt;&lt;b&gt;assigned template variables:&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+-	{section name=vars loop=$_debug_keys}
+-		_smarty_console.document.write(&quot;&lt;tr bgcolor={if %vars.index% is even}#eeeeee{else}#fafafa{/if}&gt;&lt;td valign=top&gt;&lt;tt&gt;&lt;font color=blue&gt;{ldelim}${$_debug_keys[vars]}{rdelim}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;td nowrap&gt;&lt;tt&gt;&lt;font color=green&gt;{$_debug_vals[vars]|@debug_print_var|escape:javascript}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+-	{sectionelse}
+-		_smarty_console.document.write(&quot;&lt;tr bgcolor=#eeeeee&gt;&lt;td colspan=2&gt;&lt;tt&gt;&lt;i&gt;no template variables assigned&lt;/i&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);	
+-	{/section}
+-	_smarty_console.document.write(&quot;&lt;tr bgcolor=#cccccc&gt;&lt;td colspan=2&gt;&lt;b&gt;assigned config file variables (outer template scope):&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+-	{section name=config_vars loop=$_debug_config_keys}
+-		_smarty_console.document.write(&quot;&lt;tr bgcolor={if %config_vars.index% is even}#eeeeee{else}#fafafa{/if}&gt;&lt;td valign=top&gt;&lt;tt&gt;&lt;font color=maroon&gt;{ldelim}#{$_debug_config_keys[config_vars]}#{rdelim}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;td&gt;&lt;tt&gt;&lt;font color=green&gt;{$_debug_config_vals[config_vars]|@debug_print_var|escape:javascript}&lt;/font&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+-	{sectionelse}
+-		_smarty_console.document.write(&quot;&lt;tr bgcolor=#eeeeee&gt;&lt;td colspan=2&gt;&lt;tt&gt;&lt;i&gt;no config vars assigned&lt;/i&gt;&lt;/tt&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);	
+-	{/section}
+-	_smarty_console.document.write(&quot;&lt;/table&gt;&quot;);
+-	_smarty_console.document.write(&quot;&lt;/BODY&gt;&lt;/HTML&gt;&quot;);
+-	_smarty_console.document.close();
+-&lt;/SCRIPT&gt;
+-{/if}
++&lt;script type=&quot;text/javascript&quot;&gt;
++// &lt;![CDATA[
++    if ( self.name == '' ) {ldelim}
++       var title = 'Console';
++    {rdelim}
++    else {ldelim}
++       var title = 'Console_' + self.name;
++    {rdelim}
++    _smarty_console = window.open(&quot;&quot;,title.value,&quot;width=680,height=600,resizable,scrollbars=yes&quot;);
++    _smarty_console.document.write('{$debug_output|escape:'javascript'}');
++    _smarty_console.document.close();
++// ]]&gt;
++&lt;/script&gt;
++{/if}
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/internals/core.write_file.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/internals/core.write_file.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/internals/core.write_file.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -23,8 +23,7 @@
+         smarty_core_create_dir_structure($_params, $smarty);
+     }
+ 
+-    // write to tmp file, then rename it to avoid
+-    // file locking race condition
++    // write to tmp file, then rename it to avoid file locking race condition
+     $_tmp_file = tempnam($_dirname, 'wrt');
+ 
+     if (!($fd = @fopen($_tmp_file, 'wb'))) {
+@@ -38,12 +37,13 @@
+     fwrite($fd, $params['contents']);
+     fclose($fd);
+ 
+-    // Delete the file if it allready exists (this is needed on Win,
+-    // because it cannot overwrite files with rename()
+-    if (file_exists($params['filename'])) {
++    if (PHP_OS == 'Windows' || !@rename($_tmp_file, $params['filename'])) {
++        // On platforms and filesystems that cannot overwrite with rename() 
++        // delete the file before renaming it -- because windows always suffers
++        // this, it is short-circuited to avoid the initial rename() attempt
+         @unlink($params['filename']);
++        @rename($_tmp_file, $params['filename']);
+     }
+-    @rename($_tmp_file, $params['filename']);
+     @chmod($params['filename'], $smarty-&gt;_file_perms);
+ 
+     return true;
+@@ -51,4 +51,4 @@
+ 
+ /* vim: set expandtab: */
+ 
+-?&gt;
++?&gt;
+\ No newline at end of file
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_select_date.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -24,9 +24,11 @@
+  *                day values (Marcus Bointon)
+  *           - 1.3.2 support negative timestamps, force year
+  *             dropdown to include given date unless explicitly set (Monte)
++ *           - 1.3.4 fix behaviour of 0000-00-00 00:00:00 dates to match that
++ *             of 0000-00-00 dates (cybot, boots)
+  * @link <A HREF="http://smarty.php.net/manual/en/language.function.html.select.date.php">http://smarty.php.net/manual/en/language.function.html.select.date.php</A> {html_select_date}
+  *      (Smarty online manual)
+- * @version 1.3.2
++ * @version 1.3.4
+  * @author Andrei Zmievski
+  * @author Monte Ohrt &lt;monte at ohrt dot com&gt;
+  * @param array
+@@ -131,19 +133,21 @@
+         }
+     }
+ 
+-    if(preg_match('!^-\d+$!',$time)) {
++    if (preg_match('!^-\d+$!', $time)) {
+         // negative timestamp, use date()
+-        $time = date('Y-m-d',$time);
++        $time = date('Y-m-d', $time);
+     }
+     // If $time is not in format yyyy-mm-dd
+-    if (!preg_match('/^\d{0,4}-\d{0,2}-\d{0,2}$/', $time)) {
++    if (preg_match('/^(\d{0,4}-\d{0,2}-\d{0,2})/', $time, $found)) {
++        $time = $found[1];
++    } else {
+         // use smarty_make_timestamp to get an unix timestamp and
+         // strftime to make yyyy-mm-dd
+         $time = strftime('%Y-%m-%d', smarty_make_timestamp($time));
+     }
+     // Now split this in pieces, which later can be used to set the select
+     $time = explode(&quot;-&quot;, $time);
+-    
++
+     // make syntax &quot;+N&quot; or &quot;-N&quot; work with start_year and end_year
+     if (preg_match('!^(\+|\-)\s*(\d+)$!', $end_year, $match)) {
+         if ($match[1] == '+') {
+@@ -159,7 +163,7 @@
+             $start_year = strftime('%Y') - $match[2];
+         }
+     }
+-    if (strlen($time[0]) &gt; 0) { 
++    if (strlen($time[0]) &gt; 0) {
+         if ($start_year &gt; $time[0] &amp;&amp; !isset($params['start_year'])) {
+             // force start year to include given date if not explicitly set
+             $start_year = $time[0];
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_table.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_table.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.html_table.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -15,12 +15,15 @@
+  * Purpose:  make an html table from an array of data&lt;br&gt;
+  * Input:&lt;br&gt;
+  *         - loop = array to loop through
+- *         - cols = number of columns
++ *         - cols = number of columns, comma separated list of column names
++ *                  or array of column names
+  *         - rows = number of rows
+  *         - table_attr = table attributes
++ *         - th_attr = table heading attributes (arrays are cycled)
+  *         - tr_attr = table row attributes (arrays are cycled)
+  *         - td_attr = table cell attributes (arrays are cycled)
+  *         - trailpad = value to pad trailing cells with
++ *         - caption = text for caption element 
+  *         - vdir = vertical direction (default: &quot;down&quot;, means top-to-bottom)
+  *         - hdir = horizontal direction (default: &quot;right&quot;, means left-to-right)
+  *         - inner = inner loop (default &quot;cols&quot;: print $loop line by line,
+@@ -31,10 +34,12 @@
+  * &lt;pre&gt;
+  * {table loop=$data}
+  * {table loop=$data cols=4 tr_attr='&quot;bgcolor=red&quot;'}
+- * {table loop=$data cols=4 tr_attr=$colors}
++ * {table loop=$data cols=&quot;first,second,third&quot; tr_attr=$colors}
+  * &lt;/pre&gt;
+  * @author   Monte Ohrt &lt;monte at ohrt dot com&gt;
+- * @version  1.0
++ * @author credit to Messju Mohr &lt;messju at lammfellpuschen dot de&gt;
++ * @author credit to boots &lt;boots dot smarty at yahoo dot com&gt;
++ * @version  1.1
+  * @link <A HREF="http://smarty.php.net/manual/en/language.function.html.table.php">http://smarty.php.net/manual/en/language.function.html.table.php</A> {html_table}
+  *          (Smarty online manual)
+  * @param array
+@@ -45,13 +50,15 @@
+ {
+     $table_attr = 'border=&quot;1&quot;';
+     $tr_attr = '';
++    $th_attr = '';
+     $td_attr = '';
+-    $cols = 3;
++    $cols = $cols_count = 3;
+     $rows = 3;
+     $trailpad = '&nbsp;';
+     $vdir = 'down';
+     $hdir = 'right';
+     $inner = 'cols';
++    $caption = '';
+ 
+     if (!isset($params['loop'])) {
+         $smarty-&gt;trigger_error(&quot;html_table: missing 'loop' parameter&quot;);
+@@ -65,6 +72,19 @@
+                 break;
+ 
+             case 'cols':
++                if (is_array($_value) &amp;&amp; !empty($_value)) {
++                    $cols = $_value;
++                    $cols_count = count($_value);
++                } elseif (!is_numeric($_value) &amp;&amp; is_string($_value) &amp;&amp; !empty($_value)) {
++                    $cols = explode(',', $_value);
++                    $cols_count = count($cols);
++                } elseif (!empty($_value)) {
++                    $cols_count = (int)$_value;
++                } else {
++                    $cols_count = $cols;
++                }
++                break;
++
+             case 'rows':
+                 $$_key = (int)$_value;
+                 break;
+@@ -74,11 +94,13 @@
+             case 'hdir':
+             case 'vdir':
+             case 'inner':
++            case 'caption':
+                 $$_key = (string)$_value;
+                 break;
+ 
+             case 'tr_attr':
+             case 'td_attr':
++            case 'th_attr':
+                 $$_key = $_value;
+                 break;
+         }
+@@ -87,25 +109,42 @@
+     $loop_count = count($loop);
+     if (empty($params['rows'])) {
+         /* no rows specified */
+-        $rows = ceil($loop_count/$cols);
++        $rows = ceil($loop_count/$cols_count);
+     } elseif (empty($params['cols'])) {
+         if (!empty($params['rows'])) {
+             /* no cols specified, but rows */
+-            $cols = ceil($loop_count/$rows);
++            $cols_count = ceil($loop_count/$rows);
+         }
+     }
+ 
+     $output = &quot;&lt;table $table_attr&gt;\n&quot;;
+ 
++    if (!empty($caption)) {
++        $output .= '&lt;caption&gt;' . $caption . &quot;&lt;/caption&gt;\n&quot;;
++    }
++
++    if (is_array($cols)) {
++        $cols = ($hdir == 'right') ? $cols : array_reverse($cols);
++        $output .= &quot;&lt;thead&gt;&lt;tr&gt;\n&quot;;
++
++        for ($r=0; $r&lt;$cols_count; $r++) {
++            $output .= '&lt;th' . smarty_function_html_table_cycle('th', $th_attr, $r) . '&gt;';
++            $output .= $cols[$r];
++            $output .= &quot;&lt;/th&gt;\n&quot;;
++        }
++        $output .= &quot;&lt;/tr&gt;&lt;/thead&gt;\n&quot;;
++    }
++
++    $output .= &quot;&lt;tbody&gt;\n&quot;;
+     for ($r=0; $r&lt;$rows; $r++) {
+         $output .= &quot;&lt;tr&quot; . smarty_function_html_table_cycle('tr', $tr_attr, $r) . &quot;&gt;\n&quot;;
+-        $rx =  ($vdir == 'down') ? $r*$cols : ($rows-1-$r)*$cols;
++        $rx =  ($vdir == 'down') ? $r*$cols_count : ($rows-1-$r)*$cols_count;
+ 
+-        for ($c=0; $c&lt;$cols; $c++) {
+-            $x =  ($hdir == 'right') ? $rx+$c : $rx+$cols-1-$c;
++        for ($c=0; $c&lt;$cols_count; $c++) {
++            $x =  ($hdir == 'right') ? $rx+$c : $rx+$cols_count-1-$c;
+             if ($inner!='cols') {
+                 /* shuffle x to loop over rows*/
+-                $x = floor($x/$cols) + ($x%$cols)*$rows;
++                $x = floor($x/$cols_count) + ($x%$cols_count)*$rows;
+             }
+ 
+             if ($x&lt;$loop_count) {
+@@ -116,6 +155,7 @@
+         }
+         $output .= &quot;&lt;/tr&gt;\n&quot;;
+     }
++    $output .= &quot;&lt;/tbody&gt;\n&quot;;
+     $output .= &quot;&lt;/table&gt;\n&quot;;
+     
+     return $output;
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.mailto.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.mailto.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/function.mailto.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -62,6 +62,8 @@
+ 
+     // netscape and mozilla do not decode %40 (@) in BCC field (bug?)
+     // so, don't encode it.
++    $search = array('%40', '%2C');
++    $replace  = array('@', ',');
+     $mail_parms = array();
+     foreach ($params as $var=&gt;$value) {
+         switch ($var) {
+@@ -69,7 +71,7 @@
+             case 'bcc':
+             case 'followupto':
+                 if (!empty($value))
+-                    $mail_parms[] = $var.'='.str_replace('%40','@',rawurlencode($value));
++                    $mail_parms[] = $var.'='.str_replace($search,$replace,rawurlencode($value));
+                 break;
+                 
+             case 'subject':
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.capitalize.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.capitalize.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.capitalize.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -21,7 +21,7 @@
+ function smarty_modifier_capitalize($string, $uc_digits = false)
+ {
+     smarty_modifier_capitalize_ucfirst(null, $uc_digits);
+-    return preg_replace_callback('!\b\w+\b!', 'smarty_modifier_capitalize_ucfirst', $string);
++    return preg_replace_callback('!\'?\b\w(\w|\')*\b!', 'smarty_modifier_capitalize_ucfirst', $string);
+ }
+ 
+ function smarty_modifier_capitalize_ucfirst($string, $uc_digits = null)
+@@ -33,7 +33,7 @@
+         return;
+     }
+     
+-    if(!preg_match('!\d!',$string[0]) || $_uc_digits)
++    if(substr($string[0],0,1) != &quot;'&quot; &amp;&amp; !preg_match(&quot;!\d!&quot;,$string[0]) || $_uc_digits)
+         return ucfirst($string[0]);
+     else
+         return $string[0];
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.date_format.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.date_format.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.date_format.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -31,9 +31,11 @@
+ function smarty_modifier_date_format($string, $format=&quot;%b %e, %Y&quot;, $default_date=null)
+ {
+     if (substr(PHP_OS,0,3) == 'WIN') {
+-           $_win_from = array ('%e',  '%T',       '%D');
+-           $_win_to   = array ('%#d', '%H:%M:%S', '%m/%d/%y');
+-           $format = str_replace($_win_from, $_win_to, $format);
++        $hours = strftime('%I', $string);
++        $short_hours = ( $hours &lt; 10 ) ? substr( $hours, -1) : $hours; 
++        $_win_from = array ('%e',  '%T',       '%D',        '%l');
++        $_win_to   = array ('%#d', '%H:%M:%S', '%m/%d/%y',  $short_hours);
++        $format = str_replace($_win_from, $_win_to, $format);
+     }
+     if($string != '') {
+         return strftime($format, smarty_make_timestamp($string));
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.debug_print_var.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.debug_print_var.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/modifier.debug_print_var.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -22,33 +22,66 @@
+  */
+ function smarty_modifier_debug_print_var($var, $depth = 0, $length = 40)
+ {
+-    $_replace = array(&quot;\n&quot;=&gt;'&lt;i&gt;&#92;n&lt;/i&gt;', &quot;\r&quot;=&gt;'&lt;i&gt;&#92;r&lt;/i&gt;', &quot;\t&quot;=&gt;'&lt;i&gt;&#92;t&lt;/i&gt;');
+-    if (is_array($var)) {
+-        $results = &quot;&lt;b&gt;Array (&quot;.count($var).&quot;)&lt;/b&gt;&quot;;
+-        foreach ($var as $curr_key =&gt; $curr_val) {
+-            $return = smarty_modifier_debug_print_var($curr_val, $depth+1, $length);
+-            $results .= &quot;&lt;br&gt;&quot;.str_repeat('&nbsp;', $depth*2).&quot;&lt;b&gt;&quot;.strtr($curr_key, $_replace).&quot;&lt;/b&gt; =&gt; $return&quot;;
+-        }
+-    } else if (is_object($var)) {
+-        $object_vars = get_object_vars($var);
+-        $results = &quot;&lt;b&gt;&quot;.get_class($var).&quot; Object (&quot;.count($object_vars).&quot;)&lt;/b&gt;&quot;;
+-        foreach ($object_vars as $curr_key =&gt; $curr_val) {
+-            $return = smarty_modifier_debug_print_var($curr_val, $depth+1, $length);
+-            $results .= &quot;&lt;br&gt;&quot;.str_repeat('&nbsp;', $depth*2).&quot;&lt;b&gt;$curr_key&lt;/b&gt; =&gt; $return&quot;;
+-        }
+-    } else if (is_resource($var)) {
+-        $results = '&lt;i&gt;'.(string)$var.'&lt;/i&gt;';
+-    } else if (empty($var) &amp;&amp; $var != &quot;0&quot;) {
+-        $results = '&lt;i&gt;empty&lt;/i&gt;';
+-    } else {
+-        if (strlen($var) &gt; $length ) {
+-            $results = substr($var, 0, $length-3).'...';
+-        } else {
+-            $results = $var;
+-        }
+-        $results = htmlspecialchars($results);
+-        $results = strtr($results, $_replace);
++    $_replace = array(
++        &quot;\n&quot; =&gt; '&lt;i&gt;\n&lt;/i&gt;',
++        &quot;\r&quot; =&gt; '&lt;i&gt;\r&lt;/i&gt;',
++        &quot;\t&quot; =&gt; '&lt;i&gt;\t&lt;/i&gt;'
++    );
++
++    switch (gettype($var)) {
++        case 'array' :
++            $results = '&lt;b&gt;Array (' . count($var) . ')&lt;/b&gt;';
++            foreach ($var as $curr_key =&gt; $curr_val) {
++                $results .= '&lt;br&gt;' . str_repeat('&nbsp;', $depth * 2)
++                    . '&lt;b&gt;' . strtr($curr_key, $_replace) . '&lt;/b&gt; =&gt; '
++                    . smarty_modifier_debug_print_var($curr_val, ++$depth, $length);
++                    $depth--;
++            }
++            break;
++        case 'object' :
++            $object_vars = get_object_vars($var);
++            $results = '&lt;b&gt;' . get_class($var) . ' Object (' . count($object_vars) . ')&lt;/b&gt;';
++            foreach ($object_vars as $curr_key =&gt; $curr_val) {
++                $results .= '&lt;br&gt;' . str_repeat('&nbsp;', $depth * 2)
++                    . '&lt;b&gt; -&gt;' . strtr($curr_key, $_replace) . '&lt;/b&gt; = '
++                    . smarty_modifier_debug_print_var($curr_val, ++$depth, $length);
++                    $depth--;
++            }
++            break;
++        case 'boolean' :
++        case 'NULL' :
++        case 'resource' :
++            if (true === $var) {
++                $results = 'true';
++            } elseif (false === $var) {
++                $results = 'false';
++            } elseif (null === $var) {
++                $results = 'null';
++            } else {
++                $results = htmlspecialchars((string) $var);
++            }
++            $results = '&lt;i&gt;' . $results . '&lt;/i&gt;';
++            break;
++        case 'integer' :
++        case 'float' :
++            $results = htmlspecialchars((string) $var);
++            break;
++        case 'string' :
++            $results = strtr($var, $_replace);
++            if (strlen($var) &gt; $length ) {
++                $results = substr($var, 0, $length - 3) . '...';
++            }
++            $results = htmlspecialchars('&quot;' . $results . '&quot;');
++            break;
++        case 'unknown type' :
++        default :
++            $results = strtr((string) $var, $_replace);
++            if (strlen($results) &gt; $length ) {
++                $results = substr($results, 0, $length - 3) . '...';
++            }
++            $results = htmlspecialchars($results);
+     }
++
+     return $results;
+ }
+ 
+
+Modified: YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/outputfilter.trimwhitespace.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/outputfilter.trimwhitespace.php	2006-12-17 12:09:02 UTC (rev 2258)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/smarty/libs/plugins/outputfilter.trimwhitespace.php	2006-12-17 12:12:31 UTC (rev 2259)
+@@ -49,14 +49,14 @@
+     // preceeded by a php close tag.
+     $source = trim(preg_replace('/((?&lt;!\?&gt;)\n)[\s]+/m', '\1', $source));
+ 
+-    // replace script blocks
+-    smarty_outputfilter_trimwhitespace_replace(&quot;@@@SMARTY:TRIM:SCRIPT@@@&quot;,$_script_blocks, $source);
++    // replace textarea blocks
++    smarty_outputfilter_trimwhitespace_replace(&quot;@@@SMARTY:TRIM:TEXTAREA@@@&quot;,$_textarea_blocks, $source);
+ 
+     // replace pre blocks
+     smarty_outputfilter_trimwhitespace_replace(&quot;@@@SMARTY:TRIM:PRE@@@&quot;,$_pre_blocks, $source);
+ 
+-    // replace textarea blocks
+-    smarty_outputfilter_trimwhitespace_replace(&quot;@@@SMARTY:TRIM:TEXTAREA@@@&quot;,$_textarea_blocks, $source);
++    // replace script blocks
++    smarty_outputfilter_trimwhitespace_replace(&quot;@@@SMARTY:TRIM:SCRIPT@@@&quot;,$_script_blocks, $source);
+ 
+     return $source;
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000849.html">[ydf-devel] r2258 -	YDFramework2.0/trunk/examples/weblog/skins/default_with_lightbox
+</A></li>
+	<LI>Next message: <A HREF="000851.html">[ydf-devel] r2260 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#850">[ date ]</a>
+              <a href="thread.html#850">[ thread ]</a>
+              <a href="subject.html#850">[ subject ]</a>
+              <a href="author.html#850">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

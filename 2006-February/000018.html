@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] simplify YDDatabase usage even more
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20simplify%20YDDatabase%20usage%20even%20more&In-Reply-To=%3C4aef63030602090417p41fa648ek9cee81b8187960dd%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000017.html">
+   <LINK REL="Next"  HREF="000019.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] simplify YDDatabase usage even more</H1>
+    <B>Pieter Claerhout</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20simplify%20YDDatabase%20usage%20even%20more&In-Reply-To=%3C4aef63030602090417p41fa648ek9cee81b8187960dd%40mail.gmail.com%3E"
+       TITLE="[ydf-devel] simplify YDDatabase usage even more">pieter at yellowduck.be
+       </A><BR>
+    <I>Thu Feb  9 13:17:19 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000017.html">[ydf-devel] r1648 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+</A></li>
+        <LI>Next message: <A HREF="000019.html">[ydf-devel] r1649 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#18">[ date ]</a>
+              <a href="thread.html#18">[ thread ]</a>
+              <a href="subject.html#18">[ subject ]</a>
+              <a href="author.html#18">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I actually prefer we implement some database connection parameters pool, e.g.
+in a config or XML file. That way, we could make something like
+YDDatabase::getNamedInstance which would return the database connection.
+
+If you make this in a smart way, there can be options to define where the
+aliases are defined.
+
+This also raises the issue of a global configuration option for the a web
+application. I'm planning on making some basic infrastructure every web
+application needs, such as e.g. config files, administration section which
+is password protected, skins, etc. A bit like the YDWeblog application but
+applicable to different kinds of web applications (compare it to what Ruby
+on Rails is doing).
+
+regards,
+
+
+pieter
+
+On 2/9/06, Francisco Azevedo &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">francisco at fusemail.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &gt; It's ok by me... actually I already do this on my own and have another
+</I>&gt;<i> config for the database instance:$db = YDConfig::get( 'ydb' );
+</I>&gt;<i>
+</I>&gt;<i> Yes, the objective is to forget globals.. as this seems more a ydf
+</I>&gt;<i> internal task.
+</I>&gt;<i>
+</I>&gt;<i> &gt;But your way is more clear and will simplify YDDatabaseObject too, making
+</I>&gt;<i> optional the registerDatabase function.
+</I>&gt;<i>
+</I>&gt;<i> Well.. i think you mean to make optional the registerDatabase function
+</I>&gt;<i> arguments, right?
+</I>&gt;<i> A YDConfig for YDDatabaseObject to define that YDDatabaseObject should use
+</I>&gt;<i> YDConfig db variables sounds good to me too (then we don't need to use the
+</I>&gt;<i> registerDatabase function).
+</I>&gt;<i>
+</I>&gt;<i> Francisco Azevedo
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> YDFramework-devel mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">YDFramework-devel at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://lists.berlios.de/mailman/listinfo/ydframework-devel">http://lists.berlios.de/mailman/listinfo/ydframework-devel</A>
+</I>&gt;<i>
+</I>
+
+
+--
+pieter claerhout . <A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">pieter at yellowduck.be</A> . <A HREF="http://www.yellowduck.be/">http://www.yellowduck.be/</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060209/d39655b0/attachment.html">https://lists.berlios.de/pipermail/ydframework-devel/attachments/20060209/d39655b0/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000017.html">[ydf-devel] r1648 - in YDFramework2.0/trunk: YDFramework2/YDClasses examples
+</A></li>
+	<LI>Next message: <A HREF="000019.html">[ydf-devel] r1649 - YDFramework2.0/trunk/YDFramework2/addons/YDAjax
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#18">[ date ]</a>
+              <a href="thread.html#18">[ thread ]</a>
+              <a href="subject.html#18">[ subject ]</a>
+              <a href="author.html#18">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

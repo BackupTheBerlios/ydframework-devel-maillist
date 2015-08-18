@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2372 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2372%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormRenderers&In-Reply-To=%3C200701281914.l0SJEFNn006443%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000964.html">
+   <LINK REL="Next"  HREF="000966.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2372 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers</H1>
+    <B>pclaerhout at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2372%20-%20in%20YDFramework2.0/trunk/YDFramework2/YDClasses%3A%0A%09.%20YDFormRenderers&In-Reply-To=%3C200701281914.l0SJEFNn006443%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2372 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDFormRenderers">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Sun Jan 28 20:14:15 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000964.html">[ydf-devel] r2371 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+</A></li>
+        <LI>Next message: <A HREF="000966.html">[ydf-devel] r2373 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#965">[ date ]</a>
+              <a href="thread.html#965">[ thread ]</a>
+              <a href="subject.html#965">[ subject ]</a>
+              <a href="author.html#965">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2007-01-28 20:14:11 +0100 (Sun, 28 Jan 2007)
+New Revision: 2372
+
+Modified:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+Log:
+Added support for selecting the default form field.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-01-28 18:46:33 UTC (rev 2371)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDForm.php	2007-01-28 19:14:11 UTC (rev 2372)
+@@ -70,6 +70,7 @@
+             $this-&gt;_target = empty( $target ) ? '_self' : $target;
+             $this-&gt;_attributes = $attributes;
+             $this-&gt;_legend = null;
++            $this-&gt;_defaultItem = null;
+ 
+             // The list of known elements, rules, filters and validators
+             $this-&gt;_regElements = array();
+@@ -362,6 +363,15 @@
+         }
+ 
+         /**
++         *  This function set the default item for the form.
++         *
++         *  @param $name   The name of the default form item.
++         */
++        function setDefaultItem( $name ) {
++            $this-&gt;_defaultItem = $name;
++        }
++
++        /**
+          *  This function will add a new element to the form.
+          *
+          *  @param $type        The type of element to add.
+
+Modified: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2007-01-28 18:46:33 UTC (rev 2371)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormRenderers/YDFormRenderer_array.php	2007-01-28 19:14:11 UTC (rev 2372)
+@@ -80,6 +80,18 @@
+             $form['name']   = $this-&gt;_form-&gt;_name;
+             $form['legend'] = $this-&gt;_form-&gt;_legend;
+ 
++            // Add a script for the default item
++            if (
++                ! empty( $this-&gt;_form-&gt;_defaultItem )
++                &amp;&amp;
++                array_key_exists( $this-&gt;_form-&gt;_defaultItem, $this-&gt;_form-&gt;_elements )
++            ) {
++                $form['endtag'] .= sprintf(
++                    '&lt;script type=&quot;text/javascript&quot;&gt;document.getElementById(&quot;%s&quot;).focus();&lt;/script&gt;',
++                    addslashes( $this-&gt;_form-&gt;_name . '_' . $this-&gt;_form-&gt;_defaultItem )
++                 );
++            }
++
+             // Add the fieldset and legend tag if any
+             if ( ! empty( $this-&gt;_form-&gt;_legend ) ) {
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000964.html">[ydf-devel] r2371 - in YDFramework2.0/trunk/YDFramework2/YDClasses:	. YDDatabaseDrivers
+</A></li>
+	<LI>Next message: <A HREF="000966.html">[ydf-devel] r2373 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#965">[ date ]</a>
+              <a href="thread.html#965">[ thread ]</a>
+              <a href="subject.html#965">[ subject ]</a>
+              <a href="author.html#965">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

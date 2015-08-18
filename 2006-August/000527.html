@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2020 - YDFramework2.0/trunk/examples/weblog/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-August/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2020%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200608160942.k7G9gXLA022067%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000526.html">
+   <LINK REL="Next"  HREF="000528.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2020 - YDFramework2.0/trunk/examples/weblog/include</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2020%20-%20YDFramework2.0/trunk/examples/weblog/include&In-Reply-To=%3C200608160942.k7G9gXLA022067%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2020 - YDFramework2.0/trunk/examples/weblog/include">pclaerhout at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug 16 11:42:33 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000526.html">[ydf-devel] r2019 - in YDFramework2.0/trunk/examples/weblog: .	skins/default_with_lightbox/js
+</A></li>
+        <LI>Next message: <A HREF="000528.html">[ydf-devel] r2021 - in YDFramework2.0/trunk/YDFramework2: YDClasses	YDClasses/YDCMComponent addons/YDCMLink addons/YDCMPage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#527">[ date ]</a>
+              <a href="thread.html#527">[ thread ]</a>
+              <a href="subject.html#527">[ subject ]</a>
+              <a href="author.html#527">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-08-16 11:42:33 +0200 (Wed, 16 Aug 2006)
+New Revision: 2020
+
+Modified:
+   YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+Log:
+When adding a comment, the redirect now works properly (as it's now pointing to the right comment id).
+
+Modified: YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-16 07:20:53 UTC (rev 2019)
++++ YDFramework2.0/trunk/examples/weblog/include/YDWeblogAPI.php	2006-08-16 09:42:33 UTC (rev 2020)
+@@ -416,9 +416,10 @@
+         function addComment( $values ) {
+             $values['userip'] = $_SERVER['REMOTE_ADDR'];
+             $result = $this-&gt;_executeInsert( '#_comments', $values );
++            $comment_id = $this-&gt;db-&gt;getLastInsertID();
+             $sql = 'UPDATE #_items SET num_comments = num_comments+1 WHERE id = ' . $this-&gt;str( $values['item_id'] );
+             $this-&gt;db-&gt;executeSql( $sql );
+-            return $result;
++            return $comment_id;
+         }
+ 
+         // Update a comment
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000526.html">[ydf-devel] r2019 - in YDFramework2.0/trunk/examples/weblog: .	skins/default_with_lightbox/js
+</A></li>
+	<LI>Next message: <A HREF="000528.html">[ydf-devel] r2021 - in YDFramework2.0/trunk/YDFramework2: YDClasses	YDClasses/YDCMComponent addons/YDCMLink addons/YDCMPage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#527">[ date ]</a>
+              <a href="thread.html#527">[ thread ]</a>
+              <a href="subject.html#527">[ subject ]</a>
+              <a href="author.html#527">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

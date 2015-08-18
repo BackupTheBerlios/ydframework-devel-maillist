@@ -1,0 +1,819 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r1716 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/zip examples/weblog/manage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1716%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/3rdparty%20YDFramework2/3rdparty/zip%20examples/weblog/manage&In-Reply-To=%3C200602221302.k1MD2IkC012174%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000128.html">
+   <LINK REL="Next"  HREF="000130.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r1716 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/zip examples/weblog/manage</H1>
+    <B>pclaerhout at BerliOS</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r1716%20-%20in%20YDFramework2.0/trunk%3A%20YDFramework2/3rdparty%20YDFramework2/3rdparty/zip%20examples/weblog/manage&In-Reply-To=%3C200602221302.k1MD2IkC012174%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r1716 - in YDFramework2.0/trunk: YDFramework2/3rdparty YDFramework2/3rdparty/zip examples/weblog/manage">pclaerhout at berlios.de
+       </A><BR>
+    <I>Wed Feb 22 14:02:18 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000128.html">[ydf-devel] r1715 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+        <LI>Next message: <A HREF="000130.html">[ydf-devel] r1717 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#129">[ date ]</a>
+              <a href="thread.html#129">[ thread ]</a>
+              <a href="subject.html#129">[ subject ]</a>
+              <a href="author.html#129">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: pclaerhout
+Date: 2006-02-22 14:01:53 +0100 (Wed, 22 Feb 2006)
+New Revision: 1716
+
+Added:
+   YDFramework2.0/trunk/YDFramework2/3rdparty/zip/
+   YDFramework2.0/trunk/YDFramework2/3rdparty/zip/unzip.lib.php
+   YDFramework2.0/trunk/YDFramework2/3rdparty/zip/zip.lib.php
+Modified:
+   YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+Log:
+Added support for ZIP uploads in item galleries.
+
+Feature Request #1747
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/zip/unzip.lib.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/zip/unzip.lib.php	2006-02-22 12:38:16 UTC (rev 1715)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/zip/unzip.lib.php	2006-02-22 13:01:53 UTC (rev 1716)
+@@ -0,0 +1,492 @@
++&lt;?PHP
++    /* $Id: unzip.lib.php,v 1.2 2006/01/17 17:02:31 cybot_tm Exp $ */
++
++    /**
++     *  ZIP file unpack classes. Contributed to the phpMyAdmin project.
++     *
++     *  @category   phpPublic
++     *  @package    File-Formats-ZIP
++     *  @subpackage Unzip
++     *  @filesource unzip.lib.php
++     *  @version    1.0.1
++     *
++     *  @author     Holger Boskugel &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">vbwebprofi at gmx.de</A>&gt;
++     *  @copyright  Copyright &#169; 2003, Holger Boskugel, Berlin, Germany
++     *  @license    <A HREF="http://opensource.org/licenses/gpl-license.php">http://opensource.org/licenses/gpl-license.php</A> GNU Public License
++     *
++     *  @history
++     *  2003-12-02 - HB : Patched : naming bug : Time/Size of file
++     *                    Added   : ZIP file comment
++     *                    Added   : Check BZIP2 support of PHP
++     *  2003-11-29 - HB * Initial version
++     */
++
++    /**
++     *  Unzip class, which retrieves entries from ZIP files.
++     *
++     *  Supports only the compression modes
++     *  -  0 : Stored,
++     *  -  8 : Deflated and
++     *  - 12 : BZIP2
++     *
++     *  Based on :&lt;BR&gt;
++     *  &lt;BR&gt;
++     *  {@link <A HREF="http://www.pkware.com/products/enterprise/white_papers/appnote.html">http://www.pkware.com/products/enterprise/white_papers/appnote.html</A>
++     *  * Official ZIP file format}&lt;BR&gt;
++     *  {@link <A HREF="http://msdn.microsoft.com/library/en-us/w98ddk/hh/w98ddk/storage_5l4m.asp">http://msdn.microsoft.com/library/en-us/w98ddk/hh/w98ddk/storage_5l4m.asp</A>
++     *  * Microsoft DOS date/time format}
++     *
++     *  @category   phpPublic
++     *  @package    File-Formats-ZIP
++     *  @subpackage Unzip
++     *  @version    1.0.1
++     *  @author     Holger Boskugel &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">vbwebprofi at gmx.de</A>&gt;
++     *  @uses       SimpleUnzipEntry
++     *  @example    example.unzip.php Two examples
++     */
++    class SimpleUnzip {
++// 2003-12-02 - HB &gt;
++        /**
++         *  Array to store file entries
++         *
++         *  @var    string
++         *  @access public
++         *  @see    ReadFile()
++         *  @since  1.0.1
++         */
++        var $Comment = '';
++// 2003-12-02 - HB &lt;
++
++        /**
++         *  Array to store file entries
++         *
++         *  @var    array
++         *  @access public
++         *  @see    ReadFile()
++         *  @since  1.0
++         */
++        var $Entries = array();
++
++        /**
++         *  Name of the ZIP file
++         *
++         *  @var    string
++         *  @access public
++         *  @see    ReadFile()
++         *  @since  1.0
++         */
++        var $Name = '';
++
++        /**
++         *  Size of the ZIP file
++         *
++         *  @var    integer
++         *  @access public
++         *  @see    ReadFile()
++         *  @since  1.0
++         */
++        var $Size = 0;
++
++        /**
++         *  Time of the ZIP file (unix timestamp)
++         *
++         *  @var    integer
++         *  @access public
++         *  @see    ReadFile()
++         *  @since  1.0
++         */
++        var $Time = 0;
++
++        /**
++         *  Contructor of the class
++         *
++         *  @param  string      File name
++         *  @return SimpleUnzip Instanced class
++         *  @access public
++         *  @uses   SimpleUnzip::ReadFile() Opens file on new if specified
++         *  @since  1.0
++         */
++        function SimpleUnzip($in_FileName = '')
++        {
++            if ($in_FileName !== '') {
++                SimpleUnzip::ReadFile($in_FileName);
++            }
++        } // end of the 'SimpleUnzip' constructor
++
++        /**
++         *  Counts the entries
++         *
++         *  @return integer Count of ZIP entries
++         *  @access public
++         *  @uses   $Entries
++         *  @since  1.0
++         */
++        function Count()
++        {
++            return count($this-&gt;Entries);
++        } // end of the 'Count()' method
++
++        /**
++         *  Gets data of the specified ZIP entry
++         *
++         *  @param  integer Index of the ZIP entry
++         *  @return mixed   Data for the ZIP entry
++         *  @uses   SimpleUnzipEntry::$Data
++         *  @access public
++         *  @since  1.0
++         */
++        function GetData($in_Index)
++        {
++            return $this-&gt;Entries[$in_Index]-&gt;Data;
++        } // end of the 'GetData()' method
++
++        /**
++         *  Gets an entry of the ZIP file
++         *
++         *  @param  integer             Index of the ZIP entry
++         *  @return SimpleUnzipEntry    Entry of the ZIP file
++         *  @uses   $Entries
++         *  @access public
++         *  @since  1.0
++         */
++        function GetEntry($in_Index)
++        {
++            return $this-&gt;Entries[$in_Index];
++        } // end of the 'GetEntry()' method
++
++        /**
++         *  Gets error code for the specified ZIP entry
++         *
++         *  @param  integer     Index of the ZIP entry
++         *  @return integer     Error code for the ZIP entry
++         *  @uses   SimpleUnzipEntry::$Error
++         *  @access public
++         *  @since   1.0
++         */
++        function GetError($in_Index)
++        {
++            return $this-&gt;Entries[$in_Index]-&gt;Error;
++        } // end of the 'GetError()' method
++
++        /**
++         *  Gets error message for the specified ZIP entry
++         *
++         *  @param  integer     Index of the ZIP entry
++         *  @return string      Error message for the ZIP entry
++         *  @uses   SimpleUnzipEntry::$ErrorMsg
++         *  @access public
++         *  @since  1.0
++         */
++        function GetErrorMsg($in_Index)
++        {
++            return $this-&gt;Entries[$in_Index]-&gt;ErrorMsg;
++        } // end of the 'GetErrorMsg()' method
++
++        /**
++         *  Gets file name for the specified ZIP entry
++         *
++         *  @param  integer     Index of the ZIP entry
++         *  @return string      File name for the ZIP entry
++         *  @uses   SimpleUnzipEntry::$Name
++         *  @access public
++         *  @since  1.0
++         */
++        function GetName($in_Index)
++        {
++            return $this-&gt;Entries[$in_Index]-&gt;Name;
++        } // end of the 'GetName()' method
++
++        /**
++         *  Gets path of the file for the specified ZIP entry
++         *
++         *  @param  integer     Index of the ZIP entry
++         *  @return string      Path of the file for the ZIP entry
++         *  @uses   SimpleUnzipEntry::$Path
++         *  @access public
++         *  @since  1.0
++         */
++        function GetPath($in_Index)
++        {
++            return $this-&gt;Entries[$in_Index]-&gt;Path;
++        } // end of the 'GetPath()' method
++
++        /**
++         *  Gets file time for the specified ZIP entry
++         *
++         *  @param  integer     Index of the ZIP entry
++         *  @return integer     File time for the ZIP entry (unix timestamp)
++         *  @uses   SimpleUnzipEntry::$Time
++         *  @access public
++         *  @since  1.0
++         */
++        function GetTime($in_Index)
++        {
++            return $this-&gt;Entries[$in_Index]-&gt;Time;
++        } // end of the 'GetTime()' method
++
++        /**
++         *  Reads ZIP file and extracts the entries
++         *
++         *  @param  string              File name of the ZIP archive
++         *  @return array               ZIP entry list (see also class variable {@link $Entries $Entries})
++         *  @uses   SimpleUnzipEntry    For the entries
++         *  @access public
++         *  @since  1.0
++         */
++        function ReadFile($in_FileName)
++        {
++            $this-&gt;Entries = array();
++
++            // Get file parameters
++            $this-&gt;Name = $in_FileName;
++            $this-&gt;Time = filemtime($in_FileName);
++            $this-&gt;Size = filesize($in_FileName);
++
++            // Read file
++            $oF = fopen($in_FileName, 'rb');
++            $vZ = fread($oF, $this-&gt;Size);
++            fclose($oF);
++
++// 2003-12-02 - HB &gt;
++            // Cut end of central directory
++            $aE = explode(&quot;\x50\x4b\x05\x06&quot;, $vZ);
++
++            // Easiest way, but not sure if format changes
++            //$this-&gt;Comment = substr($aE[1], 18);
++
++            // Normal way
++            $aP = unpack('x16/v1CL', $aE[1]);
++            $this-&gt;Comment = substr($aE[1], 18, $aP['CL']);
++
++            // Translates end of line from other operating systems
++            $this-&gt;Comment = strtr($this-&gt;Comment, array(&quot;\r\n&quot; =&gt; &quot;\n&quot;,
++                                                         &quot;\r&quot;   =&gt; &quot;\n&quot;));
++// 2003-12-02 - HB &lt;
++
++            // Cut the entries from the central directory
++            $aE = explode(&quot;\x50\x4b\x01\x02&quot;, $vZ);
++            // Explode to each part
++            $aE = explode(&quot;\x50\x4b\x03\x04&quot;, $aE[0]);
++            // Shift out spanning signature or empty entry
++            array_shift($aE);
++
++            // Loop through the entries
++            foreach ($aE as $vZ) {
++                $aI = array();
++                $aI['E']  = 0;
++                $aI['EM'] = '';
++                // Retrieving local file header information
++                $aP = unpack('v1VN/v1GPF/v1CM/v1FT/v1FD/V1CRC/V1CS/V1UCS/v1FNL', $vZ);
++                // Check if data is encrypted
++                $bE = ($aP['GPF'] &amp;&amp; 0x0001) ? TRUE : FALSE;
++                $nF = $aP['FNL'];
++
++                // Special case : value block after the compressed data
++                if ($aP['GPF'] &amp; 0x0008) {
++                    $aP1 = unpack('V1CRC/V1CS/V1UCS', substr($vZ, -12));
++
++                    $aP['CRC'] = $aP1['CRC'];
++                    $aP['CS']  = $aP1['CS'];
++                    $aP['UCS'] = $aP1['UCS'];
++
++                    $vZ = substr($vZ, 0, -12);
++                }
++
++                // Getting stored filename
++                $aI['N'] = substr($vZ, 26, $nF);
++
++                if (substr($aI['N'], -1) == '/') {
++                    // is a directory entry - will be skipped
++                    continue;
++                }
++
++                // Truncate full filename in path and filename
++                $aI['P'] = dirname($aI['N']);
++                $aI['P'] = $aI['P'] == '.' ? '' : $aI['P'];
++                $aI['N'] = basename($aI['N']);
++
++                $vZ = substr($vZ, 26 + $nF);
++
++                if (strlen($vZ) != $aP['CS']) {
++                  $aI['E']  = 1;
++                  $aI['EM'] = 'Compressed size is not equal with the value in header information.';
++                } else {
++                    if ($bE) {
++                        $aI['E']  = 5;
++                        $aI['EM'] = 'File is encrypted, which is not supported from this class.';
++                    } else {
++                        switch($aP['CM']) {
++                            case 0: // Stored
++                                // Here is nothing to do, the file ist flat.
++                                break;
++
++                            case 8: // Deflated
++                                $vZ = gzinflate($vZ);
++                                break;
++
++                            case 12: // BZIP2
++// 2003-12-02 - HB &gt;
++                                if (! extension_loaded('bz2')) {
++                                    if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
++                                      @dl('php_bz2.dll');
++                                    } else {
++                                      @dl('bz2.so');
++                                    }
++                                }
++
++                                if (extension_loaded('bz2')) {
++// 2003-12-02 - HB &lt;
++                                    $vZ = bzdecompress($vZ);
++// 2003-12-02 - HB &gt;
++                                } else {
++                                    $aI['E']  = 7;
++                                    $aI['EM'] = &quot;PHP BZIP2 extension not available.&quot;;
++                                }
++// 2003-12-02 - HB &lt;
++
++                                break;
++
++                            default:
++                              $aI['E']  = 6;
++                              $aI['EM'] = &quot;De-/Compression method {$aP['CM']} is not supported.&quot;;
++                        }
++
++// 2003-12-02 - HB &gt;
++                        if (! $aI['E']) {
++// 2003-12-02 - HB &lt;
++                            if ($vZ === FALSE) {
++                                $aI['E']  = 2;
++                                $aI['EM'] = 'Decompression of data failed.';
++                            } else {
++                                if (strlen($vZ) != $aP['UCS']) {
++                                    $aI['E']  = 3;
++                                    $aI['EM'] = 'Uncompressed size is not equal with the value in header information.';
++                                } else {
++                                    if (crc32($vZ) != $aP['CRC']) {
++                                        $aI['E']  = 4;
++                                        $aI['EM'] = 'CRC32 checksum is not equal with the value in header information.';
++                                    }
++                                }
++                            }
++// 2003-12-02 - HB &gt;
++                        }
++// 2003-12-02 - HB &lt;
++                    }
++                }
++
++                $aI['D'] = $vZ;
++
++                // DOS to UNIX timestamp
++                $aI['T'] = mktime(($aP['FT']  &amp; 0xf800) &gt;&gt; 11,
++                                  ($aP['FT']  &amp; 0x07e0) &gt;&gt;  5,
++                                  ($aP['FT']  &amp; 0x001f) &lt;&lt;  1,
++                                  ($aP['FD']  &amp; 0x01e0) &gt;&gt;  5,
++                                  ($aP['FD']  &amp; 0x001f),
++                                  (($aP['FD'] &amp; 0xfe00) &gt;&gt;  9) + 1980);
++
++                $this-&gt;Entries[] = &amp;new SimpleUnzipEntry($aI);
++            } // end for each entries
++
++            return $this-&gt;Entries;
++        } // end of the 'ReadFile()' method
++    } // end of the 'SimpleUnzip' class
++
++    /**
++     *  Entry of the ZIP file.
++     *
++     *  @category   phpPublic
++     *  @package    File-Formats-ZIP
++     *  @subpackage Unzip
++     *  @version    1.0
++     *  @author     Holger Boskugel &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">vbwebprofi at gmx.de</A>&gt;
++     *  @example    example.unzip.php Two examples
++     */
++    class SimpleUnzipEntry {
++        /**
++         *  Data of the file entry
++         *
++         *  @var    mixed
++         *  @access public
++         *  @see    SimpleUnzipEntry()
++         *  @since  1.0
++         */
++        var $Data = '';
++
++        /**
++         *  Error of the file entry
++         *
++         *  - 0 : No error raised.&lt;BR&gt;
++         *  - 1 : Compressed size is not equal with the value in header information.&lt;BR&gt;
++         *  - 2 : Decompression of data failed.&lt;BR&gt;
++         *  - 3 : Uncompressed size is not equal with the value in header information.&lt;BR&gt;
++         *  - 4 : CRC32 checksum is not equal with the value in header information.&lt;BR&gt;
++         *  - 5 : File is encrypted, which is not supported from this class.&lt;BR&gt;
++         *  - 6 : De-/Compression method ... is not supported.&lt;BR&gt;
++         *  - 7 : PHP BZIP2 extension not available.
++         *
++         *  @var    integer
++         *  @access public
++         *  @see    SimpleUnzipEntry()
++         *  @since  1.0
++         */
++        var $Error = 0;
++
++        /**
++         *  Error message of the file entry
++         *
++         *  @var    string
++         *  @access public
++         *  @see    SimpleUnzipEntry()
++         *  @since  1.0
++         */
++        var $ErrorMsg = '';
++
++        /**
++         *  File name of the file entry
++         *
++         *  @var    string
++         *  @access public
++         *  @see    SimpleUnzipEntry()
++         *  @since  1.0
++         */
++        var $Name = '';
++
++        /**
++         *  File path of the file entry
++         *
++         *  @var    string
++         *  @access public
++         *  @see    SimpleUnzipEntry()
++         *  @since  1.0
++         */
++        var $Path = '';
++
++        /**
++         *  File time of the file entry (unix timestamp)
++         *
++         *  @var    integer
++         *  @access public
++         *  @see    SimpleUnzipEntry()
++         *  @since  1.0
++         */
++        var $Time = 0;
++
++        /**
++         *  Contructor of the class
++         *
++         *  @param  array               Entry datas
++         *  @return SimpleUnzipEntry    Instanced class
++         *  @access public
++         *  @since  1.0
++         */
++        function SimpleUnzipEntry($in_Entry)
++        {
++            $this-&gt;Data     = $in_Entry['D'];
++            $this-&gt;Error    = $in_Entry['E'];
++            $this-&gt;ErrorMsg = $in_Entry['EM'];
++            $this-&gt;Name     = $in_Entry['N'];
++            $this-&gt;Path     = $in_Entry['P'];
++            $this-&gt;Time     = $in_Entry['T'];
++        } // end of the 'SimpleUnzipEntry' constructor
++    } // end of the 'SimpleUnzipEntry' class
++?&gt;
+
+Added: YDFramework2.0/trunk/YDFramework2/3rdparty/zip/zip.lib.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/3rdparty/zip/zip.lib.php	2006-02-22 12:38:16 UTC (rev 1715)
++++ YDFramework2.0/trunk/YDFramework2/3rdparty/zip/zip.lib.php	2006-02-22 13:01:53 UTC (rev 1716)
+@@ -0,0 +1,188 @@
++&lt;?php
++/* $Id: zip.lib.php,v 2.4 2004/11/03 13:56:52 garvinhicking Exp $ */
++// vim: expandtab sw=4 ts=4 sts=4:
++
++
++/**
++ * Zip file creation class.
++ * Makes zip files.
++ *
++ * Based on :
++ *
++ *  <A HREF="http://www.zend.com/codex.php?id=535&amp;single=1">http://www.zend.com/codex.php?id=535&amp;single=1</A>
++ *  By Eric Mueller &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">eric at themepark.com</A>&gt;
++ *
++ *  <A HREF="http://www.zend.com/codex.php?id=470&amp;single=1">http://www.zend.com/codex.php?id=470&amp;single=1</A>
++ *  by Denis125 &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">webmaster at atlant.ru</A>&gt;
++ *
++ *  a patch from Peter Listiak &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/ydframework-devel">mlady at users.sourceforge.net</A>&gt; for last modified
++ *  date and time of the compressed file
++ *
++ * Official ZIP file format: <A HREF="http://www.pkware.com/appnote.txt">http://www.pkware.com/appnote.txt</A>
++ *
++ * @access  public
++ */
++class zipfile
++{
++    /**
++     * Array to store compressed data
++     *
++     * @var  array    $datasec
++     */
++    var $datasec      = array();
++
++    /**
++     * Central directory
++     *
++     * @var  array    $ctrl_dir
++     */
++    var $ctrl_dir     = array();
++
++    /**
++     * End of central directory record
++     *
++     * @var  string   $eof_ctrl_dir
++     */
++    var $eof_ctrl_dir = &quot;\x50\x4b\x05\x06\x00\x00\x00\x00&quot;;
++
++    /**
++     * Last offset position
++     *
++     * @var  integer  $old_offset
++     */
++    var $old_offset   = 0;
++
++
++    /**
++     * Converts an Unix timestamp to a four byte DOS date and time format (date
++     * in high two bytes, time in low two bytes allowing magnitude comparison).
++     *
++     * @param  integer  the current Unix timestamp
++     *
++     * @return integer  the current date in a four byte DOS format
++     *
++     * @access private
++     */
++    function unix2DosTime($unixtime = 0) {
++        $timearray = ($unixtime == 0) ? getdate() : getdate($unixtime);
++
++        if ($timearray['year'] &lt; 1980) {
++            $timearray['year']    = 1980;
++            $timearray['mon']     = 1;
++            $timearray['mday']    = 1;
++            $timearray['hours']   = 0;
++            $timearray['minutes'] = 0;
++            $timearray['seconds'] = 0;
++        } // end if
++
++        return (($timearray['year'] - 1980) &lt;&lt; 25) | ($timearray['mon'] &lt;&lt; 21) | ($timearray['mday'] &lt;&lt; 16) |
++                ($timearray['hours'] &lt;&lt; 11) | ($timearray['minutes'] &lt;&lt; 5) | ($timearray['seconds'] &gt;&gt; 1);
++    } // end of the 'unix2DosTime()' method
++
++
++    /**
++     * Adds &quot;file&quot; to archive
++     *
++     * @param  string   file contents
++     * @param  string   name of the file in the archive (may contains the path)
++     * @param  integer  the current timestamp
++     *
++     * @access public
++     */
++    function addFile($data, $name, $time = 0)
++    {
++        $name     = str_replace('\\', '/', $name);
++
++        $dtime    = dechex($this-&gt;unix2DosTime($time));
++        $hexdtime = '\x' . $dtime[6] . $dtime[7]
++                  . '\x' . $dtime[4] . $dtime[5]
++                  . '\x' . $dtime[2] . $dtime[3]
++                  . '\x' . $dtime[0] . $dtime[1];
++        eval('$hexdtime = &quot;' . $hexdtime . '&quot;;');
++
++        $fr   = &quot;\x50\x4b\x03\x04&quot;;
++        $fr   .= &quot;\x14\x00&quot;;            // ver needed to extract
++        $fr   .= &quot;\x00\x00&quot;;            // gen purpose bit flag
++        $fr   .= &quot;\x08\x00&quot;;            // compression method
++        $fr   .= $hexdtime;             // last mod time and date
++
++        // &quot;local file header&quot; segment
++        $unc_len = strlen($data);
++        $crc     = crc32($data);
++        $zdata   = gzcompress($data);
++        $zdata   = substr(substr($zdata, 0, strlen($zdata) - 4), 2); // fix crc bug
++        $c_len   = strlen($zdata);
++        $fr      .= pack('V', $crc);             // crc32
++        $fr      .= pack('V', $c_len);           // compressed filesize
++        $fr      .= pack('V', $unc_len);         // uncompressed filesize
++        $fr      .= pack('v', strlen($name));    // length of filename
++        $fr      .= pack('v', 0);                // extra field length
++        $fr      .= $name;
++
++        // &quot;file data&quot; segment
++        $fr .= $zdata;
++
++        // &quot;data descriptor&quot; segment (optional but necessary if archive is not
++        // served as file)
++        // nijel(2004-10-19): this seems not to be needed at all and causes
++        // problems in some cases (bug #1037737)
++        //$fr .= pack('V', $crc);                 // crc32
++        //$fr .= pack('V', $c_len);               // compressed filesize
++        //$fr .= pack('V', $unc_len);             // uncompressed filesize
++
++        // add this entry to array
++        $this -&gt; datasec[] = $fr;
++
++        // now add to central directory record
++        $cdrec = &quot;\x50\x4b\x01\x02&quot;;
++        $cdrec .= &quot;\x00\x00&quot;;                // version made by
++        $cdrec .= &quot;\x14\x00&quot;;                // version needed to extract
++        $cdrec .= &quot;\x00\x00&quot;;                // gen purpose bit flag
++        $cdrec .= &quot;\x08\x00&quot;;                // compression method
++        $cdrec .= $hexdtime;                 // last mod time &amp; date
++        $cdrec .= pack('V', $crc);           // crc32
++        $cdrec .= pack('V', $c_len);         // compressed filesize
++        $cdrec .= pack('V', $unc_len);       // uncompressed filesize
++        $cdrec .= pack('v', strlen($name) ); // length of filename
++        $cdrec .= pack('v', 0 );             // extra field length
++        $cdrec .= pack('v', 0 );             // file comment length
++        $cdrec .= pack('v', 0 );             // disk number start
++        $cdrec .= pack('v', 0 );             // internal file attributes
++        $cdrec .= pack('V', 32 );            // external file attributes - 'archive' bit set
++
++        $cdrec .= pack('V', $this -&gt; old_offset ); // relative offset of local header
++        $this -&gt; old_offset += strlen($fr);
++
++        $cdrec .= $name;
++
++        // optional extra field, file comment goes here
++        // save to central directory
++        $this -&gt; ctrl_dir[] = $cdrec;
++    } // end of the 'addFile()' method
++
++
++    /**
++     * Dumps out file
++     *
++     * @return  string  the zipped file
++     *
++     * @access public
++     */
++    function file()
++    {
++        $data    = implode('', $this -&gt; datasec);
++        $ctrldir = implode('', $this -&gt; ctrl_dir);
++
++        return
++            $data .
++            $ctrldir .
++            $this -&gt; eof_ctrl_dir .
++            pack('v', sizeof($this -&gt; ctrl_dir)) .  // total # of entries &quot;on this disk&quot;
++            pack('v', sizeof($this -&gt; ctrl_dir)) .  // total # of entries overall
++            pack('V', strlen($ctrldir)) .           // size of central dir
++            pack('V', strlen($data)) .              // offset to start of central dir
++            &quot;\x00\x00&quot;;                             // .zip file comment length
++    } // end of the 'file()' method
++
++} // end of the 'zipfile' class
++?&gt;
+
+Modified: YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php
+===================================================================
+--- YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-02-22 12:38:16 UTC (rev 1715)
++++ YDFramework2.0/trunk/examples/weblog/manage/items_gallery.php	2006-02-22 13:01:53 UTC (rev 1716)
+@@ -76,12 +76,42 @@
+                     if ( ! is_dir( $this-&gt;dir_rel ) ) {
+                         @mkdir( $this-&gt;dir_rel );
+                     }
+-                    $file-&gt;moveUpload( $this-&gt;dir_rel, $filename );
++                    @ $file-&gt;moveUpload( $this-&gt;dir_rel, $filename );
+ 
++                    // Convert it to an object
++                    $fileObj = new YDFSFile( $this-&gt;dir_rel . $file-&gt;getBaseName() );
++
++                    // Check if it's a ZIP file
++                    if ( strtolower( $fileObj-&gt;getExtension() == 'zip' ) ) {
++
++                        // Include the unzip library
++                        include( YD_DIR_HOME . '/3rdparty/zip/unzip.lib.php' );
++
++                        // Convert it to a ZIP object
++                        $zip = new SimpleUnzip( $fileObj-&gt;getAbsolutePath() );
++
++                        // Get the directory as a path
++                        $dir = new YDFSDirectory( $this-&gt;dir_rel );
++
++                        // Extract the images
++                        foreach( $zip-&gt;Entries as $entry ) {
++
++                            // Save it as a filee
++                            $entryFile = $dir-&gt;createFile( $entry-&gt;Name, $entry-&gt;Data );
++
++
++                            // Delete it if it's not an image
++                            if ( ! $entryFile-&gt;isImage() ) {
++                                @ unlink( $entryFile-&gt;getAbsolutePath() );
++                            }
++
++                        }
++
++                    }
++
+                     // Check if it's an image
+-                    $fileObj = new YDFSFile( $this-&gt;dir_rel . $file-&gt;getBaseName() );
+                     if ( ! $fileObj-&gt;isImage() ) {
+-                        @unlink( $this-&gt;dir_rel . $file-&gt;getBaseName() );
++                        @unlink( $fileObj-&gt;getAbsolutePath() );
+                     }
+ 
+                     // Delete the thumbnails
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000128.html">[ydf-devel] r1715 - YDFramework2.0/trunk/examples/weblog/include
+</A></li>
+	<LI>Next message: <A HREF="000130.html">[ydf-devel] r1717 - YDFramework2.0/trunk/examples/weblog
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#129">[ date ]</a>
+              <a href="thread.html#129">[ thread ]</a>
+              <a href="subject.html#129">[ subject ]</a>
+              <a href="author.html#129">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>

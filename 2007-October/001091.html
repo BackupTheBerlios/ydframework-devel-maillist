@@ -1,0 +1,495 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [ydf-devel] r2497 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/ydframework-devel/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2497%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200710201640.l9KGevSq003582%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001090.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[ydf-devel] r2497 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements</H1>
+    <B>ximian at mail.berlios.de</B> 
+    <A HREF="mailto:ydframework-devel%40lists.berlios.de?Subject=Re%3A%20%5Bydf-devel%5D%20r2497%20-%0A%09YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements&In-Reply-To=%3C200710201640.l9KGevSq003582%40sheep.berlios.de%3E"
+       TITLE="[ydf-devel] r2497 -	YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements">ximian at mail.berlios.de
+       </A><BR>
+    <I>Sat Oct 20 18:40:57 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001090.html">[ydf-devel] r2496 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1091">[ date ]</a>
+              <a href="thread.html#1091">[ thread ]</a>
+              <a href="subject.html#1091">[ subject ]</a>
+              <a href="author.html#1091">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: ximian
+Date: 2007-10-20 18:40:50 +0200 (Sat, 20 Oct 2007)
+New Revision: 2497
+
+Removed:
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl
+   YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+Log:
+DEL: deleted old (deprecated and not supported any more) form elements
+
+Deleted: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2007-10-18 22:35:40 UTC (rev 2496)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.php	2007-10-20 16:40:50 UTC (rev 2497)
+@@ -1,174 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /**
+-     *  @addtogroup YDForm Core - Form
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    // Includes
+-    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
+-    include_once( YD_DIR_HOME_CLS . '/YDTemplate.php');
+-
+-    /**
+-     *        This is the class that defines a simple ajax grid element
+-     *
+-     *  @ingroup YDForm
+-     */
+-    class YDFormElement_Grid extends YDFormElement {
+-
+-        /**
+-         *        This is the class constructor for the YDFormElement_Grid class.
+-         *
+-         *        @param $form                The name of the form to which this element is connected.
+-         *        @param $name                The name of the form element.
+-         *        @param $label                (optional) The label for the form element.
+-         *        @param $attributes        (optional) The attributes for the form element.
+-         *        @param $options                (optional) The options for the elment.
+-         */
+-        function YDFormElement_Grid( $form = '', $name = 'gr', $label='', $attributes=array(), $options=array() ) {
+-
+-            // Initialize the parent
+-            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
+-
+-            // Set the type
+-            $this-&gt;_type = 'grid';
+-
+-            // Set the value correctly
+-            $this-&gt;_placeLabel = 'none';
+-
+-            // Indicate if filters need to be applied
+-            $this-&gt;_applyFilters = false;
+-
+-            // Indicate we are a button type
+-            $this-&gt;_isButton = false;
+-
+-			// column names
+-			$this-&gt;columns = array();
+-			
+-			// default values
+-//			$this-&gt;defaults = array();
+-			
+-			$this-&gt;form = new YDForm( 'gridform' . $name );
+-			$this-&gt;form-&gt;addElement( 'hidden', 'gr_column',    '', array('id' =&gt; 'gr_column') );
+-			$this-&gt;form-&gt;addElement( 'hidden', 'gr_direction', '', array('id' =&gt; 'gr_direction') );
+-			$this-&gt;form-&gt;addElement( 'hidden', 'gr_page',      '', array('id' =&gt; 'gr_page') );
+-        }
+-
+-
+-        /**
+-         *      This function returns a boolean indicating if the element value was
+-         *      modified from it's default value.
+-         *
+-         *      @returns        Boolean indicating if the element was modified.
+-         */
+-        function isModified() {
+-            return false;
+-        }
+-
+-
+-        /**
+-         *      This function adds a ajax event to handle header calls
+-         *
+-         *      @param $ajax    YDAjax object to assign grid events
+-         *      @param $method  Method name where to send events
+-         *
+-         */
+-		function setAjax( &amp;$ajax, $method = 'PHCMHelpdesk_reload' ){
+-		
+-			$ajax-&gt;addForm( $this-&gt;form );
+-			$ajax-&gt;addEvent( 'ticketReload()', $method, $this-&gt;form-&gt;getName() );
+-		}
+-
+-
+-        /**
+-         *      This function returns the grid form object
+-         */
+-		function getForm(){
+-
+-			// return form object
+-			return $this-&gt;form;
+-		}
+-
+-
+-        /**
+-         *      This function defines all columns
+-         *
+-         *      @param $columns    Column names
+-         *
+-         */
+-		function setColumns( $columns ){
+-
+-			$this-&gt;columns = $columns;
+-		}
+-
+-
+-        /**
+-         *      This function defines all columns
+-         *
+-         *      @param $defaults    Default details for grid columns
+-         *
+-         */
+-		function setDefaults( $defaults ){
+-
+-			$this-&gt;defaults = $defaults;
+-		}
+-
+-
+-        /**
+-         *        This function will return the element as HTML.
+-         *
+-         *        @returns        The form element as HTML text.
+-         */
+-        function toHtml() {
+-
+-            // Create the list of attributes
+-            $attribs = array(
+-                'id' =&gt; $this-&gt;_form . '_' . $this-&gt;_name
+-            );
+-            $attribs = array_merge( $this-&gt;_attributes, $attribs );
+-
+-			$template_record = new YDTemplate();
+-
+-			// set form defaults
+-			if ( isset ( $this-&gt;defaults ) ){
+-				$this-&gt;form-&gt;setDefaults( $this-&gt;defaults );
+-				$template_record-&gt;assign( 'defaults',  $this-&gt;defaults );
+-			}
+-
+-			// get record template and assign recordset
+-			$template_record-&gt;assign( 'recordset', $this-&gt;_value );
+-			$template_record-&gt;assign( 'columns',   $this-&gt;columns );
+-			$template_record-&gt;assignForm( 'form',  $this-&gt;form );
+-
+-            // Get the HTML
+-			return $template_record-&gt;fetch( dirname( __FILE__ ) . '/YDFormElement_Grid.tpl' );
+-        }
+-
+-    }
+-
+-?&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl	2007-10-18 22:35:40 UTC (rev 2496)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_Grid.tpl	2007-10-20 16:40:50 UTC (rev 2497)
+@@ -1,54 +0,0 @@
+-&lt;span id=&quot;ticket_table&quot;&gt;
+-
+-&lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;
+-  &lt;tr&gt;
+-    &lt;td align=&quot;right&quot;&gt;
+-	&lt;span class=&quot;field_previous&quot; onClick=&quot;document.getElementById('gr_page').value='{$recordset-&gt;pagePrevious}';ticketReload();&quot;&gt;&laquo; {t w=&quot;previous&quot;}&lt;/span&gt;
+-	&nbsp;
+-    {foreach from=$recordset-&gt;pages item=&quot;page&quot;}
+-		{if ($page != $recordset-&gt;page)}
+-			&lt;span class=&quot;field_page&quot; onClick=&quot;document.getElementById('gr_page').value='{$page}';ticketReload();&quot;&gt;{$page}&lt;/span&gt;
+-		{else}
+-			&lt;span class=&quot;field_page_current&quot;&gt;{$page}&lt;/span&gt;
+-		{/if}
+-	{/foreach}
+-	&nbsp;
+-	&lt;span class=&quot;field_next&quot; onClick=&quot;document.getElementById('gr_page').value='{$recordset-&gt;pageNext}';ticketReload();&quot;&gt;{t w=&quot;next&quot;} &raquo;&lt;/span&gt;
+-	&lt;/td&gt;
+-  &lt;/tr&gt;
+-&lt;/table&gt;
+-&lt;br /&gt;
+-        &lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;
+-            &lt;tr class=&quot;rowHeader&quot;&gt;
+-                {foreach from=$columns item=&quot;field&quot; key=&quot;key&quot;}
+-					{if ($field.sortable == false)}
+-	                    &lt;td height=&quot;24&quot; align=&quot;right&quot; class=&quot;fieldHeader_off&quot;&gt;{t w=$key}&nbsp;&lt;/td&gt;
+-					{elseif ($key != $defaults.grid_column)}
+-	                    &lt;td height=&quot;24&quot; align=&quot;right&quot; class=&quot;fieldHeader&quot; onClick=&quot;document.getElementById('gr_column').value='{$key}'; document.getElementById('gr_direction').value = 1-document.getElementById('gr_direction').value; ticketReload();&quot;&gt;{t w=$key}&nbsp;&lt;/td&gt;
+-					{else}
+-	                    &lt;td height=&quot;24&quot; align=&quot;right&quot; class=&quot;fieldHeader_order&quot; onClick=&quot;document.getElementById('gr_column').value='{$key}'; document.getElementById('gr_direction').value = 1-document.getElementById('gr_direction').value; ticketReload();&quot;&gt;{t w=$key}&nbsp;&lt;/td&gt;
+-					{/if}
+-                {/foreach}
+-            &lt;/tr&gt;
+-        {foreach from=$recordset-&gt;set item=&quot;record&quot;}
+-            &lt;tr class=&quot;{cycle values='row1,row2'}&quot;&gt;
+-                {foreach from=$record item=&quot;val&quot;}
+-                    &lt;td height=&quot;24&quot; align=&quot;right&quot;&gt;{$val}&nbsp;&lt;/td&gt;
+-                {/foreach}
+-            &lt;/tr&gt;
+-        {/foreach}
+-&lt;/table&gt;
+-        &lt;table width=&quot;100%&quot;  border=&quot;0&quot;&gt;
+-          &lt;tr&gt;
+-            &lt;td align=&quot;right&quot; class=&quot;field_total&quot;&gt;
+-			&nbsp;
+-			{$form.gr_column.html}
+-			{$form.gr_direction.html}
+-			{$form.gr_page.html}
+-			&lt;/td&gt;
+-          &lt;/tr&gt;
+-          &lt;tr&gt;
+-            &lt;td align=&quot;right&quot; class=&quot;field_total&quot;&gt;{t w=&quot;total&quot;}: {$recordset-&gt;totalRows}&nbsp;&nbsp;&lt;/td&gt;
+-          &lt;/tr&gt;
+-        &lt;/table&gt;
+-&lt;/span&gt;
+\ No newline at end of file
+
+Deleted: YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php
+===================================================================
+--- YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2007-10-18 22:35:40 UTC (rev 2496)
++++ YDFramework2.0/trunk/YDFramework2/YDClasses/YDFormElements/YDFormElement_SwitchMenu.php	2007-10-20 16:40:50 UTC (rev 2497)
+@@ -1,176 +0,0 @@
+-&lt;?php
+-
+-    /*
+-
+-        Yellow Duck Framework version 2.1
+-        (c) Copyright 2002-2007 Pieter Claerhout
+-
+-        This library is free software; you can redistribute it and/or
+-        modify it under the terms of the GNU Lesser General Public
+-        License as published by the Free Software Foundation; either
+-        version 2.1 of the License, or (at your option) any later version.
+-
+-        This library is distributed in the hope that it will be useful,
+-        but WITHOUT ANY WARRANTY; without even the implied warranty of
+-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+-        Lesser General Public License for more details.
+-
+-        You should have received a copy of the GNU Lesser General Public
+-        License along with this library; if not, write to the Free Software
+-        Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-
+-    */
+-
+-    /**
+-     *  @addtogroup YDForm Core - Form
+-     */
+-
+-    // Check if the framework is loaded
+-    if ( ! defined( 'YD_FW_NAME' ) ) {
+-        die( 'Yellow Duck Framework is not loaded.' );
+-    }
+-
+-    // Includes
+-    include_once( YD_DIR_HOME_CLS . '/YDForm.php');
+-
+-    /**
+-     *	This is the class that define a switch menu form element
+-     *
+-     *  @ingroup YDForm
+-     */
+-    class YDFormElement_SwitchMenu extends YDFormElement {
+-
+-        /**
+-         *	This is the class constructor for the YDFormElement_SwitchMenu class.
+-         *
+-         *	@param $form		The name of the form to which this element is connected.
+-         *	@param $name		The name of the form element.
+-         *	@param $label		(optional) The label for the form element.
+-         *	@param $attributes	(optional) The attributes for the form element.
+-         *	@param $options		(optional) The menu elements.
+-         */
+-        function YDFormElement_SwitchMenu( $form = 'YDForm', $name = 'SMenu', $label='', $attributes=array(), $options=array() ) {
+-
+-            // Initialize the parent
+-            $this-&gt;YDFormElement( $form, $name, $label, $attributes, $options );
+-
+-            // Set the type
+-            $this-&gt;_type = 'switchmenu';
+-			
+-			// Get elements
+-			$this-&gt;_elements = $options;
+-        }
+-
+-
+-        /**
+-         *	This function will return the element as HTML.
+-         *
+-         *	@returns	The form element as HTML text.
+-         */
+-        function toHtml() {
+-
+-            // Create the list of attributes
+-            $attribs = array(
+-                'name' =&gt; $this-&gt;_form . '_' . $this-&gt;_name
+-            );
+-
+-            $attribs = array_merge( $this-&gt;_attributes, $attribs );
+-            
+-            // Get the HTML
+-            $out = '';
+-
+-			// if js code was not loaded we must load
+-            if ( ! defined( 'YD_SWMENU_MAINSCRIPT' ) ) {
+-            	$out .= trim( '&lt;script type=&quot;text/javascript&quot;&gt;' );
+-            	$out .= trim( 'function hideSMenu( menudiv, obj ){' );
+-            	$out .= trim( '	var ar = document.getElementById( menudiv ).getElementsByTagName( &quot;span&quot; );' );
+-            	$out .= trim( '		if( document.getElementById( obj ).style.display != &quot;block&quot; ){' );
+-            	$out .= trim( '			for ( var i = 0; i &lt; ar.length; i++ ){' );
+-            	$out .= trim( '				if ( ar[i].className == &quot;submenu&quot; )' );
+-            	$out .= trim( '					ar[i].style.display = &quot;none&quot;;' );
+-            	$out .= trim( '			}' );
+-            	$out .= trim( '			document.getElementById( obj ).style.display = &quot;block&quot;;' );
+-            	$out .= trim( '		}else{' );
+-            	$out .= trim( '			document.getElementById( obj ).style.display = &quot;none&quot;;' );
+-            	$out .= trim( '		}' );
+-            	$out .= trim( '}' );
+-            	$out .= trim( '&lt;/script&gt;' );
+-                define( 'YD_SWMENU_MAINSCRIPT', 1 );
+-            }
+-
+-			// create menu div
+-			$out .= '&lt;div'. YDForm::_convertToHtmlAttrib( $attribs ) . '&gt;';
+-			
+-			// create menu id
+-			$IDmenu = $this-&gt;getAttribute('id');
+-			$i = 1;
+-			
+-			// cycle menus
+-			foreach ( $this-&gt;_elements as $_title =&gt; $_elements ){
+-
+-				// create submenu id
+-				$IDsubmenu = $IDmenu . '_' . $i++;
+-							
+-				// create menu div
+-				$out .= &quot;&lt;div class=\&quot;menutitle\&quot; onclick=\&quot;hideSMenu('&quot; . $IDmenu . &quot;', '&quot; . $IDsubmenu . &quot;')\&quot;&gt;&quot; . $_title . &quot;&lt;/div&gt;&quot;;
+-
+-				// create span that includes all menu subitems
+-				$out .= '&lt;span class=&quot;submenu&quot; id=&quot;' . $IDsubmenu . '&quot; style=&quot;display:none&quot;&gt;';
+-				$out .= implode( '&lt;br&gt;', $_elements );
+-				$out .= '&lt;/span&gt;';
+-        	}
+-			
+-			// add final menu div tag
+-			$out .= '&lt;/div&gt;';
+-
+-			return $out;
+-		}
+-
+-
+-        /**
+-         *	This function adds custom css to the template
+-         *
+-         *	@param $template		The template object 
+-         */
+-		function addCss( &amp; $template ){
+-
+-			$template-&gt;addCss( '.menutitle{ cursor:pointer;margin-bottom: 5px;background-color:#ECECFF;color:#000000;width:140px;padding:2px;text-align:center;font-weight:bold;border:1px solid #000000; }' );
+-			$template-&gt;addCss( '.submenu{ margin-bottom: 0.5em; }' );
+-			
+-		}
+-
+-
+-        /**
+-         *	This function adds a new menu item
+-         *
+-         *	@param $name		The name of the menu
+-         */
+-		function addMenu( $name ){
+-
+-			// add menu to elements
+-			$this-&gt;_elements[ $name ] = array();
+-		}
+-
+-
+-        /**
+-         *	This function adds a new element to a menu item
+-         *
+-         *	@param $menu		The name of the menu to assign the element
+-         *	@param $obj			The element form element object (or a simple string)
+-         */
+-		function addElement( $menu, $obj ){
+-		
+-			// if menu don't exist we should create one
+-			if ( !isset( $this-&gt;_elements[ $menu ] ) ) $this-&gt;_elements[ $menu ] = array();
+-
+-			// if element is a form object we must get its html code
+-			if ( !is_string( $obj )) $obj = $obj-&gt;toHtml();
+-
+-			// add this element to menu
+-			array_push( $this-&gt;_elements[ $menu ], $obj );		
+-		}
+-
+-
+-    }
+-
+-?&gt;
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001090.html">[ydf-devel] r2496 - YDFramework2.0/trunk/YDFramework2/YDClasses
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1091">[ date ]</a>
+              <a href="thread.html#1091">[ thread ]</a>
+              <a href="subject.html#1091">[ subject ]</a>
+              <a href="author.html#1091">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/ydframework-devel">More information about the YDFramework-devel
+mailing list</a><br>
+</body></html>
